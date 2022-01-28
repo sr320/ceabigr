@@ -7,7 +7,7 @@ February 21 and 22
 **Aim** - To develop manuscript(s), similar in fashion to FROGER 🐸 and develop epigenetic analysis pipeline to be used in future efforts 🇵🇫. 
 
 
-Tentative Schedule (please use Discussions feature to provide feedback!)
+Tentative Schedule (please use **[Discussions feature](https://github.com/sr320/ceabigr/discussions)** to provide feedback!)
 
 
 ## Monday
