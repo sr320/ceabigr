@@ -8,6 +8,11 @@ Workshop will take a case study based approach looking at specific data sets fro
 
 Prior to the workshop, participants will engage in [Discussions](https://github.com/sr320/ceabigr/discussions) and [Wiki](https://github.com/sr320/ceabigr/wiki) to share information including promising pipelines and relevant datasets. 
 
+![GitHub Discussions](https://img.shields.io/github/discussions/sr320/ceabigr)
+![GitHub issues](https://img.shields.io/github/issues-raw/sr320/ceabigr)
+![GitHub contributors](https://img.shields.io/github/contributors/sr320/ceabigr)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/w/sr320/ceabigr)
+<img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/sr320/ceabigr">
 
 ## Monday
 - Introductions
