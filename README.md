@@ -14,7 +14,7 @@ Prior to the workshop, participants will engage in [Discussions](https://github.
 - Outline of goals including highlight efforts in other species
 - Discuss best practices for workshop documentation and collaboration
 - Brief summary of recent integrated genomic efforts by participants
-- Focus on formatting, generating and genomic datasets (RNAsea, DNA methylation, lncRNA, ATAC, microbiome, metabolomics) in fashion to effectively interogate. Examples can be found on wiki including eg [gene expression](https://github.com/sr320/ceabigr/wiki/Gene-Expression-Data-Types)
+- Focus on formatting, generating and genomic datasets (RNAseq, DNA methylation, lncRNA, ATAC, microbiome, metabolomics) in fashion to effectively interogate. Examples can be found on wiki including eg [gene expression](https://github.com/sr320/ceabigr/wiki/Gene-Expression-Data-Types)
 - Develop plan for integration including machine learning, correlation analysis, etc
 
 ## Tuesday 
