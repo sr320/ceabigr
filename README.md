@@ -1,6 +1,8 @@
 # CEABiGR Workshop
 Workshop on genomic data integration with a emphasis on integrating genetics, epigenetics, and trascriptional activity.
-Workshop will take a case study based approach looking at specific data sets from oysters and corals. The workshop will take place at the Friday Harbor Labs February 21 and 22. Lodging is available February 20, 21, and 22 to allow travel on Febuary 20 and 23. 
+Workshop will take a case study based approach looking at specific data sets from oysters and corals. The workshop will take place at the Friday Harbor Labs with remote participation option 
+
+**Dates**: February 21, 22
 
 **Aim** - To develop manuscript(s), similar in fashion to FROGER 🐸 and develop genomic analysis pipeline to be used in future efforts. It is increasingly evident that we have to consider the combined molecular and physiological states to understand population responses to changing environmental condiditons. 
 
