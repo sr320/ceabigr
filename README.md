@@ -39,23 +39,23 @@ Prior to the workshop, participants will engage in [Discussions](https://github.
 ---
 
 **Particpants (IRL)**     
-Yaamini Venkataraman - WHOI    
-Shelly Trigg - GMGI			   
-Ariana Huffmyer - URI			    
-Jill Ashey - URI			           					
-Katherine Silliman - SCDNR          
-Shayle Matsuda - Shedd Aquarium           
-Laura Spencer - NOAA      
-Hollie Putnam - URI   
-Steven Roberts - UW     
-Javier A. Rodríguez- Casariego - FIU 
+- Yaamini Venkataraman - WHOI    
+- Shelly Trigg - GMGI			   
+- Ariana Huffmyer - URI			    
+- Jill Ashey - URI    			
+- Katherine Silliman - SCDNR           
+- Shayle Matsuda - Shedd Aquarium           
+- Laura Spencer - NOAA      
+- Hollie Putnam - URI   
+- Steven Roberts - UW     
+- Javier A. Rodríguez- Casariego - FIU 
 
 **Particpants (Remote)**    
-Emma Strand - URI   
-Kevin Wong - URI    
-Lauren Zane - URI   
-Danielle Becker - URI   
-Zach Bengtsson - UW   
+- Emma Strand - URI   
+- Kevin Wong - URI    
+- Lauren Zane - URI   
+- Danielle Becker - URI   
+- Zach Bengtsson - UW   
 
 
 
