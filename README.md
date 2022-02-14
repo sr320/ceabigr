@@ -56,7 +56,8 @@ Prior to the workshop, participants will engage in [Discussions](https://github.
 - Lauren Zane - URI   
 - Danielle Becker - URI   
 - Zach Bengtsson - UW   
-- Kelsey Yetsko - FIU
+- Kelsey Yetsko - FIU     
+- Cecile Cres - URI
 
 
 
