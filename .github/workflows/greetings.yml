@@ -12,5 +12,5 @@ jobs:
     - uses: actions/first-interaction@v1
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        issue-message: 'Next level unlocked! Thanks for posting an issue.'
-        pr-message: 'That is great! You submitted a pull request. Have a great day!'
+        issue-message: 'We all like issues! And you just posted your first to this CEABiGR - congrats!.'
+        pr-message: 'You submitted a pull request. Have a great day!'
