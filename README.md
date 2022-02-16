@@ -16,24 +16,29 @@ Prior to the workshop, participants will engage in [Discussions](https://github.
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/w/sr320/ceabigr)
 <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/sr320/ceabigr">
 
+
+
 ## Monday
-- Introductions
-- Outline of goals including highlight efforts in other species
-- Discuss best practices for workshop documentation and collaboration
-- Brief summary of recent integrated genomic efforts by participants
-- Focus on formatting, generating and genomic datasets (RNAseq, DNA methylation, lncRNA, ATAC, microbiome, metabolomics) in fashion to effectively interogate. Examples can be found on wiki including eg [gene expression](https://github.com/sr320/ceabigr/wiki/Gene-Expression-Data-Types)
-- Develop plan for integration including machine learning, correlation analysis, etc
+8:00 - Biological / Genomic Concepts and theories to test [Fernald Classroom]
+9:00 - Testable Hypotheses
+10:00 - Machine Learning Opportunities (Hypothesis generating)
+11:00 - Break / Lunch
+1:00 - Data Access and Analysis Protocols 
+1:30 - Breakout Groups
+4:00 - Regroup, Report, Plan
+6:00 - Dinner 
+
+
 
 ## Tuesday 
-- Evaluate and carryout analyses. This includes both data (relationship) discovery and hypothesis testing.
-- Regroup and discuss experiences and challenges
-- Outline manuscripts
-- Establish and publish robust, generalized pipelines for analysis
-- Discuss future directions.
-
-
-
-
+8:00 - Identify analyses not picked up in Day 01, or newly discovered 
+9:00 - Discuss Perspective Paper
+10:00 - Outline Oyster OA paper
+11:00 - Break/Lunch
+1:00 - Breakout Groups
+3:00 - Touch Base
+4:00 - Establish Robust Workflows
+6:00  - Dinner 
 
 
 ---
@@ -52,7 +57,6 @@ Prior to the workshop, participants will engage in [Discussions](https://github.
 
 **Particpants (Remote)**    
 - Emma Strand - URI   
-- Kevin Wong - URI    
 - Lauren Zane - URI   
 - Danielle Becker - URI   
 - Zach Bengtsson - UW   
