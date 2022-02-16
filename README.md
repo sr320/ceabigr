@@ -19,26 +19,26 @@ Prior to the workshop, participants will engage in [Discussions](https://github.
 
 
 ## Monday
-8:00 - Biological / Genomic Concepts and theories to test [Fernald Classroom]
-9:00 - Testable Hypotheses
-10:00 - Machine Learning Opportunities (Hypothesis generating)
-11:00 - Break / Lunch
-1:00 - Data Access and Analysis Protocols 
-1:30 - Breakout Groups
-4:00 - Regroup, Report, Plan
-6:00 - Dinner 
+8:00 - Biological / Genomic Concepts and theories to test [Fernald Classroom]     
+9:00 - Testable Hypotheses    
+10:00 - Machine Learning Opportunities (Hypothesis generating)    
+11:00 - Break / Lunch    
+1:00 - Data Access and Analysis Protocols      
+1:30 - Breakout Groups     
+4:00 - Regroup, Report, Plan    
+6:00 - Dinner     
 
 
 
 ## Tuesday 
-8:00 - Identify analyses not picked up in Day 01, or newly discovered 
-9:00 - Discuss Perspective Paper
-10:00 - Outline Oyster OA paper
-11:00 - Break/Lunch
-1:00 - Breakout Groups
-3:00 - Touch Base
-4:00 - Establish Robust Workflows
-6:00  - Dinner 
+8:00 - Identify analyses not picked up in Day 01, or newly discovered     
+9:00 - Discuss Perspective Paper    
+10:00 - Outline Oyster OA paper    
+11:00 - Break/Lunch     
+1:00 - Breakout Groups     
+3:00 - Touch Base    
+4:00 - Establish Robust Workflows     
+6:00  - Dinner      
 
 
 ---
