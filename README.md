@@ -43,7 +43,7 @@ Prior to the workshop, participants will engage in [Discussions](https://github.
 
 ---
 
-**Particpants (IRL)**     
+**Participants (IRL)**     
 - Yaamini Venkataraman - WHOI    
 - Shelly Trigg - GMGI			   
 - Ariana Huffmyer - URI			    
@@ -55,7 +55,7 @@ Prior to the workshop, participants will engage in [Discussions](https://github.
 - Steven Roberts - UW     
 - Javier A. Rodríguez- Casariego - FIU 
 
-**Particpants (Remote)**    
+**Participants (Remote)**    
 - Emma Strand - URI   
 - Lauren Zane - URI   
 - Danielle Becker - URI   
