@@ -3,3 +3,5 @@
 .RData
 .Ruserdata
 .RAnalysis/data/*tab
+.DS_Store
+*.bedgraph
