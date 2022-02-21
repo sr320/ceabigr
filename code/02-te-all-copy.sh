@@ -29,6 +29,7 @@ source /gscratch/srlab/programs/scripts/paths.sh
 
 cd /gscratch/scrubbed/sr320/021022-CvBSnp/
 FILES=$(ls *sorted.bam)
+cd /gscratch/scrubbed/sr320/022122-te-cov/
 
 for file in ${FILES}
 do
