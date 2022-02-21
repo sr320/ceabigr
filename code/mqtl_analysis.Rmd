@@ -11,6 +11,34 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
+```{r}
+library(MatrixEQTL)
+library(tidyverse)
+library(reshape2)
+library(LEA)
+```
+
+```{r}
+pos <- read.table("../data/Cv_10x_fxmerge_05.012.pos",header = F,sep = "\t",stringsAsFactors = F)
+head(pos)
+row.names(pos) <- paste(pos$V1,pos$V2,sep = "_")
+id <- as.character(row.names(pos))
+
+inds <- scan("../data/Cv_10x_fxmerge_05.012.indv", character())
+inds <- str_remove(inds, "/home/sr320/github/2018_L18-adult-methylation/bg_data/")
+inds <- str_remove(inds,"_R1_val_1_bismark_bt2_pe.deduplicated.sorted.bam")
+
+geno <- t(read.table("../data/Cv_10x_fxmerge_05.012",header = T,sep = "\t",stringsAsFactors = F,row.names = 1))
+
+geno <- cbind(id,geno)
+geno <- as.data.frame(geno,stringsAsFactors = F)
+rownames(geno) <- NULL
+# change sample names to match epigenetics
+colnames(geno) <- c("id",inds)
+head(geno)
+write.table(geno,"../data/Cv_10x_fxmerge_05.geno"),sep="\t",quote = F,row.names = F)
+```
+
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
