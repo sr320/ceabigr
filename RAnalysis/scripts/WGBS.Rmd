@@ -30,56 +30,106 @@ library('ggthemes')
 library("pheatmap")
 ```
 
-## Loading sample, genomic, and annotation information
-```{r, message=F}
-#load sample information
-sample.info <- read.csv("data/Methylation/Sample.Info.csv", header=T, sep=",", na.string="NA", stringsAsFactors = F) #read in info
+#obtain genome and annotation files from NCBI
+```{bash}
 
-#load genes gff (see OSF repository: https://osf.io/bcxk7/)
-Genes <- read.csv("data/Methylation/Montipora_capitata_HIv2.genes.gff3", header=F, sep="\t", na.string="NA", skip=0, stringsAsFactors = F) #read in data file
-Genes <- Genes[,c(1,3,4,5,9)] #select desired columns only
-colnames(Genes) <- c("scaffold", "feature", "start", "stop", "gene") #rename columns
-Genes$gene <- gsub(";.*","",Genes$gene) #remove extra characters
-Genes$gene <- gsub("ID=","",Genes$gene) #remove extra characters
-Genes <- Genes %>%
-  filter(feature=="gene")
-  
-# #Load annotation file (see OSF repository)
-# Annot <- read.csv("RAnalysis/Data/Genome/Panopea-generosa-genes-annotations.tab", header=FALSE, sep="\t", na.string="NA", stringsAsFactors = FALSE, skip=0)
-# colnames(Annot) <- c("gene","scaffold", "start", "end", "uniprot.id", "uniprot_taxa.id", "Uniprot.Name", "GO.IDs", "GO.Descript")
-# GO.data <- Annot[,c(1,8)] #select names and GOs
-# splitted <- strsplit(as.character(GO.data$GO.IDs), "; ") #split into multiple GO ids
-# Gene.GO.IDs <- data.frame(v1 = rep.int(GO.data$gene, sapply(splitted, length)), v2 = unlist(splitted)) #list all genes with each of their GO terms in a single row 
-# colnames(Gene.GO.IDs) <- c("gene", "GO.IDs") #rename columns
-# Gene.GO.IDs$GO.IDs <- as.character(Gene.GO.IDs$GO.IDs)
-# #Gene.GO.IDs$GO.IDs[is.na(Gene.GO.IDs$GO.IDs)] <- "unknown" #replace NA with unknown
-# GO.IDs <-unique(Gene.GO.IDs$GO.IDs)
+ 
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/022/765/GCF_002022765.2_C_virginica-3.0/GCF_002022765.2_C_virginica-3.0_genomic.fna.gz > RAnalysis/data/GCF_002022765.2_C_virginica-3.0_genomic.fna.gz
 
-# # downloaded 20210407: http://www.informatics.jax.org/gotools/data/input/map2MGIslim.txt
-# GoSlims <- read.csv("RAnalysis/Data/20210407_map2MGIslim.csv", header=TRUE, sep=",", na.string="NA", stringsAsFactors = FALSE, skip=0)
-# colnames(GoSlims) <- c("GO.IDs", "Cat","GO.Slim.Term")
-# 
-# Gene.GO.IDs.slims <- merge(Gene.GO.IDs, GoSlims, by="GO.IDs", all = TRUE)
-# Gene.GO.IDs.slims <- Gene.GO.IDs.slims[-1,]
-# 
-# GO.IDs.slims <- Gene.GO.IDs.slims[,-2]
+gunzip RAnalysis/data/GCF_002022765.2_C_virginica-3.0_genomic.fna.gz 
+
+wget https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/genome-features/C_virginica-3.0_Gnomon_genes.bed > RAnalysis/data/C_virginica-3.0_Gnomon_genes.bed
+
 
 ```
 
-5x data found in all samples
+
+## Loading sample, genomic, and annotation information
+```{r, message=F}
+#load sample information
+sample.info <- read.csv("RAnalysis/data/adult-meta.csv", header=T, sep=",", na.string="NA", stringsAsFactors = F) #read in info
+
+sample.info <- sample.info %>%
+  filter(Sex=="F")
+
+#load genes gff (https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/genome-features/C_virginica-3.0_Gnomon_genes.bed)
+Genes <- read.csv("RAnalysis/data/C_virginica-3.0_Gnomon_genes.bed", header=F, sep="\t", na.string="NA", skip=0, stringsAsFactors = F) #read in data file
+Genes <- Genes[,c(1:4)] #select desired columns only
+colnames(Genes) <-c("scaffold", "start", "stop", "gene") #rename columns
+
+```
+
+
+
+genrate a file for Xcov of all positions found in all samples (e.g., 10X)
+```{bash}
+multiIntersectBed -i \
+RAnalysis/data/16F_R1_val_1_10x.tab \
+RAnalysis/data/19F_R1_val_1_10x.tab \
+RAnalysis/data/22F_R1_val_1_10x.tab \
+RAnalysis/data/29F_R1_val_1_10x.tab \
+RAnalysis/data/35F_R1_val_1_10x.tab \
+RAnalysis/data/36F_R1_val_1_10x.tab \
+RAnalysis/data/39F_R1_val_1_10x.tab \
+RAnalysis/data/3F_R1_val_1_10x.tab \
+RAnalysis/data/41F_R1_val_1_10x.tab \
+RAnalysis/data/44F_R1_val_1_10x.tab \
+RAnalysis/data/50F_R1_val_1_10x.tab \
+RAnalysis/data/52F_R1_val_1_10x.tab \
+RAnalysis/data/53F_R1_val_1_10x.tab \
+RAnalysis/data/54F_R1_val_1_10x.tab \
+RAnalysis/data/76F_R1_val_1_10x.tab \
+RAnalysis/data/77F_R1_val_1_10x.tab > RAnalysis/data/meth.10x.bed
+
+```
+
+```{bash}
+cat RAnalysis/data/meth.10x.bed | awk '$4 ==16' > RAnalysis/data/filtered.AllSamps.10x.bed 
+
+```
+
+
+```{bash}
+#Use intersectBed to find where loci and genes intersect, allowing loci to be mapped to annotated genes
+#wb: Print all lines in the second file
+#a: file that ends in posOnly
+#b: annotated gene list
+#Save output in a new file that has the same base name and ends in -Annotated.txt
+for f in RAnalysis/data/*_R1_val_1_10x.tab
+do
+  intersectBed \
+  -wb \
+  -a ${f} \
+  -b RAnalysis/data/C_virginica-3.0_Gnomon_genes.bed \
+  > ${f}_gene
+done
+```
+
+
+```{bash}
+#intersect with file to subset only those positions found in all samples
+for f in RAnalysis/data/*_gene
+do
+  intersectBed \
+  -a ${f} \
+  -b RAnalysis/data/filtered.AllSamps.10x.bed  \
+  > ${f}_AllSamps_gene.bed
+done
+
+wc -l RAnalysis/data/*AllSamps_gene.bed
+
+```
+
 ```{r}
-meth.data <- list.files(path = "data/Methylation", pattern = "_5x_sorted_AllSamps_genes.tab$", full.names=TRUE) %>%
+meth.data <- list.files(path = "RAnalysis/data/", pattern = "AllSamps_gene.bed$", full.names=TRUE) %>%
   set_names(.) %>% 
   map_dfr(read.csv,.id="Sample.ID", header=FALSE, sep="\t", na.string="NA", stringsAsFactors = FALSE) %>% 
-  #dplyr::select(-c(V3,V8:V10)) %>%
+  dplyr::select(c(Sample.ID:V2, V4:V6,V10)) %>%
   group_by(Sample.ID)
 
-colnames(meth.data) <- c("Sample.ID", "scaffold", "position","per.meth","meth","unmeth","coverage","gene")
-meth.data$gene <- gsub(";.*","",meth.data$gene) #remove extra characters
-meth.data$gene <- gsub("ID=","",meth.data$gene) #remove extra characters
-head(meth.data)
-meth.data$Sample.ID <- gsub("data/Methylation/","",meth.data$Sample.ID) #remove extra characters
-meth.data$Sample.ID <- gsub("_.*","",meth.data$Sample.ID) #remove extra characters
+colnames(meth.data) <- c("Sample.ID", "scaffold", "position","per.meth","meth","unmeth","gene")
+meth.data$Sample.ID <- gsub("RAnalysis/data//","",meth.data$Sample.ID) #remove extra characters
+meth.data$Sample.ID <- gsub("_R1_val_1_10x.tab_gene_AllSamps_gene.bed","",meth.data$Sample.ID) #remove extra characters
 meth.data.x <- merge(meth.data, sample.info, by="Sample.ID")
 
 #plotting
