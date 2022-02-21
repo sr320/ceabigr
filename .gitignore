@@ -5,3 +5,4 @@
 .RAnalysis/data/*tab
 .DS_Store
 *.bedgraph
+*.vcf
