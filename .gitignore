@@ -5,4 +5,6 @@
 .RAnalysis/data/*tab
 .DS_Store
 *.bedgraph
+*.vcf
 ceabigr.Rproj
+bg_data
