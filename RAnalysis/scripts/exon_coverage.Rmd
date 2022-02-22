@@ -1,0 +1,36 @@
+---
+title: "exon_coverage"
+output: html_document
+---
+
+Download sorted bam files.  
+```{bash}
+wget -r --no-check-certificate --quiet --no-directories --no-parent -P ../../data/SortedBAM -A *sorted.bam https://gannet.fish.washington.edu/Atumefaciens/20210726_cvir_stringtie_GCF_002022765.2_isoforms/
+```
+
+Run bedtools to generate coverage information for each sample.    
+```{bash}
+cd ~/Projects/ceabigr/data/SortedBAM
+
+FILES=$(ls *.sorted.bam)
+
+for file in ${FILES}
+do
+    NAME=$(echo ${file} | awk -F "." '{print $1}')
+    echo ${NAME}
+
+    /home/shared/bedtools2/bin/bedtools coverage \
+    -mean \
+    -sorted \
+    -a ~/Projects/ceabigr/genome-features/C_virginica-3.0_Gnomon_exon_sorted_yrv.bed \
+    -b ~/Projects/ceabigr/data/SortedBAM/${NAME}.sorted.bam \
+    > ~/Projects/ceabigr/data/exon_coverage/${NAME}_exon_cov_m.out
+done
+```
+
+
+
+
+
+
+
