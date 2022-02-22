@@ -1,0 +1,212 @@
+---
+title: "eQTL_analysis"
+author: "Laura Spencer"
+date: "2/21/2022"
+output: html_document
+---
+
+```{r libraries}
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#     install.packages("BiocManager")
+# BiocManager::install("DESeq2", version = "3.8")
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#     install.packages("BiocManager")
+# BiocManager::install("apeglm", version = "3.8")
+# library(ashr, verbose="F")
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#     install.packages("BiocManager")
+# BiocManager::install("vsn", version = "3.8")
+
+list.of.packages <- c("tidyverse", "MatrixEQTL") #add new libraries here
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
+# Load all libraries 
+lapply(list.of.packages, FUN = function(X) {
+  do.call("require", list(X)) 
+})
+```
+
+Load data:
+
+If investigating general relationship between methylation rate and expression: 
+- Methylation status (methylated or not, locus-level) x individual matrix 
+- Methylated loci location bedfile 
+- Gene count (normalized) x individual matrix 
+- Gene location bedfile 
+
+If investigating assocations between DMLs (DMGs?) and DEGs 
+- DMLs OR DMGs x individual matrix 
+- DMLs or DMGs location bedfile 
+- DEGs count x individual matrix 
+- DEG location bedfile 
+
+Could also do a mQTL, would also need: 
+- SNPs x individual matrix (filtered for ...?   
+- SNPs location bedfile 
+- % methylation x individual matrix 
+- Methylation locations bedfile 
+
+# Prepare data 
+
+## Gene count (normalized) x individual matrix  
+
+```{r}
+# Expression data should look like this example data: 
+#read_delim(file = "MatrixEQTL/data/GE.txt", delim = "\t")
+
+# Our expression data - normalized gene counts per sample 
+# Read in data, reformat, save to file 
+read_delim(file = "data/gene_fpkm.csv", delim = ",", )[1:10, 1:10] %>%
+    as_tibble() %>% 
+    dplyr::select(OldSample.ID, starts_with("gene")) %>%
+    column_to_rownames(var = "OldSample.ID") %>% t() %>% #as.matrix() %>%
+    write.table("data/gene_fpkm.txt", sep="\t",col.names = TRUE, row.names = TRUE, quote = FALSE)
+
+expression_file_name = "data/gene_fpkm.txt"
+gene = SlicedData$new();
+gene$fileDelimiter = "\t";      # the TAB character
+gene$fileOmitCharacters = "NA"; # denote missing values;
+gene$fileSkipRows = 1;          # one row of column labels
+gene$fileSkipColumns = 1;       # one column of row labels
+gene$fileSliceSize = 2000;      # read file in slices of 2,000 rows
+gene$LoadFile(expression_file_name);
+gene #preview gene expression matrix 
+```
+## Generate location file of DEGs
+Needs to look like this: 
+
+```
+geneid	chr	left	right
+Gene_01	chr1	721289	731289
+Gene_02	chr1	752565	762565
+Gene_03	chr1	777121	787121
+Gene_04	chr1	785988	795988
+Gene_05	chr1	792479	802479
+Gene_06	chr1	798958	808958
+Gene_07	chr1	888658	898658
+Gene_08	chr1	918572	928572
+Gene_09	chr1	926430	936430
+```
+
+
+```{r}
+genepos <- read.table("../genome-features/C_virginica-3.0_Gnomon_genes.bed", header = FALSE, stringsAsFactors = FALSE) %>%
+  select(V4, V1, V2, V3)
+names(genepos) <- c("geneid", "chr", "left", "right")
+```
+
+## Methylation status akin to a SNP: 
+- Methylated or not methylated? 0 vs. 1 
+- Low methylation = X-Y% 0
+- Moderate methylation level = X-Y% 1
+- High methylation level = X-Y% 2
+
+## Downloaded the % methylation bedgraph files using the terminal via:  
+`wget --no-check-certificate -O data/union_10x.bedgraph https://gannet.fish.washington.edu/seashell/ceabigr/output/methylation-landscape/union_10x.bedgraph`
+
+This file contains % methylation per locus per individual: 
+https://gannet.fish.washington.edu/seashell/ceabigr/output/methylation-landscape/union_10x.bedgraph
+
+This file also contains the average % methylation information per locus: 
+https://gannet.fish.washington.edu/seashell/ceabigr/output/methylation-landscape/union-averages.bedgraph
+
+# NEED TO REMOVE loci that have the same low/medium/high methylation rate on all samples
+
+```{bash}
+head -n 3 ../data/union-averages.bedgraph
+```
+```{r}
+meth.percent <- read.table("../data/union-averages.bedgraph", header = TRUE, stringsAsFactors = FALSE) %>%
+    mutate_at(vars(contains("X")), as.numeric)
+
+# Inspect distribution of methylation for every locus (averaged across all samples), removing mitochondrial genome
+ggplotly(ggplot(meth.percent %>% filter(chrom!="NC_007175.2"), aes(x=total)) + 
+           geom_histogram(bins = 100, col="gray25", fill="gray75"))
+
+cols_to_mutate <- meth.percent %>% select(contains("X")) %>% colnames()
+
+meth.categories <- meth.percent %>% 
+  mutate_at(vars(contains("X")), as.numeric) %>% # convert %meth columns to numeric
+  mutate_at(cols_to_mutate, function(x) {        # assign methylotype to each individual for each locus 
+    case_when(
+      x < 10 ~ 0,                                # <10% methylated = "0" 
+      between(x, 10, 50) ~ 1,                    # 10%<x<50% methylated = "1"
+      x >= 50 ~ 2)}) %>%                         # >50% methylated = "2"
+  #mutate_at(vars(contains("X")), as.factor) %>%  
+  mutate(pos=start+1) %>%
+  mutate(methid=paste(chrom, pos, sep="")) %>%  # create a new column with locus ID (chromosome+position)
+  select(methid, chrom, pos, contains("X")) %>% rename_with(~str_remove(., "X")) %>% # remove "X" from sample ID columns names 
+  #filter(chrom!="NC_007175.2") %>%  #remove mitochondrial chromosome 
+  mutate(zeros = rowSums(. == 0, na.rm=TRUE)/26,  # calc. the % of individuals with methylotype "0"
+         ones = rowSums(. == 1, na.rm=TRUE)/26,   # calc. the % of individuals with methylotype "1"
+         twos = rowSums(. == 2, na.rm=TRUE)/26,   # calc. the % of individuals with methylotype "2"
+         nas = rowSums(is.na(.))/26) %>%          # calc. the % of individuals without data "NA"
+  filter(zeros<0.9, ones<0.9, 
+         twos<0.9, nas<0.1) # remove any loci with the same methylotype or NA across 90% or greater of samples
+  
+write.table(meth.categories, "../data/meth_types.txt", sep="\t",col.names = TRUE, row.names = FALSE, quote = FALSE) # save to file 
+```
+## Create the methylation data object 
+
+```{r}
+# methylation data should look like this example data: 
+#read_delim(file = "MatrixEQTL/data/SNP.txt", delim = "\t")
+
+meth_file_name = "../data/meth_types.txt"
+meth = SlicedData$new();
+meth$fileDelimiter = "\t";      # the TAB character
+meth$fileOmitCharacters = "NA"; # denote missing values;
+meth$fileSkipRows = 1;          # one row of column labels
+meth$fileSkipColumns = 1;       # one column of row labels
+meth$fileSliceSize = 2000;      # read file in slices of 2,000 rows
+meth$LoadFile(meth_file_name);
+```
+
+Create methylated loci location file 
+
+```{r}
+meth.categories %>% select(methid, pos) %>% 
+  write.table("../data/meth_types.txt", sep="\t",col.names = TRUE, row.names = FALSE, quote = FALSE) # save to file 
+```
+
+
+## SNPs data 
+- Methylated or not methylated? 0 vs. 1 
+- Low methylation = X-Y% 0
+- Moderate methylation level = X-Y% 1
+- High methylation level = X-Y% 2
+
+```{r}
+# SNP data should look like this example data: 
+read_delim(file = "MatrixEQTL/data/SNP.txt", delim = "\t")
+
+snp_file_name = "data/gene_fpkm.txt"
+snps = SlicedData$new();
+snps$fileDelimiter = "\t";      # the TAB character
+snps$fileOmitCharacters = "NA"; # denote missing values;
+snps$fileSkipRows = 1;          # one row of column labels
+snps$fileSkipColumns = 1;       # one column of row labels
+snps$fileSliceSize = 2000;      # read file in slices of 2,000 rows
+snps$LoadFile(snp_file_name);
+```
+
+```{bash}
+head "data/filtered.AllSamps.10x.bed"
+```
+
+Other stuff 
+
+```{r}
+# Calculate per-locus CV 
+meth.percent.cv <- meth.percent %>% 
+    mutate_at(vars(contains("X")), as.numeric) %>%
+   rowwise() %>%
+  mutate(mean=mean(c_across(contains("X")), na.rm = TRUE),
+         sd=sd(c_across(contains("X")), na.rm = TRUE)) %>%
+    mutate(cv=sd/mean)
+
+ggplotly(ggplot(meth.percent.cv %>% filter(chrom!="NC_007175.2"), aes(x=cv)) + 
+           geom_histogram(bins = 100, col="gray25", fill="gray75"))
+```
+

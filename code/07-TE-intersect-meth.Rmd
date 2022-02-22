@@ -1,0 +1,97 @@
+---
+title: "07-TE-meth-intersect"
+output: html_document
+author: Laura, Shelly, Steven, Danielle
+---
+
+
+#Load necessary libraries
+```{r}
+library(tidyverse)
+```
+
+
+
+ # CODE TO GET METHYLATION INTERSECT WITH TE
+```
+sr320@raven:/home/shared/8TB_HDD_01/sr320/github$ cd ceabigr/data/
+sr320@raven:/home/shared/8TB_HDD_01/sr320/github/ceabigr/data$ wget -r \
+--no-check-certificate \
+--quiet \
+--no-directories --no-parent \
+-P . \
+-A *10x.bedgraph  \
+https://gannet.fish.washington.edu/seashell/bu-mox/scrubbed/120321-cvBS/
+```
+
+
+
+
+```{bash}
+ cd ../data
+ FILES=$(ls *bedgraph)
+
+ for file in ${FILES}
+ do
+    NAME=$(echo ${file} | awk -F "_" '{print $1}')
+    echo ${NAME}
+
+   /home/shared/bedtools2/bin/intersectBed \
+   -wb \
+   -a ${NAME}_R1_val_1_10x.bedgraph \
+   -b ../genome-features/C_virginica-3.0_TE-all.gff \
+   > ../output/${NAME}mTE.out
+ done  
+```
+
+
+```{bash}
+head -2 ../output/9MmTE.out
+```
+
+
+
+ # Taking TE methylation at each Loci and getting Mean methylation
+
+
+ #Want to see unique transposable elements through 26 different files/samples 
+ 
+ 
+
+#Want to see unique transposable elements through 26 different files/samples 
+```{r}
+# create a vector of filenames with full path 
+filenames <- list.files(path = "../output", pattern = "mTE.out", full.names = TRUE)  
+
+b <- data.frame()   # create empty dataframe to be populated with mean & median summary stats for each feature within a sample 
+
+for (i in 1:length(filenames)) {  
+  print(filenames[i])  # print out file location and name 
+  testMte <- read.csv(file = filenames[i], sep = "\t", header = FALSE) # read in each sample data 
+    # summarize methylation data per feature, chromosome, start, and end position with mean & median 
+    group12 <- testMte %>% group_by(V13,V5, V8, V9) %>%   
+    summarize(avg = mean(V4, na.rm=TRUE), median=median(V4, na.rm=TRUE)) %>%
+
+    # add new column with sample name 
+    mutate(sample=gsub("../output/", "", filenames[i]))
+   # combine feature mean and median methylation for each sample in one common dataframe called b
+  b <- rbind(b, group12)
+}
+
+#rename columns
+colnames(b) <- c("feature_name","mean_meth", "median_meth", "sample")
+
+#write out dataframe
+write.table(b, file = "../output/transposon_summary_allsamples.txt",quote = F, row.names = F, sep = "\t")
+```
+
+
+
+
+
+
+
+
+
+
+
