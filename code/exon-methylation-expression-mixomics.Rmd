@@ -1,0 +1,131 @@
+---
+title: "exon-methylation-expression-mixomics"
+output: html_document
+---
+
+# Set up R Markdown document
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "../output/exon-methylation-expression-mixomics/") #Set root directory
+```
+
+#Install packages
+
+```{r}
+#if (!requireNamespace("BiocManager", quietly = TRUE))
+#    install.packages("BiocManager")
+# BiocManager::install("mixOmics") #Install BiocManager and mixOmics
+require(mixOmics)
+require(tidyverse)
+```
+
+```{r}
+sessionInfo()
+```
+
+# Import and reformat data
+
+```{r}
+exonExpression <- read.csv("/home/shared/8TB_HDD_02/ashuff/Projects/ceabigr/output/gene_coverage_exon.csv", header = TRUE, row.names = 1)
+exonExpressionMod <- exonExpression %>%
+  unique(.) %>%
+  unite(., exonID, 1:3) %>%
+  select(., exonID, genes, sample_id) %>%
+  unique(.) %>%
+  spread(., key = exonID, value = genes, fill = "N/A") #Create exonID column with chr-start-end, select only exonID, gene_cov, and sample_id information, filter unique rows, spread data for mixOmics formatting requirements
+head(exonExpressionMod) #Confirm formatting
+ncol(exonExpressionMod) #Count number of exons with data
+```
+
+```{r}
+exonMethylation <- read.csv("/home/shared/8TB_HDD_02/ashuff/Projects/ceabigr/output/methylation_level_exon.csv", header = TRUE)
+exonMethylationMod <- exonMethylation %>%
+  unite(., exonID, 2:4) %>%
+  select(., exonID, gene_cov, sample_id) %>%
+  unique(.) %>%
+  spread(., key = exonID, value = gene_cov, fill = "N/A") #Create exonID column with chr-start-end, select only exonID, gene_cov, and sample_id information, filter unique rows, spread data for mixOmics formatting requirements
+head(exonMethylationMod) #Confirm formatting
+```
+
+```{r}
+metadata <- read.csv("../RAnalysis/data/adult-meta.csv", header = TRUE) #Import metadata
+head(metadata) #Confirm formatting
+```
+
+# Sparse PLS
+
+Followed [`mixOmics` manual](https://mixomicsteam.github.io/Bookdown/pls.html#inputs-and-outputs-1) for analysis methods.
+
+## Tune parameters
+
+```{r}
+exonResult.pls <- pls(exonMethylationMod, exonExpressionMod, ncomp = 4) #Run a PLS with a sufficient number of components
+exonPerf.pls <- perf(exonResult.pls, validation = "Mfold", folds = 5,
+                     progressBar = FALSE, nrepeat = 1000) #Use perf for repeated k-fold cross-validation to determine the number of components that should be included
+plot(perf.pls$Q2.total) #Plot perf results
+abline(h = 0.0975) #Only include components with value is ≤ 0.0975
+```
+
+## Run SPLS
+
+```{r}
+exonResult.spls <- spls(X = exonMethylationMod, Y = exonExpressionMod, 
+                        keepX = c(25, 25), keepY = c(5,5)) #Run SPLS
+```
+
+```{r}
+plotIndiv(exonResult.spls, group= metadata$Sex,
+          pch = metadata$Treatment,
+          rep.space = "XY-variate",  legend = TRUE,
+          legend.title = 'Sex', legend.title.pch = 'Treatment',
+          ind.names = FALSE, 
+          title = 'Exon: sPLS') #Plot samples. Group by sex and add symbols for treatment
+```
+
+```{r}
+plotVar(exonResult.spls) #Plot variables
+exonCoordinates <- plotVar(exonResult.spls, plot = FALSE) #Extract coordinates
+```
+
+```{r}
+plotArrow(exonResult.spls, group = metadata$TreatmentN, legend = TRUE,
+          X.label = 'PLS comp 1', Y.label = 'PLS comp 2') #Group by treatment and sex
+```
+
+## Component-level information
+
+### Component 1
+
+```{r}
+exonSelectedVariables1 <- selectVar(exonResult.spls, comp = 1) #Selected variables for first component
+exonSelectedVariables1$X$name #Selected exons from methylation data
+exonSelectedVariables1$Y$name #Selected exons from expression data
+```
+
+```{r}
+cim(exonResult.spls, comp = 1) #Clustered image map for first component
+network(exonResult.spls, comp = 1) #Network for first component
+```
+
+```{r}
+plotLoadings(exonResult.spls, comp = 2, size.name = rel(0.5)) #Loadings for first component
+```
+
+### Component 2
+
+```{r}
+exonSelectedVariables2 <- selectVar(exonResult.spls, comp = 2) #Selected variables for second component
+exonSelectedVariables2$X$name #Selected exons from methylation data
+exonSelectedVariables2$Y$name #Selected exons from expression data
+```
+
+```{r}
+cim(exonResult.spls, comp = 2) #Clustered image map for second component
+network(exonResult.spls, comp = 2) #Network for second component
+```
+
+```{r}
+plotLoadings(exonResult.spls, comp = 2, size.name = rel(0.5)) #Loadings for second component
+```
+
