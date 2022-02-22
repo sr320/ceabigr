@@ -1,5 +1,5 @@
 ---
-title: "04-TE-meth-intersect"
+title: "07-TE-meth-intersect"
 output: html_document
 author: Laura, Shelly, Steven, Danielle
 ---
@@ -56,17 +56,21 @@ b <- data.frame()   # create empty dataframe to be populated with mean & median 
 for (i in 1:length(filenames)) {  
   print(filenames[i])  # print out file location and name 
   testMte <- read.csv(file = filenames[i], sep = "\t", header = FALSE) # read in each sample data 
-    # summarize methylation data per feature, mean & median 
+    # summarize methylation data per feature, chromosome, start, and end position with mean & median 
     group12 <- testMte %>% group_by(V13,V5, V8, V9) %>%   
     summarize(avg = mean(V4, na.rm=TRUE), median=median(V4, na.rm=TRUE)) %>%
 
     # add new column with sample name 
-    mutate(sample=gsub("../output/", "", filenames[i]))
+    mutate(sample=gsub("../../../../8TB_HDD_01/sr320/github/ceabigr/output/", "", filenames[i]))
+   # combine feature mean and median methylation for each sample in one common dataframe called b
   b <- rbind(b, group12)
 }
+
+#rename columns
 colnames(b) <- c("feature_name","mean_meth", "median_meth", "sample")
 
-write.table(b, file = "../output/_transposon_summary_allsamples.txt",quote = F, row.names = F, sep = "\t")
+#write out dataframe
+write.table(b, file = "../../../../8TB_HDD_01/sr320/github/ceabigr/output/transposon_summary_allsamples.txt",quote = F, row.names = F, sep = "\t")
 ```
 
 
