@@ -72,10 +72,36 @@ head ../output/9MmTE.out
 # Taking TE methylation at each Loci and getting Mean methylation
 
 
+```{r}
+list.files(path = "../output", pattern = "mTE.out", full.names = TRUE)
+
+
+```
+
 
 ```{r}
-group12 <- testMte %>% group_by(V13) %>%
-summarize(avg_sq = mean(V4, na.rm=TRUE))
+filenames <- list.files(path = "../output", pattern = "mTE.out", full.names = TRUE)
+
+```
+
+
+# put into a list
+l <- list(df1, df2)
+
+# iterate over the list with a for loop
+for(i in 1:length(l)){
+  l[[i]]$new_column <- l[[i]]$x + l[[i]]$y
+}
+
+list.files(path = "data", pattern = "csv", full.names = TRUE)
+
+```{r}
+
+for (f in filenames) {
+  print(f)
+}
+
+
 ```
 
 
