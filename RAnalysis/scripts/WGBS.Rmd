@@ -43,48 +43,38 @@ wget https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methyla
 
 ```
 
+# load genome and annotation information
+```{r, message=F}
+#load genes gff (https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/genome-features/C_virginica-3.0_Gnomon_genes.bed)
+Genes <- read.csv("RAnalysis/data/C_virginica-3.0_Gnomon_genes.bed", header=F, sep="\t", na.string="NA", skip=0, stringsAsFactors = F) #read in data file
+Genes <- Genes[,c(1:4)] #select desired columns only
+colnames(Genes) <-c("scaffold", "start", "stop", "gene") #rename columns
 
-## Loading sample, genomic, and annotation information
+#load gene functional annotation
+Annot <- read.csv("RAnalysis/data/proteins_398_327504.csv")
+colnames(Annot)[6] <- "gene"
+Annot$gene <- as.character(Annot$gene)
+```
+
+#EGGS
+## Loading sample information
 ```{r, message=F}
 #load sample information
 sample.info <- read.csv("RAnalysis/data/adult-meta.csv", header=T, sep=",", na.string="NA", stringsAsFactors = F) #read in info
 
 sample.info <- sample.info %>%
   filter(Sex=="F")
-
-#load genes gff (https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/genome-features/C_virginica-3.0_Gnomon_genes.bed)
-Genes <- read.csv("RAnalysis/data/C_virginica-3.0_Gnomon_genes.bed", header=F, sep="\t", na.string="NA", skip=0, stringsAsFactors = F) #read in data file
-Genes <- Genes[,c(1:4)] #select desired columns only
-colnames(Genes) <-c("scaffold", "start", "stop", "gene") #rename columns
-
 ```
-
-
 
 genrate a file for Xcov of all positions found in all samples (e.g., 10X)
 ```{bash}
 multiIntersectBed -i \
-RAnalysis/data/16F_R1_val_1_10x.tab \
-RAnalysis/data/19F_R1_val_1_10x.tab \
-RAnalysis/data/22F_R1_val_1_10x.tab \
-RAnalysis/data/29F_R1_val_1_10x.tab \
-RAnalysis/data/35F_R1_val_1_10x.tab \
-RAnalysis/data/36F_R1_val_1_10x.tab \
-RAnalysis/data/39F_R1_val_1_10x.tab \
-RAnalysis/data/3F_R1_val_1_10x.tab \
-RAnalysis/data/41F_R1_val_1_10x.tab \
-RAnalysis/data/44F_R1_val_1_10x.tab \
-RAnalysis/data/50F_R1_val_1_10x.tab \
-RAnalysis/data/52F_R1_val_1_10x.tab \
-RAnalysis/data/53F_R1_val_1_10x.tab \
-RAnalysis/data/54F_R1_val_1_10x.tab \
-RAnalysis/data/76F_R1_val_1_10x.tab \
-RAnalysis/data/77F_R1_val_1_10x.tab > RAnalysis/data/meth.10x.bed
+RAnalysis/data/*F_R1_val_1_10x.tab > RAnalysis/data/F_meth.10x.bed
 
 ```
 
 ```{bash}
-cat RAnalysis/data/meth.10x.bed | awk '$4 ==16' > RAnalysis/data/filtered.AllSamps.10x.bed 
+cat RAnalysis/data/F_meth.10x.bed | awk '$4 ==16' > RAnalysis/data/F_filtered.AllSamps.10x.bed 
 
 ```
 
@@ -95,7 +85,7 @@ cat RAnalysis/data/meth.10x.bed | awk '$4 ==16' > RAnalysis/data/filtered.AllSam
 #a: file that ends in posOnly
 #b: annotated gene list
 #Save output in a new file that has the same base name and ends in -Annotated.txt
-for f in RAnalysis/data/*_R1_val_1_10x.tab
+for f in RAnalysis/data/*F_R1_val_1_10x.tab
 do
   intersectBed \
   -wb \
@@ -108,11 +98,11 @@ done
 
 ```{bash}
 #intersect with file to subset only those positions found in all samples
-for f in RAnalysis/data/*_gene
+for f in RAnalysis/data/*F_R1_val_1_10x.tab_gene
 do
   intersectBed \
   -a ${f} \
-  -b RAnalysis/data/filtered.AllSamps.10x.bed  \
+  -b RAnalysis/data/F_filtered.AllSamps.10x.bed  \
   > ${f}_AllSamps_gene.bed
 done
 
@@ -121,7 +111,7 @@ wc -l RAnalysis/data/*AllSamps_gene.bed
 ```
 
 ```{r}
-meth.data <- list.files(path = "RAnalysis/data/", pattern = "AllSamps_gene.bed$", full.names=TRUE) %>%
+meth.data <- list.files(path = "RAnalysis/data/", pattern = "F_R1_val_1_10x.tab_gene_AllSamps_gene.bed$", full.names=TRUE) %>%
   set_names(.) %>% 
   map_dfr(read.csv,.id="Sample.ID", header=FALSE, sep="\t", na.string="NA", stringsAsFactors = FALSE) %>% 
   dplyr::select(c(Sample.ID:V2, V4:V6,V10)) %>%
@@ -138,13 +128,13 @@ allgene <- meth.data.x %>%
   summarise(mean = mean(per.meth),
             sem = std.error(per.meth))
 
-pdf("RAnalysis/output/gene.methylation.pdf", width=10, height=20)
-ggplot(allgene, aes(y=gene, x=Treatment, fill=mean))+
-  geom_tile(color="white", size=0.01)+
-  scale_fill_viridis(direction = 1,name="Percent Methylation")+
-  facet_wrap(~Sample.ID, ncol=2)+
-  theme_tufte(base_family="Helvetica")
-dev.off()
+# pdf("RAnalysis/output/Eggs_gene.methylation.pdf", width=10, height=20)
+# ggplot(allgene, aes(y=gene, x=Treatment, fill=mean))+
+#   geom_tile(color="white", size=0.01)+
+#   scale_fill_viridis(direction = 1,name="Percent Methylation")+
+#   facet_wrap(~Sample.ID, ncol=2)+
+#   theme_tufte(base_family="Helvetica")
+# dev.off()
   
 
 ```
@@ -213,13 +203,15 @@ sig <- sig[,c(1,2,5)]
 # Identifying DMG with significant interaction
 sig.Treatment <- sig %>% filter(adj.pval.treatment1<0.05)
 sig.Treatment <- sig.Treatment[order(sig.Treatment$adj.pval.treatment1),]
+write.csv(sig.Treatment,"RAnalysis/output/DMG_05_Eggs.csv")
 
+# Annotation of Secondary Exposure Interaction DMG
+sig.Treatment.annot <- sig.Treatment
+sig.Treatment.annot$gene <- gsub("gene-LOC","",sig.Treatment.annot$gene) #remove extra characters
+sig.Treatment.annot <- left_join(sig.Treatment.annot, Annot, by="gene")
+sig.Treatment.annot <- sig.Treatment.annot[!duplicated(sig.Treatment.annot$gene),]
+write.csv(sig.Treatment.annot,"RAnalysis/output/DMG_05_Eggs_Annot.csv")
 
-# # Annotation of Secondary Exposure Interaction DMG
-# D145.sig.int.annot <- merge(D145.sig.int, Annot, by="gene", all.x=TRUE)
-# D145.sig.int.annot <- D145.sig.int.annot[order(D145.sig.int.annot$adj.pval.treatment1_x_treatment2),]
-# D145.sig.int.annot <- D145.sig.int.annot[!duplicated(D145.sig.int.annot$gene),]
-# 
 
 #Sanity check plotting of top DMGs with sig interaction
 #Plotting reaction norm
@@ -273,7 +265,7 @@ ann_colors = list(
     Treatment = c(Control="blue", Exposed="red"))
 
 
-pdf("RAnalysis/output/DMG_treatment_heatmap.pdf")
+pdf("RAnalysis/output/Eggs_DMG_treatment_heatmap.pdf")
 pheatmap(Data.long, color=inferno(10), cluster_rows=T, show_rownames=FALSE,  show_colnames=TRUE, fontsize_row=8,
          scale="row", cluster_cols=F, annotation_col=df, annotation_colors = ann_colors, gaps_col = c(8), cutree_rows=7)
 dev.off()
@@ -281,48 +273,393 @@ dev.off()
 ```
 
 
-METHYL KIT APPROACH
-#read in data cov files
+#SPERM
+## Loading sample information
+```{r, message=F}
+#load sample information
+sample.info <- read.csv("RAnalysis/data/adult-meta.csv", header=T, sep=",", na.string="NA", stringsAsFactors = F) #read in info
+
+sample.info <- sample.info %>%
+  filter(Sex=="M")
+```
+
+genrate a file for Xcov of all positions found in all samples (e.g., 10X)
+```{bash}
+multiIntersectBed -i \
+RAnalysis/data/*M_R1_val_1_10x.tab > RAnalysis/data/M_meth.10x.bed
+
+```
+
+```{bash}
+cat RAnalysis/data/M_meth.10x.bed | awk '$4 ==10' > RAnalysis/data/M_filtered.AllSamps.10x.bed 
+
+```
+
+
+```{bash}
+#Use intersectBed to find where loci and genes intersect, allowing loci to be mapped to annotated genes
+#wb: Print all lines in the second file
+#a: file that ends in posOnly
+#b: annotated gene list
+#Save output in a new file that has the same base name and ends in -Annotated.txt
+for f in RAnalysis/data/*M_R1_val_1_10x.tab
+do
+  intersectBed \
+  -wb \
+  -a ${f} \
+  -b RAnalysis/data/C_virginica-3.0_Gnomon_genes.bed \
+  > ${f}_gene
+done
+```
+
+
+```{bash}
+#intersect with file to subset only those positions found in all samples
+for f in RAnalysis/data/*M_R1_val_1_10x.tab_gene
+do
+  intersectBed \
+  -a ${f} \
+  -b RAnalysis/data/M_filtered.AllSamps.10x.bed  \
+  > ${f}_AllSamps_gene.bed
+done
+
+wc -l RAnalysis/data/*AllSamps_gene.bed
+
+```
+
 ```{r}
+meth.data <- list.files(path = "RAnalysis/data/", pattern = "M_R1_val_1_10x.tab_gene_AllSamps_gene.bed$", full.names=TRUE) %>%
+  set_names(.) %>% 
+  map_dfr(read.csv,.id="Sample.ID", header=FALSE, sep="\t", na.string="NA", stringsAsFactors = FALSE) %>% 
+  dplyr::select(c(Sample.ID:V2, V4:V6,V10)) %>%
+  group_by(Sample.ID)
 
-data.list <- list("RAnalysis/data/16F_R1_val_1_10x.tab",
-"RAnalysis/data/19F_R1_val_1_10x.tab", 
-"RAnalysis/data/22F_R1_val_1_10x.tab",
-"RAnalysis/data/29F_R1_val_1_10x.tab", 
-"RAnalysis/data/35F_R1_val_1_10x.tab", 
-"RAnalysis/data/36F_R1_val_1_10x.tab", 
-"RAnalysis/data/39F_R1_val_1_10x.tab", 
-"RAnalysis/data/3F_R1_val_1_10x.tab", 
-"RAnalysis/data/41F_R1_val_1_10x.tab", 
-"RAnalysis/data/44F_R1_val_1_10x.tab", 
-"RAnalysis/data/50F_R1_val_1_10x.tab", 
-"RAnalysis/data/52F_R1_val_1_10x.tab", 
-"RAnalysis/data/53F_R1_val_1_10x.tab", 
-"RAnalysis/data/54F_R1_val_1_10x.tab", 
-"RAnalysis/data/76F_R1_val_1_10x.tab", 
-"RAnalysis/data/77F_R1_val_1_10x.tab")
+colnames(meth.data) <- c("Sample.ID", "scaffold", "position","per.meth","meth","unmeth","gene")
+meth.data$Sample.ID <- gsub("RAnalysis/data//","",meth.data$Sample.ID) #remove extra characters
+meth.data$Sample.ID <- gsub("_R1_val_1_10x.tab_gene_AllSamps_gene.bed","",meth.data$Sample.ID) #remove extra characters
+meth.data.x <- merge(meth.data, sample.info, by="Sample.ID")
 
-#The following command reads in coverage files 
-data <-methRead(data.list, sample.id = list("16F", "19F", "22F", "29F", "35F", "36F", "39F", "3F",  "41F", "44F", "50F", "52F", "53F","54F", "76F", "77F"), assembly = "Cvir", treatment=c(0, 0, 1, 1, 1, 1, 0, 1,1, 0, 1, 0, 0, 0, 0, 1), context = "CpG", pipeline = "bismarkCoverage", mincov=10)
+#plotting
+allgene <- meth.data.x %>%	
+  group_by(gene,Sample.ID, Treatment) %>%
+  summarise(mean = mean(per.meth),
+            sem = std.error(per.meth))
+
+# pdf("RAnalysis/output/Sperm_gene.methylation.pdf", width=10, height=20)
+# ggplot(allgene, aes(y=gene, x=Treatment, fill=mean))+
+#   geom_tile(color="white", size=0.01)+
+#   scale_fill_viridis(direction = 1,name="Percent Methylation")+
+#   facet_wrap(~Sample.ID, ncol=2)+
+#   theme_tufte(base_family="Helvetica")
+# dev.off()
+  
+
+```
+
+Testing for DMGs
+```{r}
+# Binomial GLM to test for differentially methylated genes
+sub_meth_table <- meth.data.x
+sub_meth_table$grouped.gene <- paste0(sub_meth_table$Sample.ID, sub_meth_table$gene)
+sub_meth_table$factors <- paste0(sub_meth_table$Treatment)
+
+
+#filter for genes with >5 methylated positions
+min.filt <- count(sub_meth_table, vars = c(grouped.gene))
+newdata <- min.filt[ which(min.filt$n > 4), ]
+sub_meth_table <- sub_meth_table[sub_meth_table$grouped.gene %in% newdata$vars,]
+
+# create data frame to store results
+results <- data.frame()
+gs <- unique(sub_meth_table$gene)
+
+#first subset the unique dataframes and second run the GLMs
+for(i in 1:length(sub_meth_table$gene)){
+    
+    #subset the dataframe gene by gene
+    sub_meth_table1 <- subset(sub_meth_table, gene ==gs[i])
+    
+    # fit glm position model
+    fit <- glm(matrix(c(meth, unmeth), ncol=2) ~ Treatment, 
+               data=sub_meth_table1, family=binomial)
+
+    a <- anova(fit, test="LRT")
+    
+    # capture summary stats to data frame
+    df <- data.frame(gene = sub_meth_table1[1,7],
+                     pval.treatment1 = a$`Pr(>Chi)`[2],
+                     pval.treatment2 = a$`Pr(>Chi)`[3],
+                     #position = a$`Pr(>Chi)`[2], 
+                     pval.treatment1_x_treatment2 = a$`Pr(>Chi)`[4],
+                     #pval.treatment1_x_position = a$`Pr(>Chi)`[2],
+                     #pval.treatment2_x_position = a$`Pr(>Chi)`[2],
+                     #pval.treatment1_x_pval.treatment2_x_position = a$`Pr(>Chi)`[2],
+                     stringsAsFactors = F)
+
+    # bind rows of temporary data frame to the results data frame
+    results <- rbind(results, df)
+    
+  }
+# An error will be generated here for contrasts. 
+#This potential for contrasts (interactions) is included in the case one wants to examine the role of position of CpG within a gene
+#Error in `contrasts<-`(`*tmp*`, value = contr.funs[1 + isOF[nn]]) : contrasts can be applied only to factors with 2 or more levels
+#Continuing the analysis from results line will generate the results in the absence of the contrast (interaction).
+
+results[is.na(results)] <- 0
+
+results$adj.pval.treatment1 <- p.adjust(results$pval.treatment1, method='BH')
+results$adj.pval.treatment2 <- p.adjust(results$pval.treatment2, method='BH')
+results$adj.pval.treatment1_x_treatment2 <- p.adjust(results$pval.treatment1_x_treatment2, method='BH')
+#results$adj.pval.treatment1_x_position <- p.adjust(results$pval.treatment1_x_position, method='BH')
+#results$adj.pval.treatment2_x_position <- p.adjust(results$pval.treatment2_x_position, method='BH')
+#results$adj.pval.treatment1_x_pval.treatment2_x_position <- p.adjust(results$pval.treatment1_x_pval.treatment2_x_position, method='BH')
+
+sig <-results
+sig <- sig[,c(1,2,5)]
+
+# Identifying DMG with significant interaction
+sig.Treatment <- sig %>% filter(adj.pval.treatment1<0.05)
+sig.Treatment <- sig.Treatment[order(sig.Treatment$adj.pval.treatment1),]
+write.csv(sig.Treatment,"RAnalysis/output/DMG_05_Sperm.csv")
+
+# Annotation of Secondary Exposure Interaction DMG
+sig.Treatment.annot <- sig.Treatment
+sig.Treatment.annot$gene <- gsub("gene-LOC","",sig.Treatment.annot$gene) #remove extra characters
+sig.Treatment.annot <- left_join(sig.Treatment.annot, Annot, by="gene")
+sig.Treatment.annot <- sig.Treatment.annot[!duplicated(sig.Treatment.annot$gene),]
+write.csv(sig.Treatment.annot,"RAnalysis/output/DMG_05_Sperm_Annot.csv")
+
+#Sanity check plotting of top DMGs with sig interaction
+#Plotting reaction norm
+
+sub_meth_table %>%	
+  filter(gene== sig.Treatment$gene[1]) %>%
+  group_by(gene,Treatment) %>%
+  summarise(means = mean(per.meth),
+            ses = std.error(per.meth)) %>%
+ggplot( aes(x=Treatment, y=means, group=Treatment, colour=Treatment, shape=Treatment)) + #plot data
+    geom_line(size=0.7, position=position_dodge(.1)) + #plot lines
+    scale_colour_manual(values = c("gray", "black")) + #set line color
+    geom_point(size=4, position=position_dodge(.1), colour="black") + #set point characteristics
+    scale_shape_manual(values=c(1,18,16)) + #set shapes
+    geom_errorbar(aes(ymin=means-ses, ymax=means+ses), #plot error bars
+    width=0, position=position_dodge(.1), colour="black") + #set error bar characteristics
+    xlab("Treatment") + #plot x axis label
+    ylab("Percent Methylation") + #plot y axis label
+    theme_bw()
 
 
 ```
-#corr plots
+
+#DEG Heatmap
 ```{r}
 
-#Identify CG covered across all samples and generate a correlation plot
-#unite#
-meth_all<-methylKit::unite(data)
-nrow(data)
-#correlation plot#
-pdf("output/MethCompare_correlation_test.pdf", width = 1000, height = 1000)
-getCorrelation(meth_all,plot=TRUE)
+DMGs <- allgene[allgene$gene %in% sig.Treatment$gene,]
+DMGs <- DMGs[,-5]
+
+Data<- DMGs %>% spread(key="gene", value=mean)
+Data.long <-Data
+row.names(Data.long) <- Data$Sample.ID
+
+Data.long  <- Data.long[,-c(1:2)]
+Data.long <- data.matrix(Data.long, rownames.force=F)
+Data.long <-t(Data.long)
+Data.long <- as.matrix(Data.long)
+colnames(Data.long) <- Data$Sample.ID
+
+col_order <- c("16F", "19F", "39F", "44F", "52F", "53F", "54F", 
+               "76F", "22F", "29F", "35F", "36F", "3F", "41F", "50F", "77F")
+Data.long <- Data.long[, col_order]
+Data.long
+
+df<- as.data.frame(Data[,1:2])
+df$Treatment <- as.factor(as.character(df$Treatment))
+#df$Coral.ID <- as.factor(as.character(df$Coral.ID))
+rownames(df) <- Data$Sample.ID 
+
+ann_colors = list(
+    Treatment = c(Control="blue", Exposed="red"))
+
+
+pdf("RAnalysis/output/Eggs_DMG_treatment_heatmap.pdf")
+pheatmap(Data.long, color=inferno(10), cluster_rows=T, show_rownames=FALSE,  show_colnames=TRUE, fontsize_row=8,
+         scale="row", cluster_cols=F, annotation_col=df, annotation_colors = ann_colors, gaps_col = c(8), cutree_rows=7)
 dev.off()
 
 ```
 
-```{r}
-clusterSamples(meth_all, dist="correlation", method="ward.D", plot=TRUE)
+#ALL SAMPLES
 
-PCASamples(meth_all)
+```{r}
+#load sample information
+sample.info <- read.csv("RAnalysis/data/adult-meta.csv", header=T, sep=",", na.string="NA", stringsAsFactors = F) #read in info
+
+meth.data <- list.files(path = "RAnalysis/data/", pattern = "_R1_val_1_10x.tab_gene_AllSamps_gene.bed$", full.names=TRUE) %>%
+  set_names(.) %>% 
+  map_dfr(read.csv,.id="Sample.ID", header=FALSE, sep="\t", na.string="NA", stringsAsFactors = FALSE) %>% 
+  dplyr::select(c(Sample.ID:V2, V4:V6,V10)) %>%
+  group_by(Sample.ID)
+
+colnames(meth.data) <- c("Sample.ID", "scaffold", "position","per.meth","meth","unmeth","gene")
+meth.data$Sample.ID <- gsub("RAnalysis/data//","",meth.data$Sample.ID) #remove extra characters
+meth.data$Sample.ID <- gsub("_R1_val_1_10x.tab_gene_AllSamps_gene.bed","",meth.data$Sample.ID) #remove extra characters
+meth.data.x <- merge(meth.data, sample.info, by="Sample.ID")
+
+#plotting
+allgene <- meth.data.x %>%	
+  group_by(gene,Sample.ID, Treatment,Sex) %>%
+  summarise(mean = mean(per.meth),
+            sem = std.error(per.meth))
+
+# pdf("RAnalysis/output/Eggs_gene.methylation.pdf", width=10, height=20)
+# ggplot(allgene, aes(y=gene, x=Treatment, fill=mean))+
+#   geom_tile(color="white", size=0.01)+
+#   scale_fill_viridis(direction = 1,name="Percent Methylation")+
+#   facet_wrap(~Sample.ID, ncol=2)+
+#   theme_tufte(base_family="Helvetica")
+# dev.off()
+  
+
 ```
+
+Testing for DMGs
+```{r}
+# Binomial GLM to test for differentially methylated genes
+sub_meth_table <- meth.data.x
+sub_meth_table$grouped.gene <- paste0(sub_meth_table$Sample.ID, sub_meth_table$gene)
+
+#filter for genes with >5 methylated positions
+min.filt <- count(sub_meth_table, vars = c(grouped.gene))
+newdata <- min.filt[ which(min.filt$n > 4), ]
+sub_meth_table <- sub_meth_table[sub_meth_table$grouped.gene %in% newdata$vars,]
+
+# create data frame to store results
+results <- data.frame()
+gs <- unique(sub_meth_table$gene)
+
+#first subset the unique dataframes and second run the GLMs
+for(i in 1:length(sub_meth_table$gene)){
+    
+    #subset the dataframe gene by gene
+    sub_meth_table1 <- subset(sub_meth_table, gene ==gs[i])
+    
+    # fit glm position model
+    fit <- glm(matrix(c(meth, unmeth), ncol=2) ~ Treatment*Sex, 
+               data=sub_meth_table1, family=binomial)
+
+    a <- anova(fit, test="LRT")
+    
+    # capture summary stats to data frame
+    df <- data.frame(gene = sub_meth_table1[1,7],
+                     pval.treatment1 = a$`Pr(>Chi)`[2],
+                     pval.treatment2 = a$`Pr(>Chi)`[3],
+                     #position = a$`Pr(>Chi)`[2], 
+                     pval.treatment1_x_treatment2 = a$`Pr(>Chi)`[4],
+                     #pval.treatment1_x_position = a$`Pr(>Chi)`[2],
+                     #pval.treatment2_x_position = a$`Pr(>Chi)`[2],
+                     #pval.treatment1_x_pval.treatment2_x_position = a$`Pr(>Chi)`[2],
+                     stringsAsFactors = F)
+
+    # bind rows of temporary data frame to the results data frame
+    results <- rbind(results, df)
+    
+  }
+# An error will be generated here for contrasts. 
+#This potential for contrasts (interactions) is included in the case one wants to examine the role of position of CpG within a gene
+#Error in `contrasts<-`(`*tmp*`, value = contr.funs[1 + isOF[nn]]) : contrasts can be applied only to factors with 2 or more levels
+#Continuing the analysis from results line will generate the results in the absence of the contrast (interaction).
+
+results[is.na(results)] <- 0
+
+results$adj.pval.treatment1 <- p.adjust(results$pval.treatment1, method='BH')
+results$adj.pval.treatment2 <- p.adjust(results$pval.treatment2, method='BH')
+results$adj.pval.treatment1_x_treatment2 <- p.adjust(results$pval.treatment1_x_treatment2, method='BH')
+#results$adj.pval.treatment1_x_position <- p.adjust(results$pval.treatment1_x_position, method='BH')
+#results$adj.pval.treatment2_x_position <- p.adjust(results$pval.treatment2_x_position, method='BH')
+#results$adj.pval.treatment1_x_pval.treatment2_x_position <- p.adjust(results$pval.treatment1_x_pval.treatment2_x_position, method='BH')
+
+sig <-results
+sig <- sig[,c(1,2,5)]
+
+# Identifying DMG with significant interaction
+sig.Treatment <- sig %>% filter(adj.pval.treatment1<0.05)
+sig.Treatment <- sig.Treatment[order(sig.Treatment$adj.pval.treatment1),]
+write.csv(sig.Treatment,"RAnalysis/output/DMG_05_Eggs.csv")
+
+# Annotation of Secondary Exposure Interaction DMG
+sig.Treatment.annot <- sig.Treatment
+sig.Treatment.annot$gene <- gsub("gene-LOC","",sig.Treatment.annot$gene) #remove extra characters
+sig.Treatment.annot <- left_join(sig.Treatment.annot, Annot, by="gene")
+sig.Treatment.annot <- sig.Treatment.annot[!duplicated(sig.Treatment.annot$gene),]
+write.csv(sig.Treatment.annot,"RAnalysis/output/DMG_05_Eggs_Annot.csv")
+
+
+#Sanity check plotting of top DMGs with sig interaction
+#Plotting reaction norm
+
+sub_meth_table %>%	
+  filter(gene== sig.Treatment$gene[2]) %>%
+  group_by(gene,Treatment) %>%
+  summarise(means = mean(per.meth),
+            ses = std.error(per.meth)) %>%
+ggplot( aes(x=Treatment, y=means, group=Treatment, colour=Treatment, shape=Treatment)) + #plot data
+    geom_line(size=0.7, position=position_dodge(.1)) + #plot lines
+    scale_colour_manual(values = c("gray", "black")) + #set line color
+    geom_point(size=4, position=position_dodge(.1), colour="black") + #set point characteristics
+    scale_shape_manual(values=c(1,18,16)) + #set shapes
+    geom_errorbar(aes(ymin=means-ses, ymax=means+ses), #plot error bars
+    width=0, position=position_dodge(.1), colour="black") + #set error bar characteristics
+    xlab("Treatment") + #plot x axis label
+    ylab("Percent Methylation") + #plot y axis label
+    theme_bw()
+
+
+```
+
+
+
+<!-- METHYL KIT APPROACH -->
+<!-- #read in data cov files -->
+<!-- ```{r} -->
+
+<!-- data.list <- list("RAnalysis/data/16F_R1_val_1_10x.tab", -->
+<!-- "RAnalysis/data/19F_R1_val_1_10x.tab",  -->
+<!-- "RAnalysis/data/22F_R1_val_1_10x.tab", -->
+<!-- "RAnalysis/data/29F_R1_val_1_10x.tab",  -->
+<!-- "RAnalysis/data/35F_R1_val_1_10x.tab",  -->
+<!-- "RAnalysis/data/36F_R1_val_1_10x.tab",  -->
+<!-- "RAnalysis/data/39F_R1_val_1_10x.tab",  -->
+<!-- "RAnalysis/data/3F_R1_val_1_10x.tab",  -->
+<!-- "RAnalysis/data/41F_R1_val_1_10x.tab",  -->
+<!-- "RAnalysis/data/44F_R1_val_1_10x.tab",  -->
+<!-- "RAnalysis/data/50F_R1_val_1_10x.tab",  -->
+<!-- "RAnalysis/data/52F_R1_val_1_10x.tab",  -->
+<!-- "RAnalysis/data/53F_R1_val_1_10x.tab",  -->
+<!-- "RAnalysis/data/54F_R1_val_1_10x.tab",  -->
+<!-- "RAnalysis/data/76F_R1_val_1_10x.tab",  -->
+<!-- "RAnalysis/data/77F_R1_val_1_10x.tab") -->
+
+<!-- #The following command reads in coverage files  -->
+<!-- data <-methRead(data.list, sample.id = list("16F", "19F", "22F", "29F", "35F", "36F", "39F", "3F",  "41F", "44F", "50F", "52F", "53F","54F", "76F", "77F"), assembly = "Cvir", treatment=c(0, 0, 1, 1, 1, 1, 0, 1,1, 0, 1, 0, 0, 0, 0, 1), context = "CpG", pipeline = "bismarkCoverage", mincov=10) -->
+
+
+<!-- ``` -->
+<!-- #corr plots -->
+<!-- ```{r} -->
+
+<!-- #Identify CG covered across all samples and generate a correlation plot -->
+<!-- #unite# -->
+<!-- meth_all<-methylKit::unite(data) -->
+<!-- nrow(data) -->
+<!-- #correlation plot# -->
+<!-- pdf("output/MethCompare_correlation_test.pdf", width = 1000, height = 1000) -->
+<!-- getCorrelation(meth_all,plot=TRUE) -->
+<!-- dev.off() -->
+
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- clusterSamples(meth_all, dist="correlation", method="ward.D", plot=TRUE) -->
+
+<!-- PCASamples(meth_all) -->
+<!-- ``` -->

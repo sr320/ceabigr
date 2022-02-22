@@ -1,0 +1,81 @@
+---
+title: "04-TE-meth-intersect"
+output: html_document
+author: Laura, Shelly, Steven, Danielle
+---
+
+
+#Load necessary libraries
+```{r}
+library(tidyverse)
+```
+
+
+
+ # CODE TO GET METHYLATION INTERSECT WITH TE
+
+
+```{bash}
+ cd ../data
+ FILES=$(ls *bedgraph)
+
+ for file in ${FILES}
+ do
+    NAME=$(echo ${file} | awk -F "_" '{print $1}')
+    echo ${NAME}
+
+   /home/shared/bedtools2/bin/intersectBed \
+   -wb \
+   -a ${NAME}_R1_val_1_10x.bedgraph \
+   -b ../genome-features/C_virginica-3.0_TE-all.gff \
+   > ../output/${NAME}mTE.out
+ done  
+```
+
+
+```{bash}
+head -2 ../output/9MmTE.out
+```
+
+
+
+ # Taking TE methylation at each Loci and getting Mean methylation
+
+
+ #Want to see unique transposable elements through 26 different files/samples 
+ 
+ 
+
+#Want to see unique transposable elements through 26 different files/samples 
+```{r}
+# create a vector of filenames with full path 
+filenames <- list.files(path = "../output", pattern = "mTE.out", full.names = TRUE)  
+
+b <- data.frame()   # create empty dataframe to be populated with mean & median summary stats for each feature within a sample 
+
+for (i in 1:length(filenames)) {  
+  print(filenames[i])  # print out file location and name 
+  testMte <- read.csv(file = filenames[i], sep = "\t", header = FALSE) # read in each sample data 
+    # summarize methylation data per feature, mean & median 
+    group12 <- testMte %>% group_by(V13,V5, V8, V9) %>%   
+    summarize(avg = mean(V4, na.rm=TRUE), median=median(V4, na.rm=TRUE)) %>%
+
+    # add new column with sample name 
+    mutate(sample=gsub("../output/", "", filenames[i]))
+  b <- rbind(b, group12)
+}
+colnames(b) <- c("feature_name","mean_meth", "median_meth", "sample")
+
+write.table(b, file = "../output/_transposon_summary_allsamples.txt",quote = F, row.names = F, sep = "\t")
+```
+
+
+
+
+
+
+
+
+
+
+
