@@ -24,20 +24,92 @@ head(pos)
 row.names(pos) <- paste(pos$V1,pos$V2,sep = "_")
 id <- as.character(row.names(pos))
 
+pos <- cbind(id,pos)
+colnames(pos) <- c('snp','chr','pos')
+write.table(pos,file="../data/Cv_10x_fxmerge_05.pos",quote = F,sep = "\t",)
+
 inds <- scan("../data/Cv_10x_fxmerge_05.012.indv", character())
 inds <- str_remove(inds, "/home/sr320/github/2018_L18-adult-methylation/bg_data/")
 inds <- str_remove(inds,"_R1_val_1_bismark_bt2_pe.deduplicated.sorted.bam")
 
-geno <- t(read.table("../data/Cv_10x_fxmerge_05.012",header = T,sep = "\t",stringsAsFactors = F,row.names = 1))
+geno <- t(read.table("../data/Cv_10x_fxmerge_05.012",header = F,sep = "\t",stringsAsFactors = F,row.names = 1))
 
 geno <- cbind(id,geno)
 geno <- as.data.frame(geno,stringsAsFactors = F)
 rownames(geno) <- NULL
 # change sample names to match epigenetics
 colnames(geno) <- c("id",inds)
+geno[geno < 0] <- NA
 head(geno)
-write.table(geno,"../data/Cv_10x_fxmerge_05.geno"),sep="\t",quote = F,row.names = F)
+write.table(geno,"../data/Cv_10x_fxmerge_05.geno",sep="\t",quote = F,row.names = F)
 ```
+
+	chrom	start	end	12	13	16	19	22	23	29	31	35	36	39	3	41	44	48	50	52	53	54	59	64	6	76	77	7	9	total
+
+```{r}
+#mf <- read.table("../data/union-averages.bedgraph",header=T,row.names = 1,stringsAsFactors = F)
+#add sample names
+mbdorder = c("12M","13M","16F","19F","22F","23M","29F","31M","35F","36F","39F","3F","41F","44F",
+             "48M","50F","52F","53F","54F","59M","64M","6M","76F","77F","7M","9M")
+mf <- mf[,c(1:29)]
+colnames(mf) <- c("chrom","start","end",mbdorder)
+
+head(mf)
+dim(mf)
+
+```
+
+Remove CpGs where the difference in methylation between the samples with the highest and lowest values is less than 10%.
+```{r warning=FALSE}
+remove = c()
+for (row in 1:nrow(mf)) {
+    minR <- min(as.numeric(mf[row,4:29]),na.rm = T)
+    maxR <- max(as.numeric(mf[row, 4:29]),na.rm=T)
+    if(maxR-minR < 10 ) {
+        remove = c(remove,row)
+    }
+}
+```
+```{r}
+mf_12 <- mf %>% slice(-remove)
+dim(mf_12)
+```
+
+```{r}
+perc_meth <- melt(mf,variable.name = "sample",value.name = "percMeth")
+perc_meth <- mutate(perc_meth,pop=substr(sample,1,2))
+head(perc_meth)
+```
+
+
+|Sample.ID|OldSample.ID|Treatment|Sex|TreatmentN|Parent.ID|
+|---------|------------|---------|---|----------|---------|
+|12M      |S12M        |Exposed  |M  |3         |EM05     |
+|13M      |S13M        |Control  |M  |1         |CM04     |
+|16F      |S16F        |Control  |F  |2         |CF05     |
+|19F      |S19F        |Control  |F  |2         |CF08     |
+|22F      |S22F        |Exposed  |F  |4         |EF02     |
+|23M      |S23M        |Exposed  |M  |3         |EM04     |
+|29F      |S29F        |Exposed  |F  |4         |EF07     |
+|31M      |S31M        |Exposed  |M  |3         |EM06     |
+|35F      |S35F        |Exposed  |F  |4         |EF08     |
+|36F      |S36F        |Exposed  |F  |4         |EF05     |
+|39F      |S39F        |Control  |F  |2         |CF06     |
+|3F       |S3F         |Exposed  |F  |4         |EF06     |
+|41F      |S41F        |Exposed  |F  |4         |EF03     |
+|44F      |S44F        |Control  |F  |2         |CF03     |
+|48M      |S48M        |Exposed  |M  |3         |EM03     |
+|50F      |S50F        |Exposed  |F  |4         |EF01     |
+|52F      |S52F        |Control  |F  |2         |CF07     |
+|53F      |S53F        |Control  |F  |2         |CF02     |
+|54F      |S54F        |Control  |F  |2         |CF01     |
+|59M      |S59M        |Exposed  |M  |3         |EM01     |
+|64M      |S64M        |Control  |M  |1         |CM05     |
+|6M       |S6M         |Control  |M  |1         |CM02     |
+|76F      |S76F        |Control  |F  |2         |CF04     |
+|77F      |S77F        |Exposed  |F  |4         |EF04     |
+|7M       |S7M         |Control  |M  |1         |CM01     |
+|9M       |S9M         |Exposed  |M  |3         |EM02     |
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
