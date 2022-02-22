@@ -47,12 +47,8 @@ write.table(geno,"../data/Cv_10x_fxmerge_05.geno",sep="\t",quote = F,row.names =
 	chrom	start	end	12	13	16	19	22	23	29	31	35	36	39	3	41	44	48	50	52	53	54	59	64	6	76	77	7	9	total
 
 ```{r}
-#mf <- read.table("../data/union-averages.bedgraph",header=T,row.names = 1,stringsAsFactors = F)
+mf <- read.table("../data/union_10x.bedgraph",header=T,stringsAsFactors = F)
 #add sample names
-mbdorder = c("12M","13M","16F","19F","22F","23M","29F","31M","35F","36F","39F","3F","41F","44F",
-             "48M","50F","52F","53F","54F","59M","64M","6M","76F","77F","7M","9M")
-mf <- mf[,c(1:29)]
-colnames(mf) <- c("chrom","start","end",mbdorder)
 
 head(mf)
 dim(mf)
@@ -60,25 +56,192 @@ dim(mf)
 ```
 
 Remove CpGs where the difference in methylation between the samples with the highest and lowest values is less than 10%.
-```{r warning=FALSE}
-remove = c()
-for (row in 1:nrow(mf)) {
-    minR <- min(as.numeric(mf[row,4:29]),na.rm = T)
-    maxR <- max(as.numeric(mf[row, 4:29]),na.rm=T)
-    if(maxR-minR < 10 ) {
-        remove = c(remove,row)
-    }
-}
-```
 ```{r}
-mf_12 <- mf %>% slice(-remove)
-dim(mf_12)
+mf1 <- mf %>% mutate_at(vars(contains("X")), as.numeric) %>%
+  rowwise() %>%
+  mutate(max=max(c_across(contains("X"))), min = min(c_across((contains("X"))))) 
+  
+  
+  
+  #rowwise() %>% mutate(max = max(as.diff = pmax(contains("X"))-pmin(contains("X")))
 ```
 
 ```{r}
-perc_meth <- melt(mf,variable.name = "sample",value.name = "percMeth")
-perc_meth <- mutate(perc_meth,pop=substr(sample,1,2))
+mf1 <- mf1 %>% mutate(diff = max-min, loci = paste(chrom,start,end,sep="_"))
+```
+
+Plot range per locus before filtering
+```{r}
+ggplot(mf1,aes(x=diff))+ geom_histogram(binwidth = 1)
+```
+
+
+```{r}
+
+
+mf_filt <- mf1 %>%
+  filter(diff>10) %>%
+  select(loci, contains("X"),-max) %>% 
+  rename_with(~str_remove(.,"X")) %>%
+  rowwise() %>%
+   mutate(count_na = sum(is.na(cur_data()))) %>%
+   ungroup %>% filter(count_na/26 <0.1)
+dim(mf_filt)
+```
+
+```{r}
+save(mf_filt,file="../data/mf_filt.Robj")
+```
+
+
+Plot range per locus after filtering
+
+```{r}
+mf_filtdiff <- mf_filt %>% 
+  mutate_at(vars(contains("M"),contains("F")), as.numeric) %>%
+  rowwise() %>%
+  mutate(max=max(c_across(contains(c("M","F")))), min = min(c_across(contains(c("M","F"))))) %>%
+  mutate(diff = max-min)
+```
+
+```{r}
+
+ggplot(mf_filtdiff,aes(x=diff))+ geom_histogram(binwidth = 1)
+```
+
+```{r}
+perc_meth <- melt(mf_filt,variable.name = "sample",value.name = "percMeth",id.vars = "loci") 
 head(perc_meth)
+```
+
+```{r}
+# check a couple loci to make sure % methylation is calculated separately for each sample and gene region 
+perc_meth %>% filter(loci=="NC_035780.1_1882_1884") %>% ggplot(aes(x=sample, y=percMeth)) + geom_bar(stat="identity")
+```
+## Rank-based normalization
+```{r}
+myRN <- function(x){
+    
+    y <- x[2:27][!is.na(x[2:27])]
+    n <- length(y)
+    k = 0.375  
+  # Ranks.
+      r <- rank(y)
+  
+  # Apply transformation.
+    out <- qnorm((r - k) / (n - 2 * k + 1))
+    x[2:27][!is.na(x[2:27])] <- out
+    return(x)
+}
+```
+
+```{r}
+mf_filt.df <- as.data.frame(select(mf_filt,-count_na))
+df_list <- lapply(1:nrow(mf_filt.df), function(r_num) { myRN(mf_filt.df[r_num, ]) })
+dcN10<- do.call(rbind, df_list)
+```
+
+```{r}
+write.table(dcN10,"../data/meth_filter_10_RankNorm.tab",sep="\t",row.names = F,quote = F)
+head(dcN10)
+```
+
+```{r}
+# get meth position file
+dcN10 <- as.data.frame(dcN10,stringsAsFactors = F)
+chr1 = sapply(strsplit(dcN10$loci,"_"), '[',1)
+chr2 = sapply(strsplit(dcN10$loci,"_"), '[',2)
+chr = paste(chr1,chr2,sep="_")
+s1 = as.numeric(sapply(strsplit(dcN10$loci,"_"), '[',3))
+s2 = as.numeric(sapply(strsplit(dcN10$loci,"_"), '[',4))
+methpos <- as.data.frame(cbind(dcN10$loci,chr,s1,s2),stringsAsFactors = F)
+methpos$s1 <- as.numeric(methpos$s1)
+methpos$s2 <- as.numeric(methpos$s2)
+colnames(methpos) <- c('geneid','chr','s1','s2')
+head(methpos)
+write.table(methpos,file="../data/methsitespos_10_mqtl.tab",quote = F,row.names = F,sep = "\t")
+```
+
+Look at Lauras code to get cov
+```{r}
+read.csv("../RAnalysis/data/adult-meta.csv", header=T, na.strings = NA) %>%
+  select(Sample.ID, Treatment, Sex) %>%
+  mutate_at(vars(Treatment, Sex), as.factor) %>%
+  mutate_at(vars(Treatment, Sex), as.numeric) %>%
+  column_to_rownames("Sample.ID") %>% t() %>% as.data.frame() %>% rownames_to_column(var = "id") %>%
+  write.table("../data/covariates.txt", sep="\t",col.names = TRUE, row.names = FALSE, quote = FALSE) # save to file
+
+```
+
+# Run methQTL
+```{r}
+# set parameters
+useModel = modelLINEAR
+snpfile = "../data/Cv_10x_fxmerge_05.geno"
+methfile = "../data/meth_filter_10_RankNorm.tab"
+covfile = "../data/covariate_mqtl.tab"
+
+snppos = read.table("../data/Cv_10x_fxmerge_05.pos",header=T)
+methpos = read.table("../data/methsitespos_10_mqtl.tab",header=T)
+
+pvOutputThresholdcis = 0.05
+pvOutputThresholdtrans = 0.01
+output_file_name_cis = "../output/mQTL_sites_cis50kb_12_p05_maf05.txt"
+output_file_name_tra = "../output/mQTL_sites_trans50kb_12_p01_maf05.txt"
+#errorCovariance = rab2;
+errorCovariance = numeric()
+# Distance for local gene-SNP pairs
+cisDist = 50000  #50kb
+```
+
+```{r}
+snps = SlicedData$new();
+snps$fileDelimiter = "\t";      # the TAB character
+snps$fileOmitCharacters = "NA"; # denote missing values;
+snps$fileSkipRows = 1;          # one row of column labels
+snps$fileSkipColumns = 1;       # one column of row labels
+snps$fileSliceSize = 2000;      # read file in pieces of 2,000 rows
+snps$LoadFile( snpfile);
+```
+
+```{r}
+meth = SlicedData$new();
+meth$fileDelimiter = "\t";      # the TAB character
+meth$fileOmitCharacters = "NA"; # denote missing values;
+meth$fileSkipRows = 1;          # one row of column labels
+meth$fileSkipColumns = 1;       # one column of row labels
+meth$fileSliceSize = 5000;      # read file in pieces of 2,000 rows
+meth$LoadFile( methfile )
+```
+
+```{r}
+cvrt = SlicedData$new();
+cvrt$fileDelimiter = "\t";      # the TAB character
+cvrt$fileOmitCharacters = "NA"; # denote missing values;
+cvrt$fileSkipRows = 1;          # one row of column labels
+cvrt$fileSkipColumns = 1;       # one column of row labels
+cvrt$fileSliceSize = 2000;      # read file in pieces of 2,000 rows
+cvrt$LoadFile( covfile )
+```
+
+```{r}
+me = Matrix_eQTL_engine(
+    snps = snps,
+    gene = gene,
+    cvrt = cvrt,
+    output_file_name = output_file_name_tra,
+    output_file_name.cis = output_file_name_cis,
+    pvOutputThreshold = pvOutputThresholdtrans,
+    pvOutputThreshold.cis = pvOutputThresholdcis,
+    useModel = useModel, 
+    errorCovariance = errorCovariance, 
+    snppos = snppos,
+    genepos = genepos,
+    cisDist = cisDist,
+    verbose = TRUE,
+    pvalue.hist = TRUE,
+    min.pv.by.genesnp = FALSE,
+    noFDRsaveMemory = FALSE);
 ```
 
 

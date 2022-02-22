@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # install the packages
 #library('devtools')
 library('methylKit')
-library('genomation')
+#library('genomation')
 library('GenomicRanges')
 library('tidyverse')
 library('plotrix')
@@ -30,28 +30,33 @@ library('ggthemes')
 library("pheatmap")
 ```
 
-#obtain genome and annotation files from NCBI
+#obtain tab data files for egg and sperm methylation at X coverage
 ```{bash}
 
- 
-wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/022/765/GCF_002022765.2_C_virginica-3.0/GCF_002022765.2_C_virginica-3.0_genomic.fna.gz > RAnalysis/data/GCF_002022765.2_C_virginica-3.0_genomic.fna.gz
+cd /home/shared/8TB_HDD_02/hputnam/ceabigr/RAnalysis/data
 
-gunzip RAnalysis/data/GCF_002022765.2_C_virginica-3.0_genomic.fna.gz 
+wget -r \
+--no-check-certificate \
+--quiet \
+--no-directories --no-parent \
+-P . \
+-A *10x.tab \
+https://gannet.fish.washington.edu/seashell/bu-mox/scrubbed/120321-cvBS/
 
-wget https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/genome-features/C_virginica-3.0_Gnomon_genes.bed > RAnalysis/data/C_virginica-3.0_Gnomon_genes.bed
-
+#need protein annotation here 
+#https://www.ncbi.nlm.nih.gov/genome/browse/#!/proteins/398/327504%7CCrassostrea%20virginica/
 
 ```
 
 # load genome and annotation information
 ```{r, message=F}
 #load genes gff (https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/genome-features/C_virginica-3.0_Gnomon_genes.bed)
-Genes <- read.csv("RAnalysis/data/C_virginica-3.0_Gnomon_genes.bed", header=F, sep="\t", na.string="NA", skip=0, stringsAsFactors = F) #read in data file
+Genes <- read.csv("/home/shared/8TB_HDD_02/hputnam/ceabigr/genome-features/C_virginica-3.0_Gnomon_genes.bed", header=F, sep="\t", na.string="NA", skip=0, stringsAsFactors = F) #read in data file
 Genes <- Genes[,c(1:4)] #select desired columns only
 colnames(Genes) <-c("scaffold", "start", "stop", "gene") #rename columns
 
 #load gene functional annotation
-Annot <- read.csv("RAnalysis/data/proteins_398_327504.csv")
+Annot <- read.csv("/home/shared/8TB_HDD_02/hputnam/ceabigr/genome-features/proteins_398_327504.csv")
 colnames(Annot)[6] <- "gene"
 Annot$gene <- as.character(Annot$gene)
 ```
@@ -69,7 +74,7 @@ sample.info <- sample.info %>%
 genrate a file for Xcov of all positions found in all samples (e.g., 10X)
 ```{bash}
 multiIntersectBed -i \
-RAnalysis/data/*F_R1_val_1_10x.tab > RAnalysis/data/F_meth.10x.bed
+/home/shared/8TB_HDD_02/hputnam/ceabigr/RAnalysis/data/*F_R1_val_1_10x.tab > RAnalysis/data/F_meth.10x.bed
 
 ```
 
@@ -489,20 +494,60 @@ dev.off()
 ```
 
 #ALL SAMPLES
+genrate a file for Xcov of all positions found in all samples (e.g., 10X)
+```{bash}
+
+awk 'BEGIN{FS=OFS="\t"} {print $1,$2,$3}' /home/shared/8TB_HDD_02/hputnam/ceabigr/RAnalysis/data/M_filtered.AllSamps.10x.bed > /home/shared/8TB_HDD_02/hputnam/ceabigr/RAnalysis/data/M2_filtered.AllSamps.10x.bed
+
+awk 'BEGIN{FS=OFS="\t"} {print $1,$2,$3}' /home/shared/8TB_HDD_02/hputnam/ceabigr/RAnalysis/data/F_filtered.AllSamps.10x.bed > /home/shared/8TB_HDD_02/hputnam/ceabigr/RAnalysis/data/F2_filtered.AllSamps.10x.bed
+
+/home/shared/bedtools2/bin/intersectBed -a /home/shared/8TB_HDD_02/hputnam/ceabigr/RAnalysis/data/M2_filtered.AllSamps.10x.bed -b /home/shared/8TB_HDD_02/hputnam/ceabigr/RAnalysis/data/F2_filtered.AllSamps.10x.bed > /home/shared/8TB_HDD_02/hputnam/ceabigr/RAnalysis/data/meth.filtered.AllSamps.10x.bed
+
+```
+
+```{bash}
+#Use intersectBed to find where loci and genes intersect, allowing loci to be mapped to annotated genes
+#wb: Print all lines in the second file
+#a: file that ends in posOnly
+#b: annotated gene list
+#Save output in a new file that has the same base name and ends in -Annotated.txt
+for f in /home/shared/8TB_HDD_02/hputnam/ceabigr/RAnalysis/data/*_R1_val_1_10x.tab
+do
+  /home/shared/bedtools2/bin/intersectBed \
+  -wb \
+  -a ${f} \
+  -b /home/shared/8TB_HDD_02/hputnam/ceabigr/genome-features/C_virginica-3.0_Gnomon_genes.bed \
+  > ${f}_gene
+done
+```
+
+
+
+```{bash}
+#intersect with file to subset only those positions found in all samples
+for f in /home/shared/8TB_HDD_02/hputnam/ceabigr/RAnalysis/data/*_R1_val_1_10x.tab_gene
+do
+  /home/shared/bedtools2/bin/intersectBed \
+  -a ${f} \
+  -b /home/shared/8TB_HDD_02/hputnam/ceabigr/RAnalysis/data/meth.filtered.AllSamps.10x.bed  \
+  > ${f}_SexAllSamps_gene.bed
+done
+
+```
 
 ```{r}
 #load sample information
 sample.info <- read.csv("RAnalysis/data/adult-meta.csv", header=T, sep=",", na.string="NA", stringsAsFactors = F) #read in info
 
-meth.data <- list.files(path = "RAnalysis/data/", pattern = "_R1_val_1_10x.tab_gene_AllSamps_gene.bed$", full.names=TRUE) %>%
+meth.data <- list.files(path = "/home/shared/8TB_HDD_02/hputnam/ceabigr/RAnalysis/data/", pattern = "_SexAllSamps_gene.bed$", full.names=TRUE) %>%
   set_names(.) %>% 
   map_dfr(read.csv,.id="Sample.ID", header=FALSE, sep="\t", na.string="NA", stringsAsFactors = FALSE) %>% 
   dplyr::select(c(Sample.ID:V2, V4:V6,V10)) %>%
   group_by(Sample.ID)
 
 colnames(meth.data) <- c("Sample.ID", "scaffold", "position","per.meth","meth","unmeth","gene")
-meth.data$Sample.ID <- gsub("RAnalysis/data//","",meth.data$Sample.ID) #remove extra characters
-meth.data$Sample.ID <- gsub("_R1_val_1_10x.tab_gene_AllSamps_gene.bed","",meth.data$Sample.ID) #remove extra characters
+meth.data$Sample.ID <- gsub("/home/shared/8TB_HDD_02/hputnam/ceabigr/RAnalysis/data//","",meth.data$Sample.ID) #remove extra characters
+meth.data$Sample.ID <- gsub("_R1_val_1_10x.tab_gene_SexAllSamps_gene.bed","",meth.data$Sample.ID) #remove extra characters
 meth.data.x <- merge(meth.data, sample.info, by="Sample.ID")
 
 #plotting
@@ -510,6 +555,7 @@ allgene <- meth.data.x %>%
   group_by(gene,Sample.ID, Treatment,Sex) %>%
   summarise(mean = mean(per.meth),
             sem = std.error(per.meth))
+write.csv(allgene, "/home/shared/8TB_HDD_02/hputnam/ceabigr/RAnalysis/data/meanmethgene_10x_allsampssex.csv")
 
 # pdf("RAnalysis/output/Eggs_gene.methylation.pdf", width=10, height=20)
 # ggplot(allgene, aes(y=gene, x=Treatment, fill=mean))+
@@ -527,6 +573,8 @@ Testing for DMGs
 # Binomial GLM to test for differentially methylated genes
 sub_meth_table <- meth.data.x
 sub_meth_table$grouped.gene <- paste0(sub_meth_table$Sample.ID, sub_meth_table$gene)
+sub_meth_table$factors <- paste0(sub_meth_table$Treatment)
+
 
 #filter for genes with >5 methylated positions
 min.filt <- count(sub_meth_table, vars = c(grouped.gene))
@@ -544,7 +592,7 @@ for(i in 1:length(sub_meth_table$gene)){
     sub_meth_table1 <- subset(sub_meth_table, gene ==gs[i])
     
     # fit glm position model
-    fit <- glm(matrix(c(meth, unmeth), ncol=2) ~ Treatment*Sex, 
+    fit <- glm(matrix(c(meth, unmeth), ncol=2) ~ Treatment, 
                data=sub_meth_table1, family=binomial)
 
     a <- anova(fit, test="LRT")
@@ -616,50 +664,40 @@ ggplot( aes(x=Treatment, y=means, group=Treatment, colour=Treatment, shape=Treat
 
 ```
 
+#DEG Heatmap
+```{r}
+
+DMGs <- allgene[allgene$gene %in% sig.Treatment$gene,]
+DMGs <- DMGs[,-5]
+
+Data<- DMGs %>% spread(key="gene", value=mean)
+Data.long <-Data
+row.names(Data.long) <- Data$Sample.ID
+
+Data.long  <- Data.long[,-c(1:2)]
+Data.long <- data.matrix(Data.long, rownames.force=F)
+Data.long <-t(Data.long)
+Data.long <- as.matrix(Data.long)
+colnames(Data.long) <- Data$Sample.ID
+
+col_order <- c("16F", "19F", "39F", "44F", "52F", "53F", "54F", 
+               "76F", "22F", "29F", "35F", "36F", "3F", "41F", "50F", "77F")
+Data.long <- Data.long[, col_order]
+Data.long
+
+df<- as.data.frame(Data[,1:2])
+df$Treatment <- as.factor(as.character(df$Treatment))
+#df$Coral.ID <- as.factor(as.character(df$Coral.ID))
+rownames(df) <- Data$Sample.ID 
+
+ann_colors = list(
+    Treatment = c(Control="blue", Exposed="red"))
 
 
-<!-- METHYL KIT APPROACH -->
-<!-- #read in data cov files -->
-<!-- ```{r} -->
+pdf("RAnalysis/output/Eggs_DMG_treatment_heatmap.pdf")
+pheatmap(Data.long, color=inferno(10), cluster_rows=T, show_rownames=FALSE,  show_colnames=TRUE, fontsize_row=8,
+         scale="row", cluster_cols=F, annotation_col=df, annotation_colors = ann_colors, gaps_col = c(8), cutree_rows=7)
+dev.off()
 
-<!-- data.list <- list("RAnalysis/data/16F_R1_val_1_10x.tab", -->
-<!-- "RAnalysis/data/19F_R1_val_1_10x.tab",  -->
-<!-- "RAnalysis/data/22F_R1_val_1_10x.tab", -->
-<!-- "RAnalysis/data/29F_R1_val_1_10x.tab",  -->
-<!-- "RAnalysis/data/35F_R1_val_1_10x.tab",  -->
-<!-- "RAnalysis/data/36F_R1_val_1_10x.tab",  -->
-<!-- "RAnalysis/data/39F_R1_val_1_10x.tab",  -->
-<!-- "RAnalysis/data/3F_R1_val_1_10x.tab",  -->
-<!-- "RAnalysis/data/41F_R1_val_1_10x.tab",  -->
-<!-- "RAnalysis/data/44F_R1_val_1_10x.tab",  -->
-<!-- "RAnalysis/data/50F_R1_val_1_10x.tab",  -->
-<!-- "RAnalysis/data/52F_R1_val_1_10x.tab",  -->
-<!-- "RAnalysis/data/53F_R1_val_1_10x.tab",  -->
-<!-- "RAnalysis/data/54F_R1_val_1_10x.tab",  -->
-<!-- "RAnalysis/data/76F_R1_val_1_10x.tab",  -->
-<!-- "RAnalysis/data/77F_R1_val_1_10x.tab") -->
+```
 
-<!-- #The following command reads in coverage files  -->
-<!-- data <-methRead(data.list, sample.id = list("16F", "19F", "22F", "29F", "35F", "36F", "39F", "3F",  "41F", "44F", "50F", "52F", "53F","54F", "76F", "77F"), assembly = "Cvir", treatment=c(0, 0, 1, 1, 1, 1, 0, 1,1, 0, 1, 0, 0, 0, 0, 1), context = "CpG", pipeline = "bismarkCoverage", mincov=10) -->
-
-
-<!-- ``` -->
-<!-- #corr plots -->
-<!-- ```{r} -->
-
-<!-- #Identify CG covered across all samples and generate a correlation plot -->
-<!-- #unite# -->
-<!-- meth_all<-methylKit::unite(data) -->
-<!-- nrow(data) -->
-<!-- #correlation plot# -->
-<!-- pdf("output/MethCompare_correlation_test.pdf", width = 1000, height = 1000) -->
-<!-- getCorrelation(meth_all,plot=TRUE) -->
-<!-- dev.off() -->
-
-<!-- ``` -->
-
-<!-- ```{r} -->
-<!-- clusterSamples(meth_all, dist="correlation", method="ward.D", plot=TRUE) -->
-
-<!-- PCASamples(meth_all) -->
-<!-- ``` -->
