@@ -13,6 +13,18 @@ library(tidyverse)
 
 
  # CODE TO GET METHYLATION INTERSECT WITH TE
+```
+sr320@raven:/home/shared/8TB_HDD_01/sr320/github$ cd ceabigr/data/
+sr320@raven:/home/shared/8TB_HDD_01/sr320/github/ceabigr/data$ wget -r \
+--no-check-certificate \
+--quiet \
+--no-directories --no-parent \
+-P . \
+-A *10x.bedgraph  \
+https://gannet.fish.washington.edu/seashell/bu-mox/scrubbed/120321-cvBS/
+```
+
+
 
 
 ```{bash}
@@ -61,7 +73,7 @@ for (i in 1:length(filenames)) {
     summarize(avg = mean(V4, na.rm=TRUE), median=median(V4, na.rm=TRUE)) %>%
 
     # add new column with sample name 
-    mutate(sample=gsub("../../../../8TB_HDD_01/sr320/github/ceabigr/output/", "", filenames[i]))
+    mutate(sample=gsub("../output/", "", filenames[i]))
    # combine feature mean and median methylation for each sample in one common dataframe called b
   b <- rbind(b, group12)
 }
@@ -70,7 +82,7 @@ for (i in 1:length(filenames)) {
 colnames(b) <- c("feature_name","mean_meth", "median_meth", "sample")
 
 #write out dataframe
-write.table(b, file = "../../../../8TB_HDD_01/sr320/github/ceabigr/output/transposon_summary_allsamples.txt",quote = F, row.names = F, sep = "\t")
+write.table(b, file = "../output/transposon_summary_allsamples.txt",quote = F, row.names = F, sep = "\t")
 ```
 
 
