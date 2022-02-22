@@ -16,7 +16,61 @@ done
 ```
 
 ```{bash}
+pwd
+
+```
+
+```{bash}
 /Applications/bioinfo/bedtools2/bin/intersectBed \
+-wb \
+-a ../data/12M_R1_val_1_10x.bedgraph \
+-b ../genome-features/C_virginica-3.0_TE-all.gff \
+> ../output/12M_te.tab
+```
+
+```{bash}
+head ../output/12M_te.tab
+```
+
+
+```{r}
+testMte <- read.csv("../output/12M_te.tab", sep = "\t", header = FALSE)
+```
+
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+group12 <- testMte %>% group_by(V13) %>%
+summarize(avg_sq = mean(V4, na.rm=TRUE))
+```
+
+
+
+vavQpcr <- group_by(qpcr, FRP) %>%
+summarize(avg_sq = mean(sq_all.runs_mean, na.rm=TRUE), trtmnt_tank, infection_status, maturity, sample_pos.neg) %>%
+distinct_all() %>%
+
+
+
+
+
+
+
+
+
+```{bash}
+for f in ../data/*bedgraph
+do
+  /Applications/bioinfo/bedtools2/bin/intersectBed \
+  -wb \
+  -a ${f} \
+  -b ../genome-feature-files/Mcap.GFFannotation.gene.gff \
+  > ${f}-geneID
+done  
 
 
 ```
