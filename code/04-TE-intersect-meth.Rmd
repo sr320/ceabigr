@@ -64,4 +64,22 @@ done
 
 
 ```
+```{bash}
+head ../output/9MmTE.out
+```
+
+
+# Taking TE methylation at each Loci and getting Mean methylation
+
+
+
+```{r}
+group12 <- testMte %>% group_by(V13) %>%
+summarize(avg_sq = mean(V4, na.rm=TRUE))
+```
+
+
+
+
+
 
