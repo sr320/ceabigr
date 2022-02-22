@@ -34,8 +34,40 @@ library(tidyverse)
 
 
 ```{r}
-group12 <- testMte %>% group_by(V13) %>%
-summarize(avg_sq = mean(V4, na.rm=TRUE))
+
+# create a vector of filenames with full path 
+filenames <- list.files(path = "../../../../8TB_HDD_01/sr320/github/ceabigr/output", pattern = "mTE.out", full.names = TRUE)  
+
+b <- data.frame()   # create empty dataframe to be populated with mean & median summary stats for each feature within a sample 
+
+for (i in 1:length(filenames)) {  
+  print(filenames[i])  # print out file location and name 
+  testMte <- read.csv(file = filenames[i], sep = "\t", header = FALSE) # read in each sample data 
+    # summarize methylation data per feature, mean & median 
+    group12 <- testMte %>% group_by(V13,V5, V8, V9) %>%   
+    summarize(avg = mean(V4, na.rm=TRUE), median=median(V4, na.rm=TRUE)) %>%
+
+    # add new column with sample name 
+    mutate(sample=gsub("../../../../8TB_HDD_01/sr320/github/ceabigr/output/", "", filenames[i]))
+  b <- rbind(b, group12)
+}
+colnames(b) <- c("feature_name","mean_meth", "median_meth", "sample")
+
+write.table(b, file = "../../../../8TB_HDD_01/sr320/github/ceabigr/output/transposon_summary_allsamples.txt",quote = F, row.names = F, sep = "\t")
+
+
+```
+
+```{r}
+filenames <- list.files(path = "../output", pattern = "mTE.out", full.names = TRUE)
+list.files(path = "../output", pattern = "mTE.out", full.names = TRUE)
+
+
+for(i in 1:10) {                                           # Head of for-loop
+ 
+  x1 <- i^2                                                # Code block
+  print(x1)                                                # Print results
+}
 ```
 
 
