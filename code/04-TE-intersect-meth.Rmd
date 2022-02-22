@@ -3,17 +3,7 @@ title: "04-TE-meth-intersect"
 output: html_document
 ---
 
-```
-for f in ../analyses/Characterizing-CpG-Methylation-5x/Mcap/*bedgraph.bed-mcGenes
-do
-  /usr/local/bin/intersectBed \
-  -wb \
-  -a ${f} \
-  -b ../genome-feature-files/Mcap.GFFannotation.gene.gff \
-  > ${f}-geneID
-done
-
-```
+test run on one
 
 ```{bash}
 pwd
@@ -21,9 +11,9 @@ pwd
 ```
 
 ```{bash}
-/Applications/bioinfo/bedtools2/bin/intersectBed \
+/home/shared/bedtools2/bin/intersectBed \
 -wb \
--a ../data/12M_R1_val_1_10x.bedgraph \
+-a ../data/3F_R1_val_1_10x.bedgraph \
 -b ../genome-features/C_virginica-3.0_TE-all.gff \
 > ../output/12M_te.tab
 ```
@@ -50,27 +40,27 @@ summarize(avg_sq = mean(V4, na.rm=TRUE))
 
 
 
-vavQpcr <- group_by(qpcr, FRP) %>%
-summarize(avg_sq = mean(sq_all.runs_mean, na.rm=TRUE), trtmnt_tank, infection_status, maturity, sample_pos.neg) %>%
-distinct_all() %>%
 
 
 
-
-
-
-
-
+# CODE TO GET METHYLATION INTERSECT WITH TE
 
 ```{bash}
-for f in ../data/*bedgraph
+cd ../data
+FILES=$(ls *bedgraph)
+
+for file in ${FILES}
 do
-  /Applications/bioinfo/bedtools2/bin/intersectBed \
+   NAME=$(echo ${file} | awk -F "_" '{print $1}')
+   echo ${NAME}
+
+  /home/shared/bedtools2/bin/intersectBed \
   -wb \
-  -a ${f} \
-  -b ../genome-feature-files/Mcap.GFFannotation.gene.gff \
-  > ${f}-geneID
+  -a ${NAME}_R1_val_1_10x.bedgraph \
+  -b ../genome-features/C_virginica-3.0_TE-all.gff \
+  > ../output/${NAME}mTE.out
 done  
+
 
 
 ```
