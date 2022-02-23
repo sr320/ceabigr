@@ -123,7 +123,7 @@ data_genes_TE<-data_genes_TE%>%
 colnames(data_genes_TE)<-c("chromosome", "start", "end", "genes", "sample_id", "sex")
 
 #write this to a file
-write.csv(data_genes_TE, "~/Projects/ceabigr/output/gene_coverage_TE.csv")
+write.csv(data_genes_TE, "~/Projects/ceabigr/output/AH_gene_coverage_TE.csv")
 ```
 
 Methylation:
@@ -161,7 +161,7 @@ data_meth_TE_sum<-data_meth_TE_sum%>%
         ))
 
 #write this to a file
-write.csv(data_meth_TE_sum, "~/Projects/ceabigr/output/methylation_level_TE.csv")
+write.csv(data_meth_TE_sum, "~/Projects/ceabigr/output/AH_methylation_level_TE.csv")
 ```
 
 Join files together
@@ -194,9 +194,7 @@ TE_plot<-TE_file%>%
 
 ```
 
-
-NEXT NEED TO PLOT METHYLATION COVERAGE (OLD CODE) AGAINST METHYLATION LEVEL
-
+NEXT NEED TO PLOT METHYLATION COVERAGE AGAINST METHYLATION LEVEL
 
 # Join files for exon level 
 
@@ -223,7 +221,7 @@ data_genes_exon<-data_genes_exon%>%
 colnames(data_genes_exon)<-c("chromosome", "start", "end", "gene_cov", "sample_id", "sex")
 
 #write this to a file
-write.csv(data_genes_exon, "~/Projects/ceabigr/output/gene_coverage_exon.csv")
+write.csv(data_genes_exon, "~/Projects/ceabigr/output/AH_gene_coverage_exon.csv")
 ```
 
 Genes: 
@@ -248,7 +246,7 @@ data_genes_exon<-data_genes_exon%>%
 colnames(data_genes_exon)<-c("chromosome", "start", "end", "genes", "sample_id", "sex")
 
 #write this to a file
-write.csv(data_genes_exon, "~/Projects/ceabigr/output/gene_coverage_exon.csv")
+write.csv(data_genes_exon, "~/Projects/ceabigr/output/AH_gene_coverage_exon.csv")
 ```
 
 Methylation:
@@ -293,16 +291,16 @@ data_meth_exon_sum<-data_meth_exon_sum%>%
 
 ```{r}
 #write this to a file
-write.csv(data_meth_exon_sum, "~/Projects/ceabigr/output/methylation_level_exon.csv")
+write.csv(data_meth_exon_sum, "~/Projects/ceabigr/output/AH_methylation_level_exon.csv")
 ```
 
 Load files if starting from this point.  
 
 ```{r}
 library(tidyverse)
-data_meth_exon_sum<-read.csv("~/Projects/ceabigr/output/methylation_level_exon.csv", sep=",")
+data_meth_exon_sum<-read.csv("~/Projects/ceabigr/output/AH_methylation_level_exon.csv", sep=",")
 
-data_genes_exon<-read.csv("~/Projects/ceabigr/output/gene_coverage_exon.csv", sep=",")
+data_genes_exon<-read.csv("~/Projects/ceabigr/output/AH_gene_coverage_exon.csv", sep=",")
 
 head(data_meth_exon_sum)
 data_meth_exon_sum<-data_meth_exon_sum%>%
@@ -341,7 +339,7 @@ exon_plot<-exon_file%>%
     ggplot(., aes(x=level, y=genes, color=Treatment))+
     facet_wrap(~Treatment*sex)+
     geom_point(size=2) + 
-    #geom_smooth(method="lm", color="black")+
+    geom_smooth(method="lm", color="black")+
     xlab("Methylation level") + 
     ylab("Gene expression")+
     ylim(0,2000)+
