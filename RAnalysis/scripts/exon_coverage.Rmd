@@ -251,12 +251,6 @@ colnames(data_genes_exon)<-c("chromosome", "start", "end", "genes", "sample_id",
 write.csv(data_genes_exon, "~/Projects/ceabigr/output/gene_coverage_exon.csv")
 ```
 
-
-
-
-
-
-methylation data for exons here: /home/shared/8TB_HDD_02/javirodr/ceabigr/data/TE_analysis/meth_TE_files
 Methylation:
 ```{r}
 # binding all methylation data files together
@@ -266,8 +260,6 @@ data_meth_exon <- list.files(path = '/home/shared/8TB_HDD_02/javirodr/ceabigr/da
 
 #paste together scaffold exon coordinates into a "code"
 data_meth_exon$code<-paste(data_meth_exon$V6, data_meth_exon$V7, data_meth_exon$V8)
-
-
 
 #summarize mean of V4 (methylation level) and sum of V5 (methylation density) by unique combinations of V6, V7, V8 
 data_meth_exon_sum<-data_meth_exon%>%
@@ -304,6 +296,23 @@ data_meth_exon_sum<-data_meth_exon_sum%>%
 write.csv(data_meth_exon_sum, "~/Projects/ceabigr/output/methylation_level_exon.csv")
 ```
 
+Load files if starting from this point.  
+
+```{r}
+library(tidyverse)
+data_meth_exon_sum<-read.csv("~/Projects/ceabigr/output/methylation_level_exon.csv", sep=",")
+
+data_genes_exon<-read.csv("~/Projects/ceabigr/output/gene_coverage_exon.csv", sep=",")
+
+head(data_meth_exon_sum)
+data_meth_exon_sum<-data_meth_exon_sum%>%
+  select(!X)
+
+head(data_genes_exon)
+data_genes_exon<-data_genes_exon%>%
+  select(!X)
+```
+
 Load metadata file.  
 ```{r}
 metadata<-read.csv(file="~/Projects/ceabigr/data/adult-meta.csv", sep=",", header=TRUE)
@@ -311,7 +320,6 @@ metadata<-read.csv(file="~/Projects/ceabigr/data/adult-meta.csv", sep=",", heade
 metadata<-metadata%>%
   select(Sample.ID, Treatment)%>%
   rename(sample_id=Sample.ID)
-
 ```
 
 Join files together
@@ -332,10 +340,11 @@ Plot correlation.
 exon_plot<-exon_file%>%
     ggplot(., aes(x=level, y=genes, color=Treatment))+
     facet_wrap(~Treatment*sex)+
-    geom_point(pch = 21, size=4) + 
+    geom_point(size=2) + 
+    #geom_smooth(method="lm", color="black")+
     xlab("Methylation level") + 
     ylab("Gene expression")+
-    ylim(0,5000)+
+    ylim(0,2000)+
     #xlim(0,150)+
     theme_classic() + 
     theme(
@@ -348,6 +357,29 @@ exon_plot<-exon_file%>%
 
 ```
     
+Plot by sample.  
+
+```{r}
+exon_plot2<-exon_file%>%
+    ggplot(., aes(x=level, y=genes, color=Treatment, shape=sex))+
+    facet_wrap(~sample_id)+
+    geom_point(size=2) + 
+    #geom_smooth(method="lm", color="black")+
+    xlab("Methylation level") + 
+    ylab("Gene expression")+
+    ylim(0,2000)+
+    #xlim(0,150)+
+    theme_classic() + 
+    theme(
+      legend.position="right",
+      axis.title=element_text(face="bold", size=14),
+      axis.text=element_text(size=12, color="black"), 
+      legend.title=element_text(face="bold", size=14), 
+      legend.text=element_text(size=12)
+      ); exon_plot2
+
+```
+
     
     
     
