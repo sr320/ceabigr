@@ -194,9 +194,7 @@ TE_plot<-TE_file%>%
 
 ```
 
-
-NEXT NEED TO PLOT METHYLATION COVERAGE (OLD CODE) AGAINST METHYLATION LEVEL
-
+NEXT NEED TO PLOT METHYLATION COVERAGE AGAINST METHYLATION LEVEL
 
 # Join files for exon level 
 
@@ -341,7 +339,7 @@ exon_plot<-exon_file%>%
     ggplot(., aes(x=level, y=genes, color=Treatment))+
     facet_wrap(~Treatment*sex)+
     geom_point(size=2) + 
-    #geom_smooth(method="lm", color="black")+
+    geom_smooth(method="lm", color="black")+
     xlab("Methylation level") + 
     ylab("Gene expression")+
     ylim(0,2000)+
