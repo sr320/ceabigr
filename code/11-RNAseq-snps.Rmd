@@ -5,7 +5,15 @@ output: html_document
 
 Bam files at 
 /home/shared/8TB_HDD_02/ashuff/Projects/ceabigr/data/SortedBAM
-
+```{bash}
+find /home/shared/8TB_HDD_02/ashuff/Projects/ceabigr/data/SortedBAM/*bam | xargs basename -s .bam \
+| xargs -I{} \
+/home/shared/samtools-1.12/samtools mpileup --VCF --no-BAQ \
+--fasta-ref ../data/Cvirginica_v300.fa \
+/home/shared/8TB_HDD_02/ashuff/Projects/ceabigr/data/SortedBAM/{}.bam \
+-o ../output/{}.vcf.gz
+```
+rest
 %%bash
 for f in /Volumes/caviar/wd/2016-12-02/*.bam
 do
