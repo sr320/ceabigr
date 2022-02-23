@@ -43,8 +43,9 @@ sample.info <- read.csv("RAnalysis/data/adult-meta.csv", header=T, na.strings = 
 
 ```
 
-```{bash}
-featureCounts
+Use 
+```{r}
+
 ```
 
 
