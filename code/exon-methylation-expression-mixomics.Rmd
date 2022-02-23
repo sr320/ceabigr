@@ -24,7 +24,24 @@ require(tidyverse)
 sessionInfo()
 ```
 
+# THINGS TO DO BEFORE YOU DO ANYTHING YOU FOOL:
+
+PLSDA
+tune parameters
+run spls
+extract VIPs from spls: value > 1
+
 # Import and reformat data
+
+```{r}
+metadata <- read.csv("../RAnalysis/data/adult-meta.csv", header = TRUE) #Import metadata
+metadata <- metadata %>%
+  select(., Sample.ID, Treatment, Sex, TreatmentN) %>%
+  rename(., sample_id = Sample.ID) #Retain necessary columns, rename sample_id
+head(metadata) #Confirm formatting
+```
+
+## Exon expression data
 
 ```{r}
 exonExpression <- read.csv("/home/shared/8TB_HDD_02/ashuff/Projects/ceabigr/output/AH_gene_coverage_exon.csv", header = TRUE, row.names = 1)
@@ -33,23 +50,34 @@ exonExpressionMod <- exonExpression %>%
   select(., exonID, genes, sample_id) %>%
   distinct(.) %>%
   slice(., -212243) %>%
-  spread(., key = exonID, value = genes, fill = NA) %>%
-  column_to_rownames(., "sample_id") #Create exonID column with chr-start-end, select only exonID, gene_cov, and sample_id information, filter unique rows, spread data for mixOmics formatting requirements, convert sample_id to columns
+  spread(., key = exonID, value = genes, fill = NA) #Create exonID column with chr-start-end, select only exonID, gene_cov, and sample_id information, filter unique rows, spread data for mixOmics formatting requirements
 head(exonExpressionMod) #Confirm formatting
 ncol(exonExpressionMod) #Count number of exons with data
 ```
 
+### Sex-specific data
+
 ```{r}
-# exonMethylation <- read.csv("/home/shared/8TB_HDD_02/ashuff/Projects/ceabigr/output/AH_methylation_level_exon.csv", header = TRUE, row.names = 1)
-# exonMethylationMod <- exonMethylation %>%
-#   unite(., exonID, 3:5) %>%
-#   select(., exonID, level, sample_id) %>%
-#   distinct(.) %>%
-#   spread(., key = exonID, value = level, fill = NA) %>%
-#   column_to_rownames(., "sample_id") #Create exonID column with chr-start-end, select only exonID, gene_cov, and sample_id information, filter unique rows, spread data for mixOmics formatting requirements, make sample_id rownames
-# head(exonMethylationMod) #Confirm formatting
-# ncol(exonMethylationMod) #Count number of exons with data
+exonExpressionFem <- exonExpressionMod %>%
+  filter(., grepl("F", sample_id, fixed = TRUE)) %>%
+  select(where(~sum(!is.na(.)) > 0)) %>%
+  column_to_rownames(., var = "sample_id") #Filter female samples only, remove exons with missing methylation data (NA) for any sample, and make sample IDs rownames
+head(exonExpressionFem) #Confirm formatting
+sum(is.na(exonExpressionFem)) #Confirm there are no NAs
+ncol(exonExpressionFem) #Count exons with data for all samples
 ```
+
+```{r}
+exonExpressionMale <- exonExpressionMod %>%
+  filter(., grepl("M", sample_id, fixed = TRUE)) %>%
+  select(where(~sum(!is.na(.)) > 0)) %>%
+  column_to_rownames(., var = "sample_id") #Filter male samples only, remove exons with missing methylation data (NA) for any sample, and make sample_id 
+head(exonExpressionMale) #Confirm formatting
+sum(is.na(exonExpressionMale)) #Confirm there are no NAs
+ncol(exonExpressionMale) #Count exons with data for all samples
+```
+
+## Exon methylation data
 
 ```{r}
 exonMethylation <- read.delim("/home/shared/8TB_HDD_02/strigg/ceabigr/output/exon_summary_allsamples.txt", header = TRUE)
@@ -58,15 +86,31 @@ exonMethylationMod <- exonMethylation %>%
   unite(., exonID, 1:3) %>%
   select(., exonID, median_meth, sample) %>%
   distinct(.) %>%
-  spread(., key = exonID, value = median_meth, drop = TRUE) %>%
-  column_to_rownames(., "sample") #Create exonID column with chr-start-end, select only exonID, gene_cov, and sample_id information, filter unique rows, spread data for mixOmics formatting requirements, make sample_id rownames
+  spread(., key = exonID, value = median_meth, fill = NA) #Create exonID column with chr-start-end, select only exonID, gene_cov, and sample_id information, filter unique rows, spread data for mixOmics formatting requirements
 head(exonMethylationMod) #Confirm formatting
 ncol(exonMethylationMod) #Count number of exons with data
 ```
 
+### Sex-specific data
+
 ```{r}
-metadata <- read.csv("../RAnalysis/data/adult-meta.csv", header = TRUE) #Import metadata
-head(metadata) #Confirm formatting
+exonMethylationFem <- exonMethylationMod %>%
+  filter(., grepl("F", sample, fixed = TRUE)) %>%
+  column_to_rownames(., var = "sample") #Filter female samples only and make sample rownames
+exonMethylationFem <- as.data.frame(t(drop_na(as.data.frame(t(exonMethylationFem))))) #Remove columns with NAs
+head(exonMethylationFem) #Confirm formatting
+sum(is.na(exonMethylationFem)) #Confirm there are no NAs
+ncol(exonMethylationFem) #Count exons with data for all samples
+```
+
+```{r}
+exonMethylationMale <- exonMethylationMod %>%
+  filter(., grepl("M", sample, fixed = TRUE)) %>%
+  column_to_rownames(., var = "sample") #Filter male samples only and make sample rownames
+exonMethylationMale <- as.data.frame(t(drop_na(as.data.frame(t(exonMethylationMale))))) #Remove columns with NAs
+head(exonMethylationMale) #Confirm formatting
+sum(is.na(exonMethylationMale)) #Confirm there are no NAs
+ncol(exonMethylationMale) #Count exons with data for all samples
 ```
 
 # Sparse PLS
@@ -76,7 +120,7 @@ Followed [`mixOmics` manual](https://mixomicsteam.github.io/Bookdown/pls.html#in
 ## Tune parameters
 
 ```{r}
-exonResult.pls <- pls(exonMethylationMod, exonExpressionMod, ncomp = 4) #Run a PLS with a sufficient number of components
+exonResult.pls <- pls(exonMethylationFem, exonExpressionFem, ncomp = 4) #Run a PLS with a sufficient number of components
 exonPerf.pls <- perf(exonResult.pls, validation = "Mfold", folds = 5,
                      progressBar = FALSE, nrepeat = 1000) #Use perf for repeated k-fold cross-validation to determine the number of components that should be included
 plot(perf.pls$Q2.total) #Plot perf results
@@ -86,9 +130,18 @@ abline(h = 0.0975) #Only include components with value is ≤ 0.0975
 ## Run SPLS
 
 ```{r}
-exonResult.spls <- spls(X = exonMethylationMod[,1:100], Y = exonExpressionMod[,1:100], 
-                        keepX = c(25, 25), keepY = c(5,5)) #Run SPLS
+exonResult.spls <- spls(X = exonMethylationFem, Y = exonExpressionFem, 
+                        keepX = c(25, 25), keepY = c(25,25)) #Run SPLS
 ```
+
+```{r}
+plotIndiv(exonResult.spls, group = metadata$Sex,
+          legend = TRUE,
+          legend.title = 'Sex',
+          ind.names = metadata$Treatment,
+          title = "Exon: sPLS") #Plot samples. Group by sex and add titles for treatment
+```
+
 
 ```{r}
 plotIndiv(exonResult.spls, group = metadata$Sex,
@@ -113,8 +166,10 @@ exonCoordinates <- plotVar(exonResult.spls, plot = FALSE) #Extract coordinates
 ```
 
 ```{r}
-plotArrow(exonResult.spls, group = metadata$TreatmentN, legend = TRUE,
-          X.label = 'PLS comp 1', Y.label = 'PLS comp 2') #Group by treatment and sex
+exonArrow <- plotArrow(exonResult.spls, group = metadata$TreatmentN, legend = TRUE,
+                       X.label = 'PLS comp 1', Y.label = 'PLS comp 2') #Group by treatment and sex
+exonArrow$data
+plot(exonArrow)
 ```
 
 ## Component-level information
@@ -128,12 +183,13 @@ exonSelectedVariables1$Y$name #Selected exons from expression data
 ```
 
 ```{r}
+pdf("../output/exon-methylation-expression-mixomics/yrv-exonSPLS-cimPlot.pdf", width = 11, height = 8.5)
 cim(exonResult.spls, comp = 1) #Clustered image map for first component
-network(exonResult.spls, comp = 1) #Network for first component
+dev.off()
 ```
 
 ```{r}
-plotLoadings(exonResult.spls, comp = 2, size.name = rel(0.5)) #Loadings for first component
+plotLoadings(exonResult.spls, comp = 1, size.name = rel(0.5)) #Loadings for first component
 ```
 
 ### Component 2
@@ -146,7 +202,6 @@ exonSelectedVariables2$Y$name #Selected exons from expression data
 
 ```{r}
 cim(exonResult.spls, comp = 2) #Clustered image map for second component
-network(exonResult.spls, comp = 2) #Network for second component
 ```
 
 ```{r}
