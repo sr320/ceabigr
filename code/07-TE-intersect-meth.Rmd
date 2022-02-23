@@ -79,7 +79,7 @@ for (i in 1:length(filenames)) {
 }
 
 #rename columns
-colnames(b) <- c("feature_name","mean_meth", "median_meth", "sample")
+colnames(b) <- c("feature_name", "chromosome", "start", "stop", "mean_meth", "median_meth", "sample")
 
 #write out dataframe
 write.table(b, file = "../output/transposon_summary_allsamples.txt",quote = F, row.names = F, sep = "\t")
@@ -87,6 +87,7 @@ write.table(b, file = "../output/transposon_summary_allsamples.txt",quote = F, r
 
 
 
+Lets break out to separtate files
 
 
 

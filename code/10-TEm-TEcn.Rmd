@@ -2,3 +2,13 @@
 title: "10-TEm-TEcn"
 output: html_document
 ---
+
+
+TE copy number
+
+```{bash}
+head ../output/*mTE*
+```
+
+TE methylation
+
