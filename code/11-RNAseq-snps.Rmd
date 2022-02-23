@@ -2,3 +2,14 @@
 title: "11-RNAseq-snps"
 output: html_document
 ---
+
+Bam files at 
+/home/shared/8TB_HDD_02/ashuff/Projects/ceabigr/data/SortedBAM
+
+%%bash
+for f in /Volumes/caviar/wd/2016-12-02/*.bam
+do
+bcftools \
+call -v -m /Volumes/caviar/wd/2016-12-02/$(basename "${f}" .bam).vcf.gz \
+> /Volumes/caviar/wd/2016-12-02/$(basename "${f}" .bam)_calls.vcf.gz
+done
