@@ -6,7 +6,7 @@ Workshop will take a case study based approach looking at specific data sets fro
 
 **Aim** - To develop manuscript(s), similar in fashion to FROGER 🐸 and develop genomic analysis pipeline to be used in future efforts. It is increasingly evident that we have to consider the combined molecular and physiological states to understand population responses to changing environmental condiditons. 
 
-
+![360](https://github.com/sr320/ceabigr/blob/main/data/360.gif?raw=true)
 
 Prior to the workshop, participants will engage in [Discussions](https://github.com/sr320/ceabigr/discussions) and [Wiki](https://github.com/sr320/ceabigr/wiki) to share information including promising pipelines and relevant datasets. 
 
