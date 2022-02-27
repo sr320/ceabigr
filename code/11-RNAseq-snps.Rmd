@@ -21,3 +21,156 @@ bcftools \
 call -v -m /Volumes/caviar/wd/2016-12-02/$(basename "${f}" .bam).vcf.gz \
 > /Volumes/caviar/wd/2016-12-02/$(basename "${f}" .bam)_calls.vcf.gz
 done
+
+
+
+# GATK method
+
+https://github.com/laurahspencer/red-king_RNASeq-2022
+
+
+MOx
+
+```
+# Deduplicate using picard (within gatk), output will have duplicates removed 
+
+echo "Deduplicating bams"
+for file in *sorted.bam
+do
+sample="$(basename -a $file | cut -d "." -f 1)"
+
+${gatk} MarkDuplicates \
+I=$file \
+O="${outputdir}gatk/$sample.dedup.bam" \
+M="${outputdir}gatk/$sample.dup_metrics.txt" \
+REMOVE_DUPLICATES=true
+done >> "${jobdir}04-dedup_stout.txt" 2>&1
+
+
+
+
+# Create a FASTA sequence dictionary file for O.lurida genome (needed by gatk)
+echo "Creating sequence dictionary (.dict)" 
+${gatk} CreateSequenceDictionary \
+-R ${homedir}data/Olurida_v081_concat/Olurida_v081_concat_rehead.fa \
+-O ${homedir}data/Olurida_v081_concat/Olurida_v081_concat_rehead.dict \
+ >> "${jobdir}05-CreateSequenceDictionary.txt" 2>&1
+
+# Split reads spanning splicing events 
+echo "Splitting reads spanning splice junctions (SplitNCigarReads)"
+for file in *dedup.bam
+do
+sample="$(basename -a $file | cut -d "." -f 1)"
+
+# split CigarN reads
+${gatk} SplitNCigarReads \
+-R ${homedir}data/Olurida_v081_concat/Olurida_v081_concat_rehead.fa \
+-I $file \
+-O $sample.dedup-split.bam
+done >> "${jobdir}06-CigarNSplit_stout.txt" 2>&1
+
+# Add read group ID to bams (needed by gatk)
+echo "Adding read group to bams" 
+for file in *dedup-split.bam
+do
+sample="$(basename -a $file | cut -d "." -f 1)"
+
+# add read group info to headers, specifying sample names 
+${gatk} AddOrReplaceReadGroups \
+I=$sample.dedup-split.bam \
+O=$sample.dedup-split-RG.bam \
+RGID=1 \
+RGLB=$sample \
+RGPL=ILLUMINA \
+RGPU=unit1 \
+RGSM=$sample
+done >> "${jobdir}07-AddReadGroup_stout.txt" 2>&1
+
+# Index the final .bam files (that have been deduplicated, split, read-group added)
+echo "Indexing variant-call ready .bam files"
+for file in *dedup-split-RG.bam
+do
+${samtools} index $file 
+done >> "${jobdir}08-index-bams.txt" 2>&1
+
+# Call variants 
+echo "Calling variants using HaplotypeCaller"
+for file in *dedup-split-RG.bam
+do
+sample="$(basename -a $file | cut -d "." -f 1)"
+
+${gatk} HaplotypeCaller \
+-R ${homedir}data/Olurida_v081_concat/Olurida_v081_concat_rehead.fa \
+-I $sample.dedup-split-RG.bam \
+-O $sample.variants.g.vcf \
+-ERC GVCF
+done >> "${jobdir}09-HaplotypeCaller_stout.txt" 2>&1
+
+# create sample map of all gvcfs
+rm sample_map.txt  #remove if already exists 
+echo "Creating sample map of all gvcfs"
+for file in *variants.g.vcf
+do
+sample="$(basename -a $file | cut -d "." -f 1)"
+echo -e "$sample\t$file" >> sample_map.txt
+done
+
+# create interval list (just a list of all contigs in genome)
+echo "Creating intervals list"
+awk 'BEGIN {FS="\t"}; {print $1 FS "0" FS $2}' ${homedir}data/Olurida_v081_concat/Olurida_v081_concat_rehead.fa.fai > intervals.bed 
+
+# Aggregate single-sample GVCFs into GenomicsDB
+# Note: the intervals file requires a specific name - e.g. for .bed format, it MUST be "intervals.bed"
+echo "Aggregating single-sample GVCFs into GenomicsDB"
+rm -r GenomicsDB/ #can't already have a GenomicsDB directory, else will fail 
+${gatk} GenomicsDBImport \
+--genomicsdb-workspace-path GenomicsDB/ \
+-L intervals.bed \
+--sample-name-map sample_map.txt \
+--reader-threads 40 >> "${jobdir}10-GenomicsDBImport_stout.txt" 2>&1
+
+# Joint genotype 
+echo "Joint genotyping"
+${gatk} GenotypeGVCFs \
+-R ${homedir}data/Olurida_v081_concat/Olurida_v081_concat_rehead.fa \
+-V gendb://GenomicsDB \
+-O Olurida_QuantSeq2020_genotypes.vcf.gz \
+>> "${jobdir}11-GenotypeGVCFs_stout.txt" 2>&1
+
+# Hard filter variants 
+echo "Hard filtering variants"
+${gatk} VariantFiltration \
+-R ${homedir}data/Olurida_v081_concat/Olurida_v081_concat_rehead.fa \
+-V Olurida_QuantSeq2020_genotypes.vcf.gz \
+-O Olurida_QuantSeq2020_genotypes-filtered.vcf.gz \
+--filter-name "FS" \
+--filter "FS > 60.0" \
+--filter-name "QD" \
+--filter "QD < 2.0" \
+--filter-name "QUAL30" \
+--filter "QUAL < 30.0" \
+--filter-name "SOR3" \
+--filter "SOR > 3.0" \
+--filter-name "DP15" \
+--filter "DP < 15" \
+--filter-name "DP150" \
+--filter "DP > 150" \
+--filter-name "AF30" \
+--filter "AF < 0.30" >> "${jobdir}12-GenotypeGVCFs_stout.txt" 2>&1
+
+# Select only SNPs that pass filtering
+echo "Selecting SNPs that pass fitering"
+${gatk} SelectVariants \
+-R ${homedir}data/Olurida_v081_concat/Olurida_v081_concat_rehead.fa \
+-V Olurida_QuantSeq2020_genotypes-filtered.vcf.gz \
+--exclude-filtered TRUE \
+--select-type-to-include SNP \
+-O Olurida_QuantSeq2020_genotypes-filtered-true.vcf.gz \
+ >> "${jobdir}13-SelectVariants_stout.txt" 2>&1
+
+echo "complete!"
+```
+
+
+
+
