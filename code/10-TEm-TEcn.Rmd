@@ -4,11 +4,15 @@ output: html_document
 ---
 
 
-TE copy number
+TE methylation
 
 ```{bash}
-head ../output/*mTE*
+head -1 ../output/07-TE-intersect-meth/*mTE*
 ```
 
-TE methylation
+TE Methylation Summary 
+
+```{bash}
+head -3 ../output/07-TE-intersect-meth/*summary*
+```
 
