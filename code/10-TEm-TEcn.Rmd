@@ -16,3 +16,11 @@ TE Methylation Summary
 head -3 ../output/07-TE-intersect-meth/*summary*
 ```
 
+
+TE Copy Number
+
+```{bash}
+head -2 ../output/02-te-all/*out
+```
+
+
