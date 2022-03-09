@@ -29,7 +29,22 @@ done
 https://github.com/laurahspencer/red-king_RNASeq-2022
 
 
-MOx
+RE-DOWNLOADING BAMS
+
+
+https://gannet.fish.washington.edu/Atumefaciens/20220225_cvir_stringtie_GCF_002022765.2_isoforms/
+
+sr320@raven:/home/shared/8TB_HDD_01/sr320/github/ceabigr/data$ 
+
+wget -r \
+--no-check-certificate \
+--quiet \
+--no-directories --no-parent \
+-P . \
+-A *sorted.bam  \
+https://gannet.fish.washington.edu/Atumefaciens/20220225_cvir_stringtie_GCF_002022765.2_isoforms/
+
+
 
 ```
 # Deduplicate using picard (within gatk), output will have duplicates removed 
@@ -38,13 +53,24 @@ echo "Deduplicating bams"
 for file in *sorted.bam
 do
 sample="$(basename -a $file | cut -d "." -f 1)"
+```
 
-${gatk} MarkDuplicates \
+```{bash}
+echo "Deduplicating bams"
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/
+
+for file in *sorted.bam
+do
+sample="$(basename -a $file | cut -d "." -f 1)"
+
+/home/shared/gatk-4.2.5.0/gatk MarkDuplicates \
 I=$file \
-O="${outputdir}gatk/$sample.dedup.bam" \
-M="${outputdir}gatk/$sample.dup_metrics.txt" \
+O="../output/11-RNAseq-snps/$sample.dedup.bam" \
+M="../output/11-RNAseq-snps/$sample.dup_metrics.txt" \
 REMOVE_DUPLICATES=true
-done >> "${jobdir}04-dedup_stout.txt" 2>&1
+done
+```
+
 
 
 
