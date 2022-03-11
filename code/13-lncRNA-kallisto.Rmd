@@ -1,0 +1,55 @@
+---
+title: "13-lncRNA"
+output: html_document
+---
+
+Using kallisto to get count data for lncRNA...
+
+Need fasta
+Need .fq
+
+Grab .fq files
+
+https://gannet.fish.washington.edu/Atumefaciens/20220224_cvir_gonad_RNAseq_fastp_trimming/S12M_R1.fastp-trim.20bp-5prime.20220224.fq.gz
+
+
+
+wget -r \
+--no-check-certificate \
+--quiet \
+--no-directories --no-parent \
+-P . \
+-A *fq.gz \
+https://gannet.fish.washington.edu/Atumefaciens/20220224_cvir_gonad_RNAseq_fastp_trimming/
+
+
+
+Downloading lncRNA fasta
+
+wget --no-check-certificate https://gannet.fish.washington.edu/Atumefaciens/20220217-cvir-lncRNA_subsetting/GCF_002022765.2_C_virginica-3.0_lncRNA.fa
+
+
+
+Creating an index
+```{bash}
+/home/shared/kallisto/kallisto \
+index -i ../data/GCF_002022765.2_C_virginica-3.0_lncRNA.index \
+../data/GCF_002022765.2_C_virginica-3.0_lncRNA.fa
+```
+
+
+
+```{bash}
+find ../data/*_R1.fastp* \
+| xargs basename -s _R2.fastp-trim.20bp-5prime.20220224.fq.gz | xargs -I{} /home/shared/kallisto/kallisto \
+quant -i ../data/GCF_002022765.2_C_virginica-3.0_lncRNA.index \
+-o ../output/13-lncRNA-kallisto/{} \
+-t 40 \
+../data/{}_R1.fastp-trim.20bp-5prime.20220224.fq.gz ../data/{}_R2.fastp-trim.20bp-5prime.20220224.fq.gz \
+2>&1 | tee ../output/13-lncRNA-kallisto/{}.out
+```
+
+
+
+
+
