@@ -4,3 +4,64 @@ output: html_document
 ---
 
 
+```{bash}
+cd ../data
+wget --no-check-certificate https://gannet.fish.washington.edu/Atumefaciens/20220217-cvir-lncRNA_subsetting/GCF_002022765.2_C_virginica-3.0_lncRNA.gff
+```
+https://gannet.fish.washington.edu/Atumefaciens/20220217-cvir-lncRNA_subsetting/GCF_002022765.2_C_virginica-3.0_lncRNA.bed
+
+
+```{bash}
+cd ../data
+wget --no-check-certificate https://gannet.fish.washington.edu/Atumefaciens/20220217-cvir-lncRNA_subsetting/GCF_002022765.2_C_virginica-3.0_lncRNA.bed
+```
+
+```{bash}
+pwd
+```
+
+
+
+for file in *dedup.bam
+do
+sample="$(basename -a $file | cut -d "." -f 1)"
+
+
+
+```{bash}
+
+
+for file in ../data/*sorted.bam
+  do
+  sample="$(basename -a $file | cut -d "." -f 1)"
+    echo ${sample}
+
+done
+```
+
+
+```{bash}
+
+for file in ../data/*sorted.bam
+  do
+  sample="$(basename -a $file | cut -d "." -f 1)"
+    echo ${sample}
+
+    /home/shared/bedtools2/bin/bedtools coverage \
+    -mean \
+    -sorted \
+    -a ../data/GCF_002022765.2_C_virginica-3.0_lncRNA.bed \
+    -b ../data/${sample}.sorted.bam \
+    > ../output/12-lncRNA/${sample}_lncRNA_cov.out
+done
+```
+
+
+```{bash}
+wc -l ../data/GCF_002022765.2_C_virginica-3.0_lncRNA.gff
+```
+
+```{bash}
+wc -l ../output/12-lncRNA/*_lncRNA_cov.out
+```
+
