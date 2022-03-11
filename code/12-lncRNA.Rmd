@@ -58,7 +58,8 @@ done
 
 
 ```{bash}
-wc -l ../data/GCF_002022765.2_C_virginica-3.0_lncRNA.gff
+wc -l ../data/GCF_002022765.2_C_virginica-3.0_lncRNA.bed
+
 ```
 
 ```{bash}

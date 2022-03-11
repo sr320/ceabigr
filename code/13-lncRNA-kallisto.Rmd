@@ -41,7 +41,7 @@ index -i ../data/GCF_002022765.2_C_virginica-3.0_lncRNA.index \
 
 ```{bash}
 find ../data/*_R1.fastp* \
-| xargs basename -s _R2.fastp-trim.20bp-5prime.20220224.fq.gz | xargs -I{} /home/shared/kallisto/kallisto \
+| xargs basename -s _R1.fastp-trim.20bp-5prime.20220224.fq.gz | xargs -I{} /home/shared/kallisto/kallisto \
 quant -i ../data/GCF_002022765.2_C_virginica-3.0_lncRNA.index \
 -o ../output/13-lncRNA-kallisto/{} \
 -t 40 \
