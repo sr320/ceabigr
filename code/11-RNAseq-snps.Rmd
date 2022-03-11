@@ -71,38 +71,51 @@ REMOVE_DUPLICATES=true
 done
 ```
 
+```{bash}
+pwd
+```
 
 
-
-
+```{bash}
 # Create a FASTA sequence dictionary file for O.lurida genome (needed by gatk)
 echo "Creating sequence dictionary (.dict)" 
-${gatk} CreateSequenceDictionary \
--R ${homedir}data/Olurida_v081_concat/Olurida_v081_concat_rehead.fa \
--O ${homedir}data/Olurida_v081_concat/Olurida_v081_concat_rehead.dict \
- >> "${jobdir}05-CreateSequenceDictionary.txt" 2>&1
+/home/shared/gatk-4.2.5.0/gatk CreateSequenceDictionary \
+-R ../data/Cvirginica_v300.fa \
+-O ../data/Cvirginica_v300.dict \
+ >> ../output/11-RNAseq-snps/CreateSequenceDictionary.txt 2>&1
+```
 
+
+```{bash}
 # Split reads spanning splicing events 
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
 echo "Splitting reads spanning splice junctions (SplitNCigarReads)"
 for file in *dedup.bam
 do
 sample="$(basename -a $file | cut -d "." -f 1)"
 
 # split CigarN reads
-${gatk} SplitNCigarReads \
--R ${homedir}data/Olurida_v081_concat/Olurida_v081_concat_rehead.fa \
+/home/shared/gatk-4.2.5.0/gatk SplitNCigarReads \
+-R ../../data/Cvirginica_v300.fa  \
 -I $file \
--O $sample.dedup-split.bam
-done >> "${jobdir}06-CigarNSplit_stout.txt" 2>&1
+-O ../../output/11-RNAseq-snps/$sample.dedup-split.bam
+done >> ../../output/11-RNAseq-snps/CigarNSplit_stout.txt 2>&1
 
+
+```
+
+```{bash}
 # Add read group ID to bams (needed by gatk)
 echo "Adding read group to bams" 
+
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
+
 for file in *dedup-split.bam
 do
 sample="$(basename -a $file | cut -d "." -f 1)"
 
 # add read group info to headers, specifying sample names 
-${gatk} AddOrReplaceReadGroups \
+/home/shared/gatk-4.2.5.0/gatk AddOrReplaceReadGroups \
 I=$sample.dedup-split.bam \
 O=$sample.dedup-split-RG.bam \
 RGID=1 \
@@ -110,7 +123,12 @@ RGLB=$sample \
 RGPL=ILLUMINA \
 RGPU=unit1 \
 RGSM=$sample
-done >> "${jobdir}07-AddReadGroup_stout.txt" 2>&1
+done >> AddReadGroup_stout.txt 2>&1
+```
+
+
+
+```
 
 # Index the final .bam files (that have been deduplicated, split, read-group added)
 echo "Indexing variant-call ready .bam files"
