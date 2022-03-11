@@ -20,7 +20,7 @@ sr320@raven:/home/shared/8TB_HDD_01/sr320/github/ceabigr/data$ wget -r \
 --quiet \
 --no-directories --no-parent \
 -P . \
--A *10x.bedgraph  \
+-A *sorted  \
 https://gannet.fish.washington.edu/seashell/bu-mox/scrubbed/120321-cvBS/
 ```
 

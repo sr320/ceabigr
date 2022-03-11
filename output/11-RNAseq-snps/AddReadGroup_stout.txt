@@ -1,0 +1,62 @@
+Using GATK jar /home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -jar /home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar AddOrReplaceReadGroups I=S12M.dedup-split.bam O=S12M.dedup-split-RG.bam RGID=1 RGLB=S12M RGPL=ILLUMINA RGPU=unit1 RGSM=S12M
+INFO	2022-03-11 09:58:35	AddOrReplaceReadGroups	
+
+********** NOTE: Picard's command line syntax is changing.
+**********
+********** For more information, please see:
+********** https://github.com/broadinstitute/picard/wiki/Command-Line-Syntax-Transition-For-Users-(Pre-Transition)
+**********
+********** The command line looks like this in the new syntax:
+**********
+**********    AddOrReplaceReadGroups -I S12M.dedup-split.bam -O S12M.dedup-split-RG.bam -RGID 1 -RGLB S12M -RGPL ILLUMINA -RGPU unit1 -RGSM S12M
+**********
+
+
+09:58:35.197 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+[Fri Mar 11 09:58:35 PST 2022] AddOrReplaceReadGroups INPUT=S12M.dedup-split.bam OUTPUT=S12M.dedup-split-RG.bam RGID=1 RGLB=S12M RGPL=ILLUMINA RGPU=unit1 RGSM=S12M    VERBOSITY=INFO QUIET=false VALIDATION_STRINGENCY=STRICT COMPRESSION_LEVEL=2 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=false CREATE_MD5_FILE=false GA4GH_CLIENT_SECRETS=client_secrets.json USE_JDK_DEFLATER=false USE_JDK_INFLATER=false
+Mar 11, 2022 9:58:35 AM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+[Fri Mar 11 09:58:35 PST 2022] Executing as sr320@raven on Linux 5.4.0-96-generic amd64; OpenJDK 64-Bit Server VM 11.0.14+9-Ubuntu-0ubuntu2.18.04; Deflater: Intel; Inflater: Intel; Provider GCS is available; Picard version: 4.2.5.0
+INFO	2022-03-11 09:58:35	AddOrReplaceReadGroups	Created read-group ID=1 PL=ILLUMINA LB=S12M SM=S12M
+
+INFO	2022-03-11 09:58:38	AddOrReplaceReadGroups	Processed     1,000,000 records.  Elapsed time: 00:00:03s.  Time for last 1,000,000:    3s.  Last read position: NC_035780.1:10,612,562
+INFO	2022-03-11 09:58:41	AddOrReplaceReadGroups	Processed     2,000,000 records.  Elapsed time: 00:00:06s.  Time for last 1,000,000:    2s.  Last read position: NC_035780.1:22,557,621
+INFO	2022-03-11 09:58:44	AddOrReplaceReadGroups	Processed     3,000,000 records.  Elapsed time: 00:00:08s.  Time for last 1,000,000:    2s.  Last read position: NC_035780.1:32,603,339
+INFO	2022-03-11 09:58:47	AddOrReplaceReadGroups	Processed     4,000,000 records.  Elapsed time: 00:00:11s.  Time for last 1,000,000:    2s.  Last read position: NC_035780.1:42,758,474
+INFO	2022-03-11 09:58:50	AddOrReplaceReadGroups	Processed     5,000,000 records.  Elapsed time: 00:00:14s.  Time for last 1,000,000:    3s.  Last read position: NC_035780.1:57,180,406
+INFO	2022-03-11 09:58:53	AddOrReplaceReadGroups	Processed     6,000,000 records.  Elapsed time: 00:00:17s.  Time for last 1,000,000:    3s.  Last read position: NC_035781.1:3,202,608
+INFO	2022-03-11 09:58:56	AddOrReplaceReadGroups	Processed     7,000,000 records.  Elapsed time: 00:00:20s.  Time for last 1,000,000:    3s.  Last read position: NC_035781.1:13,816,583
+INFO	2022-03-11 09:58:59	AddOrReplaceReadGroups	Processed     8,000,000 records.  Elapsed time: 00:00:23s.  Time for last 1,000,000:    3s.  Last read position: NC_035781.1:24,074,449
+INFO	2022-03-11 09:59:02	AddOrReplaceReadGroups	Processed     9,000,000 records.  Elapsed time: 00:00:26s.  Time for last 1,000,000:    3s.  Last read position: NC_035781.1:35,952,453
+INFO	2022-03-11 09:59:05	AddOrReplaceReadGroups	Processed    10,000,000 records.  Elapsed time: 00:00:29s.  Time for last 1,000,000:    3s.  Last read position: NC_035781.1:48,055,742
+INFO	2022-03-11 09:59:08	AddOrReplaceReadGroups	Processed    11,000,000 records.  Elapsed time: 00:00:33s.  Time for last 1,000,000:    3s.  Last read position: NC_035781.1:58,863,651
+INFO	2022-03-11 09:59:14	AddOrReplaceReadGroups	Processed    12,000,000 records.  Elapsed time: 00:00:39s.  Time for last 1,000,000:    6s.  Last read position: NC_035782.1:10,021,670
+INFO	2022-03-11 09:59:17	AddOrReplaceReadGroups	Processed    13,000,000 records.  Elapsed time: 00:00:42s.  Time for last 1,000,000:    3s.  Last read position: NC_035782.1:22,854,463
+INFO	2022-03-11 09:59:20	AddOrReplaceReadGroups	Processed    14,000,000 records.  Elapsed time: 00:00:45s.  Time for last 1,000,000:    2s.  Last read position: NC_035782.1:34,608,104
+INFO	2022-03-11 09:59:23	AddOrReplaceReadGroups	Processed    15,000,000 records.  Elapsed time: 00:00:48s.  Time for last 1,000,000:    2s.  Last read position: NC_035782.1:47,505,861
+INFO	2022-03-11 09:59:26	AddOrReplaceReadGroups	Processed    16,000,000 records.  Elapsed time: 00:00:51s.  Time for last 1,000,000:    2s.  Last read position: NC_035782.1:57,652,448
+INFO	2022-03-11 09:59:29	AddOrReplaceReadGroups	Processed    17,000,000 records.  Elapsed time: 00:00:54s.  Time for last 1,000,000:    2s.  Last read position: NC_035782.1:68,938,495
+INFO	2022-03-11 09:59:32	AddOrReplaceReadGroups	Processed    18,000,000 records.  Elapsed time: 00:00:57s.  Time for last 1,000,000:    3s.  Last read position: NC_035783.1:4,767,455
+INFO	2022-03-11 09:59:35	AddOrReplaceReadGroups	Processed    19,000,000 records.  Elapsed time: 00:01:00s.  Time for last 1,000,000:    3s.  Last read position: NC_035783.1:15,820,621
+INFO	2022-03-11 09:59:38	AddOrReplaceReadGroups	Processed    20,000,000 records.  Elapsed time: 00:01:03s.  Time for last 1,000,000:    2s.  Last read position: NC_035783.1:25,843,547
+INFO	2022-03-11 09:59:41	AddOrReplaceReadGroups	Processed    21,000,000 records.  Elapsed time: 00:01:06s.  Time for last 1,000,000:    2s.  Last read position: NC_035783.1:37,966,262
+INFO	2022-03-11 09:59:47	AddOrReplaceReadGroups	Processed    22,000,000 records.  Elapsed time: 00:01:11s.  Time for last 1,000,000:    5s.  Last read position: NC_035783.1:48,384,002
+INFO	2022-03-11 09:59:50	AddOrReplaceReadGroups	Processed    23,000,000 records.  Elapsed time: 00:01:15s.  Time for last 1,000,000:    3s.  Last read position: NC_035784.1:536,576
+INFO	2022-03-11 09:59:53	AddOrReplaceReadGroups	Processed    24,000,000 records.  Elapsed time: 00:01:18s.  Time for last 1,000,000:    3s.  Last read position: NC_035784.1:12,114,426
+INFO	2022-03-11 09:59:56	AddOrReplaceReadGroups	Processed    25,000,000 records.  Elapsed time: 00:01:21s.  Time for last 1,000,000:    3s.  Last read position: NC_035784.1:23,651,630
+INFO	2022-03-11 09:59:59	AddOrReplaceReadGroups	Processed    26,000,000 records.  Elapsed time: 00:01:24s.  Time for last 1,000,000:    3s.  Last read position: NC_035784.1:35,279,342
+INFO	2022-03-11 10:00:02	AddOrReplaceReadGroups	Processed    27,000,000 records.  Elapsed time: 00:01:27s.  Time for last 1,000,000:    2s.  Last read position: NC_035784.1:44,625,040
+INFO	2022-03-11 10:00:05	AddOrReplaceReadGroups	Processed    28,000,000 records.  Elapsed time: 00:01:30s.  Time for last 1,000,000:    2s.  Last read position: NC_035784.1:52,215,496
+INFO	2022-03-11 10:00:08	AddOrReplaceReadGroups	Processed    29,000,000 records.  Elapsed time: 00:01:33s.  Time for last 1,000,000:    2s.  Last read position: NC_035784.1:57,450,071
+INFO	2022-03-11 10:00:11	AddOrReplaceReadGroups	Processed    30,000,000 records.  Elapsed time: 00:01:36s.  Time for last 1,000,000:    2s.  Last read position: NC_035784.1:68,527,556
+INFO	2022-03-11 10:00:14	AddOrReplaceReadGroups	Processed    31,000,000 records.  Elapsed time: 00:01:39s.  Time for last 1,000,000:    3s.  Last read position: NC_035784.1:80,981,112
+INFO	2022-03-11 10:00:17	AddOrReplaceReadGroups	Processed    32,000,000 records.  Elapsed time: 00:01:42s.  Time for last 1,000,000:    3s.  Last read position: NC_035784.1:93,831,614
+INFO	2022-03-11 10:00:22	AddOrReplaceReadGroups	Processed    33,000,000 records.  Elapsed time: 00:01:47s.  Time for last 1,000,000:    5s.  Last read position: NC_035785.1:7,930,972
+INFO	2022-03-11 10:00:26	AddOrReplaceReadGroups	Processed    34,000,000 records.  Elapsed time: 00:01:50s.  Time for last 1,000,000:    3s.  Last read position: NC_035785.1:20,686,521
+INFO	2022-03-11 10:00:29	AddOrReplaceReadGroups	Processed    35,000,000 records.  Elapsed time: 00:01:53s.  Time for last 1,000,000:    3s.  Last read position: NC_035785.1:35,901,877
+INFO	2022-03-11 10:00:32	AddOrReplaceReadGroups	Processed    36,000,000 records.  Elapsed time: 00:01:56s.  Time for last 1,000,000:    2s.  Last read position: NC_035785.1:47,851,232
+INFO	2022-03-11 10:00:35	AddOrReplaceReadGroups	Processed    37,000,000 records.  Elapsed time: 00:01:59s.  Time for last 1,000,000:    2s.  Last read position: NC_035786.1:7,267,626
+INFO	2022-03-11 10:00:38	AddOrReplaceReadGroups	Processed    38,000,000 records.  Elapsed time: 00:02:02s.  Time for last 1,000,000:    2s.  Last read position: NC_035786.1:23,995,070
+INFO	2022-03-11 10:00:41	AddOrReplaceReadGroups	Processed    39,000,000 records.  Elapsed time: 00:02:05s.  Time for last 1,000,000:    2s.  Last read position: NC_035786.1:38,249,539
