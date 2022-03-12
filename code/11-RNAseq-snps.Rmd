@@ -128,14 +128,16 @@ done >> AddReadGroup_stout.txt 2>&1
 
 
 
-```
+```{bash}
 
 # Index the final .bam files (that have been deduplicated, split, read-group added)
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
+
 echo "Indexing variant-call ready .bam files"
 for file in *dedup-split-RG.bam
 do
-${samtools} index $file 
-done >> "${jobdir}08-index-bams.txt" 2>&1
+/home/shared/samtools-1.12/samtools index $file 
+done >> index-bams.txt 2>&1
 
 # Call variants 
 echo "Calling variants using HaplotypeCaller"
@@ -143,12 +145,14 @@ for file in *dedup-split-RG.bam
 do
 sample="$(basename -a $file | cut -d "." -f 1)"
 
-${gatk} HaplotypeCaller \
--R ${homedir}data/Olurida_v081_concat/Olurida_v081_concat_rehead.fa \
+/home/shared/gatk-4.2.5.0/gatk HaplotypeCaller \
+-R /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/Cvirginica_v300.fa \
 -I $sample.dedup-split-RG.bam \
 -O $sample.variants.g.vcf \
 -ERC GVCF
-done >> "${jobdir}09-HaplotypeCaller_stout.txt" 2>&1
+done >> HaplotypeCaller_stout.txt 2>&1
+```
+
 
 # create sample map of all gvcfs
 rm sample_map.txt  #remove if already exists 
