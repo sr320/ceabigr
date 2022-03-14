@@ -16,25 +16,15 @@ knitr::opts_knit$set(root.dir = "../output/exon-methylation-expression-mixomics/
 #if (!requireNamespace("BiocManager", quietly = TRUE))
 #    install.packages("BiocManager")
 # BiocManager::install("mixOmics") #Install BiocManager and mixOmics
+#install.packages("plotly")
 require(mixOmics)
 require(tidyverse)
+require(plotly)
 ```
 
 ```{r}
 sessionInfo()
 ```
-
-# THINGS TO DO BEFORE YOU DO ANYTHING YOU FOOL:
-
-different filtering ideas:
-  - expression data: filtered for low frequency genes (sum = 10 across all sample)
-  - methylation data: < 10% methylation difference
-  - P over A filtering
-extract males and females from raw data, then re-filter
-PLSDA
-tune parameters
-run spls
-extract VIPs from spls: value > 1
 
 # Import and reformat data
 
@@ -62,6 +52,19 @@ ncol(exonExpressionMod) #Count number of exons with data
 ```
 
 ```{r}
+exonExpressionHist <- exonExpressionMod %>%
+  t(.) %>%
+  as.data.frame(.) %>%
+  drop_na(.) %>%
+  rowwise() %>%
+  summarise(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) #Calculate the range of exon expression values across each sample
+  
+plot_ly(x = exonExpressionHist$range, type = "histogram") #Interactive plot of exon expression value ranges
+```
+
+Based on the interactive histogram, I'll remove data where the range is < 20.
+
+```{r}
 #Transpose expression data
 #Remove rows with missing data
 #Rowwise range operation
@@ -74,7 +77,7 @@ exonExpressionFilt <- exonExpressionMod %>%
   rowwise() %>%
   mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
   column_to_rownames("exon") %>%
-  filter(., range > 10) %>%
+  filter(., range > 20) %>%
   select(., !range) %>%
   t(.) %>%
   as.data.frame(.)
@@ -170,7 +173,7 @@ exonExpressionFem <- exonExpressionMod %>%
   rowwise() %>%
   mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
   column_to_rownames("exon") %>%
-  filter(., range > 10) %>%
+  filter(., range > 20) %>%
   select(., !range) %>%
   t(.) %>%
   as.data.frame(.) #Filter female samples only, remove exons with missing expression data (NA) for any sample, remove samples with low variation, and make sample IDs rownames
@@ -189,7 +192,7 @@ exonExpressionMale <- exonExpressionMod %>%
   rowwise() %>%
   mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
   column_to_rownames("exon") %>%
-  filter(., range > 10) %>%
+  filter(., range > 20) %>%
   select(., !range) %>%
   t(.) %>%
   as.data.frame(.) #Filter male samples only, remove exons with missing expression data (NA) for any sample, remove samples with low variation, and make sample IDs rownames
@@ -197,6 +200,7 @@ head(exonExpressionMale) #Confirm formatting
 sum(is.na(exonExpressionMale)) #Confirm there are no NAs
 ncol(exonExpressionMale) #Count exons with data for all samples
 ```
+
 ### Exon methylation
 
 ```{r}
@@ -237,15 +241,21 @@ sum(is.na(exonMethylationMale)) #Confirm there are no NAs
 ncol(exonMethylationMale) #Count exons with data for all samples
 ```
 
+# THINGS TO DO BEFORE YOU DO ANYTHING YOU FOOL:
+
+tune sex-specific parameters
+run sex-specific spls
+extract VIPs from spls: value > 1
+
 ## Female SPLS
 
 ### Tune parameters
 
 ```{r}
-exonResult.pls <- pls(exonMethylationFem, exonExpressionFem, ncomp = 4) #Run a PLS with a sufficient number of components
-exonPerf.pls <- perf(exonResult.pls, validation = "Mfold", folds = 5,
+exonResult.plsFem <- pls(exonMethylationFem, exonExpressionFem, ncomp = 4) #Run a PLS with a sufficient number of components
+exonPerf.plsFem <- perf(exonResult.plsFem, validation = "Mfold", folds = 5,
                      progressBar = FALSE, nrepeat = 1000) #Use perf for repeated k-fold cross-validation to determine the number of components that should be included
-plot(perf.pls$Q2.total) #Plot perf results
+plot(exonPerf.plsFem$Q2.total) #Plot perf results
 abline(h = 0.0975) #Only include components with value is ≤ 0.0975
 ```
 
