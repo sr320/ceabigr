@@ -1,0 +1,34 @@
+Using GATK jar /home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -jar /home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar SplitNCigarReads -R ../../data/Cvirginica_v300.fa -I S12M.dedup.bam -O ../../output/11-RNAseq-snps/S12M.dedup-split.bam
+10:18:53.864 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+Mar 10, 2022 10:18:53 AM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+10:18:53.962 INFO  SplitNCigarReads - ------------------------------------------------------------
+10:18:53.963 INFO  SplitNCigarReads - The Genome Analysis Toolkit (GATK) v4.2.5.0
+10:18:53.963 INFO  SplitNCigarReads - For support and documentation go to https://software.broadinstitute.org/gatk/
+10:18:53.963 INFO  SplitNCigarReads - Executing as sr320@raven on Linux v5.4.0-96-generic amd64
+10:18:53.963 INFO  SplitNCigarReads - Java runtime: OpenJDK 64-Bit Server VM v11.0.14+9-Ubuntu-0ubuntu2.18.04
+10:18:53.963 INFO  SplitNCigarReads - Start Date/Time: March 10, 2022 at 10:18:53 AM PST
+10:18:53.963 INFO  SplitNCigarReads - ------------------------------------------------------------
+10:18:53.963 INFO  SplitNCigarReads - ------------------------------------------------------------
+10:18:53.967 INFO  SplitNCigarReads - HTSJDK Version: 2.24.1
+10:18:53.967 INFO  SplitNCigarReads - Picard Version: 2.25.4
+10:18:53.967 INFO  SplitNCigarReads - Built for Spark Version: 2.4.5
+10:18:53.967 INFO  SplitNCigarReads - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+10:18:53.968 INFO  SplitNCigarReads - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+10:18:53.968 INFO  SplitNCigarReads - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+10:18:53.968 INFO  SplitNCigarReads - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+10:18:53.968 INFO  SplitNCigarReads - Deflater: IntelDeflater
+10:18:53.968 INFO  SplitNCigarReads - Inflater: IntelInflater
+10:18:53.968 INFO  SplitNCigarReads - GCS max retries/reopens: 20
+10:18:53.968 INFO  SplitNCigarReads - Requester pays: disabled
+10:18:53.968 INFO  SplitNCigarReads - Initializing engine
+10:18:54.150 INFO  SplitNCigarReads - Done initializing engine
+10:18:54.170 INFO  ProgressMeter - Starting traversal
+10:18:54.170 INFO  ProgressMeter -        Current Locus  Elapsed Minutes       Reads Processed     Reads/Minute
+10:19:04.208 INFO  ProgressMeter -  NC_035780.1:4364796              0.2                432000        2582445.0
+10:19:14.218 INFO  ProgressMeter -  NC_035780.1:9437747              0.3                886000        2651768.3
+10:19:24.235 INFO  ProgressMeter - NC_035780.1:15005357              0.5               1366000        2726093.5
+10:19:34.241 INFO  ProgressMeter - NC_035780.1:20447408              0.7               1794000        2686231.9
+10:19:44.251 INFO  ProgressMeter - NC_035780.1:24703091              0.8               2176000        2606976.7
