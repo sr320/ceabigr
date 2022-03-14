@@ -26,6 +26,11 @@ sessionInfo()
 
 # THINGS TO DO BEFORE YOU DO ANYTHING YOU FOOL:
 
+different filtering ideas:
+  - expression data: filtered for low frequency genes (sum = 10 across all sample)
+  - methylation data: < 10% methylation difference
+  - P over A filtering
+extract males and females from raw data, then re-filter
 PLSDA
 tune parameters
 run spls
@@ -50,31 +55,29 @@ exonExpressionMod <- exonExpression %>%
   select(., exonID, genes, sample_id) %>%
   distinct(.) %>%
   slice(., -212243) %>%
-  spread(., key = exonID, value = genes, fill = NA) #Create exonID column with chr-start-end, select only exonID, gene_cov, and sample_id information, filter unique rows, spread data for mixOmics formatting requirements
+  spread(., key = exonID, value = genes, fill = NA) %>%
+  column_to_rownames(., var = "sample_id") #Create exonID column with chr-start-end, select only exonID, gene_cov, and sample_id information, filter unique rows, spread data for mixOmics formatting requirements
 head(exonExpressionMod) #Confirm formatting
 ncol(exonExpressionMod) #Count number of exons with data
 ```
 
-### Sex-specific data
-
 ```{r}
-exonExpressionFem <- exonExpressionMod %>%
-  filter(., grepl("F", sample_id, fixed = TRUE)) %>%
-  select(where(~sum(!is.na(.)) > 0)) %>%
-  column_to_rownames(., var = "sample_id") #Filter female samples only, remove exons with missing methylation data (NA) for any sample, and make sample IDs rownames
-head(exonExpressionFem) #Confirm formatting
-sum(is.na(exonExpressionFem)) #Confirm there are no NAs
-ncol(exonExpressionFem) #Count exons with data for all samples
-```
-
-```{r}
-exonExpressionMale <- exonExpressionMod %>%
-  filter(., grepl("M", sample_id, fixed = TRUE)) %>%
-  select(where(~sum(!is.na(.)) > 0)) %>%
-  column_to_rownames(., var = "sample_id") #Filter male samples only, remove exons with missing methylation data (NA) for any sample, and make sample_id 
-head(exonExpressionMale) #Confirm formatting
-sum(is.na(exonExpressionMale)) #Confirm there are no NAs
-ncol(exonExpressionMale) #Count exons with data for all samples
+#Transpose expression data
+#Rowwise range operation
+#Remove rows without big differences in exon expression
+exonExpressionFilt <- exonExpressionMod %>%
+  t(.) %>%
+  as.data.frame(.) %>%
+  rownames_to_column("exon") %>%
+  rowwise() %>%
+  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
+  column_to_rownames("exon") %>%
+  filter(., range > 10) %>%
+  select(., !range) %>%
+  t(.) %>%
+  as.data.frame(.)
+head(exonExpressionFilt) #Confirm formatting
+ncol(exonExpressionFilt) #Number of exons remaining
 ```
 
 ## Exon methylation data
@@ -86,51 +89,41 @@ exonMethylationMod <- exonMethylation %>%
   unite(., exonID, 1:3) %>%
   select(., exonID, median_meth, sample) %>%
   distinct(.) %>%
-  spread(., key = exonID, value = median_meth, fill = NA) #Create exonID column with chr-start-end, select only exonID, gene_cov, and sample_id information, filter unique rows, spread data for mixOmics formatting requirements
+  spread(., key = exonID, value = median_meth, fill = NA) %>%
+  column_to_rownames(., var = "sample") #Create exonID column with chr-start-end, select only exonID, gene_cov, and sample_id information, filter unique rows, spread data for mixOmics formatting requirements
 head(exonMethylationMod) #Confirm formatting
 ncol(exonMethylationMod) #Count number of exons with data
 ```
 
-### Sex-specific data
-
 ```{r}
-exonMethylationFem <- exonMethylationMod %>%
-  filter(., grepl("F", sample, fixed = TRUE)) %>%
-  column_to_rownames(., var = "sample") #Filter female samples only and make sample rownames
-exonMethylationFem <- as.data.frame(t(drop_na(as.data.frame(t(exonMethylationFem))))) #Remove columns with NAs
-head(exonMethylationFem) #Confirm formatting
-sum(is.na(exonMethylationFem)) #Confirm there are no NAs
-ncol(exonMethylationFem) #Count exons with data for all samples
-```
-
-```{r}
-exonMethylationMale <- exonMethylationMod %>%
-  filter(., grepl("M", sample, fixed = TRUE)) %>%
-  column_to_rownames(., var = "sample") #Filter male samples only and make sample rownames
-exonMethylationMale <- as.data.frame(t(drop_na(as.data.frame(t(exonMethylationMale))))) #Remove columns with NAs
-head(exonMethylationMale) #Confirm formatting
-sum(is.na(exonMethylationMale)) #Confirm there are no NAs
-ncol(exonMethylationMale) #Count exons with data for all samples
+#Transpose methylation data
+#Rowwise range operation
+#Remove rows without big differences in exon methylation
+exonMethylationFilt <- exonMethylationMod %>%
+  t(.) %>%
+  as.data.frame(.) %>%
+  rownames_to_column("exon") %>%
+  rowwise() %>%
+  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
+  column_to_rownames("exon") %>%
+  filter(., range > 10) %>%
+  select(., !range) %>%
+  t(.) %>%
+  as.data.frame(.)
+head(exonMethylationFilt) #Confirm formatting
+ncol(exonMethylationFilt) #Number of exons remaining
 ```
 
 # Sparse PLS
 
 Followed [`mixOmics` manual](https://mixomicsteam.github.io/Bookdown/pls.html#inputs-and-outputs-1) for analysis methods.
 
-## Tune parameters
+## Run SPLS with all samples
+
+I'm going to run an SPLS with default settings for all parameters to confirm there are large sex differences that should be accounted for in follow-up analyses.
 
 ```{r}
-exonResult.pls <- pls(exonMethylationFem, exonExpressionFem, ncomp = 4) #Run a PLS with a sufficient number of components
-exonPerf.pls <- perf(exonResult.pls, validation = "Mfold", folds = 5,
-                     progressBar = FALSE, nrepeat = 1000) #Use perf for repeated k-fold cross-validation to determine the number of components that should be included
-plot(perf.pls$Q2.total) #Plot perf results
-abline(h = 0.0975) #Only include components with value is ≤ 0.0975
-```
-
-## Run SPLS
-
-```{r}
-exonResult.spls <- spls(X = exonMethylationFem, Y = exonExpressionFem, 
+exonResult.spls <- spls(X = exonMethylationFilt, Y = exonExpressionFilt, 
                         keepX = c(25, 25), keepY = c(25,25)) #Run SPLS
 ```
 
@@ -138,16 +131,7 @@ exonResult.spls <- spls(X = exonMethylationFem, Y = exonExpressionFem,
 plotIndiv(exonResult.spls, group = metadata$Sex,
           legend = TRUE,
           legend.title = 'Sex',
-          ind.names = metadata$Treatment,
-          title = "Exon: sPLS") #Plot samples. Group by sex and add titles for treatment
-```
-
-
-```{r}
-plotIndiv(exonResult.spls, group = metadata$Sex,
-          rep.space = "XY-variate", legend = TRUE,
-          legend.title = 'Sex',
-          ind.names = metadata$Treatment,
+          ind.names = metadata$sample_id,
           title = "Exon: sPLS") #Plot samples. Group by sex and add titles for treatment
 ```
 
@@ -159,10 +143,111 @@ plotIndiv(exonResult.spls, group= metadata$Sex,
           ind.names = FALSE,
           title = "Exon: sPLS") #Plot samples. Group by sex and add symbols for sex + treatment
 ```
+## Separate sex-specific data
 
 ```{r}
-plotVar(exonResult.spls, cex = c(2,2)) #Plot variables
-exonCoordinates <- plotVar(exonResult.spls, plot = FALSE) #Extract coordinates
+metadataFem <- metadata %>%
+    filter(., Sex == "F") #Select female metadata
+metadataMale <- metadata %>%
+    filter(., Sex == "M") #Select male metadata
+```
+
+### Exon expression
+
+```{r}
+exonExpressionFem <- exonExpressionMod %>%
+  filter(., grepl("F", rownames(.), fixed = TRUE)) %>%
+  select(where(~sum(!is.na(.)) > 0)) %>%
+  t(.) %>%
+  as.data.frame(.) %>%
+  rownames_to_column("exon") %>%
+  rowwise() %>%
+  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
+  column_to_rownames("exon") %>%
+  filter(., range > 10) %>%
+  select(., !range) %>%
+  t(.) %>%
+  as.data.frame(.) #Filter female samples only, remove exons with missing expression data (NA) for any sample, remove samples with low variation, and make sample IDs rownames
+head(exonExpressionFem) #Confirm formatting
+sum(is.na(exonExpressionFem)) #Confirm there are no NAs
+ncol(exonExpressionFem) #Count exons with data for all samples
+```
+
+```{r}
+exonExpressionMale <- exonExpressionMod %>%
+  filter(., grepl("M", rownames(.), fixed = TRUE)) %>%
+  select(where(~sum(!is.na(.)) > 0)) %>%
+  t(.) %>%
+  as.data.frame(.) %>%
+  rownames_to_column("exon") %>%
+  rowwise() %>%
+  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
+  column_to_rownames("exon") %>%
+  filter(., range > 10) %>%
+  select(., !range) %>%
+  t(.) %>%
+  as.data.frame(.) #Filter male samples only, remove exons with missing expression data (NA) for any sample, remove samples with low variation, and make sample IDs rownames
+head(exonExpressionMale) #Confirm formatting
+sum(is.na(exonExpressionMale)) #Confirm there are no NAs
+ncol(exonExpressionMale) #Count exons with data for all samples
+```
+### Exon methylation
+
+```{r}
+exonMethylationFem <- exonMethylationMod %>%
+  filter(., grepl("F", rownames(.), fixed = TRUE)) %>% 
+  t(.) %>%
+  as.data.frame(.) %>%
+  rownames_to_column("exon") %>%
+  rowwise() %>%
+  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
+  column_to_rownames("exon") %>%
+  filter(., range > 10) %>%
+  select(., !range) %>%
+  t(.) %>%
+  as.data.frame(.) #Filter female samples only
+exonMethylationFem <- as.data.frame(t(drop_na(as.data.frame(t(exonMethylationFem))))) #Remove columns with NAs
+head(exonMethylationFem) #Confirm formatting
+sum(is.na(exonMethylationFem)) #Confirm there are no NAs
+ncol(exonMethylationFem) #Count exons with data for all samples
+```
+
+```{r}
+exonMethylationMale <- exonMethylationMod %>%
+  filter(., grepl("M", rownames(.), fixed = TRUE)) %>% 
+  t(.) %>%
+  as.data.frame(.) %>%
+  rownames_to_column("exon") %>%
+  rowwise() %>%
+  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
+  column_to_rownames("exon") %>%
+  filter(., range > 10) %>%
+  select(., !range) %>%
+  t(.) %>%
+  as.data.frame(.) #Filter male samples only
+exonMethylationMale <- as.data.frame(t(drop_na(as.data.frame(t(exonMethylationMale))))) #Remove columns with NAs
+head(exonMethylationMale) #Confirm formatting
+sum(is.na(exonMethylationMale)) #Confirm there are no NAs
+ncol(exonMethylationMale) #Count exons with data for all samples
+```
+
+## Female SPLS
+
+### Tune parameters
+
+```{r}
+exonResult.pls <- pls(exonMethylationFem, exonExpressionFem, ncomp = 4) #Run a PLS with a sufficient number of components
+exonPerf.pls <- perf(exonResult.pls, validation = "Mfold", folds = 5,
+                     progressBar = FALSE, nrepeat = 1000) #Use perf for repeated k-fold cross-validation to determine the number of components that should be included
+plot(perf.pls$Q2.total) #Plot perf results
+abline(h = 0.0975) #Only include components with value is ≤ 0.0975
+```
+
+### Run SPLS 
+
+```{r}
+exonResult.splsFem <- spls(X = exonMethylationFem, Y = exonExpressionFem,
+                        keepX = c(25, 25), keepY = c(25,25)) #Run SPLS for female samples
 ```
 
 ```{r}
@@ -172,9 +257,9 @@ exonArrow$data
 plot(exonArrow)
 ```
 
-## Component-level information
+### Component-level information
 
-### Component 1
+#### Component 1
 
 ```{r}
 exonSelectedVariables1 <- selectVar(exonResult.spls, comp = 1) #Selected variables for first component
@@ -192,7 +277,7 @@ dev.off()
 plotLoadings(exonResult.spls, comp = 1, size.name = rel(0.5)) #Loadings for first component
 ```
 
-### Component 2
+#### Component 2
 
 ```{r}
 exonSelectedVariables2 <- selectVar(exonResult.spls, comp = 2) #Selected variables for second component
