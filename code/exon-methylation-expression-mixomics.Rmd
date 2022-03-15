@@ -137,21 +137,26 @@ exonResult.spls <- spls(X = exonMethylationFilt, Y = exonExpressionFilt,
 ```
 
 ```{r}
+#pdf("../output/exon-methylation-expression-mixomics/yrv-exonSPLS-Full1.pdf", width = 11, height = 8.5)
 plotIndiv(exonResult.spls, group = metadata$Sex,
           legend = TRUE,
           legend.title = 'Sex',
           ind.names = metadata$sample_id,
           title = "Exon: sPLS") #Plot samples. Group by sex and add titles for treatment
+#dev.off()
 ```
 
 ```{r}
+#pdf("../output/exon-methylation-expression-mixomics/yrv-exonSPLS-Full2.pdf", width = 11, height = 8.5)
 plotIndiv(exonResult.spls, group= metadata$Sex,
           pch = metadata$TreatmentN,
           rep.space = "XY-variate",  legend = TRUE,
           legend.title = "Sex", legend.title.pch = "Sex + Treatment",
           ind.names = FALSE,
           title = "Exon: sPLS") #Plot samples. Group by sex and add symbols for sex + treatment
+#dev.off()
 ```
+
 ## Separate sex-specific data
 
 ```{r}
