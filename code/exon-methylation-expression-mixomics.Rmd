@@ -256,12 +256,53 @@ extract VIPs from spls: value > 1
 
 ### Tune parameters
 
+#### Number of components
+
 ```{r}
 exonResult.plsFem <- pls(exonMethylationFem, exonExpressionFem, ncomp = 4) #Run a PLS with a sufficient number of components
 exonPerf.plsFem <- perf(exonResult.plsFem, validation = "Mfold", folds = 5,
                      progressBar = FALSE, nrepeat = 1000) #Use perf for repeated k-fold cross-validation to determine the number of components that should be included
+```
+
+```{r}
+#pdf(“../output/exon-methylation-expression-mixomics/yrv-exonSPLS-Fem-CompTune.pdf”, width = 11, height = 8.5)
 plot(exonPerf.plsFem$Q2.total) #Plot perf results
 abline(h = 0.0975) #Only include components with value is ≤ 0.0975
+#dev.off()
+```
+
+#### `keepX`: Number of variables per component
+
+```{r}
+list.keepX <- c(2:10, 15, 20, 25, 30) #Number of drivers to pull
+tune.spls.MAE.FemX <- tune.spls(exonMethylationFem, exonExpressionFem, ncomp = FIX,
+  test.keepX = list.keepX,
+  validation = "Mfold", folds = 5,
+  nrepeat = 1000, progressBar = FALSE,
+  measure = "MAE") #Tune parameters based on Mean Absolute Value with 5 folds and 1000 repeats
+```
+
+```{r}
+#pdf(“../output/exon-methylation-expression-mixomics/yrv-exonSPLS-Fem-XTune.pdf”, width = 11, height = 8.5)
+plot(tune.spls.MAE.FemX, legend.position = "topright") #Plot tuning results
+#dev.off()
+```
+
+#### `keepY`: Number of variables per component
+
+```{r}
+list.keepY <- c(2:10, 15, 20, 25, 30) #Number of drivers to pull
+tune.spls.MAE.FemY <- tune.spls(exonMethylationFem, exonExpressionFem, ncomp = FIX,
+  test.keepY = list.keepY,
+  validation = "Mfold", folds = 5,
+  nrepeat = 1000, progressBar = FALSE,
+  measure = "MAE") #Tune parameters based on Mean Absolute Value with 5 folds and 1000 repeats
+```
+
+```{r}
+#pdf(“../output/exon-methylation-expression-mixomics/yrv-exonSPLS-Fem-YTune.pdf”, width = 11, height = 8.5)
+plot(tune.spls.MAE.FemY, legend.position = "topright") #Plot tuning results
+#dev.off()
 ```
 
 ### Run SPLS 
