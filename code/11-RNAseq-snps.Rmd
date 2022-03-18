@@ -138,9 +138,14 @@ for file in *dedup-split-RG.bam
 do
 /home/shared/samtools-1.12/samtools index $file 
 done >> index-bams.txt 2>&1
+```
 
+```{bash}
 # Call variants 
 echo "Calling variants using HaplotypeCaller"
+
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
+
 for file in *dedup-split-RG.bam
 do
 sample="$(basename -a $file | cut -d "." -f 1)"
@@ -149,6 +154,7 @@ sample="$(basename -a $file | cut -d "." -f 1)"
 -R /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/Cvirginica_v300.fa \
 -I $sample.dedup-split-RG.bam \
 -O $sample.variants.g.vcf \
+--native-pair-hmm-threads 36 \
 -ERC GVCF
 done >> HaplotypeCaller_stout.txt 2>&1
 ```
