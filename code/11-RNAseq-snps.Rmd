@@ -141,6 +141,27 @@ done >> index-bams.txt 2>&1
 ```
 
 ```{bash}
+pwd
+```
+
+
+
+
+```{bash}
+# create interval list (just a list of all contigs in genome)
+echo "Creating intervals list"
+awk 'BEGIN {FS="\t"}; {print $1 FS "0" FS $2}' ../data/Cvirginica_v300.fa.fai  > ../output/11-RNAseq-snps/Cv_intervals.bed 
+
+```
+
+
+
+
+
+
+
+
+```{bash}
 # Call variants 
 echo "Calling variants using HaplotypeCaller"
 
