@@ -261,7 +261,7 @@ extract VIPs from spls: value > 1
 ```{r}
 exonResult.plsFem <- pls(exonMethylationFem, exonExpressionFem, ncomp = 4) #Run a PLS with a sufficient number of components
 exonPerf.plsFem <- perf(exonResult.plsFem, validation = "Mfold", folds = 10,
-                     progressBar = FALSE, nrepeat = 1000) #Use perf for repeated k-fold cross-validation to determine the number of components that should be included
+                     progressBar = FALSE, nrepeat = 100) #Use perf for repeated k-fold cross-validation to determine the number of components that should be included
 ```
 
 ```{r}
