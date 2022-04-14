@@ -260,8 +260,11 @@ extract VIPs from spls: value > 1
 
 ```{r}
 exonResult.plsFem <- pls(exonMethylationFem, exonExpressionFem, ncomp = 4) #Run a PLS with a sufficient number of components
-exonPerf.plsFem <- perf(exonResult.plsFem, validation = "Mfold", folds = 10,
-                     progressBar = FALSE, nrepeat = 100) #Use perf for repeated k-fold cross-validation to determine the number of components that should be included
+```
+
+```{r}
+exonPerf.plsFem <- perf(exonResult.plsFem, validation = "Mfold", folds = 2,
+                     progressBar = FALSE, nrepeat = 10) #Use perf for repeated k-fold cross-validation to determine the number of components that should be included
 ```
 
 ```{r}
@@ -275,11 +278,11 @@ abline(h = 0.0975) #Only include components with value is ≤ 0.0975
 
 ```{r}
 list.keepX <- c(2:10, 15, 20, 25, 30) #Number of drivers to pull
-tune.spls.MAE.FemX <- tune.spls(exonMethylationFem, exonExpressionFem, ncomp = FIX,
+tune.spls.RSS.FemX <- tune.spls(exonMethylationFem, exonExpressionFem, ncomp = FIX,
   test.keepX = list.keepX,
-  validation = "Mfold", folds = 10,
-  nrepeat = 1000, progressBar = FALSE,
-  measure = "MAE") #Tune parameters based on Mean Absolute Value with 5 folds and 1000 repeats
+  validation = "Mfold", folds = 2,
+  nrepeat = 10, progressBar = TRUE,
+  measure = "RSS") #Tune parameters based on Mean Absolute Value with 5 folds and 1000 repeats
 ```
 
 ```{r}
