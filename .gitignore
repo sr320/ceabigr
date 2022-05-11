@@ -10,3 +10,6 @@ ceabigr.Rproj
 bg_data
 *.bam
 meth_types.txt
+genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff
+genome-features/GCF_002022765.2_C_virginica-3.0_genomic.fna
+genome-features/C_virginica-3.0-gene.gff
