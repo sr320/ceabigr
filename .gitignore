@@ -17,3 +17,4 @@ genome-features/C_virginica-3.0-CDS.gff
 genome-features/C_virginica-3.0-exon.gff
 genome-features/C_virginica-3.0-lncRNA.gff
 genome-features/C_virginica-3.0-mRNA.gff
+genome-features/C_virginica-3.0-nonCDS.bed
