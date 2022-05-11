@@ -24,3 +24,6 @@ genome-features/C_virginica-3.0-downstream.gff
 genome-features/C_virginica-3.0-flanks.gff
 genome-features/C_virginica-3.0-upstream.gff
 genome-features/C_virginica-3.0-intergenic.bed
+genome-features/C_virginica-3.0-rm.te
+genome-features/C_virginica-3.0-rm.te.bed
+genome-features/C_virginica-3.0-rm.te.gz
