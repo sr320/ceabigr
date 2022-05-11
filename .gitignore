@@ -27,3 +27,4 @@ genome-features/C_virginica-3.0-intergenic.bed
 genome-features/C_virginica-3.0-rm.te
 genome-features/C_virginica-3.0-rm.te.bed
 genome-features/C_virginica-3.0-rm.te.gz
+genome-features/C_virginica-3.0-fuzznuc-CGmotif.gff
