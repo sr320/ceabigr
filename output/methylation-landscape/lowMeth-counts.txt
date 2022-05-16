@@ -1,4 +1,3 @@
-0	10x.SNPcorr.bedgraph-lowMeth
 6773447	12M_R1_val_1_10x.SNPcorr.bedgraph-lowMeth
 6795754	13M_R1_val_1_10x.SNPcorr.bedgraph-lowMeth
 6657213	16F_R1_val_1_10x.SNPcorr.bedgraph-lowMeth
@@ -25,4 +24,5 @@
 6631520	77F_R1_val_1_10x.SNPcorr.bedgraph-lowMeth
 6329791	7M_R1_val_1_10x.SNPcorr.bedgraph-lowMeth
 6221322	9M_R1_val_1_10x.SNPcorr.bedgraph-lowMeth
-0	fem-union-averages_10x.SNPcorr.bedgraph-lowMeth
+10212421	fem-union-averages_10x.SNPcorr.bedgraph-lowMeth
+9657277	male-union-averages_10x.SNPcorr.bedgraph-lowMeth

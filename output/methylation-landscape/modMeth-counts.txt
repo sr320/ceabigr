@@ -24,5 +24,5 @@
 600153	77F_R1_val_1_10x.SNPcorr.bedgraph-modMeth
 407720	7M_R1_val_1_10x.SNPcorr.bedgraph-modMeth
 383314	9M_R1_val_1_10x.SNPcorr.bedgraph-modMeth
-2	fem-union-averages_10x.SNPcorr.bedgraph-modMeth
-2	male-union-averages_10x.SNPcorr.bedgraph-modMeth
+1211567	fem-union-averages_10x.SNPcorr.bedgraph-modMeth
+866734	male-union-averages_10x.SNPcorr.bedgraph-modMeth
