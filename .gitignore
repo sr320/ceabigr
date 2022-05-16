@@ -30,3 +30,4 @@ genome-features/C_virginica-3.0-rm.te.gz
 genome-features/C_virginica-3.0-fuzznuc-CGmotif.gff
 *.bedgraph-Meth
 *.bedgraph-modMeth
+*.bedgraph-lowMeth
