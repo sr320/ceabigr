@@ -240,3 +240,129 @@ text("Genome Feature", x = 0.785, y = 0.879, cex = 1.5) #Add legend title that i
 #dev.off()
 ```
 
+# Males
+
+## Genomic location of methylated CpGs
+
+### Create summary table
+
+```{r}
+maleCpGFeatureOverlaps <- cbind(maleExonUTROverlaps,
+                               maleCDSOverlaps,
+                               maleIntronOverlaps,
+                               maleUpstreamOverlaps,
+                               maleDownstreamOverlaps,
+                               malelncRNAOverlaps,
+                               maleTEOverlaps,
+                               maleIntergenicOverlaps) #Combine information from all genome features
+rownames(maleCpGFeatureOverlaps) <- c("Meth", "modMeth", "lowMeth") #Assign row names
+ncol(maleCpGFeatureOverlaps) #Count columns
+maleCpGFeatureOverlaps <- maleCpGFeatureOverlaps[,seq(1, 16, 2)] #Keep odd-numbered columns (counts)
+colnames(maleCpGFeatureOverlaps) <- c("exonUTR", "CDS", "intron", "upstream", "downstream", "lncRNA", "TE", "intergenic") #Add column names
+head(maleCpGFeatureOverlaps) #Confirm formatting
+```
+
+```{r}
+maleCpGFeatureOverlaps <- as.data.frame(t(maleCpGFeatureOverlaps)) #Transpose so column names are row names
+maleCpGFeatureOverlaps$allCpGs <- c(606308, 1728303, 5497597, 694265, 616684, 281715, 611471, 5417334) #Add CpG motif overlap information
+maleCpGFeatureOverlaps <- maleCpGFeatureOverlaps[,c(4, 1:3)] #Reorganize columns
+head(maleCpGFeatureOverlaps) #Confirm formatting
+```
+
+```{r}
+write.csv(maleCpGFeatureOverlaps, "male-CpG-feature-overlaps.csv", quote = FALSE, row.names = TRUE) #Save data
+```
+
+### Contingency tests
+
+#### Format data
+
+```{r}
+maleCpGLocationStatTest <- data.frame(t(maleCpGFeatureOverlaps)) #Transpose for statistical testing
+maleCpGLocationStatTest <- maleCpGLocationStatTest[1:2,] #keep only allCpGs and Meth data
+head(maleCpGLocationStatTest) #Confirm formatting
+```
+
+#### All vs. Meth
+
+```{r}
+maleCpGLocationAllMeth <- data.frame() #Create empty dataframe to store chi-squared results
+for(i in 1:ncol(maleCpGLocationStatTest)) { #For each genome feature
+  AllFeature <- maleCpGLocationStatTest[1,i] #Variable for # genome feature overlaps for genomic CpGs with data
+  MethFeature <- maleCpGLocationStatTest[2,i] #Variable for # genome feature overlaps for methylated CpGs
+  AllNotFeature <- sum(maleCpGLocationStatTest[1,-i]) #Variable for # other CpG types for genomic CpGs with data
+  MethNotFeature <- sum(maleCpGLocationStatTest[2,-i]) #Variable for # other CpG types for methylated CpGs
+  ct <- matrix(c(AllFeature, MethFeature, AllNotFeature, MethNotFeature), ncol = 2) #Create contingency table
+  colnames(ct) <- c(as.character(colnames(maleCpGLocationStatTest[i])), paste0("Not", colnames(maleCpGLocationStatTest[i]))) #Assign column names: type, not type
+  rownames(ct) <- c(as.character(row.names(maleCpGLocationStatTest)[c(1,2)])) #Assign row names: genomic CpGs with data, methylated CpGs
+  print(ct) #Confirm table is correct
+  ctResults <- data.frame(broom::tidy(chisq.test(ct))) #Create dataframe storing chi-sq stats results. Use broom::tidy to extract results from test output
+  ctResults$GenomeFeature <- as.character(colnames(maleCpGLocationStatTest)[i]) #Add CpG type to results
+  maleCpGLocationAllMeth <- rbind(maleCpGLocationAllMeth, ctResults) #Add test statistics to master table
+}
+```
+
+```{r}
+head(maleCpGLocationAllMeth)
+```
+
+```{r}
+maleCpGLocationAllMeth$p.adj <- p.adjust(maleCpGLocationAllMeth$p.value, method = "fdr") #Correct p-value using FDR
+range(maleCpGLocationAllMeth$p.adj) #Look at range of p-values
+head(maleCpGLocationAllMeth) #Confirm changes
+```
+
+```{r}
+write.csv(maleCpGLocationAllMeth, "male-CpG-location-statResults.txt", quote = FALSE, row.names = TRUE) #Save statistical output
+```
+
+### Create barplot
+
+```{r}
+head(maleCpGFeatureOverlaps)
+```
+
+```{r}
+maleCpGFeatureOverlapsPercents <- maleCpGFeatureOverlaps #Duplicate dataframe
+for (i in 1:length(maleCpGFeatureOverlaps)) {
+  maleCpGFeatureOverlapsPercents[,i] <- (maleCpGFeatureOverlapsPercents[,i] / (sum(maleCpGFeatureOverlapsPercents[,i]))) * 100
+} #Divide every entry by sum of the column and multiply by 100 to get percentages. Do not include gene information
+head(maleCpGFeatureOverlapsPercents) #Check calculations
+```
+
+```{r}
+#pdf("figures/male-CpG-feature-overlaps.pdf", width = 11, height = 8.5)
+
+par(mar = c(1,5,0,1), oma = c(3, 1, 1, 11)) #Change figure boundaries
+
+barplot(t(t(maleCpGFeatureOverlapsPercents[,c(1:4)])), 
+        col= plotColors2, 
+        axes = FALSE, 
+        names.arg = c("5x CpGs", "High", "Moderate", "Low"), cex.names = 1.5,
+        ylim = c(0, 110)) #Create base plot. Everything should be white. Do not plot axes. Include sequencing type as labels and set size. Set y-axis specs. 
+
+axis(side = 2, at = seq(0, 100, by = 10), las = 2, col = "grey80", cex.axis = 1.2) #Add y-axis
+mtext(side = 2, "% CpGs", line = 3, cex = 1.5) #Add y-axis label
+
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE) #Create new plot
+plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n") #Add new plot on top of current plot
+legend(x = 0.57, y = 0.87, 
+       xpd = TRUE,
+       legend = c("Exon UTR", 
+                  "CDS", 
+                  "Introns", 
+                  "Upstream Flank", 
+                  "Downstream Flank", 
+                  "lncRNA", 
+                  "TE", 
+                  "Intergenic"),
+       pch = 22, 
+        col = "black", 
+        pt.bg = plotColors2,
+       bty = "n",
+       cex = 1.5, 
+       x.intersp = 0.7, xjust = 0) #Place a legend in the top right of the figure with no box
+text("Genome Feature", x = 0.785, y = 0.879, cex = 1.5) #Add legend title that is aligned with legend
+
+#dev.off()
+```
