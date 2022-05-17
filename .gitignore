@@ -118,3 +118,11 @@ output/methylation-landscape/male-union-averages_10x.SNPcorr.bedgraph-modMeth.be
 output/methylation-landscape/fem-union-averages_10x-wb.bed
 output/methylation-landscape/male-union-averages_10x-wb.bed
 *.bed-Gene
+*.bed-CDS
+*.bed-exonUTR
+*.bed-intron
+*.bed-upstreamFlanks
+*.bed-downstreamFlanks
+*.bed-intergenic
+*.bed-lncRNA
+*.bed-TE
