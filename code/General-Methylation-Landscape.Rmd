@@ -116,30 +116,30 @@ My goal is to 1) understand statistical differences between distribution of CG m
 ### Create summary table
 
 ```{r}
-cpgFeatureOverlaps <- cbind(exonUTROverlaps,
-                            CDSOverlaps,
-                            intronOverlaps,
-                            upstreamOverlaps,
-                            downstreamOverlaps,
-                            lncRNAOverlaps,
-                            TEOverlaps,
-                            intergenicOverlaps) #Combine information from all genome features
-rownames(cpgFeatureOverlaps) <- c("Meth", "sparseMeth", "unMeth") #Assign row names
-ncol(cpgFeatureOverlaps) #Count columns
-cpgFeatureOverlaps <- cpgFeatureOverlaps[,seq(1, 16, 2)] #Keep odd-numbered columns (counts)
-colnames(cpgFeatureOverlaps) <- c("exonUTR", "CDS", "intron", "upstream", "downstream", "lncRNA", "TE", "intergenic") #Add column names
-head(cpgFeatureOverlaps) #Confirm formatting
+femCpGFeatureOverlaps <- cbind(femExonUTROverlaps,
+                               femCDSOverlaps,
+                               femIntronOverlaps,
+                               femUpstreamOverlaps,
+                               femDownstreamOverlaps,
+                               femlncRNAOverlaps,
+                               femTEOverlaps,
+                               femIntergenicOverlaps) #Combine information from all genome features
+rownames(femCpGFeatureOverlaps) <- c("Meth", "modMeth", "lowMeth") #Assign row names
+ncol(femCpGFeatureOverlaps) #Count columns
+femCpGFeatureOverlaps <- femCpGFeatureOverlaps[,seq(1, 16, 2)] #Keep odd-numbered columns (counts)
+colnames(femCpGFeatureOverlaps) <- c("exonUTR", "CDS", "intron", "upstream", "downstream", "lncRNA", "TE", "intergenic") #Add column names
+head(femCpGFeatureOverlaps) #Confirm formatting
 ```
 
 ```{r}
-cpgFeatureOverlaps <- as.data.frame(t(cpgFeatureOverlaps)) #Transpose so column names are row names
-cpgFeatureOverlaps$allCpGs <- c(700167, 1516641, 5221932, 592834, 549787, 454393, 5424483, 4730728) #Add CpG motif overlap information
-cpgFeatureOverlaps <- cpgFeatureOverlaps[,c(4, 1:3)] #Reorganize columns
-head(cpgFeatureOverlaps) #Confirm formatting
+femCpGFeatureOverlaps <- as.data.frame(t(femCpGFeatureOverlaps)) #Transpose so column names are row names
+femCpGFeatureOverlaps$allCpGs <- c(606308, 1728303, 5497597, 694265, 616684, 281715, 611471, 5417334) #Add CpG motif overlap information
+femCpGFeatureOverlaps <- femCpGFeatureOverlaps[,c(4, 1:3)] #Reorganize columns
+head(femCpGFeatureOverlaps) #Confirm formatting
 ```
 
 ```{r}
-write.csv(cpgFeatureOverlaps, "CpG-feature-overlaps.csv", quote = FALSE, row.names = TRUE) #Save data
+write.csv(femCpGFeatureOverlaps, "fem-CpG-feature-overlaps.csv", quote = FALSE, row.names = TRUE) #Save data
 ```
 
 ### Contingency tests
@@ -147,65 +147,68 @@ write.csv(cpgFeatureOverlaps, "CpG-feature-overlaps.csv", quote = FALSE, row.nam
 #### Format data
 
 ```{r}
-cpgLocationStatTest <- data.frame(t(cpgFeatureOverlaps)) #Transpose for statistical testing
-cpgLocationStatTest <- cpgLocationStatTest[1:2,] #keep only allCpGs and Meth data
-head(cpgLocationStatTest) #Confirm formatting
+femCpGLocationStatTest <- data.frame(t(femCpGFeatureOverlaps)) #Transpose for statistical testing
+femCpGLocationStatTest <- femCpGLocationStatTest[1:2,] #keep only allCpGs and Meth data
+head(femCpGLocationStatTest) #Confirm formatting
 ```
 
 #### All vs. Meth
 
 ```{r}
-CpGLocationAllMeth <- data.frame() #Create empty dataframe to store chi-squared results
-for(i in 1:ncol(cpgLocationStatTest)) { #For each genome feature
-  AllFeature <- cpgLocationStatTest[1,i] #Variable for # genome feature overlaps for genomic CpGs with data
-  MethFeature <- cpgLocationStatTest[2,i] #Variable for # genome feature overlaps for methylated CpGs
-  AllNotFeature <- sum(cpgLocationStatTest[1,-i]) #Variable for # other CpG types for genomic CpGs with data
-  MethNotFeature <- sum(cpgLocationStatTest[2,-i]) #Variable for # other CpG types for methylated CpGs
+femCpGLocationAllMeth <- data.frame() #Create empty dataframe to store chi-squared results
+for(i in 1:ncol(femCpGLocationStatTest)) { #For each genome feature
+  AllFeature <- femCpGLocationStatTest[1,i] #Variable for # genome feature overlaps for genomic CpGs with data
+  MethFeature <- femCpGLocationStatTest[2,i] #Variable for # genome feature overlaps for methylated CpGs
+  AllNotFeature <- sum(femCpGLocationStatTest[1,-i]) #Variable for # other CpG types for genomic CpGs with data
+  MethNotFeature <- sum(femCpGLocationStatTest[2,-i]) #Variable for # other CpG types for methylated CpGs
   ct <- matrix(c(AllFeature, MethFeature, AllNotFeature, MethNotFeature), ncol = 2) #Create contingency table
-  colnames(ct) <- c(as.character(colnames(cpgLocationStatTest[i])), paste0("Not", colnames(cpgLocationStatTest[i]))) #Assign column names: type, not type
-  rownames(ct) <- c(as.character(row.names(cpgLocationStatTest)[c(1,2)])) #Assign row names: genomic CpGs with data, methylated CpGs
+  colnames(ct) <- c(as.character(colnames(femCpGLocationStatTest[i])), paste0("Not", colnames(femCpGLocationStatTest[i]))) #Assign column names: type, not type
+  rownames(ct) <- c(as.character(row.names(femCpGLocationStatTest)[c(1,2)])) #Assign row names: genomic CpGs with data, methylated CpGs
   print(ct) #Confirm table is correct
   ctResults <- data.frame(broom::tidy(chisq.test(ct))) #Create dataframe storing chi-sq stats results. Use broom::tidy to extract results from test output
-  ctResults$GenomeFeature <- as.character(colnames(cpgLocationStatTest)[i]) #Add CpG type to results
-  CpGLocationAllMeth <- rbind(CpGLocationAllMeth, ctResults) #Add test statistics to master table
+  ctResults$GenomeFeature <- as.character(colnames(femCpGLocationStatTest)[i]) #Add CpG type to results
+  femCpGLocationAllMeth <- rbind(femCpGLocationAllMeth, ctResults) #Add test statistics to master table
 }
 ```
 
 ```{r}
-head(CpGLocationAllMeth)
-```
-
-
-```{r}
-CpGLocationAllMeth$p.adj <- p.adjust(CpGLocationAllMeth$p.value, method = "fdr") #Correct p-value using FDR
-range(CpGLocationAllMeth$p.adj) #Look at range of p-values
-head(CpGLocationAllMeth) #Confirm changes
+head(femCpGLocationAllMeth)
 ```
 
 ```{r}
-write.csv(CpGLocationAllMeth, "CpG-location-statResults.txt", quote = FALSE, row.names = TRUE) #Save statistical output
+femCpGLocationAllMeth$p.adj <- p.adjust(femCpGLocationAllMeth$p.value, method = "fdr") #Correct p-value using FDR
+range(femCpGLocationAllMeth$p.adj) #Look at range of p-values
+head(femCpGLocationAllMeth) #Confirm changes
+```
+
+```{r}
+write.csv(femCpGLocationAllMeth, "fem-CpG-location-statResults.txt", quote = FALSE, row.names = TRUE) #Save statistical output
 ```
 
 ### Create barplot
 
 ```{r}
-head(cpgFeatureOverlaps)
+head(femCpGFeatureOverlaps)
 ```
 
 ```{r}
-cpgFeatureOverlapsPercents <- cpgFeatureOverlaps #Duplicate dataframe
-for (i in 1:length(cpgFeatureOverlaps)) {
-  cpgFeatureOverlapsPercents[,i] <- (cpgFeatureOverlapsPercents[,i] / (sum(cpgFeatureOverlapsPercents[,i]))) * 100
+femCpGFeatureOverlapsPercents <- femCpGFeatureOverlaps #Duplicate dataframe
+for (i in 1:length(femCpGFeatureOverlaps)) {
+  femCpGFeatureOverlapsPercents[,i] <- (femCpGFeatureOverlapsPercents[,i] / (sum(femCpGFeatureOverlapsPercents[,i]))) * 100
 } #Divide every entry by sum of the column and multiply by 100 to get percentages. Do not include gene information
-head(cpgFeatureOverlapsPercents) #Check calculations
+head(femCpGFeatureOverlapsPercents) #Check calculations
+```
+
+```{bash}
+mkdir figures #Make figure directory
 ```
 
 ```{r}
-#pdf("figures/CpG-feature-overlaps.pdf", width = 11, height = 8.5)
+#pdf("figures/fem-CpG-feature-overlaps.pdf", width = 11, height = 8.5)
 
 par(mar = c(1,5,0,1), oma = c(3, 1, 1, 11)) #Change figure boundaries
 
-barplot(t(t(cpgFeatureOverlapsPercents[,c(1:4)])), 
+barplot(t(t(femCpGFeatureOverlapsPercents[,c(1:4)])), 
         col= plotColors2, 
         axes = FALSE, 
         names.arg = c("5x CpGs", "High", "Moderate", "Low"), cex.names = 1.5,
