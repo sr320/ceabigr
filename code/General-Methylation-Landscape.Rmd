@@ -1,0 +1,239 @@
+---
+title: "General Methylation Landscape"
+author: "Yaamini Venkataraman"
+output: github_document
+---
+
+In this script, I'll create summary tables for genomic location information, run statistcal tests, and visualize the distribution of DML in the genome.
+
+# Prepare R Markdown file
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/Users/yaaminivenkataraman/Documents/ceabigr/output/methylation-landscape/") #Set root directory
+```
+
+# Install packages
+
+```{r}
+#Packages for visualization
+
+#install.packages("dichromat")
+#install.packages("broom")
+
+require(dichromat)
+require(broom)
+```
+
+# Obtain session information
+
+```{r}
+sessionInfo()
+```
+
+# Establish color scheme
+
+```{r}
+plotColors <- rev(RColorBrewer::brewer.pal(5, "Blues")) #Create a color palette for the barplots. Use 5 shades from RColorBrewer. Reverse the order so the darkest shade is used first.
+```
+
+```{r}
+plotColors2 <- rev(RColorBrewer::brewer.pal(8, "Blues")) #Create a color palette for the barplots. Use 8 shades from RColorBrewer. Reverse the order so the darkest shade is used first.
+```
+
+# Import file counts
+
+```{r}
+exonUTROverlaps <- read.table("exonUTR-counts.txt", header = FALSE, col.names = c("counts", "filename")) #Import file with all file overlaps
+femExonUTROverlaps <- exonUTROverlaps[c(80,82,81),] #Female data, reorder rows
+maleExonUTROverlaps <- exonUTROverlaps[c(84,86,85),] #Female data, reorder rows
+head(femExonUTROverlaps) #Confirm dataframe creation
+head(maleExonUTROverlaps) #Confirm dataframe creation
+```
+
+```{r}
+CDSOverlaps <- read.table("CDS-counts.txt", header = FALSE, col.names = c("counts", "filename")) #Import file with all file overlaps
+femCDSOverlaps <- CDSOverlaps[c(80,82,81),] #Female data, reorder rows
+maleCDSOverlaps <- CDSOverlaps[c(84,86,85),] #Female data, reorder rows
+head(femCDSOverlaps) #Confirm dataframe creation
+head(maleCDSOverlaps) #Confirm dataframe creation
+```
+
+```{r}
+intronOverlaps <- read.table("intron-counts.txt", header = FALSE, col.names = c("counts", "filename")) #Import file with all file overlaps
+femIntronOverlaps <- intronOverlaps[c(80,82,81),] #Female data, reorder rows
+maleIntronOverlaps <- intronOverlaps[c(84,86,85),] #Female data, reorder rows
+head(femIntronOverlaps) #Confirm dataframe creation
+head(maleIntronOverlaps) #Confirm dataframe creation
+```
+
+```{r}
+upstreamOverlaps <- read.table("upstreamFlanks-counts.txt", header = FALSE, col.names = c("counts", "filename")) #Import file with all file overlaps
+femUpstreamOverlaps <- upstreamOverlaps[c(80,82,81),] #Female data, reorder rows
+maleUpstreamOverlaps <- upstreamOverlaps[c(84,86,85),] #Female data, reorder rows
+head(femUpstreamOverlaps) #Confirm dataframe creation
+head(maleUpstreamOverlaps) #Confirm dataframe creation
+```
+
+```{r}
+downstreamOverlaps <- read.table("downstreamFlanks-counts.txt", header = FALSE, col.names = c("counts", "filename")) #Import file with all file overlaps
+femDownstreamOverlaps <- downstreamOverlaps[c(80,82,81),] #Female data, reorder rows
+maleDownstreamOverlaps <- downstreamOverlaps[c(84,86,85),] #Female data, reorder rows
+head(femDownstreamOverlaps) #Confirm dataframe creation
+head(maleDownstreamOverlaps) #Confirm dataframe creation
+```
+
+```{r}
+lncRNAOverlaps <- read.table("lncRNA-counts.txt", header = FALSE, col.names = c("counts", "filename")) #Import file with all file overlaps
+femlncRNAOverlaps <- lncRNAOverlaps[c(80,82,81),] #Female data, reorder rows
+malelncRNAOverlaps <- lncRNAOverlaps[c(84,86,85),] #Female data, reorder rows
+head(femlncRNAOverlaps) #Confirm dataframe creation
+head(malelncRNAOverlaps) #Confirm dataframe creation
+```
+
+```{r}
+TEOverlaps <- read.table("TE-counts.txt", header = FALSE, col.names = c("counts", "filename")) #Import file with all file overlaps
+femTEOverlaps <- TEOverlaps[c(80,82,81),] #Female data, reorder rows
+maleTEOverlaps <- TEOverlaps[c(84,86,85),] #Female data, reorder rows
+head(femTEOverlaps) #Confirm dataframe creation
+head(maleTEOverlaps) #Confirm dataframe creation
+```
+
+```{r}
+intergenicOverlaps <- read.table("intergenic-counts.txt", header = FALSE, col.names = c("counts", "filename")) #Import file with all file overlaps
+femIntergenicOverlaps <- intergenicOverlaps[c(80,82,81),] #Female data, reorder rows
+maleIntergenicOverlaps <- intergenicOverlaps[c(84,86,85),] #Female data, reorder rows
+head(femIntergenicOverlaps) #Confirm dataframe creation
+head(maleIntergenicOverlaps) #Confirm dataframe creation
+```
+
+# Females
+
+## Genomic location of methylated CpGs
+
+My goal is to 1) understand statistical differences between distribution of CG motifs and methylated CpGs in various genomic features and 2) visualize the genomic locations of these loci.
+
+### Create summary table
+
+```{r}
+cpgFeatureOverlaps <- cbind(exonUTROverlaps,
+                            CDSOverlaps,
+                            intronOverlaps,
+                            upstreamOverlaps,
+                            downstreamOverlaps,
+                            lncRNAOverlaps,
+                            TEOverlaps,
+                            intergenicOverlaps) #Combine information from all genome features
+rownames(cpgFeatureOverlaps) <- c("Meth", "sparseMeth", "unMeth") #Assign row names
+ncol(cpgFeatureOverlaps) #Count columns
+cpgFeatureOverlaps <- cpgFeatureOverlaps[,seq(1, 16, 2)] #Keep odd-numbered columns (counts)
+colnames(cpgFeatureOverlaps) <- c("exonUTR", "CDS", "intron", "upstream", "downstream", "lncRNA", "TE", "intergenic") #Add column names
+head(cpgFeatureOverlaps) #Confirm formatting
+```
+
+```{r}
+cpgFeatureOverlaps <- as.data.frame(t(cpgFeatureOverlaps)) #Transpose so column names are row names
+cpgFeatureOverlaps$allCpGs <- c(700167, 1516641, 5221932, 592834, 549787, 454393, 5424483, 4730728) #Add CpG motif overlap information
+cpgFeatureOverlaps <- cpgFeatureOverlaps[,c(4, 1:3)] #Reorganize columns
+head(cpgFeatureOverlaps) #Confirm formatting
+```
+
+```{r}
+write.csv(cpgFeatureOverlaps, "CpG-feature-overlaps.csv", quote = FALSE, row.names = TRUE) #Save data
+```
+
+### Contingency tests
+
+#### Format data
+
+```{r}
+cpgLocationStatTest <- data.frame(t(cpgFeatureOverlaps)) #Transpose for statistical testing
+cpgLocationStatTest <- cpgLocationStatTest[1:2,] #keep only allCpGs and Meth data
+head(cpgLocationStatTest) #Confirm formatting
+```
+
+#### All vs. Meth
+
+```{r}
+CpGLocationAllMeth <- data.frame() #Create empty dataframe to store chi-squared results
+for(i in 1:ncol(cpgLocationStatTest)) { #For each genome feature
+  AllFeature <- cpgLocationStatTest[1,i] #Variable for # genome feature overlaps for genomic CpGs with data
+  MethFeature <- cpgLocationStatTest[2,i] #Variable for # genome feature overlaps for methylated CpGs
+  AllNotFeature <- sum(cpgLocationStatTest[1,-i]) #Variable for # other CpG types for genomic CpGs with data
+  MethNotFeature <- sum(cpgLocationStatTest[2,-i]) #Variable for # other CpG types for methylated CpGs
+  ct <- matrix(c(AllFeature, MethFeature, AllNotFeature, MethNotFeature), ncol = 2) #Create contingency table
+  colnames(ct) <- c(as.character(colnames(cpgLocationStatTest[i])), paste0("Not", colnames(cpgLocationStatTest[i]))) #Assign column names: type, not type
+  rownames(ct) <- c(as.character(row.names(cpgLocationStatTest)[c(1,2)])) #Assign row names: genomic CpGs with data, methylated CpGs
+  print(ct) #Confirm table is correct
+  ctResults <- data.frame(broom::tidy(chisq.test(ct))) #Create dataframe storing chi-sq stats results. Use broom::tidy to extract results from test output
+  ctResults$GenomeFeature <- as.character(colnames(cpgLocationStatTest)[i]) #Add CpG type to results
+  CpGLocationAllMeth <- rbind(CpGLocationAllMeth, ctResults) #Add test statistics to master table
+}
+```
+
+```{r}
+head(CpGLocationAllMeth)
+```
+
+
+```{r}
+CpGLocationAllMeth$p.adj <- p.adjust(CpGLocationAllMeth$p.value, method = "fdr") #Correct p-value using FDR
+range(CpGLocationAllMeth$p.adj) #Look at range of p-values
+head(CpGLocationAllMeth) #Confirm changes
+```
+
+```{r}
+write.csv(CpGLocationAllMeth, "CpG-location-statResults.txt", quote = FALSE, row.names = TRUE) #Save statistical output
+```
+
+### Create barplot
+
+```{r}
+head(cpgFeatureOverlaps)
+```
+
+```{r}
+cpgFeatureOverlapsPercents <- cpgFeatureOverlaps #Duplicate dataframe
+for (i in 1:length(cpgFeatureOverlaps)) {
+  cpgFeatureOverlapsPercents[,i] <- (cpgFeatureOverlapsPercents[,i] / (sum(cpgFeatureOverlapsPercents[,i]))) * 100
+} #Divide every entry by sum of the column and multiply by 100 to get percentages. Do not include gene information
+head(cpgFeatureOverlapsPercents) #Check calculations
+```
+
+```{r}
+#pdf("figures/CpG-feature-overlaps.pdf", width = 11, height = 8.5)
+
+par(mar = c(1,5,0,1), oma = c(3, 1, 1, 11)) #Change figure boundaries
+
+barplot(t(t(cpgFeatureOverlapsPercents[,c(1:4)])), 
+        col= plotColors2, 
+        axes = FALSE, 
+        names.arg = c("5x CpGs", "High", "Moderate", "Low"), cex.names = 1.5,
+        ylim = c(0, 110)) #Create base plot. Everything should be white. Do not plot axes. Include sequencing type as labels and set size. Set y-axis specs. 
+
+axis(side = 2, at = seq(0, 100, by = 10), las = 2, col = "grey80", cex.axis = 1.2) #Add y-axis
+mtext(side = 2, "% CpGs", line = 3, cex = 1.5) #Add y-axis label
+
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE) #Create new plot
+plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n") #Add new plot on top of current plot
+legend(x = 0.57, y = 0.87, 
+       xpd = TRUE,
+       legend = c("Exon UTR", 
+                  "CDS", 
+                  "Introns", 
+                  "Upstream Flank", 
+                  "Downstream Flank", 
+                  "lncRNA", 
+                  "TE", 
+                  "Intergenic"),
+       pch = 22, 
+        col = "black", 
+        pt.bg = plotColors2,
+       bty = "n",
+       cex = 1.5, 
+       x.intersp = 0.7, xjust = 0) #Place a legend in the top right of the figure with no box
+text("Genome Feature", x = 0.785, y = 0.879, cex = 1.5) #Add legend title that is aligned with legend
+
+#dev.off()
+```
+
