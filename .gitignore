@@ -117,3 +117,4 @@ output/methylation-landscape/male-union-averages_10x.SNPcorr.bedgraph-Meth.bed
 output/methylation-landscape/male-union-averages_10x.SNPcorr.bedgraph-modMeth.bed
 output/methylation-landscape/fem-union-averages_10x-wb.bed
 output/methylation-landscape/male-union-averages_10x-wb.bed
+*.bed-Gene
