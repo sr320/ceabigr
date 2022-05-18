@@ -204,14 +204,14 @@ mkdir figures #Make figure directory
 ```
 
 ```{r}
-#pdf("figures/fem-CpG-feature-overlaps.pdf", width = 11, height = 8.5)
+pdf("figures/fem-CpG-feature-overlaps.pdf", width = 11, height = 8.5)
 
 par(mar = c(1,5,0,1), oma = c(3, 1, 1, 11)) #Change figure boundaries
 
 barplot(t(t(femCpGFeatureOverlapsPercents[,c(1:4)])), 
         col= plotColors2, 
         axes = FALSE, 
-        names.arg = c("5x CpGs", "High", "Moderate", "Low"), cex.names = 1.5,
+        names.arg = c("10x CpGs", "High", "Moderate", "Low"), cex.names = 1.5,
         ylim = c(0, 110)) #Create base plot. Everything should be white. Do not plot axes. Include sequencing type as labels and set size. Set y-axis specs. 
 
 axis(side = 2, at = seq(0, 100, by = 10), las = 2, col = "grey80", cex.axis = 1.2) #Add y-axis
@@ -237,7 +237,7 @@ legend(x = 0.57, y = 0.87,
        x.intersp = 0.7, xjust = 0) #Place a legend in the top right of the figure with no box
 text("Genome Feature", x = 0.785, y = 0.879, cex = 1.5) #Add legend title that is aligned with legend
 
-#dev.off()
+dev.off()
 ```
 
 # Males
@@ -331,14 +331,14 @@ head(maleCpGFeatureOverlapsPercents) #Check calculations
 ```
 
 ```{r}
-#pdf("figures/male-CpG-feature-overlaps.pdf", width = 11, height = 8.5)
+pdf("figures/male-CpG-feature-overlaps.pdf", width = 11, height = 8.5)
 
 par(mar = c(1,5,0,1), oma = c(3, 1, 1, 11)) #Change figure boundaries
 
 barplot(t(t(maleCpGFeatureOverlapsPercents[,c(1:4)])), 
         col= plotColors2, 
         axes = FALSE, 
-        names.arg = c("5x CpGs", "High", "Moderate", "Low"), cex.names = 1.5,
+        names.arg = c("10x CpGs", "High", "Moderate", "Low"), cex.names = 1.5,
         ylim = c(0, 110)) #Create base plot. Everything should be white. Do not plot axes. Include sequencing type as labels and set size. Set y-axis specs. 
 
 axis(side = 2, at = seq(0, 100, by = 10), las = 2, col = "grey80", cex.axis = 1.2) #Add y-axis
@@ -364,12 +364,12 @@ legend(x = 0.57, y = 0.87,
        x.intersp = 0.7, xjust = 0) #Place a legend in the top right of the figure with no box
 text("Genome Feature", x = 0.785, y = 0.879, cex = 1.5) #Add legend title that is aligned with legend
 
-#dev.off()
+dev.off()
 ```
 # Multipanel plot
 
 ```{r}
-#pdf("figures/meth-landscape-fig.pdf", width = 11, height = 8.5)
+pdf("figures/meth-landscape-fig.pdf", width = 11, height = 8.5)
 
 par(mar = c(3,5,1,1), oma = c(0, 1, 1, 11), mfrow = c(2, 1)) #Change figure boundaries
 
@@ -390,7 +390,7 @@ mtext("A) Females", x = 0, y = 105, cex = 1.5, adj = 0) #Add panel title
 barplot(t(t(maleCpGFeatureOverlapsPercents[,c(1:4)])), 
         col= plotColors2, 
         axes = FALSE, 
-        names.arg = c("5x CpGs", "High", "Moderate", "Low"), cex.names = 1.5,
+        names.arg = c("10x CpGs", "High", "Moderate", "Low"), cex.names = 1.5,
         ylim = c(0, 110)) #Create base plot. Everything should be white. Do not plot axes. Include sequencing type as labels and set size. Set y-axis specs. 
 
 axis(side = 2, at = seq(0, 100, by = 10), las = 2, col = "grey80", cex.axis = 1.2) #Add y-axis
@@ -419,6 +419,6 @@ legend(x = 0.57, y = 0.87,
        x.intersp = 0.7, xjust = 0) #Place a legend in the top right of the figure with no box
 text("Genome Feature", x = 0.785, y = 0.879, cex = 1.5) #Add legend title that is aligned with legend
 
-#dev.off()
+dev.off()
 ```
 
