@@ -181,6 +181,32 @@ done >> HaplotypeCaller_stout.txt 2>&1
 ```
 
 
+```{bash}
+pwd
+```
+
+
+```{bash}
+head ../output/11-RNAseq-snps/HaplotypeCaller_stout.txt
+```
+
+
+```{bash}
+
+wget -r \
+--no-check-certificate \
+--quiet \
+--no-directories --no-parent \
+-P ../output/11-RNAseq-snps/ \
+-A *variants.g.vcf  \
+https://gannet.fish.washington.edu/seashell/bu-github/ceabigr/output/11-RNAseq-snps/
+
+```
+
+
+
+
+
 # create sample map of all gvcfs
 rm sample_map.txt  #remove if already exists 
 echo "Creating sample map of all gvcfs"
