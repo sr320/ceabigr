@@ -1,0 +1,80 @@
+---
+title: "CoV_exp_x_meth"
+output: html_document
+---
+
+load libraries
+```{r}
+library(data.table)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+
+```
+
+
+load data
+```{r}
+
+cov_data <- fread("https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/analyses/genes_treatment_fpkm_CoV_df.csv")
+
+
+Cvir_genom_feats <- fread("https://gannet.fish.washington.edu/Atumefaciens/20211209_cvir_gff-to-bed/20211209_cvir_GCF_002022765.2_genes.bed")
+```
+
+
+format data
+```{r}
+colnames(cov_data) <- c("gene_ids", "M_control","F_control", "M_treated", "F_treated")
+
+
+cov_data_l <- cov_data %>% pivot_longer(names_to = "sample",values_to = "CoV_FPKM", cols = 2:5)
+
+
+Cvir_genom_feats$length <- Cvir_genom_feats$V3 - Cvir_genom_feats$V2 + 1
+
+colnames(Cvir_genom_feats)[4] <- "gene_ids"
+
+cov_data_l <- merge(cov_data_l, Cvir_genom_feats[,c("gene_ids", "length")], by = "gene_ids")
+```
+
+
+check CoV data distribution
+```{r}
+
+ggplot(cov_data_l, aes(x = log(CoV_FPKM),fill = sample)) + geom_histogram(col = "black") + scale_x_continuous(limits = c(-5,2))
+
+```
+
+
+run regression model to check if treatment influences CoV within males or females
+```{r}
+#not including gene length because we are using FPKM and these are already normalized by length
+lm_M <- cov_data_l %>% filter(grepl("M_", sample)) %>% aov(log(CoV_FPKM) ~ sample , data = .)
+
+summary(lm_M)
+
+lm_F <- cov_data_l %>% filter(grepl("F_", sample)) %>% aov(log(CoV_FPKM) ~ sample , data = .)
+
+summary(lm_F)
+
+
+```
+
+boxplots of CoV distribution per treatment
+```{r}
+cov_data_l %>% filter(grepl("M_", sample)) %>% filter(!(is.na(CoV_FPKM))) %>% ggplot() + geom_boxplot(aes(x = sample, y = CoV_FPKM)) 
+
+cov_data_l %>% filter(grepl("F_", sample)) %>% filter(!(is.na(CoV_FPKM))) %>% ggplot() + geom_boxplot(aes(x = sample, y = CoV_FPKM))
+```
+
+
+
+check PCA because boxplots look like log(CoV_FPKM) distributions aren't different between treatments for males
+```{r}
+
+#cov_data_l$log_CoV_FPKM <- log(cov_data_l$CoV_FPKM)
+pr <- data.frame(t(na.omit(log(cov_data[,c("M_treated", "M_control")])))) %>%  prcomp()
+
+```
