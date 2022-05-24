@@ -53,15 +53,20 @@ run regression model to check if treatment influences CoV within males or female
 #not including gene length because we are using FPKM and these are already normalized by length
 lm_M <- cov_data_l %>% filter(grepl("M_", sample)) %>% aov(log(CoV_FPKM) ~ sample , data = .)
 
-TukeyHSD(lm_M)
+summary(lm_M)
+
+lm_F <- cov_data_l %>% filter(grepl("F_", sample)) %>% aov(log(CoV_FPKM) ~ sample , data = .)
+
+summary(lm_F)
+
 
 ```
 
 boxplots of CoV distribution per treatment
 ```{r}
-cov_data_l %>% filter(grepl("M_", sample)) %>% filter(!(is.na(CoV_FPKM))) %>% ggplot() + geom_boxplot(aes(x = sample, y = log(CoV_FPKM))) 
+cov_data_l %>% filter(grepl("M_", sample)) %>% filter(!(is.na(CoV_FPKM))) %>% ggplot() + geom_boxplot(aes(x = sample, y = CoV_FPKM)) 
 
-
+cov_data_l %>% filter(grepl("F_", sample)) %>% filter(!(is.na(CoV_FPKM))) %>% ggplot() + geom_boxplot(aes(x = sample, y = CoV_FPKM))
 ```
 
 
