@@ -232,19 +232,30 @@ https://gannet.fish.washington.edu/seashell/bu-github/ceabigr/output/11-RNAseq-s
 
 
 
+```{bash}
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
 
-# create sample map of all gvcfs
-rm sample_map.txt  #remove if already exists 
+
+#rm sample_map.txt  #remove if already exists 
 echo "Creating sample map of all gvcfs"
 for file in *variants.g.vcf
 do
 sample="$(basename -a $file | cut -d "." -f 1)"
 echo -e "$sample\t$file" >> sample_map.txt
 done
+```
+
+```{bash}
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
+
 
 # create interval list (just a list of all contigs in genome)
 echo "Creating intervals list"
-awk 'BEGIN {FS="\t"}; {print $1 FS "0" FS $2}' ${homedir}data/Olurida_v081_concat/Olurida_v081_concat_rehead.fa.fai > intervals.bed 
+awk 'BEGIN {FS="\t"}; {print $1 FS "0" FS $2}' /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/Cvirginica_v300.fa.fai > intervals.bed 
+
+
+```
+
 
 # Aggregate single-sample GVCFs into GenomicsDB
 # Note: the intervals file requires a specific name - e.g. for .bed format, it MUST be "intervals.bed"
