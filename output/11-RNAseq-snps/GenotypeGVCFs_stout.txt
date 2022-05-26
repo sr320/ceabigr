@@ -1,0 +1,36 @@
+Using GATK jar /home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -jar /home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar GenotypeGVCFs -R /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/Cvirginica_v300.fa -V gendb://GenomicsDB -O Cv-rnaseq_genotypes.vcf.gz
+08:56:43.848 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+May 26, 2022 8:56:43 AM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+08:56:43.942 INFO  GenotypeGVCFs - ------------------------------------------------------------
+08:56:43.942 INFO  GenotypeGVCFs - The Genome Analysis Toolkit (GATK) v4.2.5.0
+08:56:43.942 INFO  GenotypeGVCFs - For support and documentation go to https://software.broadinstitute.org/gatk/
+08:56:43.942 INFO  GenotypeGVCFs - Executing as sr320@raven on Linux v5.4.0-107-generic amd64
+08:56:43.942 INFO  GenotypeGVCFs - Java runtime: OpenJDK 64-Bit Server VM v11.0.15+10-Ubuntu-0ubuntu0.18.04.1
+08:56:43.942 INFO  GenotypeGVCFs - Start Date/Time: May 26, 2022 at 8:56:43 AM PDT
+08:56:43.942 INFO  GenotypeGVCFs - ------------------------------------------------------------
+08:56:43.942 INFO  GenotypeGVCFs - ------------------------------------------------------------
+08:56:43.943 INFO  GenotypeGVCFs - HTSJDK Version: 2.24.1
+08:56:43.943 INFO  GenotypeGVCFs - Picard Version: 2.25.4
+08:56:43.943 INFO  GenotypeGVCFs - Built for Spark Version: 2.4.5
+08:56:43.943 INFO  GenotypeGVCFs - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+08:56:43.943 INFO  GenotypeGVCFs - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+08:56:43.943 INFO  GenotypeGVCFs - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+08:56:43.943 INFO  GenotypeGVCFs - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+08:56:43.943 INFO  GenotypeGVCFs - Deflater: IntelDeflater
+08:56:43.943 INFO  GenotypeGVCFs - Inflater: IntelInflater
+08:56:43.943 INFO  GenotypeGVCFs - GCS max retries/reopens: 20
+08:56:43.943 INFO  GenotypeGVCFs - Requester pays: disabled
+08:56:43.943 INFO  GenotypeGVCFs - Initializing engine
+08:56:43.944 INFO  GenotypeGVCFs - Shutting down engine
+[May 26, 2022 at 8:56:43 AM PDT] org.broadinstitute.hellbender.tools.walkers.GenotypeGVCFs done. Elapsed time: 0.00 minutes.
+Runtime.totalMemory()=2155872256
+***********************************************************************
+
+A USER ERROR has occurred: The specified fasta file (file:///home/shared/8TB_HDD_01/sr320/github/ceabigr/data/Cvirginica_v300.fa) does not exist.
+
+***********************************************************************
+Set the system property GATK_STACKTRACE_ON_USER_EXCEPTION (--java-options '-DGATK_STACKTRACE_ON_USER_EXCEPTION=true') to print the stack trace.
+/tmp/RtmpFBYNby/chunk-code-6d297c02e07e.txt: line 6: $/home/shared/gatk-4.2.5.0/gatk: No such file or directory
