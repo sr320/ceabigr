@@ -1,0 +1,74 @@
+Using GATK jar /home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -jar /home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar GenomicsDBImport --genomicsdb-workspace-path GenomicsDB/ -L intervals.bed --sample-name-map sample_map.txt --reader-threads 40
+08:51:05.023 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+May 26, 2022 8:51:05 AM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+08:51:05.419 INFO  GenomicsDBImport - ------------------------------------------------------------
+08:51:05.419 INFO  GenomicsDBImport - The Genome Analysis Toolkit (GATK) v4.2.5.0
+08:51:05.419 INFO  GenomicsDBImport - For support and documentation go to https://software.broadinstitute.org/gatk/
+08:51:05.419 INFO  GenomicsDBImport - Executing as sr320@raven on Linux v5.4.0-107-generic amd64
+08:51:05.420 INFO  GenomicsDBImport - Java runtime: OpenJDK 64-Bit Server VM v11.0.15+10-Ubuntu-0ubuntu0.18.04.1
+08:51:05.420 INFO  GenomicsDBImport - Start Date/Time: May 26, 2022 at 8:51:04 AM PDT
+08:51:05.420 INFO  GenomicsDBImport - ------------------------------------------------------------
+08:51:05.420 INFO  GenomicsDBImport - ------------------------------------------------------------
+08:51:05.420 INFO  GenomicsDBImport - HTSJDK Version: 2.24.1
+08:51:05.421 INFO  GenomicsDBImport - Picard Version: 2.25.4
+08:51:05.421 INFO  GenomicsDBImport - Built for Spark Version: 2.4.5
+08:51:05.421 INFO  GenomicsDBImport - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+08:51:05.421 INFO  GenomicsDBImport - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+08:51:05.421 INFO  GenomicsDBImport - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+08:51:05.421 INFO  GenomicsDBImport - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+08:51:05.421 INFO  GenomicsDBImport - Deflater: IntelDeflater
+08:51:05.421 INFO  GenomicsDBImport - Inflater: IntelInflater
+08:51:05.421 INFO  GenomicsDBImport - GCS max retries/reopens: 20
+08:51:05.421 INFO  GenomicsDBImport - Requester pays: disabled
+08:51:05.421 INFO  GenomicsDBImport - Initializing engine
+08:51:05.422 INFO  GenomicsDBImport - Shutting down engine
+[May 26, 2022 at 8:51:05 AM PDT] org.broadinstitute.hellbender.tools.genomicsdb.GenomicsDBImport done. Elapsed time: 0.01 minutes.
+Runtime.totalMemory()=2155872256
+***********************************************************************
+
+A USER ERROR has occurred: Bad input: Found two mappings for the same sample: S12M
+S12M.variants.g.vcf
+S12M.variants.g.vcf
+
+***********************************************************************
+Set the system property GATK_STACKTRACE_ON_USER_EXCEPTION (--java-options '-DGATK_STACKTRACE_ON_USER_EXCEPTION=true') to print the stack trace.
+Using GATK jar /home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -jar /home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar GenomicsDBImport --genomicsdb-workspace-path GenomicsDB/ -L intervals.bed --sample-name-map sample_map.txt --reader-threads 40
+08:51:16.827 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+May 26, 2022 8:51:16 AM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+08:51:16.921 INFO  GenomicsDBImport - ------------------------------------------------------------
+08:51:16.922 INFO  GenomicsDBImport - The Genome Analysis Toolkit (GATK) v4.2.5.0
+08:51:16.922 INFO  GenomicsDBImport - For support and documentation go to https://software.broadinstitute.org/gatk/
+08:51:16.922 INFO  GenomicsDBImport - Executing as sr320@raven on Linux v5.4.0-107-generic amd64
+08:51:16.922 INFO  GenomicsDBImport - Java runtime: OpenJDK 64-Bit Server VM v11.0.15+10-Ubuntu-0ubuntu0.18.04.1
+08:51:16.922 INFO  GenomicsDBImport - Start Date/Time: May 26, 2022 at 8:51:16 AM PDT
+08:51:16.922 INFO  GenomicsDBImport - ------------------------------------------------------------
+08:51:16.922 INFO  GenomicsDBImport - ------------------------------------------------------------
+08:51:16.923 INFO  GenomicsDBImport - HTSJDK Version: 2.24.1
+08:51:16.923 INFO  GenomicsDBImport - Picard Version: 2.25.4
+08:51:16.923 INFO  GenomicsDBImport - Built for Spark Version: 2.4.5
+08:51:16.923 INFO  GenomicsDBImport - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+08:51:16.923 INFO  GenomicsDBImport - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+08:51:16.923 INFO  GenomicsDBImport - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+08:51:16.923 INFO  GenomicsDBImport - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+08:51:16.923 INFO  GenomicsDBImport - Deflater: IntelDeflater
+08:51:16.923 INFO  GenomicsDBImport - Inflater: IntelInflater
+08:51:16.923 INFO  GenomicsDBImport - GCS max retries/reopens: 20
+08:51:16.923 INFO  GenomicsDBImport - Requester pays: disabled
+08:51:16.923 INFO  GenomicsDBImport - Initializing engine
+08:51:16.924 INFO  GenomicsDBImport - Shutting down engine
+[May 26, 2022 at 8:51:16 AM PDT] org.broadinstitute.hellbender.tools.genomicsdb.GenomicsDBImport done. Elapsed time: 0.00 minutes.
+Runtime.totalMemory()=2155872256
+***********************************************************************
+
+A USER ERROR has occurred: Bad input: Found two mappings for the same sample: S12M
+S12M.variants.g.vcf
+S12M.variants.g.vcf
+
+***********************************************************************
+Set the system property GATK_STACKTRACE_ON_USER_EXCEPTION (--java-options '-DGATK_STACKTRACE_ON_USER_EXCEPTION=true') to print the stack trace.

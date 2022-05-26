@@ -256,6 +256,20 @@ awk 'BEGIN {FS="\t"}; {print $1 FS "0" FS $2}' /home/shared/8TB_HDD_01/sr320/git
 
 ```
 
+```{bash}
+# Aggregate single-sample GVCFs into GenomicsDB
+# Note: the intervals file requires a specific name - e.g. for .bed format, it MUST be "intervals.bed"
+
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
+
+echo "Aggregating single-sample GVCFs into GenomicsDB"
+#rm -r GenomicsDB/ #can't already have a GenomicsDB directory, else will fail 
+/home/shared/gatk-4.2.5.0/gatk GenomicsDBImport \
+--genomicsdb-workspace-path GenomicsDB/ \
+-L intervals.bed \
+--sample-name-map sample_map.txt \
+--reader-threads 40 >> "GenomicsDBImport_stout.txt" 2>&1
+```
 
 # Aggregate single-sample GVCFs into GenomicsDB
 # Note: the intervals file requires a specific name - e.g. for .bed format, it MUST be "intervals.bed"
