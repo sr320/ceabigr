@@ -8,7 +8,7 @@ output: html_document
 ### Load libraries and source scripts 
 
 ```{r, message=FALSE, warning=FALSE, results=FALSE}
-#source("../references/biostats.R")
+source("biostats.R")
 
 list.of.packages <- c("DESeq2", "RCurl", "tidyverse", "vegan", "pheatmap", "pastecs", "factoextra", "FactoMineR", "RColorBrewer", "tibble", "reshape2", "plotly", "cowplot", "clipr", "janitor", "ggpubr", "forcats", "apeglm", "car", "vsn") #add new libraries here 
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
@@ -28,48 +28,236 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 #BiocManager::install("vsn")
 ```
 
-
-### Import sample info, library/file names, and then join 
+### Import sample info 
 
 ```{r}
-sample.info <- read.csv("RAnalysis/data/adult-meta.csv", header=T, na.strings = NA) %>%
-          mutate_at(vars(Treatment,Sex), as.factor)
+sample.info <- read.csv("../data/adult-meta.csv", header=T, na.strings = NA) %>%
+          mutate_at(vars(Treatment,Sex), as.factor) %>% mutate(rownames=Sample.ID) %>%
+    column_to_rownames("rownames")
+
+# How many samples in each treatment / sex? 
+sample.info %>% group_by(Sex, Treatment) %>% tally()
+```
+
+## PCA using normalized counts 
+
+### Using all samples
+
+```{r}
+# Our expression data - normalized gene counts per sample 
+# Read in data, reformat, save to file 
+counts.norm <- read_delim(file = "../data/gene_fpkm.csv", delim = ",", ) %>% 
+    as_tibble() %>% 
+    dplyr::select(OldSample.ID, starts_with("gene")) %>%
+  mutate(OldSample.ID=gsub("S", "", OldSample.ID)) %>%
+    column_to_rownames(var = "OldSample.ID") %>% t() 
 ```
 
 ```{r}
-"../../ashuff/Projects/ceabigr/data/SortedBAM/S12M.sorted.bam"
-"output/featurecounts"
-"genome-features/C_virginica-3.0_Gnomon_gene_sorted_yrv.gff3"
-
+# Inspect distribution of methylation for every locus (averaged across all samples), removing mitochondrial genome
+hist(log(counts.norm %>% as.vector()), breaks = 100)
+counts.norm %>% as.vector() %>% summary() #summary of normalized count matrix 
+rowSums(counts.norm, na.rm=TRUE) %>% as.vector() %>% summary() # Summary of the total counts for each gene (across all samples)
+rowMeans(counts.norm, na.rm=TRUE) %>% as.vector() %>% summary() # Summary of the average count for each gene (across all samples)
 ```
 
-Use 
-```{r}
-
-```
-
-
-```{bash}
-IN=../../ashuff/Projects/ceabigr/data/SortedBAM
-
-# Summarize paired-end reads and count fragments (instead of reads)
-featureCounts \
--p --countReadPairs \
--T 20 \
--t gene \
--g ID \
--a genome-features/C_virginica-3.0_Gnomon_gene_sorted_yrv.gff3 \
--o output/featurecounts/featurecounts_counts-per-gene \
-${IN}/*.sorted.bam
-```
-
-### Import counts matrix file as dataframe, extract sample # from file/column names to simplify them 
-THESE ARE normalized gene counts 
+## PCAs using normalized gene expression data - both eggs and sperm 
 
 ```{r}
-counts <- read_delim(file = "data/gene_fpkm.csv", delim = ",", ) %>% as_tibble() %>% 
-  mutate_at(vars(Treatment, Sex), as.factor) %>% 
-  column_to_rownames("library")
+### Pre-filtering - remove low-frequency genes, those with less than 10 summed across all samples
+keep <- rowSums(counts.norm, na.rm=TRUE) >= 10 #use sum
+#keep <- rowMeans(counts.norm, na.rm=TRUE) >= 10 #use mean
+counts.norm.filt <- counts.norm[keep,]
+print(paste("# genes remaining after pre-filtering:", nrow(counts.norm.filt)))
+print(paste("# of genes dropped:", nrow(counts.norm) - nrow(counts.norm.filt), sep=" "))
+
+# Generate PCA from variance-covariance matrix 
+pca.princomp <- prcomp(cov(counts.norm.filt), scale=F) #scale=F for variance-covariance matrix
+
+# Whic pc axes are significat? 
+screeplot(pca.princomp, bstick=TRUE) #Only PC1 sign. 
+shapiro.test(pca.princomp$x) #multivariate normality not met, hmmmm  - what to do?
+
+# How much variation is explained by each PC? 
+pca.eigenval(pca.princomp) #The Proporation of Variance = %variance 
+pc.percent <- pca.eigenval(pca.princomp)[2,1:5]*100
+
+
+# Generate dataframe for PC biplots 
+tab.expr <- data.frame(sample.id = colnames(counts.norm.filt),
+    PC1 = pca.princomp$x[,1],    # the first eigenvector
+    PC2 = pca.princomp$x[,2],    # the second eigenvector
+    PC3 = pca.princomp$x[,3],    # the first eigenvector
+    stringsAsFactors = FALSE)
+
+# Add sample treatment info 
+tab.expr.annot <- left_join(tab.expr, sample.info, by=c("sample.id"="Sample.ID")) %>% droplevels()
+
+# PCA color coded by pH 
+ggplotly(ggplot(tab.expr.annot, aes(x=PC1, y=PC2, text=sample.id)) + 
+  geom_point(aes(col=Treatment), pch=16, size=3, alpha=0.5) + 
+  theme_minimal() + ggtitle("Expression, all genes, PC1xPC2") + 
+  xlab(paste("PC1 (", round(pc.percent[1], digits = 1), "%)", sep="")) + 
+  ylab(paste("PC2 (", round(pc.percent[2], digits = 1), "%)", sep="")) + 
+  theme(legend.position = "right") + 
+  scale_color_manual(values = c(Control="#2c7bb6", Exposed="#d7191c"), name="pH Treatment") +
+  guides(colour = guide_legend(override.aes = list(size=3.5))) + 
+  stat_ellipse(aes(color=Treatment), size=0.3), tooltip="text")
+
+ggplotly(ggplot(tab.expr.annot, aes(x=PC1, y=PC2, text=sample.id)) + 
+  geom_point(aes(col=Sex), pch=16, size=3, alpha=0.5) + 
+  theme_minimal() + ggtitle("Expression, all genes, PC1xPC2") + 
+  xlab(paste("PC1 (", round(pc.percent[1], digits = 1), "%)", sep="")) + 
+  ylab(paste("PC2 (", round(pc.percent[2], digits = 1), "%)", sep="")) + 
+  theme(legend.position = "right") + 
+  #scale_color_manual(values = c(M="#2c7bb6", F="#d7191c"), name="Sex") +
+  guides(colour = guide_legend(override.aes = list(size=3.5))) + 
+  stat_ellipse(aes(color=Sex), size=0.3), tooltip="text")
+```
+
+## PCAs using prcomp with just egg samples & multivariate homogeneity of variances analysis
+
+```{r}
+counts.norm.eggs <- counts.norm %>% as.data.frame() %>% select(contains("F")) %>% as.matrix()
+
+### Pre-filtering - remove low-frequency genes, those with less than 10 summed across all samples
+keep.eggs <- rowSums(counts.norm.eggs, na.rm=TRUE) >= 10 #use mean
+counts.norm.eggs.filt <- counts.norm.eggs[keep.eggs,]
+print(paste("# genes remaining after pre-filtering:", nrow(counts.norm.eggs.filt)))
+print(paste("# of genes dropped:", nrow(counts.norm.eggs) - nrow(counts.norm.eggs.filt), sep=" "))
+
+#pca.princomp.eggs <- prcomp(cov(t(counts.norm.eggs.filt)), scale=F) #scale=F for variance-covariance matrix
+pca.princomp.eggs <- prcomp(t(counts.norm.eggs.filt)) 
+pca.eigenval(pca.princomp.eggs) #The Proporation of Variance = %variance 
+pc.percent.eggs <- pca.eigenval(pca.princomp.eggs)[2,1:5]*100
+screeplot(pca.princomp.eggs, bstick=TRUE) #looks like PC 1 & maybe 2 are significant 
+tab.expr.eggs <- data.frame(sample.id = colnames(counts.norm.eggs.filt),
+    PC1 = pca.princomp.eggs$x[,1],    # the first eigenvector
+    PC2 = pca.princomp.eggs$x[,2],    # the second eigenvector
+    PC3 = pca.princomp.eggs$x[,3],    # the first eigenvector
+    stringsAsFactors = FALSE)
+shapiro.test(pca.princomp.eggs$x) #multivariate normality not met, hmmmm  
+tab.expr.annot.eggs <- left_join(tab.expr.eggs, sample.info, by=c("sample.id"="Sample.ID")) %>% droplevels()
+
+ggplotly(ggplot(tab.expr.annot.eggs, aes(x=PC1, y=PC2, text=sample.id)) + 
+  geom_point(aes(col=Treatment), pch=16, size=3, alpha=0.5) + 
+  theme_minimal() + ggtitle("Expression in EGGS, PC1xPC2") + 
+  xlab(paste("PC1 (", round(pc.percent[1], digits = 1), "%)", sep="")) + 
+  ylab(paste("PC2 (", round(pc.percent[2], digits = 1), "%)", sep="")) + 
+  theme(legend.position = "right") + 
+  scale_color_manual(values = c(Control="#2c7bb6", Exposed="#d7191c"), name="pH Treatment") +
+  guides(colour = guide_legend(override.aes = list(size=3.5))) + 
+  stat_ellipse(aes(color=Treatment), size=0.3), tooltip="text")
+
+require(ggpubr)
+# GGSCATTER with ellipses and stars - PC1 PC2
+ggscatter(tab.expr.annot.eggs, x="PC1", y="PC2",
+          col="Treatment", size=2.5, alpha=0.85, ellipse = TRUE, star.plot = TRUE, 
+           palette = c(Control="#2c7bb6", Exposed="#d7191c")) +
+  theme_minimal() + ggtitle("Eggs, PC1xPC2") + 
+  xlab(paste("PC1 (", round(pc.percent.eggs[1], digits = 1), "%)", sep="")) + 
+  ylab(paste("PC2 (", round(pc.percent.eggs[2], digits = 1), "%)", sep="")) + 
+  theme(legend.position = "right") + 
+  guides(colour = guide_legend(override.aes = list(size=3.5, linetype="blank"))) 
+
+# Save Eigenvectors (gene-wise loadings) to file 
+pca.eigenvec(pca.princomp.eggs) %>% 
+    write.csv(file = "../output/LS_PCA-eggs_gene-loadings_fpkm.csv", row.names = T, quote = F)
+
+# Examine homogeneity of multivariate variance 
+all((sample.info %>% filter(Sex=="F"))$Sample.ID == t(counts.norm.eggs.filt) %>% as.data.frame() %>% rownames()) #double check samples are in same order
+eggs.t <- t(counts.norm.eggs.filt) %>% as.data.frame()
+print(perm.female <- adonis(eggs.t ~ Treatment, 
+                            data=sample.info %>% filter(Sex=="F"), permutations = 1000, method="bray")) #no diff
+
+
+# Examine variance by calculating euclidean distance from treatment centroid for each sample 
+# calculate centroids for each 
+centroids.eggs <- tab.expr.annot.eggs %>% group_by(Treatment) %>% dplyr::summarize(
+  PC1.mean=mean(PC1),
+  PC1.sd=sd(PC1),
+  PC2.mean=mean(PC2),
+  PC2.sd=sd(PC2))
+
+# calculate euclidean distance from treatment centroid for each sample 
+distances.eggs <- tab.expr.annot.eggs %>% 
+  left_join(centroids.eggs, by = "Treatment") %>% 
+  mutate(dist.cent=sqrt((PC1-PC1.mean)^2+(PC2-PC2.mean)^2)) %>%
+  mutate(Treatment=factor(Treatment, levels=c("Control", "Exposed")))
+
+ggplot(data=distances.eggs, aes(x=PC1, y=PC2, group=Treatment, colour=Treatment)) + 
+  geom_point() + 
+    theme_minimal()+ stat_ellipse() +
+  geom_segment(aes(x=PC1.mean, y=PC2.mean, xend=PC1, yend=PC2)) +
+      geom_point(aes(x=PC1.mean, y=PC2.mean,fill=Treatment), col="black", shape=22, size=4) +
+   ggtitle("PCA by Treatment, Eggs\n(FPKM normalized)") + theme(legend.position = c(0.9, 0.15))
+
+# examine euclidean distances from centroid 
+ggplot(distances.eggs, aes(x=Treatment, y=dist.cent, colour=Treatment)) + 
+  geom_boxplot() + geom_jitter(width = .2) +
+  ggtitle("Euclidean distances to centroid of PCA by treatment\nEggs") +
+  theme_minimal() + theme(legend.position = "none", axis.title.x = element_blank())
+hist(distances.eggs$dist.cent) #normal distribution? 
+shapiro.test(distances.eggs$dist.cent)
+summary(aov(dist.cent~Treatment, data=distances.eggs)) # centroids tend to differ 
+TukeyHSD(aov(dist.cent~Treatment, data=distances.eggs)) # centroids tend to differ 
+```
+
+```{r}
+pca.eggs.loadings  <- pca.princomp.eggs$rotation
+```
+
+## PCAs with just sperm samples 
+
+```{r}
+counts.norm.sperm <- counts.norm %>% as.data.frame() %>% select(contains("M")) %>% as.matrix()
+
+### Pre-filtering - remove low-frequency genes, those with less than 10 summed across all samples
+keep.sperm <- rowMeans(counts.norm.sperm, na.rm=TRUE) >= 10 #use mean
+counts.norm.sperm.filt <- counts.norm.sperm[keep.sperm,]
+print(paste("# genes remaining after pre-filtering:", nrow(counts.norm.sperm.filt)))
+print(paste("# of genes dropped:", nrow(counts.norm.sperm) - nrow(counts.norm.sperm.filt), sep=" "))
+
+#pca.princomp.sperm <- prcomp(cov(counts.norm.sperm.filt), scale=F) #scale=F for variance-covariance matrix
+pca.princomp.sperm <- prcomp(t(counts.norm.sperm.filt)) #scale=F for variance-covariance matrix
+pca.eigenval(pca.princomp.sperm) #The Proporation of Variance = %variance 
+pc.percent.sperm <- pca.eigenval(pca.princomp.sperm)[2,1:5]*100
+screeplot(pca.princomp.sperm, bstick=TRUE) #looks like PC 1 & 2 are significant 
+tab.expr.sperm <- data.frame(sample.id = colnames(counts.norm.sperm.filt),
+    PC1 = pca.princomp.sperm$x[,1],    # the first eigenvector
+    PC2 = pca.princomp.sperm$x[,2],    # the second eigenvector
+    PC3 = pca.princomp.sperm$x[,3],    # the first eigenvector
+    stringsAsFactors = FALSE)
+shapiro.test(pca.princomp.sperm$x) #multivariate normality not met, hmmmm  
+tab.expr.annot.sperm <- left_join(tab.expr.sperm, sample.info, by=c("sample.id"="Sample.ID")) %>% droplevels()
+
+ggplotly(ggplot(tab.expr.annot.sperm, aes(x=PC1, y=PC2, text=sample.id)) +  
+  geom_point(aes(col=Treatment), pch=16, size=3, alpha=0.4) + 
+  theme_minimal() + ggtitle("Expression in SPERM, PC1xPC2") + 
+  xlab(paste("PC1 (", round(pc.percent[1], digits = 1), "%)", sep="")) + 
+  ylab(paste("PC2 (", round(pc.percent[2], digits = 1), "%)", sep="")) + 
+  theme(legend.position = "right") + 
+  scale_color_manual(values = c(Control="#2c7bb6", Exposed="#d7191c"), name="pH Treatment") +
+  guides(colour = guide_legend(override.aes = list(size=3.5))) + 
+  stat_ellipse(aes(color=Treatment), size=0.3), tooltip="text")
+```
+
+# DESeq2 workflow 
+
+### Import raw counts matrix file as dataframe, extract sample # from file/column names to simplify them 
+
+```{r}
+# These are raw counts 
+counts <- read_delim(file = "../data/transcript-counts_per-gene-per-sample.csv", delim = ",", ) %>%
+    column_to_rownames("gene_name")
+colnames(counts) = gsub("transcript_counts.S", "", colnames(counts))
+```
+
+```{r}
+# THESE ARE normalized gene counts 
+# counts <- read_delim(file = "data/gene_fpkm.csv", delim = ",", ) %>% as_tibble() %>% 
+#   mutate_at(vars(Treatment, Sex), as.factor) %>% 
+#   column_to_rownames("library")
 
 # counts %>% group_by(Treatment, Sex) %>% summarize()
 ```
@@ -77,15 +265,15 @@ counts <- read_delim(file = "data/gene_fpkm.csv", delim = ",", ) %>% as_tibble()
 ### Summarize counts and visualize (remove last column - that's undetermined counts)
 
 ```{r}
-print(paste("Number of samples:", nrow(counts)))
-print(paste("Total number of genes in dataframe:", prettyNum(ncol(counts %>% select(contains("gene"))), sep=" ")))
-print(paste("Average number of genes per sample:", prettyNum(round(mean(rowSums(counts %>% select(contains("gene")) != 0)), digits = 0), big.mark = ","), sep=" "))
+print(paste("Number of samples:", ncol(counts)))
+print(paste("Total number of genes in dataframe:", prettyNum(nrow(counts), sep=" ")))
+print(paste("Average number of genes per sample:", prettyNum(round(mean(colSums(counts != 0)), digits = 0), big.mark = ","), sep=" "))
 
 library(plotly)
 #inspect total counts (normalized) by sample
  ggplotly(
    ggplot(
-     data.frame(rowSums(counts %>% select(contains("gene")))) %>% 
+     data.frame(colSums(counts)) %>% 
             dplyr::rename(count.total = 1) %>% rownames_to_column(var="sample")) + 
      geom_bar(aes(x=sample, y=count.total), stat = "identity") + ggtitle("Total count by sample") + 
               theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())) 
@@ -94,7 +282,7 @@ library(plotly)
 ## OPTIONAL: FILTER WHOLE SAMPLES. 
 
 Remove whole samples from the data set and sample info here if needed
-NEED TO UPDATE FOR TRANSPOSED DATAFRAME 
+WOULD NEED TO UPDATE FOR TRANSPOSED DATAFRAME 
 
 ```{r}
 # remove.list <- c("Tank_7_Crab_4")
@@ -113,29 +301,28 @@ NEED TO UPDATE FOR TRANSPOSED DATAFRAME
 
 NOTE: Should i do this? DESeq2 throws out low-frequency genes anyway, BUT other folks do pre-filter. For example in https://doi.org/10.1186/s12864-017-4392-0 "Genes with mean count less than ten across all samples were removed."
 
-NOT WORKING 
-
 ```{r}
-counts.t <- counts %>% select(contains("gene"))
-# # keep <- colSums(counts, na.rm=TRUE) >= 10 #use sum
-# keep <- colMeans(counts %>% column_to_rownames("library") %>% select(contains("gene")), na.rm=TRUE) >= 10 #use mean
-# counts.s <- counts[,keep]
-# 
-# print(paste("# genes remaining after pre-filtering:", ncol(counts.s)))
-# print(paste("# of genes dropped:", ncol(counts.t) - ncol(counts.s), sep=" "))
+summary(counts)
+counts.t <- t(counts)
+keep <- colSums(counts.t, na.rm=TRUE) >= 10 #use sum
+#keep <- colMeans(counts.t, na.rm=TRUE) >= 10 #use mean
+counts.ts <- counts.t[,keep]
+
+print(paste("# genes remaining after pre-filtering:", ncol(counts.ts)))
+print(paste("# of genes dropped:", ncol(counts.t) - ncol(counts.ts), sep=" "))
 ```
 
 ## Summary stats
 ```{r}
 # What's the average no. of genes per sample? 
-data.frame(rowSums(counts.t != 0)) %>% 
+data.frame(rowSums(counts.ts != 0)) %>% 
                   dplyr::rename(count.total = 1) %>% 
                   rownames_to_column(var="sample") %>% 
   summarise(mean=mean(count.total, na.rm=T), sd=sd(count.total, na.rm=T), se=sd/sqrt(length(sample)),
             min=min(count.total, na.rm=T), max=max(count.total, na.rm=T))
 
 # No. of reads per sample? 
-data.frame(rowSums(counts.t)) %>% 
+data.frame(rowSums(counts.ts)) %>% 
                   dplyr::rename(read.total = 1) %>% 
                   rownames_to_column(var="sample") %>% #summary() 
 summarise(mean=mean(read.total, na.rm=T), sd=sd(read.total, na.rm=T), se=sd/sqrt(length(sample))) #use this to average across all samples 
@@ -146,77 +333,109 @@ summarise(mean=mean(read.total, na.rm=T), sd=sd(read.total, na.rm=T), se=sd/sqrt
 
 ```{r}
 ggplotly(
-ggplot(data = data.frame(rowSums(counts.t != 0, na.rm=TRUE)) %>% 
+ggplot(data = data.frame(rowSums(counts.ts != 0, na.rm=TRUE)) %>% 
                   dplyr::rename(count.total = 1) %>% 
                   rownames_to_column(var="sample")) +
            geom_bar(aes(x=sample, y=count.total), stat = "identity") + ggtitle("Total # genes by sample") + 
              theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())) 
 ```
+
 ### Generate heat map of counts before DESeq processing / analysis 
 
 NOTE: scale="column" b/c range of counts is so huge, so counts have been scaled 
 
 ```{r}
-pheatmap(data.matrix(counts %>% dplyr::select(starts_with("gene"))), Rowv=NA, Colv=NA, na.rm = TRUE, xlab = NA, 
+# Confirm that sample info table and counts tables are in same order 
+all(rownames(sample.info) == rownames(counts.ts))
+
+# heatmap of all genes, all samples, log2 transformed
+pheatmap(log2(data.matrix(counts.ts+1)), Rowv=NA, Colv=NA, na.rm = TRUE, xlab = NA, 
                      show_colnames =FALSE, cluster_cols = FALSE, cluster_rows = TRUE, 
                      scale="column", #color=c("dodgerblue3", "goldenrod1"), 
-                     main = "gene counts", annotation_row=counts[,c("Treatment", "Sex")])
+                     main = "gene counts", annotation_row=sample.info[,c("Treatment", "Sex")])
 ```
 
+### Generate heatmap of just sperm 
 
 ```{r}
-pheatmap(data.matrix(counts %>% filter(Sex=="M") %>% 
-                       dplyr::select(starts_with("gene"))), Rowv=NA, Colv=NA, na.rm = TRUE, xlab = NA, 
+sample.info %>% filter(Sex=="M") %>% rownames()
+(sample.info %>% filter(Sex=="M"))[,c("Treatment", "Sex")]
+
+pheatmap(data.matrix(counts.ts[sample.info %>% filter(Sex=="M") %>% rownames(), ]), 
+         Rowv=NA, Colv=NA, na.rm = TRUE, xlab = NA, 
                      show_colnames =FALSE, cluster_cols = FALSE, cluster_rows = TRUE, 
                      scale="column", #color=c("dodgerblue3", "goldenrod1"), 
-                     main = "gene counts, sperm only", annotation_row=counts[,c("Treatment", "Sex")])
+                     main = "gene counts, sperm only", annotation_row=(sample.info %>% filter(Sex=="M"))[,c("Treatment", "Sex")])
 ```
+### Generate heatmap of just eggs 
 
 ```{r}
-counts %>% filter(Sex=="M")
-```
+sample.info %>% filter(Sex=="F") %>% rownames()
+(sample.info %>% filter(Sex=="F"))[,c("Treatment", "Sex")]
 
-
-```{r}
-pheatmap(data.matrix(counts %>% filter(Sex=="F") %>% 
-                       dplyr::select(starts_with("gene"))), Rowv=NA, Colv=NA, na.rm = TRUE, xlab = NA, 
+pheatmap(data.matrix(counts.ts[sample.info %>% filter(Sex=="F") %>% rownames(), ]), 
+         Rowv=NA, Colv=NA, na.rm = TRUE, xlab = NA, 
                      show_colnames =FALSE, cluster_cols = FALSE, cluster_rows = TRUE, 
                      scale="column", #color=c("dodgerblue3", "goldenrod1"), 
-                     main = "gene counts, eggs only", annotation_row=counts[,c("Treatment", "Sex")])
+                     main = "gene counts, eggs only", annotation_row=(sample.info %>% filter(Sex=="F"))[,c("Treatment", "Sex")])
 ```
-
 # Analysis in DESeq2  
 
+Split count data into sperm and eggs to analyze separately 
+
+```{r}
+sample.info %>% filter(Sex=="F") %>% rownames()
+
+counts.ts.male <- counts.ts[ sample.info %>% filter(Sex=="M") %>% rownames() , ]
+counts.ts.female <- counts.ts[ sample.info %>% filter(Sex=="F") %>% rownames() , ]
+
+sample.info.male <- sample.info %>% filter(Sex=="M")
+sample.info.female <- sample.info %>% filter(Sex=="F")
+```
+
+NOTE: It is absolutely critical that the **columns of the count matrix** and the **rows of the column data (information about samples)** are in the same order. DESeq2 will not make guesses as to which column of the count matrix belongs to which row of the column data, these must be provided to DESeq2 already in consistent order.
+
+```{r}
+all(rownames(counts.ts) == rownames(sample.info)) # Should print 'TRUE' 
+```
 
 # Generate DESeq datasets with various treatment comparisons  
 
 ```{r}
-dds.sex <- DESeqDataSetFromMatrix(countData = counts %>% dplyr::select(starts_with("gene")) %>% t() %>% round(digits = 0),
-                              colData = counts[,"Sex", drop=FALSE] ,
+
+dds.sex <- DESeqDataSetFromMatrix(countData = counts.ts %>% t(),
+                              colData = sample.info[,"Sex", drop=FALSE] ,
                               design = ~ Sex)
 
-dds.treatment <- DESeqDataSetFromMatrix(countData = counts %>% dplyr::select(starts_with("gene")) %>% t() %>% round(digits = 0),
-                              colData = counts[,"Treatment", drop=FALSE] ,
+dds.treatment <- DESeqDataSetFromMatrix(countData = counts.ts %>% t(),
+                              colData = sample.info[,"Treatment", drop=FALSE],
+                              design = ~ Treatment)
+
+# dds.sex.treat <- DESeqDataSetFromMatrix(countData = counts.ts %>% t(),
+#                               colData = sample.info[,c("Sex", "Treatment"), drop=FALSE],
+#                               design = ~ Sex + Treatment)
+
+dds.male <- DESeqDataSetFromMatrix(countData = counts.ts.male %>% t(),
+                              colData = sample.info.male[,"Treatment", drop=FALSE],
+                              design = ~ Treatment)
+
+dds.female <- DESeqDataSetFromMatrix(countData = counts.ts.female %>% t(),
+                              colData = sample.info.female[,"Treatment", drop=FALSE],
                               design = ~ Treatment)
 ```
 
+
 # Visualize data via PCAs and heat maps 
 
-# HERE: REDO PCA USING CODE FROM MULTIVARIATE STATS 
-
-## Transform data 
+## First transform data 
 
 - Here we transform counts using a variance stabilizing transformation (VST), since we have many samples. 
 - Here we use `blind=FALSE` b/c we are interested in differences explained by experimental design, and may wish to use this transformed data in downstream analyses. 
 ```{r}
-vsd.pH <- varianceStabilizingTransformation(dds.sex, blind=FALSE)
-vsd.tank <- varianceStabilizingTransformation(dds.tank, blind=FALSE)
-vsd.treat.tank <- varianceStabilizingTransformation(dds.treat.tank, blind=FALSE)
-
-meanSdPlot(assay(vsd.pH)) #check out normalized count SD by ranked mean - red line should be ~flat 
-
-meanSdPlot(assay(normTransform(dds.pH))) #this is variance after a simple log2(n+1) transformation 
-
+vsd.sex <- varianceStabilizingTransformation(dds.sex, blind=FALSE)
+vsd.treatment <- varianceStabilizingTransformation(dds.treatment, blind=FALSE)
+vsd.male <- varianceStabilizingTransformation(dds.male, blind=FALSE)
+vsd.female <- varianceStabilizingTransformation(dds.female, blind=FALSE)
 ```
 
 ## Visualize sample clustering via PCA (after transformation)
@@ -224,50 +443,81 @@ meanSdPlot(assay(normTransform(dds.pH))) #this is variance after a simple log2(n
 NOTE: Hover over points to see the sample numbers
 
 ```{r}
-# PCA with points color coded by pH Treatment 
+# PCA with points color coded by pH sex 
 ggplotly(
-  plotPCA(vsd.pH, intgroup="Treatment") + 
-           ggtitle("PCA by Treatment (var-stabilizing transformed)") + 
-    geom_point(size=3, aes(text=colnames(vsd.pH))) + 
+  plotPCA(vsd.sex, intgroup="Sex") + 
+           ggtitle("PCA by Sex\n(var-stabilizing transformed)") + 
+    geom_point(size=3, aes(text=colnames(vsd.sex))) + 
     theme_minimal()+ stat_ellipse(), tooltip = "text")
 
-# PCA with points color coded by tank 
+# PCA with points color coded by treatment 
 ggplotly(
-  plotPCA(vsd.tank, intgroup="Tank") + 
-           ggtitle("PCA by Tank (var-stabilizing transformed)") + 
-    geom_point(size=3, aes(text=colnames(vsd.tank))) + 
-   theme_minimal(), tooltip = "text")
+  plotPCA(vsd.treatment, intgroup="Treatment") + 
+           ggtitle("PCA by Treatment (var-stabilizing transformed)") + 
+    geom_point(size=3, aes(text=colnames(vsd.treatment))) + 
+   theme_minimal()+ stat_ellipse(), tooltip = "text")
 
-# PCA with points color coded by treatment + tank 
+# PCA of male only, by treatment 
 ggplotly(
-  plotPCA(vsd.treat.tank, intgroup="Treatment_Tank") + 
-           ggtitle("PCA by Treatment & Tank (var-stabilizing transformed)") + 
-    geom_point(size=3, aes(text=colnames(vsd.treat.tank))) + 
-   theme_minimal(), tooltip = "text")
+  plotPCA(vsd.male, intgroup=c("Treatment")) +
+           ggtitle("PCA of sperm (var-stabilizing transformed)") +
+    geom_point(size=3, aes(text=colnames(vsd.male))) +
+   theme_minimal()+ stat_ellipse(), tooltip = "text")
 
-# Ambient pH (8.0) tanks:  1,2,7,10,11
-# Moderate pH (7.8) tanks: 3,4,9,20
-# Low pH (7.5) tanks: 5,13,15,16,18
+# PCA of female only, by treatment 
+ggplotly(
+  plotPCA(vsd.female, intgroup=c("Treatment")) +
+           ggtitle("PCA of eggs (var-stabilizing transformed)") +
+    geom_point(size=3, aes(text=colnames(vsd.female))) +
+   theme_minimal()+ stat_ellipse(), tooltip = "text")
 
-PCA.data.pH <- plotPCA(vsd.pH, intgroup=c("Treatment"), returnData=TRUE)
-save(PCA.data.pH, file="../results/PCA.data.pH")
+
+PCA.data.sex <- plotPCA(vsd.sex, intgroup=c("Sex"), returnData=TRUE)
+PCA.data.treatment <- plotPCA(vsd.treatment, intgroup=c("Treatment"), returnData=TRUE)
 ```
 
-
-
-### Generate heat maps before & after transformation  
-
+### PCA from variance stabilized-transformed data using DESeq2 
 ```{r}
-# extract treatment info from VSD transformation 
-#vsd.df <- as.data.frame(colData(vsd)[,c("population", "pCO2.parent")])
+# Generate PCA 
+a <- plotPCA(vsd.female, intgroup="Treatment")
 
-# generate heatmap from untransformed counts 
-#pheatmap(counts(dds), cluster_rows=FALSE, show_rownames=FALSE,
-#         cluster_cols=T, annotation_col=vsd.df, scale = "row", main="QuantSeq, untransformed data (but scaled by rows")
+# calculate centroids for each 
+b <- a$data %>% group_by(Treatment) %>% dplyr::summarize(PC1.mean=mean(PC1), 
+                                             PC1.sd=sd(PC1),
+                                             PC2.mean=mean(PC2),
+                                             PC2.sd=sd(PC2))
 
-# generate heatmap from VSD counts 
-#pheatmap(assay(vsd), cluster_rows=FALSE, show_rownames=FALSE,
-#         cluster_cols=T, annotation_col=vsd.df, main = "QuantSeq, VSD-transformed")
+# calculate euclidean distance from treatment centroid for each sample 
+c <- a$data %>% left_join(b, by = "Treatment") %>% 
+  mutate(dist.cent=sqrt((PC1-PC1.mean)^2+(PC2-PC2.mean)^2)) %>%
+  mutate(Treatment=factor(Treatment, levels=c("Control", "Exposed")))
+  
+ggplot(data=c, aes(x=PC1, y=PC2, group=Treatment, colour=Treatment)) + 
+  geom_point() + 
+    theme_minimal()+ stat_ellipse() +
+  geom_segment(aes(x=PC1.mean, y=PC2.mean, xend=PC1, yend=PC2)) +
+      geom_point(aes(x=PC1.mean, y=PC2.mean,fill=Treatment), col="black", shape=22, size=4) +
+   ggtitle("PCA by Treatment, All genes\n(var-stabilizing transformed)") + theme(legend.position = c(0.9, 0.15))
+
+# examine euclidean distances from centroid 
+ggplot(c, aes(x=Treatment, y=dist.cent, colour=Treatment)) + 
+  geom_boxplot() + geom_jitter(width = .2) +
+  ggtitle("Euclidean distances to centroid of PCA by treatment\nAll genes") +
+  theme_minimal() + theme(legend.position = "none", axis.title.x = element_blank())
+hist(c$dist.cent) #normal distribution? 
+shapiro.test(c$dist.cent) #marginal
+summary(aov(dist.cent~Treatment, data=c)) # centroids are not significantly different 
+
+hist(log(c$dist.cent)) #log transformed = yes  
+shapiro.test(log(c$dist.cent)) #log transformed = yes  
+summary(aov(log(dist.cent)~Treatment, data=c)) # centroids are not significantly different 
+
+## perMANOVA - multivariate analysis of variance 
+## Using variance-stabilized transformation
+all((sample.info %>% filter(Sex=="F"))$Sample.ID == t(assay(vsd.female)) %>% as.data.frame() %>% rownames()) #double check samples are in same order
+vsd.female.t <- t(assay(vsd.female)) %>% as.data.frame()
+print(perm.female <- adonis(vsd.female.t ~ Treatment, 
+                            data=sample.info %>% filter(Sex=="F"), permutations = 1000, method="bray"))
 ```
 
 ### Heatmap of the sample-to-sample distances
@@ -278,11 +528,11 @@ A heatmap of this distance matrix gives us an overview over similarities and dis
 ```{r}
 colors <- colorRampPalette(rev(brewer.pal(9, "Blues")) )(255)
 
-sampleDistss <- dist(t(assay(vsd.pH)))
+sampleDistss <- dist(t(assay(vsd.sex)))
 sampleDistMatrixs <- as.matrix(sampleDistss)
 
 # Here we only show pH treatment 
-rownames(sampleDistMatrixs) <- vsd.pH$Treatment #set row names 
+rownames(sampleDistMatrixs) <- vsd.sex$Treatment #set row names 
 colnames(sampleDistMatrixs) <- NULL
 pheatmap(sampleDistMatrixs,
          clustering_distance_rows=sampleDistss,
@@ -291,10 +541,10 @@ pheatmap(sampleDistMatrixs,
 
 
 # Here we also show tank number 
-sampleDistss <- dist(t(assay(vsd.treat.tank)))
+sampleDistss <- dist(t(assay(vsd.treatment)))
 sampleDistMatrixs <- as.matrix(sampleDistss)
 
-rownames(sampleDistMatrixs) <- vsd.treat.tank$Treatment_Tank #set row names 
+rownames(sampleDistMatrixs) <- vsd.treatment$Treatment_Tank #set row names 
 colnames(sampleDistMatrixs) <- NULL
 pheatmap(sampleDistMatrixs,
          clustering_distance_rows=sampleDistss,
@@ -307,621 +557,71 @@ pheatmap(sampleDistMatrixs,
 ### Run the function `DESeq` to assess differential expression 
 
 ```{r}
-dds.DESeq.pH <- DESeq(dds.pH) 
+dds.DESeq.sex <- DESeq(dds.sex) 
+dds.DESeq.treat <- DESeq(dds.treatment) 
+dds.DESeq.male <- DESeq(dds.male) 
+dds.DESeq.female <- DESeq(dds.female) 
 ```
-## Any DEGs between pH treatment? 
+
+## Any DEGs? 
 
 ```{r}
-#colData(dds.DESeq.pH)
-print("Comparison: Ambient pH vs. Moderate pH")
-summary(res.pco2.AM <- results(dds.DESeq.pH, contrast=c("Treatment", "Ambient", "Moderate"), alpha=0.05))
-paste("No. of genes differentially expressed (padj<0.05) by pH, Ambient vs. Moderate:",  sum(res.pco2.AM$padj < 0.05, na.rm=TRUE))
+colData(dds.DESeq.sex)
+print("Comparison: Male pH vs. Female")
+summary(res.sex <- results(dds.DESeq.sex, contrast=c("Sex", "M", "F"), alpha=0.05))
+paste("No. of genes differentially expressed (padj<0.05) by sex, male vs. female:",  sum(res.sex$padj < 0.05, na.rm=TRUE))
 
-print("Comparison: Ambient pH vs. Low pH")
-summary(res.pco2.AL <- results(dds.DESeq.pH, contrast=c("Treatment", "Ambient", "Low"), alpha=0.05))
-paste("No. of genes differentially expressed (padj<0.05) by pH, Ambient vs. Low:",  sum(res.pco2.AL$padj < 0.05, na.rm=TRUE))
+colData(dds.DESeq.treat)
+print("Comparison: Control pH vs. Exposed pH")
+summary(res.treat <- results(dds.DESeq.treat, contrast=c("Treatment", "Control", "Exposed"), alpha=0.05))
+paste("No. of genes differentially expressed (padj<0.05) by treatment, Control vs. Exposed (both sexes):",  sum(res.treat$padj < 0.05, na.rm=TRUE))
 
-print("Comparison: Moderate pH vs. Low pH")
-summary(res.pco2.ML <- results(dds.DESeq.pH, contrast=c("Treatment", "Moderate", "Low"), alpha=0.05))
-paste("No. of genes differentially expressed (padj<0.05) by pH, Moderate vs. Low:",  sum(res.pco2.ML$padj < 0.05, na.rm=TRUE))
-```
-### Volcano plots 
-FIX: need to figure out how to plot the Moderate vs. Low genes 
+colData(dds.DESeq.male)
+print("Comparison: Sperm - exposed vs. unexposed")
+summary(res.sperm <- results(dds.DESeq.male, contrast=c("Treatment", "Control", "Exposed"), alpha=0.05))
+paste("No. of genes differentially expressed (padj<0.05) by treatment, Control vs. Exposed (sperm only):",  sum(res.sperm$padj < 0.05, na.rm=TRUE))
 
-```{r}
-resLFC.AM <- lfcShrink(dds.DESeq.pH, coef="Treatment_Moderate_vs_Ambient", type="apeglm")
-resLFC.AL <- lfcShrink(dds.DESeq.pH, coef="Treatment_Low_vs_Ambient", type="apeglm")
-
-plotMA(resLFC.AM, ylim=c(-6,4))
-plotMA(resLFC.AL, ylim=c(-6,4))
-```
-### Create heatmaps with DEGs 
-
-```{r}
-#Subset the DESeq results for only those statistically sign. ones 
-diffex.AM <- subset(res.pco2.AM, padj < 0.05)
-diffex.AL <- subset(res.pco2.AL, padj < 0.05)
-diffex.ML <- subset(res.pco2.ML, padj < 0.05)
-
-### Generate counts matrix With DEGs among any pH treatment
-diffex.pH.counts <- subset(counts(dds.DESeq.pH), rownames(dds.DESeq.pH) %in% unique(c(rownames(diffex.AM),rownames(diffex.AL),rownames(diffex.ML))))
-
-# Create a dataframe to annotate heatmap with treatments 
-dds.pH.df <- sample.info[match(colnames(diffex.pH.counts), sample.info$Sample),c("Sample", "Treatment", "Tank")] %>%
-  remove_rownames() %>% column_to_rownames(var = "Sample")
-
-# Make sure treatment order is correct
-all(colnames(diffex.pH.counts) == rownames(dds.pH.df)) #double check that samples are still in same order 
-
-# All DEGs among any pH treatment 
-pheatmap(diffex.pH.counts, cluster_rows=TRUE, cluster_cols=FALSE,
-         show_rownames=FALSE, na.rm=TRUE, annotation_colors = list(Treatment=c(Ambient="#2c7bb6", Moderate="#fdae61", Low="#d7191c")),
-         scale="row", main = "Differentially expressed genes (DEGs) among any pH treatment", 
-         annotation_col=dds.pH.df[,"Treatment", drop=FALSE], fontsize = 8)
-
-# # another way to do a heatmap 
-# heatmap(diffex.pH.counts, Colv = NA, scale="row", ColSideColors = brewer.pal(3, "Set1")[dds.pH.df$Treatment])
+colData(dds.DESeq.female)
+print("Comparison: Eggs - exposed vs. unexposed")
+summary(res.eggs <- results(dds.DESeq.female, contrast=c("Treatment", "Control", "Exposed"), alpha=0.05))
+paste("No. of genes differentially expressed (padj<0.05) by treatment, Control vs. Exposed (eggs only):",  sum(res.eggs$padj < 0.05, na.rm=TRUE))
 ```
 
-
-```{r}
-### ----- Generate pairwise comparison heatmaps 
-
-# Create count matrices containing DEGs for each pairwise treatment comparison, rows (genes) ordered by pvalue, 
-
-diffex.AM.counts <- subset(counts(dds.DESeq.pH), rownames(dds.DESeq.pH) %in% rownames(diffex.AM)) %>% as.data.frame() %>%
-  dplyr::select((sample.info %>% arrange(Treatment) %>% 
-                   filter(Treatment=="Ambient" | Treatment== "Moderate"))$Sample) %>% 
-  rownames_to_column(var = "gene") %>% arrange(match(gene, c(as.data.frame(diffex.AM) %>% arrange(padj) %>% rownames()))) %>%
-  column_to_rownames(var = "gene") %>% as.matrix()
-  
-diffex.AL.counts <- subset(counts(dds.DESeq.pH), rownames(dds.DESeq.pH) %in% rownames(diffex.AL)) %>% as.data.frame() %>%
-  dplyr::select((sample.info %>% arrange(Treatment) %>% 
-                   filter(Treatment=="Ambient" | Treatment== "Low"))$Sample) %>% 
-  rownames_to_column(var = "gene") %>% arrange(match(gene, c(as.data.frame(diffex.AL) %>% arrange(padj) %>% rownames()))) %>% 
-  column_to_rownames(var = "gene") %>% as.matrix()
-
-diffex.ML.counts <- subset(counts(dds.DESeq.pH), rownames(dds.DESeq.pH) %in% rownames(diffex.ML)) %>% as.data.frame() %>%
-  dplyr::select((sample.info %>% arrange(Treatment) %>% 
-                   filter(Treatment=="Moderate" | Treatment== "Low"))$Sample) %>% 
-  rownames_to_column(var = "gene") %>%
-  arrange(match(gene, c(as.data.frame(diffex.ML) %>% arrange(padj) %>% rownames()))) %>% 
-  column_to_rownames(var = "gene") %>% as.matrix()
-
-
-pheatmap(diffex.AM.counts, cluster_cols = FALSE, cluster_rows=TRUE, 
-         show_rownames=FALSE, na.rm=TRUE, scale="row", 
-         main = "DEGs among pH 8.0 (ambient) & pH 7.8 (moderate), sorted by p-value",
-         fontsize = 8, cutree_rows = 2, 
-         annotation_colors = list(Treatment=c(Ambient="#2c7bb6", Moderate="#fdae61")),
-         annotation_col=dds.pH.df[colnames(diffex.AM.counts),"Treatment", drop=FALSE])
-
-pheatmap(diffex.AL.counts, cluster_cols = FALSE, cluster_rows=TRUE, 
-         show_rownames=FALSE, na.rm=TRUE, scale="row", 
-         main = "DEGs among pH 8.0 (ambient) & pH 7.5 (low), sorted by p-value",
-         fontsize = 8, cutree_rows = 2,
-         annotation_colors = list(Treatment=c(Ambient="#2c7bb6", Low="#d7191c")),
-         annotation_col=dds.pH.df[colnames(diffex.AL.counts),"Treatment", drop=FALSE])
-
-pheatmap(diffex.ML.counts, cluster_cols = FALSE, cluster_rows=TRUE, 
-         show_rownames=TRUE, na.rm=TRUE, scale="row", 
-         main = "DEGs among pH 7.8 (moderate) & pH 7.5 (low), sorted by p-value",
-         fontsize = 8, cutree_rows = 2, 
-         annotation_colors = list(Treatment=c(Moderate="#fdae61", Low="#d7191c")),
-         annotation_col=dds.pH.df[colnames(diffex.ML.counts),"Treatment", drop=FALSE])
-```
-
-### Save lists of annotated genes DEGs 
-
-Here I merge the DEG lists with the Best Blast table, and then with my Uniprot/Swissprot annotations to get UniprotID and GO information. 
-
-Column order in saved file is with (parentheses indicating source): 
-```
-- gene:               Blue king crab gene ID
-- baseMean:           (DESeq2)
-- log2FoldChange:     (DESeq2)
-- lfcSE:              (DESeq2)
-- stat:               (DESeq2)
-- pvalue:             (DESeq2)
-- padj:               (DESeq2)
-- blast_type:         (Best blast)
-- seq_length:         (Best blast)
-- hit_acc:            (Best blast)
-- hit_desc:           (Best blast)
-- score:              (Best blast)
-- e_value:            (Best blast)
-- percent_ident:      (Best blast)
-- percent_ident.num:  (Best blast)
-- query_start:        (Best blast)
-- query_end:          (Best blast)
-- hit_start:          (Best blast)
-- hit_end:            (Best blast)
-- Start:              (Uniprot Blast)
-- End:                (Uniprot Blast)
-- saccver:            (Uniprot Blast)
-- SPID:               (Uniprot Blast)
-- gene.Uni:           (Uniprot Blast)
-- evalue:             (Uniprot Blast)
-- Protein names       (Uniprot Blast)
-- Gene ontology (biological processes): (Uniprot Blast)
-- Gene ontology IDs:  (Uniprot Blast)
-```
-
-```{r}
-diffex.AM %>% as.data.frame() %>% rownames_to_column("gene") %>% 
-  left_join(P.plat.bestblast, by=c("gene"="id")) %>%
-  left_join(P.plat.blast.GO %>% 
-              dplyr::select(geneID, Start, End, saccver, SPID,gene.Uni,evalue, `Protein names`,
-                            `Gene ontology (biological process)`, `Gene ontology IDs`), 
-            by = c("gene"="geneID")) %>% arrange(padj) %>% 
-  write.csv(file = "../results/DEGs.Amb-vs-Mod_annotated.csv", row.names = F, quote = F)
-
-diffex.AL %>% as.data.frame() %>% rownames_to_column("gene") %>% 
-  left_join(P.plat.bestblast, by=c("gene"="id")) %>%
-  left_join(P.plat.blast.GO %>% 
-              dplyr::select(geneID, Start, End, saccver, SPID,gene.Uni,evalue, `Protein names`,
-                            `Gene ontology (biological process)`, `Gene ontology IDs`), 
-            by = c("gene"="geneID")) %>% arrange(padj) %>% 
-  write.csv(file = "../results/DEGs.Amb-vs-Low_annotated.csv", row.names = F, quote = F)
-
-diffex.ML %>% as.data.frame() %>% rownames_to_column("gene") %>% 
-  left_join(P.plat.bestblast, by=c("gene"="id")) %>%
-  left_join(P.plat.blast.GO %>% 
-              dplyr::select(geneID, Start, End, saccver, SPID,gene.Uni,evalue, `Protein names`,
-                            `Gene ontology (biological process)`, `Gene ontology IDs`), 
-            by = c("gene"="geneID")) %>% arrange(padj) %>% 
-  write.csv(file = "../results/DEGs.Mod-vs-Low_annotated.csv", row.names = F, quote = F)
-  
-```
-
-### question - are the moderate vs. low DEGs unique? or are they similar to ambient? 
-```{r}
-diffex.ML %>% rownames() %>% length() #15 DEGs between moderate & low pH 
-Reduce(setdiff, list(c(diffex.ML %>% rownames()), c(diffex.AL %>% rownames()))) %>% length() # 9 of which are also different among ambient & low pH 
-Reduce(setdiff, list(c(diffex.ML %>% rownames()), c(diffex.AM %>% rownames()))) %>% length() # 11 of which are also different among ambient & moderate pH
-```
-
-
-# Enrichment analysis
-
-Here I will do a quick enrichment analysis using the online tool DAVID. I copy the Uniprot SPIDs for the annotated DEGs and all annotated genes examined into the DAVID Functional Annotation Tools. I do so for each pairwise pH comparison. 
-
-```{r, eval=FALSE}
-# DEGs between Ambient & Moderate
-diffex.AM %>% as.data.frame() %>% rownames_to_column("gene") %>% dplyr::select(gene, padj) %>% 
-  left_join(P.plat.blast %>% dplyr::select(geneID, SPID), by = c("gene"="geneID")) %>% 
-  dplyr::select(SPID) %>%  na.omit() %>% unlist() %>% as.vector() %>% write_clip()
-
-# AMBIENT VS. LOW
-diffex.AL %>% as.data.frame() %>% rownames_to_column("gene") %>% dplyr::select(gene, padj) %>% 
-  left_join(P.plat.blast %>% dplyr::select(geneID, SPID), by = c("gene"="geneID")) %>% 
-  dplyr::select(SPID) %>%  na.omit() %>% unlist() %>% as.vector() %>% write_clip()
-
-# MODERATE VS LOW 
-diffex.ML %>% as.data.frame() %>% rownames_to_column("gene") %>% dplyr::select(gene, padj) %>% 
-  left_join(P.plat.blast %>% dplyr::select(geneID, SPID), by = c("gene"="geneID")) %>% 
-  dplyr::select(SPID) %>%  na.omit() %>% unlist() %>% as.vector() %>% write_clip()
-
-# BACKGROUND
-res.pco2.AM %>% as.data.frame() %>% rownames_to_column("gene") %>% dplyr::select(gene, padj) %>% 
-  left_join(P.plat.blast %>% dplyr::select(geneID, SPID), by = c("gene"="geneID")) %>% 
-  dplyr::select(SPID) %>%  na.omit() %>% unlist() %>% as.vector() %>% write_clip()
-
-
-# TRY TO USE THE BEST BLAST ANNOTATION TABLE 
-# DEGs between Ambient & Moderate
-diffex.AM %>% as.data.frame() %>% rownames_to_column("gene") %>% dplyr::select(gene, padj) %>% 
-  left_join(P.plat.blast %>% dplyr::select(id, blast_type, hit_acc, hit_desc), by = c("gene"="id")) %>% #filter(blast_type=="BLASTX1") %>% 
-  separate(hit_acc, sep = "\\.", into = c("accession","version"), remove = F) %>%
-  dplyr::select(accession) %>%  na.omit() %>% unlist() %>% as.vector() %>% write_clip()
-
-# DEGs between Ambient & Low
-diffex.AL %>% as.data.frame() %>% rownames_to_column("gene") %>% dplyr::select(gene, padj) %>% 
-  left_join(P.plat.blast %>% dplyr::select(id, hit_acc, hit_desc), by = c("gene"="id")) %>% 
-  dplyr::select(hit_acc) %>%  na.omit() %>% unlist() %>% as.vector() %>% write_clip()
-
-# DEGs between Moderate & Low (includes just 4 annotated genes) 
-diffex.ML %>% as.data.frame() %>% rownames_to_column("gene") %>% dplyr::select(gene, padj) %>% 
-  left_join(P.plat.blast %>% dplyr::select(id, hit_acc, hit_desc), by = c("gene"="id")) %>% 
-  dplyr::select(hit_acc) %>%  na.omit() %>% unlist() %>% as.vector() %>% write_clip()
-
-# All genes (background, includes 7,153 annotated genes)
-res.pco2.AM %>% as.data.frame() %>% rownames_to_column("gene") %>% dplyr::select(gene, padj) %>% 
-  left_join(P.plat.blast %>% dplyr::select(id, hit_acc, hit_desc), by = c("gene"="id")) %>% 
-  dplyr::select(hit_acc) %>%  na.omit() %>% unlist() %>% as.vector() %>% write_clip()
-
-P.plat.blast %>% filter(blast_type=="BLASTN1")
-
-```
-
-
-## DAVID Results 
-# NEED TO UPDATE LOCATIONS DEPENDING ON BOWTIE2 OR STAR 
-
-Enriched biological processes (and associated gene lists) are saved to GitHub. These have been updated to remove outlier sample (Tank 7 Crab 4).  
-
--- Ambient pH vs. Moderate pH, [results/david/DAVID-Enriched-BP_Amb-Mod_no-outlier-T7C4.txt](https://raw.githubusercontent.com/laurahspencer/red-king_RNASeq-2022/main/results/david/DAVID-Enriched-BP_Amb-Mod_no-outlier-T7C4.txt)  
--- Ambient pH vs. Moderate pH, [results/david/DAVID-Enriched-BP_Amb-Low_no-outlier-T7C4.txt](https://raw.githubusercontent.com/laurahspencer/red-king_RNASeq-2022/main/results/david/DAVID-Enriched-BP_Amb-Low_no-outlier-T7C4.txt)  
--- Moderate pH vs. Low pH, NONE 
-
-
-Visualize with REVIGO - read in DAVID enrichment results, extract GO terms and PValues and copy to clipboard to paste into [REVIGO](http://revigo.irb.hr/)  
-
-```{r, eval=FALSE}
-# With Bowtie2 aligned
-# Between ambient and moderate pH 
-read_delim(file="../results/bowtie/DAVID-Enriched-BP_Amb-Mod_no-outlier-T7C4.txt", delim = "\t") %>% 
-  mutate(GO = str_extract(Term, "GO(.*?)~")) %>% 
-  mutate(GO = gsub("~", "", GO)) %>% dplyr::select(GO, PValue) %>% na.omit() %>% write_clip()
-
-# Between ambient and low pH 
-read_delim(file="../results/bowtie/DAVID-Enriched-BP_Amb-Low_no-outlier-T7C4.txt", delim = "\t") %>% 
-  mutate(GO = str_extract(Term, "GO(.*?)~")) %>% 
-  mutate(GO = gsub("~", "", GO)) %>% dplyr::select(Term) %>% na.omit() %>% write_clip()
-
-# Between moderate and low pH 
-read_delim(file="../results/bowtie/DAVID-Enriched-BP_Mod-Low_no-outlier-T7C4.txt", delim = "\t") %>% 
-  mutate(GO = str_extract(Term, "GO(.*?)~")) %>% 
-  mutate(GO = gsub("~", "", GO)) %>% dplyr::select(GO, PValue) %>% na.omit() %>% write_clip()
-
-# With STAR aligned 
-read_delim(file="../results/star/star.v2/DAVID-Enriched-BP_Amb-Mod_no-outlier-T7C4.txt", delim = "\t") %>% 
-  mutate(GO = str_extract(Term, "GO(.*?)~")) %>% 
-  mutate(GO = gsub("~", "", GO)) %>% dplyr::select(GO, PValue) %>% na.omit() %>% write_clip()
-
-read_delim(file="../results/star/star.v2/DAVID-Enriched-BP_Amb-Low_no-outlier-T7C4.txt", delim = "\t") %>% 
-  mutate(GO = str_extract(Term, "GO(.*?)~")) %>% 
-  mutate(GO = gsub("~", "", GO)) %>% dplyr::select(GO, PValue) %>% na.omit() %>% write_clip()
-
-read_delim(file="../results/star/star.v2/DAVID-Enriched-BP_Mod-Low_no-outlier-T7C4.txt", delim = "\t") %>% 
-  mutate(GO = str_extract(Term, "GO(.*?)~")) %>% 
-  mutate(GO = gsub("~", "", GO)) %>% dplyr::select(GO, PValue) %>% na.omit() %>% write_clip()
-```
-
-# Exploring differences in within-group variances 
-
-## Broad differences using multivariate approaches
-
-Identify centroid (mean of points on PC axes), calculate euclidean distances, compare those 
-
-```{r}
-# All genes in matrix 
-
-a <- plotPCA(vsd.pH, intgroup="Treatment")
-
-# calculate centroids for each 
-b <- a$data %>% group_by(Treatment) %>% summarize(PC1.mean=mean(PC1), 
-                                             PC1.sd=sd(PC1),
-                                             PC2.mean=mean(PC2),
-                                             PC2.sd=sd(PC2))
-# calculate euclidean distance from treatment centroid for each sample 
-c <- a$data %>% left_join(b, by = "Treatment") %>% 
-  mutate(dist.cent=sqrt((PC1-PC1.mean)^2+(PC2-PC2.mean)^2)) %>%
-  mutate(Treatment=factor(Treatment, levels=c("Ambient", "Moderate", "Low")))
-  
-# examine euclidean distances from centroid 
-ggplot(c, aes(x=Treatment, y=dist.cent, colour=Treatment)) + 
-  geom_boxplot() + geom_jitter(width = .2) +
-  ggtitle("Euclidean distances to centroid of PCA by treatment\nAll genes") +
-  theme_minimal() + theme(legend.position = "none", axis.title.x = element_blank())
-hist(c$dist.cent) #normal distribution? 
-shapiro.test(c$dist.cent) #not really 
-
-hist(log(c$dist.cent)) #log transformed = yes  
-shapiro.test(log(c$dist.cent)) #log transformed = yes  
-summary(aov(log(dist.cent)~Treatment, data=c)) # no diff
-TukeyHSD(aov(log(dist.cent)~Treatment, data=c)) # no diff 
-
-ggplot(data=c, aes(x=PC1, y=PC2, group=Treatment, colour=Treatment)) + 
-  geom_point() + 
-    theme_minimal()+ stat_ellipse() +
-  geom_segment(aes(x=PC1.mean, y=PC2.mean, xend=PC1, yend=PC2)) +
-      geom_point(aes(x=PC1.mean, y=PC2.mean,fill=Treatment), col="black", shape=22, size=4) +
-   ggtitle("PCA by Treatment, All genes\n(var-stabilizing transformed)") + theme(legend.position = c(0.08, 0.85))
-
-
-
-# DEGs only 
-degs.vst <- vst(
-  DESeqDataSetFromMatrix(
-    countData = counts.tk[,unique(c(rownames(diffex.AM),rownames(diffex.AL),rownames(diffex.ML)))] %>% t(),
-                              colData = counts.tk[,"Treatment", drop=FALSE] ,
-                              design = ~ Treatment), blind=TRUE)
-
-a <- plotPCA(degs.vst, intgroup="Treatment")
-
-# calculate centroids for each 
-b <- a$data %>% group_by(Treatment) %>% summarize(PC1.mean=mean(PC1), 
-                                             PC1.sd=sd(PC1),
-                                             PC2.mean=mean(PC2),
-                                             PC2.sd=sd(PC2))
-# calculate euclidean distance from treatment centroid for each sample 
-c <- a$data %>% left_join(b, by = "Treatment") %>% 
-  mutate(dist.cent=sqrt((PC1-PC1.mean)^2+(PC2-PC2.mean)^2)) %>%
-  mutate(Treatment=factor(Treatment, levels=c("Ambient", "Moderate", "Low")))
-  
-# examine euclidean distances from centroid 
-ggplot(c, aes(x=Treatment, y=dist.cent, colour=Treatment)) + 
-  geom_boxplot() + geom_jitter(width = .2) +
-  ggtitle("Euclidean distances to centroid of PCA by treatment\nDEGs only") +
-  theme_minimal() + theme(legend.position = "none", axis.title.x = element_blank())
-hist(c$dist.cent) #normal distribution? 
-shapiro.test(c$dist.cent) #not really 
-
-hist(c$dist.cent^.5) #log transformed = yes  
-shapiro.test(c$dist.cent^.5) #log transformed = yes  
-summary(aov(dist.cent^.5~Treatment, data=c)) # very different 
-TukeyHSD(aov(dist.cent^.5~Treatment, data=c)) # ambient diff from other treatments - more spread 
-
-ggplot(data=c, aes(x=PC1, y=PC2, group=Treatment, colour=Treatment)) + 
-  geom_point() + 
-    theme_minimal()+ stat_ellipse() +
-  geom_segment(aes(x=PC1.mean, y=PC2.mean, xend=PC1, yend=PC2)) +
-      geom_point(aes(x=PC1.mean, y=PC2.mean,fill=Treatment), col="black", shape=22, size=4) +
-   ggtitle("PCA by Treatment, DEGs only\n(var-stabilizing transformed)") + theme(legend.position = c(0.08, 0.85))
-
-
-
-  
-# Excluding DEGs 
-notdegs.vst <- vst(
-  DESeqDataSetFromMatrix(countData = counts.tk[,-which(names(counts.tk) %in% c("Tank", "Treatment", "Treatment_Tank", rownames(diffex.AM),rownames(diffex.AL),rownames(diffex.ML)))] %>% t(),
-                              colData = counts.tk[,"Treatment", drop=FALSE] ,
-                              design = ~ Treatment), blind=TRUE)
-
-a <- plotPCA(notdegs.vst, intgroup="Treatment")
-
-# calculate centroids for each 
-b <- a$data %>% group_by(Treatment) %>% summarize(PC1.mean=mean(PC1), 
-                                             PC1.sd=sd(PC1),
-                                             PC2.mean=mean(PC2),
-                                             PC2.sd=sd(PC2))
-# calculate euclidean distance from treatment centroid for each sample 
-c <- a$data %>% left_join(b, by = "Treatment") %>% 
-  mutate(dist.cent=sqrt((PC1-PC1.mean)^2+(PC2-PC2.mean)^2)) %>%
-  mutate(Treatment=factor(Treatment, levels=c("Ambient", "Moderate", "Low")))
-  
-# examine euclidean distances from centroid 
-ggplot(c, aes(x=Treatment, y=dist.cent, colour=Treatment)) + 
-  geom_boxplot() + geom_jitter(width = .2) +
-  ggtitle("Euclidean distances to centroid of PCA by treatment\nAll genes except DEGs") +
-  theme_minimal() + theme(legend.position = "none", axis.title.x = element_blank())
-hist(c$dist.cent) #normal distribution? 
-shapiro.test(c$dist.cent) #not really 
-
-hist(c$dist.cent^.5) #sqrt-transformed = yes  
-shapiro.test(c$dist.cent^.5) #sqrt transformed = yes  
-summary(aov(dist.cent^.5~Treatment, data=c)) # not different at all  
-TukeyHSD(aov(dist.cent^.5~Treatment, data=c)) # no differences at all 
-
-ggplot(data=c, aes(x=PC1, y=PC2, group=Treatment, colour=Treatment)) + 
-  geom_point() + 
-    theme_minimal()+ stat_ellipse() +
-  geom_segment(aes(x=PC1.mean, y=PC2.mean, xend=PC1, yend=PC2)) +
-      geom_point(aes(x=PC1.mean, y=PC2.mean,fill=Treatment), col="black", shape=22, size=4) +
-     ggtitle("PCA by Treatment, excluding DEGs\n(var-stabilizing transformed)") + theme(legend.position = c(0.08, 0.85))
-
-```
-
-## Gene-wise variance 
+## Gene-wise variance, eggs 
 
 Explore coefficient of variation by treatment, and gene groups 
 
 ```{r}
-assay(vsd.pH) #variance-stabilizing transformed count matrix
-mcols(mcols(dds.DESeq.pH))$description #Description of DESeq summary stats columns
-mcols(dds.DESeq.pH) #DESeq summary stats 
+assay(vsd.female) #variance-stabilizing transformed count matrix
+mcols(mcols(dds.DESeq.female))$description #Description of DESeq summary stats columns
+mcols(dds.DESeq.female) #DESeq summary stats 
+```
 
+```{r}
 # Create dataframe in long format with gene, sample number, transformed counts, and treatment 
-# use assay(vsd.pH) for variance-stabilizing transformed data 
-# use assay(normTransform(dds.pH)) for log2(n+1) transformation 
-d <- assay(vsd.pH) %>% as.matrix() %>% as.data.frame() %>% rownames_to_column(var = "gene") %>% 
-  pivot_longer(-gene, values_to = "counts.vsd", names_to = "Sample") %>%
-  left_join(sample.info[,c("Sample", "Treatment")]) %>% 
-  mutate_at(c("gene", "Sample"), factor) %>%
-  mutate(Treatment=factor(Treatment, levels=c("Ambient", "Moderate", "Low")))
+d <- assay(vsd.female) %>% as.matrix() %>% as.data.frame() %>% rownames_to_column(var = "gene") %>% 
+  pivot_longer(-gene, values_to = "counts.vsd", names_to = "Sample.ID") %>%
+  left_join(sample.info %>% filter(Sex=="F") %>% select(Sample.ID,Treatment)) %>% 
+  mutate_at(c("gene", "Sample.ID"), factor)
+```
 
+```{r}
 # Test for homogeneity of variances among treatments  
 hist(d$counts.vsd) # first inspect transformed counts for normality - not super convincing 
 shapiro.test(d$counts.vsd %>% sample(5000, replace=FALSE)) #not normal 
 ks.test(x=d$counts.vsd,y='pnorm',alternative='two.sided')
-leveneTest(counts.vsd ~ Treatment, data=d) #variances differ, but how? 
+leveneTest(counts.vsd ~ Treatment, data=d) #variances don't differ
 fligner.test(counts.vsd ~ Treatment, data=d) #variances differ, but how? 
-ggplot(d, aes(x=Treatment, y=counts.vsd, colour=Treatment)) + geom_boxplot() + ggtitle("Normalized counts by treatment\nAll genes")# can't tell - no obvious difference 
+ggplot(d, aes(x=Treatment, y=log(counts.vsd), colour=Treatment)) + 
+  geom_boxplot() + ggtitle("Normalized counts by treatment\nAll genes")# can't tell - no obvious difference 
+```
 
-
+```{r}
 # Calculate & inspect coefficient of variation for each gene within treatments 
 e <- d %>% group_by(Treatment, gene) %>% 
-  summarize(mean=mean(counts.vsd), CV=var(counts.vsd))
+  dplyr::summarize(mean=mean(counts.vsd), CV=var(counts.vsd))
 ggplot(e, aes(x=Treatment, y=sqrt(CV), colour=Treatment)) + geom_violin() +geom_boxplot() + ggtitle("Standard deviation by treatment\nAll genes")
 ggplot(e, aes(x=Treatment, y=log2(CV), colour=Treatment)) + geom_violin() +geom_boxplot() + ggtitle("Log2(CV) by treatment\nAll genes")
 ggplot(e, aes(x=mean, y=sqrt(CV), colour=Treatment)) + geom_point(size=1) + facet_wrap(~Treatment) + theme_minimal() + ggtitle("Standard deviation ~ mean of normalized counts by treatment\nAll genes")
-
-# inspect CV by treatment - Genes that are differentially expressed between Ambient and the two pH treatments only. 
-# NOTE: this does not include genes that are diff. expressed between moderate and low pH (only a handful, though)
-f <- e %>% mutate(DEG=as.factor(if_else(gene %in% c(rownames(diffex.AM),rownames(diffex.AL),rownames(diffex.ML)), "DEG", "Non-DEG"))) %>%
-  mutate(DEG=factor(DEG, levels=c("Non-DEG", "DEG"))) %>%
-  mutate(change = as.factor(case_when(
-  gene %in% c(rownames(subset(res.pco2.AM, padj < 0.05 & log2FoldChange < 0)), rownames(subset(res.pco2.AL, padj < 0.05 & log2FoldChange < 0))) ~ "Up-regulated",
-  gene %in% c(rownames(subset(res.pco2.AM, padj < 0.05 & log2FoldChange > 0)), rownames(subset(res.pco2.AL, padj < 0.05 & log2FoldChange > 0))) ~ "Down-regulated")))  
-
-# create vector of gene names that are diff. expressed among moderate and low pH - not included in this variance comparison
-remove <- (f %>% ungroup() %>% filter(DEG=="DEG") %>% filter(is.na(change)))$gene %>% as.vector()
-
-ggplot(f %>% filter(!c(gene %in% remove)), aes(x=Treatment, y=log(CV), colour=Treatment)) + 
-  geom_boxplot() + facet_wrap(~DEG+change) + theme_minimal() + 
-  theme(axis.title.x = element_blank()) + ylab("Log(Coeff. variation of transformed counts)") + 
-  ggtitle("Variance within treatments\nNon-DEGs, and DEGs that are down- and up-regulated in OA") +
-  theme(axis.text.x = element_blank(), plot.title = element_text(size=10), legend.position = "bottom")
-
-# generate the same plot, but standardize the CV by dividing by the mean log(CV/Mean)
-ggplot(f %>% filter(!c(gene %in% remove)), aes(x=Treatment, y=log(CV/mean), colour=Treatment)) +
-  geom_boxplot() + facet_wrap(~DEG+change) + theme_minimal() +
-  theme(axis.title.x = element_blank()) + ylab("Log(Coeff. variation / mean)") +
-  ggtitle("Variance/Mean within treatments\nNon-DEGs, and DEGs that are down- and up-regulated in OA") +
-  theme(axis.text.x = element_blank(), plot.title = element_text(size=10))
-
-ggplot(f, aes(x=mean, y=sqrt(CV), colour=Treatment)) + geom_point(size=1) + facet_wrap(~change+Treatment) + 
-  theme_minimal() + theme(plot.title = element_text(size=11), legend.position = "right") + 
-  ylab("Standard deviation of transformed counts") + xlab("Mean of transformed counts") +
-  ggtitle("Variance/Mean within treatments")
-
-# NOTE: When I do NOT filter out low-frequency genes prior to the DESeq2 analysis using the mean=10 threshold, some CV=0 for some genes/treatments
-# So I will remove the 
-f %>% filter(CV!=0)
-hist(log((f %>% filter(CV!=0))$CV))
-summary(aov(log(CV) ~ DEG*Treatment, data=f %>% filter(CV!=0)))
-TukeyHSD(aov(log2(CV) ~ DEG+Treatment+DEG:Treatment, data=f %>% filter(CV!=0)))
-
-# # Here you can plot the normalized gene counts for those genes. 
-# cv.zero <- (f %>% filter(CV==0))$gene %>% as.vector()
-# diff_plots = list()
-# for (i in 1:length(cv.zero)) {
-# a <-  plotCounts(dds.DESeq.pH, gene=cv.zero[i], intgroup=c("Treatment"), returnData = TRUE)
-# b <- ggplot(a %>% filter(Treatment==c("Ambient", "Moderate", "Low")) 
-#                          %>% rownames_to_column("sample"),
-#        aes(x=Treatment, y=count, color=Treatment, label=sample)) +
-#   geom_point(position=position_jitter(w = 0.1,h = 0)) +
-#     geom_text() +
-#     theme_bw() +
-#     ggtitle(cv.zero[i]) +
-#     theme(plot.title = element_text(hjust = 0.5))
-# diff_plots[[i]] <- b
-# }
-# diff_plots
-```
-
-
-
-
-# BONEYARD 
-### Are genes that are upregulated in response to OA more or less variable in those treatments compared to in the ambient crab? 
-
-```{r}
-rownames(subset(res.pco2.AM, padj < 0.05 & log2FoldChange < 0)) #UPregulated in moderate OA compared to Ambient 
-rownames(subset(res.pco2.AM, padj < 0.05 & log2FoldChange > 0)) #DOWNregulated in moderate OA compared to Ambient 
-
-rownames(subset(res.pco2.AL, padj < 0.05 & log2FoldChange < 0)) #UPregulated in LOW OA compared to Ambient 
-rownames(subset(res.pco2.AL, padj < 0.05 & log2FoldChange > 0)) #DOWNregulated in LOW OA compared to Ambient 
-
-rownames(subset(res.pco2.ML, padj < 0.05 & log2FoldChange < 0)) #UPregulated in LOW OA compared to Moderate 
-rownames(subset(res.pco2.ML, padj < 0.05 & log2FoldChange > 0)) #DOWNregulated in LOW OA compared to Moderate 
-
-# Here I define which genes I want to look at so I can characterize the up/down regulation 
-# test <- rownames(subset(res.pco2.ML, padj < 0.05 & log2FoldChange > 0))
-
-diff_plots = list()
-for (i in 1:length(test)) {
-a <-  plotCounts(dds.DESeq.pH, gene=test[i], intgroup=c("Treatment"), returnData = TRUE)
-b <- ggplot(a %>% filter(Treatment==c("Moderate", "Low")) 
-                         %>% rownames_to_column("sample"),
-       aes(x=Treatment, y=count, color=Treatment, label=sample)) +
-  geom_point(position=position_jitter(w = 0.1,h = 0)) +
-    geom_text() +
-    theme_bw() +
-    ggtitle(test[i]) +
-    theme(plot.title = element_text(hjust = 0.5))
-diff_plots[[i]] <- b
-}
-diff_plots 
-
-# ======================
-## For genes that are UPREGULATED in moderate pH or low pH compared to ambient, how does dispersion compare? Look at PCAs first 
-updegs.vst <- varianceStabilizingTransformation(
-  DESeqDataSetFromMatrix(
-    countData = counts.tk[,unique(c(rownames(subset(res.pco2.AM, padj < 0.05 & log2FoldChange < 0)),
-                                    rownames(subset(res.pco2.AL, padj < 0.05 & log2FoldChange < 0))))] %>% t(),
-                              colData = counts.tk[,"Treatment", drop=FALSE] ,
-                              design = ~ Treatment), blind=TRUE)
-
-a <- plotPCA(updegs.vst, intgroup="Treatment")
-
-# calculate centroids for each 
-b <- a$data %>% group_by(Treatment) %>% summarize(PC1.mean=mean(PC1), 
-                                             PC1.sd=sd(PC1),
-                                             PC2.mean=mean(PC2),
-                                             PC2.sd=sd(PC2))
-# calculate euclidean distance from treatment centroid for each sample 
-c <- a$data %>% left_join(b, by = "Treatment") %>% 
-  mutate(dist.cent=sqrt((PC1-PC1.mean)^2+(PC2-PC2.mean)^2)) %>%
-  mutate(Treatment=factor(Treatment, levels=c("Ambient", "Moderate", "Low")))
-  
-# examine euclidean distances from centroid 
-ggplot(c, aes(x=Treatment, y=dist.cent, colour=Treatment)) + 
-  geom_boxplot() + geom_jitter(width = .2) +
-  ggtitle("Euclidean distances to centroid of PCA by treatment\nUpregulated genes in OA only") +
-  theme_minimal() + theme(legend.position = "none", axis.title.x = element_blank())
-hist(c$dist.cent) #normal distribution? 
-shapiro.test(c$dist.cent) #not really 
-
-hist(c$dist.cent^.5) #log transformed = yes  
-shapiro.test(c$dist.cent^.5) #log transformed = yes  
-summary(aov(dist.cent^.5~Treatment, data=c)) # no diff 
-TukeyHSD(aov(dist.cent^.5~Treatment, data=c)) # no sign. diff
-
-ggplot(data=c, aes(x=PC1, y=PC2, group=Treatment, colour=Treatment)) + 
-  geom_point() + 
-    theme_minimal()+ stat_ellipse() +
-  geom_segment(aes(x=PC1.mean, y=PC2.mean, xend=PC1, yend=PC2)) +
-      geom_point(aes(x=PC1.mean, y=PC2.mean,fill=Treatment), col="black", shape=22, size=4) +
-   ggtitle("PCA by Treatment, genes upregulated in OA\n(var-stabilizing transformed)") + theme(legend.position = c(0.08, 0.85))
-
-
-# ======================
-## For genes that are DOWNREGULATED in moderate pH or low pH compared to ambient, how does dispersion compare? Look at PCAs first 
-downdegs.vst <- varianceStabilizingTransformation(
-  DESeqDataSetFromMatrix(
-    countData = counts.tk[,unique(c(rownames(subset(res.pco2.AM, padj > 0.05 & log2FoldChange < 0)),
-                                    rownames(subset(res.pco2.AL, padj > 0.05 & log2FoldChange < 0))))] %>% t(),
-                              colData = counts.tk[,"Treatment", drop=FALSE] ,
-                              design = ~ Treatment), blind=TRUE)
-
-a <- plotPCA(downdegs.vst, intgroup="Treatment")
-
-# calculate centroids for each 
-b <- a$data %>% group_by(Treatment) %>% summarize(PC1.mean=mean(PC1), 
-                                             PC1.sd=sd(PC1),
-                                             PC2.mean=mean(PC2),
-                                             PC2.sd=sd(PC2))
-# calculate euclidean distance from treatment centroid for each sample 
-c <- a$data %>% left_
-  mutate(dist.cent=sqrt((PC1-PC1.mean)^2+(PC2-PC2.mean)^2)) %>%
-  mutate(Treatment=factor(Treatment, levels=c("Ambient",join(b, by = "Treatment") %>%  "Moderate", "Low")))
-  
-# examine euclidean distances from centroid 
-ggplot(c, aes(x=Treatment, y=dist.cent, colour=Treatment)) + 
-  geom_boxplot() + geom_jitter(width = .2) +
-  ggtitle("Euclidean distances to centroid of PCA by treatment\nDownregulated genes only") +
-  theme_minimal() + theme(legend.position = "none", axis.title.x = element_blank())
-hist(c$dist.cent) #normal distribution? 
-shapiro.test(c$dist.cent) #not really 
-
-hist(c$dist.cent^.5) #log transformed = yes  
-shapiro.test(c$dist.cent^.5) #log transformed = yes  
-summary(aov(dist.cent^.5~Treatment, data=c)) # no diff 
-TukeyHSD(aov(dist.cent^.5~Treatment, data=c)) # no sign. diff
-
-ggplot(data=c, aes(x=PC1, y=PC2, group=Treatment, colour=Treatment)) + 
-  geom_point() + 
-    theme_minimal()+ stat_ellipse() +
-  geom_segment(aes(x=PC1.mean, y=PC2.mean, xend=PC1, yend=PC2)) +
-      geom_point(aes(x=PC1.mean, y=PC2.mean,fill=Treatment), col="black", shape=22, size=4) +
-   ggtitle("PCA by Treatment, genes downregulated in OA\n(var-stabilizing transformed)") + theme(legend.position = c(0.08, 0.85))
-```
-
-## Redo all-gene heat map and PCAs with the low-frequency genes (identified in the DEG analysis) removed
-
-```{r}
-a <- c(res.pco2.AM %>% as.data.frame() %>% filter(is.na(padj)) %>% rownames())
-b <- c(res.pco2.AL %>% as.data.frame() %>% filter(is.na(padj)) %>% rownames())
-c <- c(res.pco2.ML %>% as.data.frame() %>% filter(is.na(padj)) %>% rownames())
-d <- Reduce(setdiff, list(a,b,c))
-
-test <- assay(vsd.pH) %>% as.data.frame() %>% rownames_to_column(var = "gene") %>% filter(!gene %in% d) %>% head(n=100) %>% column_to_rownames(var = "gene") %>% t()
-
-pheatmap(test, Rowv=NA, Colv=NA, na.rm = TRUE, xlab = NA, 
-                     show_colnames =FALSE, cluster_cols = FALSE, cluster_rows = TRUE, 
-                     scale="column", color=c("dodgerblue3", "goldenrod1"), 
-                     main = "RKC gene counts", annotation_row=counts.tk[,c("Treatment", "Tank")])
 ```
 
