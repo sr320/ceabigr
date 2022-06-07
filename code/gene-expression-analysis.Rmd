@@ -115,16 +115,17 @@ ggplotly(ggplot(tab.expr.annot, aes(x=PC1, y=PC2, text=sample.id)) +
   stat_ellipse(aes(color=Sex), size=0.3), tooltip="text")
 ```
 
-## PCAs using prcomp with just egg samples & multivariate homogeneity of variances analysis
+## PCAs using prcomp with just egg samples & variances analysis
 
 ```{r}
 counts.norm.eggs <- counts.norm %>% as.data.frame() %>% select(contains("F")) %>% as.matrix()
 
 ### Pre-filtering - remove low-frequency genes, those with less than 10 summed across all samples
-keep.eggs <- rowSums(counts.norm.eggs, na.rm=TRUE) >= 10 #use mean
+keep.eggs <- rowSums(counts.norm.eggs, na.rm=TRUE) >= 10 
 counts.norm.eggs.filt <- counts.norm.eggs[keep.eggs,]
 print(paste("# genes remaining after pre-filtering:", nrow(counts.norm.eggs.filt)))
 print(paste("# of genes dropped:", nrow(counts.norm.eggs) - nrow(counts.norm.eggs.filt), sep=" "))
+print(paste("% of transcripts dropped: ", signif(100*(sum(counts.norm.eggs)-sum(counts.norm.eggs.filt))/sum(counts.norm.eggs), digits = 5), "%", sep=""))
 
 #pca.princomp.eggs <- prcomp(cov(t(counts.norm.eggs.filt)), scale=F) #scale=F for variance-covariance matrix
 pca.princomp.eggs <- prcomp(t(counts.norm.eggs.filt)) 
@@ -139,15 +140,15 @@ tab.expr.eggs <- data.frame(sample.id = colnames(counts.norm.eggs.filt),
 shapiro.test(pca.princomp.eggs$x) #multivariate normality not met, hmmmm  
 tab.expr.annot.eggs <- left_join(tab.expr.eggs, sample.info, by=c("sample.id"="Sample.ID")) %>% droplevels()
 
-ggplotly(ggplot(tab.expr.annot.eggs, aes(x=PC1, y=PC2, text=sample.id)) + 
-  geom_point(aes(col=Treatment), pch=16, size=3, alpha=0.5) + 
-  theme_minimal() + ggtitle("Expression in EGGS, PC1xPC2") + 
-  xlab(paste("PC1 (", round(pc.percent[1], digits = 1), "%)", sep="")) + 
-  ylab(paste("PC2 (", round(pc.percent[2], digits = 1), "%)", sep="")) + 
-  theme(legend.position = "right") + 
-  scale_color_manual(values = c(Control="#2c7bb6", Exposed="#d7191c"), name="pH Treatment") +
-  guides(colour = guide_legend(override.aes = list(size=3.5))) + 
-  stat_ellipse(aes(color=Treatment), size=0.3), tooltip="text")
+# ggplotly(ggplot(tab.expr.annot.eggs, aes(x=PC1, y=PC2, text=sample.id)) + 
+#   geom_point(aes(col=Treatment), pch=16, size=3, alpha=0.5) + 
+#   theme_minimal() + ggtitle("Expression in EGGS, PC1xPC2") + 
+#   xlab(paste("PC1 (", round(pc.percent[1], digits = 1), "%)", sep="")) + 
+#   ylab(paste("PC2 (", round(pc.percent[2], digits = 1), "%)", sep="")) + 
+#   theme(legend.position = "right") + 
+#   scale_color_manual(values = c(Control="#2c7bb6", Exposed="#d7191c"), name="pH Treatment") +
+#   guides(colour = guide_legend(override.aes = list(size=3.5))) + 
+#   stat_ellipse(aes(color=Treatment), size=0.3), tooltip="text")
 
 require(ggpubr)
 # GGSCATTER with ellipses and stars - PC1 PC2
@@ -169,7 +170,6 @@ all((sample.info %>% filter(Sex=="F"))$Sample.ID == t(counts.norm.eggs.filt) %>%
 eggs.t <- t(counts.norm.eggs.filt) %>% as.data.frame()
 print(perm.female <- adonis(eggs.t ~ Treatment, 
                             data=sample.info %>% filter(Sex=="F"), permutations = 1000, method="bray")) #no diff
-
 
 # Examine variance by calculating euclidean distance from treatment centroid for each sample 
 # calculate centroids for each 
