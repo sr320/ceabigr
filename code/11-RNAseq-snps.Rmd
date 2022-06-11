@@ -229,6 +229,17 @@ https://gannet.fish.washington.edu/seashell/bu-github/ceabigr/output/11-RNAseq-s
 
 ```
 
+```{bash}
+
+wget -r \
+--no-check-certificate \
+--quiet \
+--no-directories --no-parent \
+-P ../output/11-RNAseq-snps/ \
+-A *variants.g.vcf.idx \
+https://gannet.fish.washington.edu/seashell/bu-github/ceabigr/output/11-RNAseq-snps/
+
+```
 
 
 
@@ -291,7 +302,7 @@ echo "Joint genotyping"
 cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
 
 echo "Hard filtering variants"
-$/home/shared/gatk-4.2.5.0/gatk VariantFiltration \
+/home/shared/gatk-4.2.5.0/gatk VariantFiltration \
 -R /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/Cvirginica_v300.fa \
 -V Cv-rnaseq_genotypes.vcf.gz \
 -O Cv-rnaseq_genotypes-filtered.vcf.gz \
@@ -308,7 +319,7 @@ $/home/shared/gatk-4.2.5.0/gatk VariantFiltration \
 --filter-name "DP150" \
 --filter "DP > 150" \
 --filter-name "AF30" \
---filter "AF < 0.30" >> "GenotypeGVCFs_stout.txt" 2>&1
+--filter "AF < 0.30" >> "Genotype_filter_stout.txt" 2>&1
 ```
 
 x

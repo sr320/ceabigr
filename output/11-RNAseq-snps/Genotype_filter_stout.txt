@@ -1,0 +1,37 @@
+/tmp/RtmpTUYbrf/chunk-code-5ba265d42365.txt: line 6: $/home/shared/gatk-4.2.5.0/gatk: No such file or directory
+/tmp/RtmpTUYbrf/chunk-code-5ba2126360c9.txt: line 6: $/home/shared/gatk-4.2.5.0/gatk: No such file or directory
+Using GATK jar /home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -jar /home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar VariantFiltration -R /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/Cvirginica_v300.fa -V Cv-rnaseq_genotypes.vcf.gz -O Cv-rnaseq_genotypes-filtered.vcf.gz --filter-name FS --filter FS > 60.0 --filter-name QD --filter QD < 2.0 --filter-name QUAL30 --filter QUAL < 30.0 --filter-name SOR3 --filter SOR > 3.0 --filter-name DP15 --filter DP < 15 --filter-name DP150 --filter DP > 150 --filter-name AF30 --filter AF < 0.30
+07:51:05.587 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+Jun 08, 2022 7:51:05 AM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+07:51:05.679 INFO  VariantFiltration - ------------------------------------------------------------
+07:51:05.679 INFO  VariantFiltration - The Genome Analysis Toolkit (GATK) v4.2.5.0
+07:51:05.679 INFO  VariantFiltration - For support and documentation go to https://software.broadinstitute.org/gatk/
+07:51:05.679 INFO  VariantFiltration - Executing as sr320@raven on Linux v5.4.0-113-generic amd64
+07:51:05.679 INFO  VariantFiltration - Java runtime: OpenJDK 64-Bit Server VM v11.0.15+10-Ubuntu-0ubuntu0.18.04.1
+07:51:05.679 INFO  VariantFiltration - Start Date/Time: June 8, 2022 at 7:51:05 AM PDT
+07:51:05.679 INFO  VariantFiltration - ------------------------------------------------------------
+07:51:05.679 INFO  VariantFiltration - ------------------------------------------------------------
+07:51:05.680 INFO  VariantFiltration - HTSJDK Version: 2.24.1
+07:51:05.680 INFO  VariantFiltration - Picard Version: 2.25.4
+07:51:05.680 INFO  VariantFiltration - Built for Spark Version: 2.4.5
+07:51:05.680 INFO  VariantFiltration - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+07:51:05.680 INFO  VariantFiltration - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+07:51:05.680 INFO  VariantFiltration - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+07:51:05.680 INFO  VariantFiltration - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+07:51:05.680 INFO  VariantFiltration - Deflater: IntelDeflater
+07:51:05.680 INFO  VariantFiltration - Inflater: IntelInflater
+07:51:05.680 INFO  VariantFiltration - GCS max retries/reopens: 20
+07:51:05.680 INFO  VariantFiltration - Requester pays: disabled
+07:51:05.680 INFO  VariantFiltration - Initializing engine
+07:51:05.681 INFO  VariantFiltration - Shutting down engine
+[June 8, 2022 at 7:51:05 AM PDT] org.broadinstitute.hellbender.tools.walkers.filters.VariantFiltration done. Elapsed time: 0.00 minutes.
+Runtime.totalMemory()=2155872256
+***********************************************************************
+
+A USER ERROR has occurred: The specified fasta file (file:///home/shared/8TB_HDD_01/sr320/github/ceabigr/data/Cvirginica_v300.fa) does not exist.
+
+***********************************************************************
+Set the system property GATK_STACKTRACE_ON_USER_EXCEPTION (--java-options '-DGATK_STACKTRACE_ON_USER_EXCEPTION=true') to print the stack trace.
