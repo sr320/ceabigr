@@ -197,3 +197,20 @@ INFO: Failed to detect whether we are running on Google Compute Engine.
 07:39:11.376 INFO  GenomicsDBImport - Importing to workspace - /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps/GenomicsDB
 07:39:11.376 WARN  GenomicsDBImport - GenomicsDBImport cannot use multiple VCF reader threads for initialization when the number of intervals is greater than 1. Falling back to serial VCF reader initialization.
 07:39:14.474 INFO  GenomicsDBImport - Importing batch 1 with 26 samples
+07:56:21.624 INFO  GenomicsDBImport - Importing batch 1 with 26 samples
+08:14:23.142 INFO  GenomicsDBImport - Importing batch 1 with 26 samples
+08:34:51.982 INFO  GenomicsDBImport - Importing batch 1 with 26 samples
+08:52:02.755 INFO  GenomicsDBImport - Importing batch 1 with 26 samples
+09:20:59.104 INFO  GenomicsDBImport - Importing batch 1 with 26 samples
+09:29:53.075 INFO  GenomicsDBImport - Importing batch 1 with 26 samples
+09:40:06.517 INFO  GenomicsDBImport - Importing batch 1 with 26 samples
+09:54:14.089 INFO  GenomicsDBImport - Importing batch 1 with 26 samples
+10:11:57.494 INFO  GenomicsDBImport - Importing batch 1 with 26 samples
+10:18:31.734 INFO  GenomicsDBImport - Importing batch 1 with 26 samples
+10:18:34.076 INFO  GenomicsDBImport - Done importing batch 1/1
+10:18:34.077 INFO  GenomicsDBImport - Import completed!
+10:18:34.078 INFO  GenomicsDBImport - Shutting down engine
+[June 11, 2022 at 10:18:34 AM PDT] org.broadinstitute.hellbender.tools.genomicsdb.GenomicsDBImport done. Elapsed time: 159.39 minutes.
+Runtime.totalMemory()=9407823872
+Tool returned:
+true
