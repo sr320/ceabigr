@@ -2,3 +2,4 @@
 *.idx
 Cv-rnaseq_genotypes.vcf.gz.tbi
 GenomicsDB
+GenotypeGVCFs_stout.txt
