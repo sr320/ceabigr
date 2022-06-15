@@ -31,6 +31,8 @@ genome-features/C_virginica-3.0-fuzznuc-CGmotif.gff
 *.bedgraph-Meth
 *.bedgraph-modMeth
 *.bedgraph-lowMeth
+#trying to fix this
+output/11-RNA-snps/*stout.txt
 output/methylation-landscape/12M_R1_val_1_10x.SNPcorr.bedgraph-lowMeth.bed
 output/methylation-landscape/12M_R1_val_1_10x.SNPcorr.bedgraph-Meth.bed
 output/methylation-landscape/12M_R1_val_1_10x.SNPcorr.bedgraph-modMeth.bed
