@@ -6,3 +6,4 @@ GenomicsDB
 Cv-rnaseq_genotypes-filtered.vcf.gz.tbi
 Genotype_filter_stout.txt
 GenotypeGVCFs_stout.txt
+Cv-rnaseq_genotypes-filtered.true.vcf.gz.tbi
