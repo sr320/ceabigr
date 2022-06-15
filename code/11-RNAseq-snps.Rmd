@@ -322,19 +322,27 @@ echo "Hard filtering variants"
 --filter "AF < 0.30" >> "Genotype_filter_stout.txt" 2>&1
 ```
 
-x
+
+
+```{bash}
 # Select only SNPs that pass filtering
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
+
+
+
 echo "Selecting SNPs that pass fitering"
-${gatk} SelectVariants \
--R ${homedir}data/Olurida_v081_concat/Olurida_v081_concat_rehead.fa \
--V Olurida_QuantSeq2020_genotypes-filtered.vcf.gz \
+/home/shared/gatk-4.2.5.0/gatk SelectVariants \
+-R /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/Cvirginica_v300.fa \
+-V Cv-rnaseq_genotypes-filtered.vcf.gz \
 --exclude-filtered TRUE \
 --select-type-to-include SNP \
--O Olurida_QuantSeq2020_genotypes-filtered-true.vcf.gz \
- >> "${jobdir}13-SelectVariants_stout.txt" 2>&1
+-O Cv-rnaseq_genotypes-filtered.true.vcf.gz \
+ >> "SelectVariants_stout.txt" 2>&1
 
 echo "complete!"
 ```
+
+
 
 
 
