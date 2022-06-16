@@ -1,0 +1,7 @@
+---
+title: "14-RNA-kallisto"
+output: html_document
+---
+
+Lets get all trimmed rna-seq data
+
