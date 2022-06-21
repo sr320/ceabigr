@@ -573,14 +573,16 @@ ggplotly(
     geom_point(size=3, aes(text=colnames(vsd.treatment))) + 
    theme_minimal()+ stat_ellipse(), tooltip = "text")
 
-# PCA of male only, by treatment 
+# PCA of male only, by treatment (using all genes)
+
 ggplotly(
-  plotPCA(vsd.male, intgroup=c("Treatment")) +
+  plotPCA(vsd.male, intgroup=c("Treatment"), ntop=ncol(counts.ts.male)) +
            ggtitle("PCA of sperm (var-stabilizing transformed)") +
     geom_point(size=3, aes(text=colnames(vsd.male))) +
    theme_minimal()+ stat_ellipse(), tooltip = "text")
 
 # PCA of female only, by treatment 
+
 ggplotly(
   plotPCA(vsd.female, intgroup=c("Treatment"),  ntop=1000) +
            ggtitle("PCA of eggs (var-stabilizing transformed)") +
@@ -747,6 +749,35 @@ print("Comparison: Eggs - exposed vs. unexposed")
 summary(res.eggs <- results(dds.DESeq.female, contrast=c("Treatment", "Control", "Exposed"), alpha=0.05))
 paste("No. of genes differentially expressed (padj<0.05) by treatment, Control vs. Exposed (eggs only):",  sum(res.eggs$padj < 0.05, na.rm=TRUE))
 ```
+### Plot differentially expressed genes 
+
+```{r}
+dds.DESeq.male
+
+x <- res.sperm %>% as.data.frame() %>% filter(padj < 0.05) %>% head(n=10) %>% rownames() %>% unlist() %>% as.vector()
+
+diff_plots = list()
+for (i in 1:length(x)) {
+a <-  plotCounts(dds.DESeq.male, gene=x[i], intgroup=c("Treatment"), returnData = TRUE)
+b <- ggplot(a %>% rownames_to_column("sample"),
+       aes(x=Treatment, y=count, color=Treatment, label=sample)) +
+  geom_point(size=2, position=position_jitter(w = 0.15,h = 0)) +
+    #geom_text() +
+    theme_bw() +
+    ggtitle(x[i]) +
+    theme(plot.title = element_text(hjust = 0.5))
+diff_plots[[i]] <- b
+}
+diff_plots
+```
+
+## Write out results 
+
+```{r}
+res.sperm %>% as.data.frame() %>% filter(padj < 0.05) %>% 
+  write_delim(file = "../output/15-Gene-expression-analysis/DESeq2_DEGs_sperm.tab", delim = "\t")
+```
+
 
 ## Gene-wise variance, eggs 
 
@@ -876,24 +907,6 @@ counts.norm.eggs.filt %>% as.data.frame() %>% rownames_to_column("gene") %>%
   
 ```
 
-
-
-```{r}
-diff_plots = list()
-for (i in 1:length(x)) {
-a <-  plotCounts(dds.DESeq.female, gene=x[i], intgroup=c("Treatment"), returnData = TRUE)
-b <- ggplot(a %>% filter(Treatment==c("Control", "Exposed"))
-                         %>% rownames_to_column("sample"),
-       aes(x=Treatment, y=count, color=Treatment, label=sample)) +
-  geom_point(position=position_jitter(w = 0.1,h = 0)) +
-    geom_text() +
-    theme_bw() +
-    ggtitle(x[i]) +
-    theme(plot.title = element_text(hjust = 0.5))
-diff_plots[[i]] <- b
-}
-diff_plots
-```
 
 NEXT TO DO: 
 - DAPC analysis? 
