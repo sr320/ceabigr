@@ -5,3 +5,71 @@ output: html_document
 
 Lets get all trimmed rna-seq data
 
+```{bash}
+wget --recursive --no-parent --no-directories --accept '*[MF]_*fq.gz' \
+--accept 'trimmed_fastq_checksums.md' \
+-P /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/big \
+https://gannet.fish.washington.edu/Atumefaciens/20220224_cvir_gonad_RNAseq_fastp_trimming/
+```
+
+
+```{bash}
+cd ../data/
+curl -O https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/022/765/GCF_002022765.2_C_virginica-3.0/GCF_002022765.2_C_virginica-3.0_cds_from_genomic.fna.gz
+``` 
+
+
+Creating an index
+```{bash}
+/home/shared/kallisto/kallisto \
+index -i ../data/GCF_002022765.2_C_virginica-3.0_cds_from_genomic.index \
+../data/GCF_002022765.2_C_virginica-3.0_cds_from_genomic.fna
+```
+
+
+
+```{bash}
+find ../data/big/*_R1.fastp* \
+| xargs basename -s _R1.fastp-trim.20bp-5prime.20220224.fq.gz | xargs -I{} /home/shared/kallisto/kallisto \
+quant -i ../data/GCF_002022765.2_C_virginica-3.0_cds_from_genomic.index \
+-o ../output/14-RNA-kallisto/{} \
+-t 40 \
+../data/big/{}_R1.fastp-trim.20bp-5prime.20220224.fq.gz ../data/big/{}_R2.fastp-trim.20bp-5prime.20220224.fq.gz \
+2>&1 | tee ../output/14-RNA-kallisto/{}.out
+```
+
+
+```{R}
+library(edgeR)
+```
+
+```{bash}
+/home/shared/trinityrnaseq-v2.12.0/util/abundance_estimates_to_matrix.pl \
+--est_method kallisto \
+    --gene_trans_map none \
+    --out_prefix ../output/14-RNA-kallisto/run01 \
+    --name_sample_by_basedir \
+     ../output/14-RNA-kallisto/S12M/abundance.tsv \
+     ../output/14-RNA-kallisto/S13M/abundance.tsv \
+     ../output/14-RNA-kallisto/S23M/abundance.tsv \
+     ../output/14-RNA-kallisto/S31M/abundance.tsv
+```
+
+
+```{bash}
+/home/shared/trinityrnaseq-v2.12.0/util/abundance_estimates_to_matrix.pl \
+--est_method kallisto \
+    --gene_trans_map none \
+    --out_prefix ../output/14-RNA-kallisto/run02 \
+    --name_sample_by_basedir \
+     ../output/14-RNA-kallisto/S12M/abundance.tsv \
+     ../output/14-RNA-kallisto/S23M/abundance.tsv \
+     ../output/14-RNA-kallisto/S31M/abundance.tsv \
+     ../output/14-RNA-kallisto/S48M/abundance.tsv \
+     ../output/14-RNA-kallisto/S59M/abundance.tsv \
+     ../output/14-RNA-kallisto/S9M/abundance.tsv \
+     ../output/14-RNA-kallisto/S13M/abundance.tsv \
+     ../output/14-RNA-kallisto/S64M/abundance.tsv \
+     ../output/14-RNA-kallisto/S6M/abundance.tsv \
+     ../output/14-RNA-kallisto/S7M/abundance.tsv
+```
