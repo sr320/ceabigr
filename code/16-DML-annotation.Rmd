@@ -1,0 +1,20 @@
+---
+title: "16-DML-annotation"
+output: html_document
+---
+
+
+Working with to dml files
+
+```{bash}
+head ../data/*dml.bed
+```
+
+
+```{bash}
+wc -l ../data/*dml.bed
+```
+
+
+
+Where do these DMLs overlap in genome? 
