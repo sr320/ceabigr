@@ -1,0 +1,12 @@
+Using GATK jar /home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -jar /home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar CreateSequenceDictionary -R ../data/Cvirginica_v300.fa -O ../data/Cvirginica_v300.dict
+10:14:27.231 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/home/shared/gatk-4.2.5.0/gatk-package-4.2.5.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+[Thu Mar 10 10:14:27 PST 2022] CreateSequenceDictionary --OUTPUT ../data/Cvirginica_v300.dict --REFERENCE ../data/Cvirginica_v300.fa --TRUNCATE_NAMES_AT_WHITESPACE true --NUM_SEQUENCES 2147483647 --VERBOSITY INFO --QUIET false --VALIDATION_STRINGENCY STRICT --COMPRESSION_LEVEL 2 --MAX_RECORDS_IN_RAM 500000 --CREATE_INDEX false --CREATE_MD5_FILE false --GA4GH_CLIENT_SECRETS client_secrets.json --help false --version false --showHidden false --USE_JDK_DEFLATER false --USE_JDK_INFLATER false
+Mar 10, 2022 10:14:27 AM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+[Thu Mar 10 10:14:27 PST 2022] Executing as sr320@raven on Linux 5.4.0-96-generic amd64; OpenJDK 64-Bit Server VM 11.0.14+9-Ubuntu-0ubuntu2.18.04; Deflater: Intel; Inflater: Intel; Provider GCS is available; Picard version: Version:4.2.5.0
+[Thu Mar 10 10:14:30 PST 2022] picard.sam.CreateSequenceDictionary done. Elapsed time: 0.05 minutes.
+Runtime.totalMemory()=2155872256
+Tool returned:
+0

@@ -1,0 +1,9 @@
+,statistic,p.value,parameter,method,GenomeFeature,p.adj
+1,2154.64197785723,0,1,Pearson's Chi-squared test with Yates' continuity correction,exonUTR,0
+2,293506.124059723,0,1,Pearson's Chi-squared test with Yates' continuity correction,CDS,0
+3,141811.353777623,0,1,Pearson's Chi-squared test with Yates' continuity correction,intron,0
+4,56195.9086606558,0,1,Pearson's Chi-squared test with Yates' continuity correction,upstream,0
+5,5253.42333883346,0,1,Pearson's Chi-squared test with Yates' continuity correction,downstream,0
+6,1.07756413220743,0.299243115989684,1,Pearson's Chi-squared test with Yates' continuity correction,lncRNA,0.299243115989684
+7,11000.9569956692,0,1,Pearson's Chi-squared test with Yates' continuity correction,TE,0
+8,530753.083998075,0,1,Pearson's Chi-squared test with Yates' continuity correction,intergenic,0

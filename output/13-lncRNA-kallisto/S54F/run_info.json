@@ -1,0 +1,13 @@
+{
+	"n_targets": 4750,
+	"n_bootstraps": 0,
+	"n_processed": 22715760,
+	"n_pseudoaligned": 1283406,
+	"n_unique": 756887,
+	"p_pseudoaligned": 5.6,
+	"p_unique": 3.3,
+	"kallisto_version": "0.46.1",
+	"index_version": 10,
+	"start_time": "Sat Mar 12 10:45:15 2022",
+	"call": "/home/shared/kallisto/kallisto quant -i ../data/GCF_002022765.2_C_virginica-3.0_lncRNA.index -o ../output/13-lncRNA-kallisto/S54F -t 40 ../data/S54F_R1.fastp-trim.20bp-5prime.20220224.fq.gz ../data/S54F_R2.fastp-trim.20bp-5prime.20220224.fq.gz"
+}

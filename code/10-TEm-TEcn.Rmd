@@ -1,0 +1,26 @@
+---
+title: "10-TEm-TEcn"
+output: html_document
+---
+
+
+TE methylation
+
+```{bash}
+head -1 ../output/07-TE-intersect-meth/*mTE*
+```
+
+TE Methylation Summary 
+
+```{bash}
+head -3 ../output/07-TE-intersect-meth/*summary*
+```
+
+
+TE Copy Number
+
+```{bash}
+head -2 ../output/02-te-all/*out
+```
+
+

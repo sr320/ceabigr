@@ -1,0 +1,94 @@
+---
+title: "Intron-intersect-meth"
+output: html_document
+---
+
+#Load necessary libraries
+```{r}
+library(tidyverse)
+```
+
+
+
+ #add GeneID back to intron bed file
+ 
+```{bash}
+/home/shared/bedtools2/bin/intersectBed \
+  -wb \
+  -a ~/ceabigr/genome-features/C_virginica-3.0_intron.bed \
+  -b ~/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff | \
+  awk -F"\t" '{OFS=FS="\t"}{if($6=="gene")print $0}' |\
+  awk -F"\t" '{OFS=FS="\t"}{sub(/.*;gene=/,"",$12);sub(/;.*/,"",$12);print $1FS$2FS$3FS$12}' \
+  > ~/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_intron.bed
+   
+   
+```
+ 
+ 
+ # CODE TO GET METHYLATION INTERSECT WITH Intron
+
+
+```{bash}
+ cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/data
+
+ FILES=$(ls *bedgraph)
+
+ for file in ${FILES}
+ do
+    NAME=$(echo ${file} | awk -F "_" '{print $1}')
+    echo ${NAME}
+
+   /home/shared/bedtools2/bin/intersectBed \
+   -wb \
+   -a ${NAME}_R1_val_1_10x.bedgraph \
+   -b  ~/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_intron.bed\
+   > ~/ceabigr/output/${NAME}_mIntron.out
+ done  
+```
+ # Get gene percent methylation by calculating the mean and median Loci percent methylation for each sample
+
+#Want to see unique transposable elements through 26 different files/samples 
+```{r}
+# create a vector of filenames with full path 
+filenames <- list.files(path = "~/ceabigr/output", pattern = "_mIntron.out", full.names = TRUE)  
+
+b <- data.frame()   # create empty dataframe to be populated with mean & median summary stats for each feature within a sample 
+
+for (i in 1:length(filenames)) {  
+  print(filenames[i])  # print out file location and name 
+  testMte <- read.csv(file = filenames[i], sep = "\t", header = FALSE) # read in each sample data 
+    # summarize methylation data per feature, chromosome, start, and end position with mean & median 
+    group12 <- testMte %>% group_by(V5,V6,V7,V8) %>%   
+    summarize(avg = mean(V4, na.rm=TRUE), median=median(V4, na.rm=TRUE)) %>%
+
+    # add new column with sample name 
+    mutate(sample=gsub("/home/shared/8TB_HDD_02/strigg/ceabigr/output/", "", filenames[i]))
+   # combine feature mean and median methylation for each sample in one common dataframe called b
+  b <- rbind(b, group12)
+}
+
+#rename columns
+colnames(b) <- c("chr","start","end","feature_name","mean_meth", "median_meth", "sample")
+
+#clean up sample name
+b$sample <- gsub("_mIntron.out","", b$sample)
+
+#add intron numbering
+intron.rle <- rle(b$feature_name)
+
+b$feature_name <- paste0(rep(intron.rle$values, times = intron.rle$lengths), "_","intron_",unlist(lapply(intron.rle$lengths, seq_len)))
+
+#write out dataframe
+write.table(b, file = "~/ceabigr/output/intron_summary_allsamples.txt",quote = F, row.names = F, sep = "\t")
+```
+
+
+
+
+
+
+
+
+
+
+

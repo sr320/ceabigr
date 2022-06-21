@@ -1,0 +1,349 @@
+---
+title: "11-RNAseq-snps"
+output: html_document
+---
+
+Bam files at 
+/home/shared/8TB_HDD_02/ashuff/Projects/ceabigr/data/SortedBAM
+```{bash}
+find /home/shared/8TB_HDD_02/ashuff/Projects/ceabigr/data/SortedBAM/*bam | xargs basename -s .bam \
+| xargs -I{} \
+/home/shared/samtools-1.12/samtools mpileup --VCF --no-BAQ \
+--fasta-ref ../data/Cvirginica_v300.fa \
+/home/shared/8TB_HDD_02/ashuff/Projects/ceabigr/data/SortedBAM/{}.bam \
+-o ../output/{}.vcf.gz
+```
+rest
+%%bash
+for f in /Volumes/caviar/wd/2016-12-02/*.bam
+do
+bcftools \
+call -v -m /Volumes/caviar/wd/2016-12-02/$(basename "${f}" .bam).vcf.gz \
+> /Volumes/caviar/wd/2016-12-02/$(basename "${f}" .bam)_calls.vcf.gz
+done
+
+
+
+# GATK method
+
+https://github.com/laurahspencer/red-king_RNASeq-2022
+
+
+RE-DOWNLOADING BAMS
+
+
+https://gannet.fish.washington.edu/Atumefaciens/20220225_cvir_stringtie_GCF_002022765.2_isoforms/
+
+sr320@raven:/home/shared/8TB_HDD_01/sr320/github/ceabigr/data$ 
+
+wget -r \
+--no-check-certificate \
+--quiet \
+--no-directories --no-parent \
+-P . \
+-A *sorted.bam  \
+https://gannet.fish.washington.edu/Atumefaciens/20220225_cvir_stringtie_GCF_002022765.2_isoforms/
+
+
+
+```
+# Deduplicate using picard (within gatk), output will have duplicates removed 
+
+echo "Deduplicating bams"
+for file in *sorted.bam
+do
+sample="$(basename -a $file | cut -d "." -f 1)"
+```
+
+```{bash}
+echo "Deduplicating bams"
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/
+
+for file in *sorted.bam
+do
+sample="$(basename -a $file | cut -d "." -f 1)"
+
+/home/shared/gatk-4.2.5.0/gatk MarkDuplicates \
+I=$file \
+O="../output/11-RNAseq-snps/$sample.dedup.bam" \
+M="../output/11-RNAseq-snps/$sample.dup_metrics.txt" \
+REMOVE_DUPLICATES=true
+done
+```
+
+```{bash}
+pwd
+```
+
+
+```{bash}
+# Create a FASTA sequence dictionary file for O.lurida genome (needed by gatk)
+echo "Creating sequence dictionary (.dict)" 
+/home/shared/gatk-4.2.5.0/gatk CreateSequenceDictionary \
+-R ../data/Cvirginica_v300.fa \
+-O ../data/Cvirginica_v300.dict \
+ >> ../output/11-RNAseq-snps/CreateSequenceDictionary.txt 2>&1
+```
+
+
+```{bash}
+# Split reads spanning splicing events 
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
+echo "Splitting reads spanning splice junctions (SplitNCigarReads)"
+for file in *dedup.bam
+do
+sample="$(basename -a $file | cut -d "." -f 1)"
+
+# split CigarN reads
+/home/shared/gatk-4.2.5.0/gatk SplitNCigarReads \
+-R ../../data/Cvirginica_v300.fa  \
+-I $file \
+-O ../../output/11-RNAseq-snps/$sample.dedup-split.bam
+done >> ../../output/11-RNAseq-snps/CigarNSplit_stout.txt 2>&1
+
+
+```
+
+```{bash}
+# Add read group ID to bams (needed by gatk)
+echo "Adding read group to bams" 
+
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
+
+for file in *dedup-split.bam
+do
+sample="$(basename -a $file | cut -d "." -f 1)"
+
+# add read group info to headers, specifying sample names 
+/home/shared/gatk-4.2.5.0/gatk AddOrReplaceReadGroups \
+I=$sample.dedup-split.bam \
+O=$sample.dedup-split-RG.bam \
+RGID=1 \
+RGLB=$sample \
+RGPL=ILLUMINA \
+RGPU=unit1 \
+RGSM=$sample
+done >> AddReadGroup_stout.txt 2>&1
+```
+
+
+
+```{bash}
+
+# Index the final .bam files (that have been deduplicated, split, read-group added)
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
+
+echo "Indexing variant-call ready .bam files"
+for file in *dedup-split-RG.bam
+do
+/home/shared/samtools-1.12/samtools index $file 
+done >> index-bams.txt 2>&1
+```
+
+```{bash}
+pwd
+```
+
+
+
+
+```{bash}
+# create interval list (just a list of all contigs in genome)
+echo "Creating intervals list"
+awk 'BEGIN {FS="\t"}; {print $1 FS "0" FS $2}' ../data/Cvirginica_v300.fa.fai  > ../output/11-RNAseq-snps/Cv_intervals.bed 
+
+```
+
+
+
+
+
+
+
+
+```{bash}
+# Call variants 
+<!-- echo "Calling variants using HaplotypeCaller" -->
+
+<!-- cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps -->
+
+<!-- for file in *dedup-split-RG.bam -->
+<!-- do -->
+<!-- sample="$(basename -a $file | cut -d "." -f 1)" -->
+
+<!-- /home/shared/gatk-4.2.5.0/gatk HaplotypeCaller \ -->
+<!-- -R /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/Cvirginica_v300.fa \ -->
+<!-- -I $sample.dedup-split-RG.bam \ -->
+<!-- -O $sample.variants.g.vcf \ -->
+<!-- --native-pair-hmm-threads 36 \ -->
+<!-- -ERC GVCF -->
+<!-- done >> HaplotypeCaller_stout.txt 2>&1 -->
+
+
+ACTUALL RUN ON MOX
+#SBATCH --chdir=/gscratch/scrubbed/sr320/031722-haplo
+
+
+
+# Directories and programs
+bismark_dir="/gscratch/srlab/programs/Bismark-0.22.3"
+bowtie2_dir="/gscratch/srlab/programs/bowtie2-2.3.4.1-linux-x86_64/"
+samtools="/gscratch/srlab/programs/samtools-1.9/samtools"
+reads_dir="/gscratch/srlab/sr320/data/cvirg/"
+fastqc="/gscratch/srlab/programs/fastqc_v0.11.9/fastqc"
+genome_folder="/gscratch/srlab/sr320/data/Cvirg-genome/"
+
+source /gscratch/srlab/programs/scripts/paths.sh
+
+for file in *dedup-split-RG.bam
+do
+sample="$(basename -a $file | cut -d "." -f 1)"
+
+/gscratch/srlab/programs/gatk-4.1.9.0/gatk HaplotypeCaller \
+-R Cvirginica_v300.fa \
+-I $sample.dedup-split-RG.bam \
+-O $sample.variants.g.vcf \
+--native-pair-hmm-threads 12 \
+-ERC GVCF
+done
+
+
+```
+
+
+
+```{bash}
+head ../output/11-RNAseq-snps/HaplotypeCaller_stout.txt
+```
+
+
+```{bash}
+
+wget -r \
+--no-check-certificate \
+--quiet \
+--no-directories --no-parent \
+-P ../output/11-RNAseq-snps/ \
+-A *variants.g.vcf  \
+https://gannet.fish.washington.edu/seashell/bu-github/ceabigr/output/11-RNAseq-snps/
+
+```
+
+```{bash}
+
+wget -r \
+--no-check-certificate \
+--quiet \
+--no-directories --no-parent \
+-P ../output/11-RNAseq-snps/ \
+-A *variants.g.vcf.idx \
+https://gannet.fish.washington.edu/seashell/bu-github/ceabigr/output/11-RNAseq-snps/
+
+```
+
+
+
+```{bash}
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
+
+
+#rm sample_map.txt  #remove if already exists 
+echo "Creating sample map of all gvcfs"
+for file in *variants.g.vcf
+do
+sample="$(basename -a $file | cut -d "." -f 1)"
+echo -e "$sample\t$file" >> sample_map.txt
+done
+```
+
+```{bash}
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
+
+
+# create interval list (just a list of all contigs in genome)
+echo "Creating intervals list"
+awk 'BEGIN {FS="\t"}; {print $1 FS "0" FS $2}' /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/Cvirginica_v300.fa.fai > intervals.bed 
+
+
+```
+
+```{bash}
+# Aggregate single-sample GVCFs into GenomicsDB
+# Note: the intervals file requires a specific name - e.g. for .bed format, it MUST be "intervals.bed"
+
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
+
+echo "Aggregating single-sample GVCFs into GenomicsDB"
+#rm -r GenomicsDB/ #can't already have a GenomicsDB directory, else will fail 
+/home/shared/gatk-4.2.5.0/gatk GenomicsDBImport \
+--genomicsdb-workspace-path GenomicsDB/ \
+-L intervals.bed \
+--sample-name-map sample_map.txt \
+--reader-threads 40 >> "GenomicsDBImport_stout.txt" 2>&1
+```
+
+```{bash}
+# Joint genotype 
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
+
+
+echo "Joint genotyping"
+/home/shared/gatk-4.2.5.0/gatk GenotypeGVCFs \
+-R /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/Cvirginica_v300.fa \
+-V gendb://GenomicsDB \
+-O Cv-rnaseq_genotypes.vcf.gz \
+>> "GenotypeGVCFs_stout.txt" 2>&1
+
+```
+
+```{bash}
+# Hard filter variants 
+
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
+
+echo "Hard filtering variants"
+/home/shared/gatk-4.2.5.0/gatk VariantFiltration \
+-R /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/Cvirginica_v300.fa \
+-V Cv-rnaseq_genotypes.vcf.gz \
+-O Cv-rnaseq_genotypes-filtered.vcf.gz \
+--filter-name "FS" \
+--filter "FS > 60.0" \
+--filter-name "QD" \
+--filter "QD < 2.0" \
+--filter-name "QUAL30" \
+--filter "QUAL < 30.0" \
+--filter-name "SOR3" \
+--filter "SOR > 3.0" \
+--filter-name "DP15" \
+--filter "DP < 15" \
+--filter-name "DP150" \
+--filter "DP > 150" \
+--filter-name "AF30" \
+--filter "AF < 0.30" >> "Genotype_filter_stout.txt" 2>&1
+```
+
+
+
+```{bash}
+# Select only SNPs that pass filtering
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/output/11-RNAseq-snps
+
+
+
+echo "Selecting SNPs that pass fitering"
+/home/shared/gatk-4.2.5.0/gatk SelectVariants \
+-R /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/Cvirginica_v300.fa \
+-V Cv-rnaseq_genotypes-filtered.vcf.gz \
+--exclude-filtered TRUE \
+--select-type-to-include SNP \
+-O Cv-rnaseq_genotypes-filtered.true.vcf.gz \
+ >> "SelectVariants_stout.txt" 2>&1
+
+echo "complete!"
+```
+
+
+
+
+
+

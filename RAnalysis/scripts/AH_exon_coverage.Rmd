@@ -1,0 +1,386 @@
+---
+title: "exon_coverage"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Coverage of exons in gene expression data.  
+
+Download sorted bam files.  
+```{bash}
+wget -r --no-check-certificate --quiet --no-directories --no-parent -P ../../data/SortedBAM -A *sorted.bam https://gannet.fish.washington.edu/Atumefaciens/20210726_cvir_stringtie_GCF_002022765.2_isoforms/
+```
+
+Run bedtools to generate coverage information for each sample.    
+```{bash}
+cd ~/Projects/ceabigr/data/SortedBAM
+
+FILES=$(ls *.sorted.bam)
+
+for file in ${FILES}
+do
+    NAME=$(echo ${file} | awk -F "." '{print $1}')
+    echo ${NAME}
+
+    /home/shared/bedtools2/bin/bedtools coverage \
+    -mean \
+    -sorted \
+    -a ~/Projects/ceabigr/genome-features/C_virginica-3.0_Gnomon_exon_sorted_yrv.bed \
+    -b ~/Projects/ceabigr/data/SortedBAM/${NAME}.sorted.bam \
+    > ~/Projects/ceabigr/data/exon_coverage/${NAME}_exon_cov_m.out
+done
+```
+
+# Coverage of TE in gene expression data.  
+
+Run .bam files against C_virginica-3.0_TE-all.gff -> turn in .bed files 
+
+```{bash}
+cd ~/Projects/ceabigr/genome-features/
+
+awk 'BEGIN{FS=OFS="\t"} {print $1,$4,$5}' C_virginica-3.0_TE-all.gff > C_virginica-3.0_TE-all.bed
+
+```
+
+Run this against the TE files to get out files for TE 
+
+Run bedtools to generate coverage information for each sample.    
+```{bash}
+cd ~/Projects/ceabigr/data/SortedBAM
+
+FILES=$(ls *.sorted.bam)
+
+for file in ${FILES}
+do
+    NAME=$(echo ${file} | awk -F "." '{print $1}')
+    echo ${NAME}
+
+    /home/shared/bedtools2/bin/bedtools coverage \
+    -mean \
+    -sorted \
+    -a ~/Projects/ceabigr/genome-features/C_virginica-3.0_TE-all.bed \
+    -b ~/Projects/ceabigr/data/SortedBAM/${NAME}.sorted.bam \
+    > ~/Projects/ceabigr/data/TE_coverage/${NAME}_TE_cov_m.out
+done
+```
+
+# Trial correlation of gene expression coverage and methylation of TE's in one sample 
+
+Run in sample S3F between TE coverage and TE methylation
+
+Join together a test file with TE methylation adding the coverage column from our TE coverage file 
+
+TE coverage: ~Projects/ceabigr/data/TE_coverage/S3F_TE_cov_m.out
+TE methylation: ~Projects/ceabigr/output/3F_R1_val_1_bismark_bt2_pe_te-allcov_m.out
+```{r}
+library(tidyverse)
+TE_genes<-read.csv("~/Projects/ceabigr/data/TE_coverage/S6M_TE_cov_m.out", sep="\t", header=FALSE)
+TE_meth<-read.csv("~/Projects/ceabigr/output/6M_R1_val_1_bismark_bt2_pe_te-allcov_m.out", sep="\t", header=FALSE)
+
+colnames(TE_genes)<-c("chromosome", "start", "end", "gene_cov")
+colnames(TE_meth)<-c("chromosome", "predmodel", "calc", "start", "end", "X", "Y", "Z", "info", "meth_cov")
+
+test<-left_join(TE_meth, TE_genes)
+```
+
+Run correlation analysis 
+
+```{r}
+test<-test%>%
+    filter(meth_cov<400)
+
+plot(test$gene_cov~test$meth_cov)
+abline(lm(test$gene_cov~test$meth_cov), data=test, col="red")
+
+cor.test(test$gene_cov,test$meth_cov)
+```
+
+# TE coverage joining files
+
+Genes: 
+```{r}
+library(purrr)
+library(fs)
+
+# binding all gene coverage data files together
+data_genes_TE <- list.files(path = '~/Projects/ceabigr/data/TE_coverage', pattern = ".out", full.names = TRUE)%>%
+    set_names(.) %>%
+    map_dfr(read.table, .id = "file.ID", header=FALSE, sep="\t")
+
+data_genes_TE$sample_id<-sub(".*coverage/S", "", data_genes_TE$file.ID) #grab after files/
+data_genes_TE$sample_id<-sub("_TE.*", "", data_genes_TE$sample_id) #grab before underscore
+
+data_genes_TE<-data_genes_TE%>%
+    select(!file.ID)
+
+data_genes_TE<-data_genes_TE%>%
+    mutate(sex = case_when(
+        endsWith(sample_id, "M") ~ "Male",
+        endsWith(sample_id, "F") ~ "Female"
+        ))
+
+colnames(data_genes_TE)<-c("chromosome", "start", "end", "genes", "sample_id", "sex")
+
+#write this to a file
+write.csv(data_genes_TE, "~/Projects/ceabigr/output/AH_gene_coverage_TE.csv")
+```
+
+Methylation:
+```{r}
+# binding all gene coverage data files together
+data_meth_TE <- list.files(path = '/home/shared/8TB_HDD_02/javirodr/ceabigr/data/TE_analysis/meth_TE_files', pattern = ".cov", full.names = TRUE)%>%
+    set_names(.) %>%
+    map_dfr(read.table, .id = "file.ID", header=FALSE, sep="\t")
+
+#summarize mean of V4 (methylation level) and sum of V5 (methylation density) by unique combinations of V6, V9, V10 
+data_meth_TE$code<-paste(data_meth_TE$V6, data_meth_TE$V9, data_meth_TE$V10)
+
+data_meth_TE_sum<-data_meth_TE%>%
+    group_by(code)%>%
+    summarise(level=mean(V4, na.rm=TRUE), 
+              coverage=sum(V5, na.rm=TRUE))
+
+data_meth_TE_sum$chromosome<-data_meth_TE$V6[match(data_meth_TE_sum$code, data_meth_TE$code)]
+data_meth_TE_sum$start<-data_meth_TE$V9[match(data_meth_TE_sum$code, data_meth_TE$code)]
+data_meth_TE_sum$end<-data_meth_TE$V10[match(data_meth_TE_sum$code, data_meth_TE$code)]
+data_meth_TE_sum$file.ID<-data_meth_TE$file.ID[match(data_meth_TE_sum$code, data_meth_TE$code)]
+
+data_meth_TE_sum$sample_id<-sub(".*files/", "", data_meth_TE_sum$file.ID) #grab after files/
+data_meth_TE_sum$sample_id<-sub("_R.*", "", data_meth_TE_sum$sample_id) #grab before underscore
+#want to grab after "files/" and before "_R"
+
+data_meth_TE_sum<-data_meth_TE_sum%>%
+    select(!file.ID) %>%
+    select(!code)#may need to remove code
+
+data_meth_TE_sum<-data_meth_TE_sum%>%
+    mutate(sex = case_when(
+        endsWith(sample_id, "M") ~ "Male",
+        endsWith(sample_id, "F") ~ "Female"
+        ))
+
+#write this to a file
+write.csv(data_meth_TE_sum, "~/Projects/ceabigr/output/AH_methylation_level_TE.csv")
+```
+
+Join files together
+```{r}
+TE_file<-left_join(data_genes_TE, data_meth_TE_sum)
+head(TE_file)
+```
+
+Plot correlation.  
+
+```{r}
+library(ggplot2)
+
+TE_plot<-TE_file%>%
+    ggplot(., aes(x=level, y=genes, color=sex))+
+    #geom_smooth(method="loess", se=TRUE, fullrange=TRUE, level=0.95, color="black") +
+    geom_point(pch = 21, size=4) + 
+    xlab("Methylation level") + 
+    ylab("Gene expression")+
+    ylim(0,300)+
+    xlim(0,150)+
+    theme_classic() + 
+    theme(
+      legend.position="right",
+      axis.title=element_text(face="bold", size=14),
+      axis.text=element_text(size=12, color="black"), 
+      legend.title=element_text(face="bold", size=14), 
+      legend.text=element_text(size=12)
+      ); TE_plot
+
+```
+
+NEXT NEED TO PLOT METHYLATION COVERAGE AGAINST METHYLATION LEVEL
+
+# Join files for exon level 
+
+```{r}
+library(purrr)
+library(fs)
+
+# binding all gene coverage data files together
+data_genes_exon <- list.files(path = '~/Projects/ceabigr/data/exon_coverage', pattern = ".out", full.names = TRUE)%>%
+    set_names(.) %>%
+    map_dfr(read.table, .id = "file.ID", header=FALSE, sep="\t")
+
+data_genes_exon$sample_id<-substr(data_genes_exon$file.ID,69,71)
+
+data_genes_exon<-data_genes_exon%>%
+    select(!file.ID)
+
+data_genes_exon<-data_genes_exon%>%
+    mutate(sex = case_when(
+        endsWith(sample_id, "M") ~ "Male",
+        endsWith(sample_id, "F") ~ "Female"
+        ))
+    
+colnames(data_genes_exon)<-c("chromosome", "start", "end", "gene_cov", "sample_id", "sex")
+
+#write this to a file
+write.csv(data_genes_exon, "~/Projects/ceabigr/output/AH_gene_coverage_exon.csv")
+```
+
+Genes: 
+```{r}
+# binding all gene coverage data files together
+data_genes_exon <- list.files(path = '~/Projects/ceabigr/data/exon_coverage', pattern = ".out", full.names = TRUE)%>%
+    set_names(.) %>%
+    map_dfr(read.table, .id = "file.ID", header=FALSE, sep="\t")
+
+data_genes_exon$sample_id<-sub(".*coverage/S", "", data_genes_exon$file.ID) #grab after files/
+data_genes_exon$sample_id<-sub("_exon.*", "", data_genes_exon$sample_id) #grab before underscore
+
+data_genes_exon<-data_genes_exon%>%
+    select(!file.ID)
+
+data_genes_exon<-data_genes_exon%>%
+    mutate(sex = case_when(
+        endsWith(sample_id, "M") ~ "Male",
+        endsWith(sample_id, "F") ~ "Female"
+        ))
+
+colnames(data_genes_exon)<-c("chromosome", "start", "end", "genes", "sample_id", "sex")
+
+#write this to a file
+write.csv(data_genes_exon, "~/Projects/ceabigr/output/AH_gene_coverage_exon.csv")
+```
+
+Methylation:
+```{r}
+# binding all methylation data files together
+data_meth_exon <- list.files(path = '/home/shared/8TB_HDD_02/javirodr/ceabigr/data/TE_analysis/meth_exon_files', pattern = ".cov", full.names = TRUE)%>%
+    set_names(.) %>%
+    map_dfr(read.table, .id = "file.ID", header=FALSE, sep="\t")
+
+#paste together scaffold exon coordinates into a "code"
+data_meth_exon$code<-paste(data_meth_exon$V6, data_meth_exon$V7, data_meth_exon$V8)
+
+#summarize mean of V4 (methylation level) and sum of V5 (methylation density) by unique combinations of V6, V7, V8 
+data_meth_exon_sum<-data_meth_exon%>%
+    group_by(code)%>%
+    summarise(level=mean(V4, na.rm=TRUE), 
+              coverage=sum(V5, na.rm=TRUE))
+
+data_meth_exon_sum$chromosome<-data_meth_exon$V6[match(data_meth_exon_sum$code, data_meth_exon$code)]
+data_meth_exon_sum$start<-data_meth_exon$V7[match(data_meth_exon_sum$code, data_meth_exon$code)]
+data_meth_exon_sum$end<-data_meth_exon$V8[match(data_meth_exon_sum$code, data_meth_exon$code)]
+data_meth_exon_sum$file.ID<-data_meth_exon$file.ID[match(data_meth_exon_sum$code, data_meth_exon$code)]
+
+data_meth_exon_sum$sample_id<-sub(".*files/", "", data_meth_exon_sum$file.ID) #grab after files/
+data_meth_exon_sum$sample_id<-sub("_R.*", "", data_meth_exon_sum$sample_id) #grab before underscore
+#want to grab after "files/" and before "_R"
+
+data_meth_exon_sum<-data_meth_exon_sum%>%
+    select(!file.ID) %>%
+    select(!code)#may need to remove code
+
+data_meth_exon_sum<-data_meth_exon_sum%>%
+    mutate(sex = case_when(
+        endsWith(sample_id, "M") ~ "Male",
+        endsWith(sample_id, "F") ~ "Female"
+        ))
+
+#remove na's
+data_meth_exon_sum<-data_meth_exon_sum%>%
+  filter(!is.na(chromosome))
+```
+
+```{r}
+#write this to a file
+write.csv(data_meth_exon_sum, "~/Projects/ceabigr/output/AH_methylation_level_exon.csv")
+```
+
+Load files if starting from this point.  
+
+```{r}
+library(tidyverse)
+data_meth_exon_sum<-read.csv("~/Projects/ceabigr/output/AH_methylation_level_exon.csv", sep=",")
+
+data_genes_exon<-read.csv("~/Projects/ceabigr/output/AH_gene_coverage_exon.csv", sep=",")
+
+head(data_meth_exon_sum)
+data_meth_exon_sum<-data_meth_exon_sum%>%
+  select(!X)
+
+head(data_genes_exon)
+data_genes_exon<-data_genes_exon%>%
+  select(!X)
+```
+
+Load metadata file.  
+```{r}
+metadata<-read.csv(file="~/Projects/ceabigr/data/adult-meta.csv", sep=",", header=TRUE)
+
+metadata<-metadata%>%
+  select(Sample.ID, Treatment)%>%
+  rename(sample_id=Sample.ID)
+```
+
+Join files together
+```{r}
+exon_file<-left_join(data_meth_exon_sum, data_genes_exon)
+
+exon_file<-exon_file%>%
+  unique(.)
+
+exon_file<-left_join(exon_file, metadata)
+
+head(exon_file)
+```
+
+Plot correlation.  
+
+```{r}
+exon_plot<-exon_file%>%
+    ggplot(., aes(x=level, y=genes, color=Treatment))+
+    facet_wrap(~Treatment*sex)+
+    geom_point(size=2) + 
+    geom_smooth(method="lm", color="black")+
+    xlab("Methylation level") + 
+    ylab("Gene expression")+
+    ylim(0,2000)+
+    #xlim(0,150)+
+    theme_classic() + 
+    theme(
+      legend.position="right",
+      axis.title=element_text(face="bold", size=14),
+      axis.text=element_text(size=12, color="black"), 
+      legend.title=element_text(face="bold", size=14), 
+      legend.text=element_text(size=12)
+      ); exon_plot
+
+```
+    
+Plot by sample.  
+
+```{r}
+exon_plot2<-exon_file%>%
+    ggplot(., aes(x=level, y=genes, color=Treatment, shape=sex))+
+    facet_wrap(~sample_id)+
+    geom_point(size=2) + 
+    #geom_smooth(method="lm", color="black")+
+    xlab("Methylation level") + 
+    ylab("Gene expression")+
+    ylim(0,2000)+
+    #xlim(0,150)+
+    theme_classic() + 
+    theme(
+      legend.position="right",
+      axis.title=element_text(face="bold", size=14),
+      axis.text=element_text(size=12, color="black"), 
+      legend.title=element_text(face="bold", size=14), 
+      legend.text=element_text(size=12)
+      ); exon_plot2
+
+```
+
+    
+    
+    
+
+
+

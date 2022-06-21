@@ -1,0 +1,322 @@
+---
+title: "eQTL_analysis"
+author: "Laura Spencer"
+date: "2/21/2022"
+output: html_document
+---
+
+```{r libraries}
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#     install.packages("BiocManager")
+# BiocManager::install("DESeq2", version = "3.8")
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#     install.packages("BiocManager")
+# BiocManager::install("apeglm", version = "3.8")
+# library(ashr, verbose="F")
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#     install.packages("BiocManager")
+# BiocManager::install("vsn", version = "3.8")
+
+list.of.packages <- c("tidyverse", "MatrixEQTL", "Hmisc") #add new libraries here
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
+# Load all libraries 
+lapply(list.of.packages, FUN = function(X) {
+  do.call("require", list(X)) 
+})
+```
+
+Load data:
+
+If investigating general relationship between methylation rate and expression: 
+- Methylation status (methylated or not, locus-level) x individual matrix 
+- Methylated loci location bedfile 
+- Gene count (normalized) x individual matrix 
+- Gene location bedfile 
+
+If investigating assocations between DMLs (DMGs?) and DEGs 
+- DMLs OR DMGs x individual matrix 
+- DMLs or DMGs location bedfile 
+- DEGs count x individual matrix 
+- DEG location bedfile 
+
+Could also do a mQTL, would also need: 
+- SNPs x individual matrix (filtered for ...?   
+- SNPs location bedfile 
+- % methylation x individual matrix 
+- Methylation locations bedfile 
+
+# Prepare data 
+
+## Gene count (normalized) x individual matrix  
+
+```{r}
+# Expression data should look like this example data: 
+#read_delim(file = "MatrixEQTL/data/GE.txt", delim = "\t")
+
+# Our expression data - normalized gene counts per sample 
+# Read in data, reformat, save to file 
+counts.norm <- read_delim(file = "../data/gene_fpkm.csv", delim = ",", ) %>% 
+    as_tibble() %>% 
+    dplyr::select(OldSample.ID, starts_with("gene")) %>%
+  mutate(OldSample.ID=gsub("S", "", OldSample.ID)) %>%
+    column_to_rownames(var = "OldSample.ID") %>% t() 
+
+# Inspect distribution of methylation for every locus (averaged across all samples), removing mitochondrial genome
+hist(counts.norm %>% as.vector())
+counts.norm %>% as.vector() %>% summary()
+rowSums(counts.norm, na.rm=TRUE) %>% as.vector() %>% summary()
+
+### Pre-filtering - remove low-frequency genes, those with less than 10 summed across all samples
+keep <- rowSums(counts.norm, na.rm=TRUE) >= 10 #use sum
+counts.norm.filt <- counts.norm[keep,]
+print(paste("# genes remaining after pre-filtering:", nrow(counts.norm.filt)))
+print(paste("# of genes dropped:", nrow(counts.norm) - nrow(counts.norm.filt), sep=" "))
+
+write.table(counts.norm.filt, "../data/gene_fpkm.txt", sep="\t",col.names = TRUE, row.names = TRUE, quote = FALSE)
+
+expression_file_name = "../data/gene_fpkm.txt"
+gene = SlicedData$new();
+gene$fileDelimiter = "\t";      # the TAB character
+gene$fileOmitCharacters = "NA"; # denote missing values;
+gene$fileSkipRows = 1;          # one row of column labels
+gene$fileSkipColumns = 1;       # one column of row labels
+gene$fileSliceSize = 2000;      # read file in slices of 2,000 rows
+gene$LoadFile(expression_file_name);
+gene #preview gene expression matrix 
+```
+
+## Generate location file of DEGs
+Needs to look like this: 
+
+```
+geneid	chr	left	right
+Gene_01	chr1	721289	731289
+Gene_02	chr1	752565	762565
+Gene_03	chr1	777121	787121
+Gene_04	chr1	785988	795988
+Gene_05	chr1	792479	802479
+Gene_06	chr1	798958	808958
+Gene_07	chr1	888658	898658
+Gene_08	chr1	918572	928572
+Gene_09	chr1	926430	936430
+```
+
+```{r}
+gene_locations <- read.table("../genome-features/C_virginica-3.0_Gnomon_genes.bed", header = FALSE, stringsAsFactors = FALSE) %>%
+  select(V4, V1, V2, V3)
+names(gene_locations) <- c("geneid", "chr", "left", "right")
+write.table(gene_locations, "../data/gene_locations.txt", sep="\t",col.names = TRUE, row.names = FALSE, quote = FALSE) # save to file 
+
+genepos <- read.table("../data/gene_locations.txt", header = TRUE, stringsAsFactors = FALSE)
+```
+
+## Methylation status akin to a SNP: 
+- Methylated or not methylated? 0 vs. 1 
+- Low methylation = X-Y% 0
+- Moderate methylation level = X-Y% 1
+- High methylation level = X-Y% 2
+
+## Downloaded the % methylation bedgraph files using the terminal via:  
+`wget --no-check-certificate -O data/union_10x.bedgraph https://gannet.fish.washington.edu/seashell/ceabigr/output/methylation-landscape/union_10x.bedgraph`
+
+This file contains % methylation per locus per individual: 
+https://gannet.fish.washington.edu/seashell/ceabigr/output/methylation-landscape/union_10x.bedgraph
+
+This file also contains the average % methylation information per locus: 
+https://gannet.fish.washington.edu/seashell/ceabigr/output/methylation-landscape/union-averages.bedgraph
+
+```{r}
+meth.percent <- read.table("../data/union-averages.bedgraph", header = TRUE, stringsAsFactors = FALSE) %>%
+    mutate_at(vars(contains("X")), as.numeric)
+
+# Inspect distribution of methylation for every locus (averaged across all samples), removing mitochondrial genome
+ggplotly(ggplot(meth.percent %>% filter(chrom!="NC_007175.2"), aes(x=total)) + 
+           geom_histogram(bins = 100, col="gray25", fill="gray75"))
+
+cols_to_mutate <- meth.percent %>% select(contains("X")) %>% colnames()
+
+meth.categories <- meth.percent %>% 
+  mutate_at(vars(contains("X")), as.numeric) %>% # convert %meth columns to numeric
+  mutate_at(cols_to_mutate, function(x) {        # assign methylotype to each individual for each locus 
+    case_when(
+      x < 10 ~ 0,                                # <10% methylated = "0" 
+      between(x, 10, 50) ~ 1,                    # 10%<x<50% methylated = "1"
+      x >= 50 ~ 2)}) %>%                         # >50% methylated = "2"
+  #mutate_at(vars(contains("X")), as.factor) %>%  
+  mutate(pos=start+1) %>%
+  mutate(methid=paste(chrom, pos, sep="")) %>%  # create a new column with locus ID (chromosome+position)
+  select(methid, chrom, pos, contains("X")) %>% 
+  #filter(chrom!="NC_007175.2") %>%  #remove mitochondrial chromosome 
+  mutate(zeros = rowSums(. == 0, na.rm=TRUE)/26,  # calc. the % of individuals with methylotype "0"
+         ones = rowSums(. == 1, na.rm=TRUE)/26,   # calc. the % of individuals with methylotype "1"
+         twos = rowSums(. == 2, na.rm=TRUE)/26,   # calc. the % of individuals with methylotype "2"
+         nas = rowSums(is.na(.))/26) %>%          # calc. the % of individuals without data "NA"
+  filter(zeros<0.9, ones<0.9, 
+         twos<0.9, nas<0.1) # remove any loci with the same methylotype or NA across 90% or greater of samples
+  
+
+# write to file 
+# remove "X" from sample ID columns names and select chr, pos, and methylotypes
+# Also, need to remove whole samples that aren't in the gene expression data 
+write.table(meth.categories %>% select(methid, contains("X")) %>% rename_with(~str_remove(., "X")) %>%
+  select(methid, counts.norm.filt %>% colnames()), 
+              "../data/meth_types.txt", sep="\t",col.names = TRUE, row.names = FALSE, quote = FALSE) # save to file 
+```
+
+## Create the methylation data object 
+
+```{r}
+# methylation data should look like this example data: 
+#read_delim(file = "MatrixEQTL/data/SNP.txt", delim = "\t")
+
+meth_file_name = "../data/meth_types.txt"
+meth = SlicedData$new();
+meth$fileDelimiter = "\t";      # the TAB character
+meth$fileOmitCharacters = "NA"; # denote missing values;
+meth$fileSkipRows = 1;          # one row of column labels
+meth$fileSkipColumns = 1;       # one column of row labels
+meth$fileSliceSize = 2000;      # read file in slices of 2,000 rows
+meth$LoadFile(meth_file_name);
+```
+
+## Create methylated loci location file 
+
+```{r}
+meth.categories %>% select(methid, chrom, pos) %>% 
+  write.table("../data/meth_locations.txt", sep="\t",col.names = TRUE, row.names = FALSE, quote = FALSE) # save to file 
+
+methpos <- read.table("../data/meth_locations.txt", header = TRUE, stringsAsFactors = FALSE)
+```
+
+## Read in covariates - sex and OA treatment 
+
+Should look like this, note that covariates need to be numeric 
+
+```
+id	Sam_01	Sam_02	Sam_03	Sam_04	Sam_05	Sam_06	Sam_07	Sam_08	Sam_09	Sam_10	Sam_11	Sam_12	Sam_13	Sam_14	Sam_15	Sam_16
+gender	0	0	0	0	0	0	0	0	1	1	1	1	1	1	1	1
+age	36	40	46	65	69	43	40	54	44	70	24	34	55	62	48	40
+```
+
+```{r}
+read.csv("../RAnalysis/data/adult-meta.csv", header=T, na.strings = NA) %>% 
+  select(Sample.ID, Treatment, Sex) %>%
+  filter(Sample.ID %in% colnames(counts.norm.filt)) %>%
+  mutate_at(vars(Treatment, Sex), as.factor) %>%  
+  mutate_at(vars(Treatment, Sex), as.numeric) %>% 
+  column_to_rownames("Sample.ID") %>% t() %>% as.data.frame() %>% rownames_to_column(var = "id") %>% 
+  write.table("../data/covariates.txt", sep="\t",col.names = TRUE, row.names = FALSE, quote = FALSE) # save to file 
+
+## Load covariates
+covariates_file_name = "../data/covariates.txt"
+cvrt = SlicedData$new();
+cvrt$fileDelimiter = "\t";      # the TAB character
+cvrt$fileOmitCharacters = "NA"; # denote missing values;
+cvrt$fileSkipRows = 1;          # one row of column labels
+cvrt$fileSkipColumns = 1;       # one column of row labels
+cvrt$LoadFile(covariates_file_name);
+```
+
+## Define settings for eQTL analysis 
+
+```{r}
+# Linear model to use, modelANOVA, modelLINEAR, or modelLINEAR_CROSS
+useModel = modelLINEAR; # modelANOVA, modelLINEAR, or modelLINEAR_CROSS
+
+# Output file name
+output_file_name_cis = tempfile();
+output_file_name_tra = tempfile();
+
+# Only associations significant at this level will be saved
+pvOutputThreshold_cis = 2e-2;
+pvOutputThreshold_tra = 1e-2;
+
+# Error covariance matrix
+# Set to numeric() for identity.
+errorCovariance = numeric();
+# errorCovariance = read.table("Sample_Data/errorCovariance.txt");
+
+# Distance for local gene-SNP pairs
+cisDist = 50000;
+```
+
+
+```{r}
+## Run the analysis
+me = Matrix_eQTL_main(
+snps = meth,
+gene = gene,
+cvrt = cvrt,
+output_file_name     = output_file_name_tra,
+pvOutputThreshold     = pvOutputThreshold_tra,
+useModel = useModel,
+errorCovariance = errorCovariance,
+verbose = TRUE,
+output_file_name.cis = output_file_name_cis,
+pvOutputThreshold.cis = pvOutputThreshold_cis,
+snpspos = methpos,
+genepos = genepos,
+cisDist = cisDist,
+pvalue.hist = "qqplot",
+min.pv.by.genesnp = FALSE,
+noFDRsaveMemory = FALSE);
+
+unlink(output_file_name_tra);
+unlink(output_file_name_cis);
+
+## Results:
+
+cat('Analysis done in: ', me$time.in.sec, ' seconds', '\n');
+cat('Detected local eQTLs:', '\n');
+show(me$cis$eqtls)
+cat('Detected distant eQTLs:', '\n');
+show(me$trans$eqtls)
+
+## Plot the Q-Q plot of local and distant p-values
+
+plot(me)
+```
+
+# other stuff 
+
+## SNPs data 
+- Methylated or not methylated? 0 vs. 1 
+- Low methylation = X-Y% 0
+- Moderate methylation level = X-Y% 1
+- High methylation level = X-Y% 2
+
+```{r}
+# SNP data should look like this example data: 
+read_delim(file = "MatrixEQTL/data/SNP.txt", delim = "\t")
+
+snp_file_name = "data/gene_fpkm.txt"
+snps = SlicedData$new();
+snps$fileDelimiter = "\t";      # the TAB character
+snps$fileOmitCharacters = "NA"; # denote missing values;
+snps$fileSkipRows = 1;          # one row of column labels
+snps$fileSkipColumns = 1;       # one column of row labels
+snps$fileSliceSize = 2000;      # read file in slices of 2,000 rows
+snps$LoadFile(snp_file_name);
+```
+
+```{bash}
+head "data/filtered.AllSamps.10x.bed"
+```
+
+Other stuff 
+
+```{r}
+# Calculate per-locus CV 
+meth.percent.cv <- meth.percent %>% 
+    mutate_at(vars(contains("X")), as.numeric) %>%
+   rowwise() %>%
+  mutate(mean=mean(c_across(contains("X")), na.rm = TRUE),
+         sd=sd(c_across(contains("X")), na.rm = TRUE)) %>%
+    mutate(cv=sd/mean)
+
+ggplotly(ggplot(meth.percent.cv %>% filter(chrom!="NC_007175.2"), aes(x=cv)) + 
+           geom_histogram(bins = 100, col="gray25", fill="gray75"))
+```
+
