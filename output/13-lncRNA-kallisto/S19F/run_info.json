@@ -1,13 +1,13 @@
 {
-	"n_targets": 4750,
+	"n_targets": 60213,
 	"n_bootstraps": 0,
 	"n_processed": 23837247,
-	"n_pseudoaligned": 1036461,
-	"n_unique": 597027,
-	"p_pseudoaligned": 4.3,
-	"p_unique": 2.5,
+	"n_pseudoaligned": 10424709,
+	"n_unique": 5787983,
+	"p_pseudoaligned": 43.7,
+	"p_unique": 24.3,
 	"kallisto_version": "0.46.1",
 	"index_version": 10,
-	"start_time": "Sat Mar 12 10:24:01 2022",
-	"call": "/home/shared/kallisto/kallisto quant -i ../data/GCF_002022765.2_C_virginica-3.0_lncRNA.index -o ../output/13-lncRNA-kallisto/S19F -t 40 ../data/S19F_R1.fastp-trim.20bp-5prime.20220224.fq.gz ../data/S19F_R2.fastp-trim.20bp-5prime.20220224.fq.gz"
+	"start_time": "Thu Jun 16 06:38:38 2022",
+	"call": "/home/shared/kallisto/kallisto quant -i ../data/GCF_002022765.2_C_virginica-3.0_cds_from_genomic.index -o ../output/13-lncRNA-kallisto/S19F -t 40 ../data/big/S19F_R1.fastp-trim.20bp-5prime.20220224.fq.gz ../data/big/S19F_R2.fastp-trim.20bp-5prime.20220224.fq.gz"
 }
