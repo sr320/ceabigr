@@ -1,0 +1,13 @@
+{
+	"n_targets": 60213,
+	"n_bootstraps": 0,
+	"n_processed": 34776112,
+	"n_pseudoaligned": 5982604,
+	"n_unique": 3308676,
+	"p_pseudoaligned": 17.2,
+	"p_unique": 9.5,
+	"kallisto_version": "0.46.1",
+	"index_version": 10,
+	"start_time": "Thu Jun 16 06:59:48 2022",
+	"call": "/home/shared/kallisto/kallisto quant -i ../data/GCF_002022765.2_C_virginica-3.0_cds_from_genomic.index -o ../output/14-RNA-kallisto/S23M -t 40 ../data/big/S23M_R1.fastp-trim.20bp-5prime.20220224.fq.gz ../data/big/S23M_R2.fastp-trim.20bp-5prime.20220224.fq.gz"
+}
