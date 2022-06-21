@@ -72,22 +72,31 @@ print(paste("# genes remaining after pre-filtering:", nrow(counts.norm.filt)))
 print(paste("# of genes dropped:", nrow(counts.norm) - nrow(counts.norm.filt), sep=" "))
 
 # Generate PCA from variance-covariance matrix 
-pca.princomp <- prcomp(cov(counts.norm.filt), scale=F) #scale=F for variance-covariance matrix
+#pca.princomp <- prcomp(cov(counts.norm.filt), scale=F) #scale=F for variance-covariance matrix
+pca.princomp <- prcomp(counts.norm.filt, scale=T, center=T) #scale=F for variance-covariance matrix
 
 # Whic pc axes are significat? 
 screeplot(pca.princomp, bstick=TRUE) #Only PC1 sign. 
-shapiro.test(pca.princomp$x) #multivariate normality not met, hmmmm  - what to do?
+#shapiro.test(pca.princomp$x) #multivariate normality not met, hmmmm  - what to do?
+shapiro.test(pca.princomp$rotation) #multivariate normality not met, hmmmm  - what to do?
 
 # How much variation is explained by each PC? 
 pca.eigenval(pca.princomp) #The Proporation of Variance = %variance 
 pc.percent <- pca.eigenval(pca.princomp)[2,1:5]*100
 
 
-# Generate dataframe for PC biplots 
+# # Generate dataframe for PC biplots 
+# tab.expr <- data.frame(sample.id = colnames(counts.norm.filt),
+#     PC1 = pca.princomp$x[,1],    # the first eigenvector
+#     PC2 = pca.princomp$x[,2],    # the second eigenvector
+#     PC3 = pca.princomp$x[,3],    # the first eigenvector
+#     stringsAsFactors = FALSE)
+
+# Generate dataframe for PC biplots
 tab.expr <- data.frame(sample.id = colnames(counts.norm.filt),
-    PC1 = pca.princomp$x[,1],    # the first eigenvector
-    PC2 = pca.princomp$x[,2],    # the second eigenvector
-    PC3 = pca.princomp$x[,3],    # the first eigenvector
+    PC1 = pca.princomp$rotation[,1],    # the first eigenvector
+    PC2 = pca.princomp$rotation[,2],    # the second eigenvector
+    PC3 = pca.princomp$rotation[,3],    # the first eigenvector
     stringsAsFactors = FALSE)
 
 # Add sample treatment info 
@@ -114,6 +123,9 @@ ggplotly(ggplot(tab.expr.annot, aes(x=PC1, y=PC2, text=sample.id)) +
   guides(colour = guide_legend(override.aes = list(size=3.5))) + 
   stat_ellipse(aes(color=Sex), size=0.3), tooltip="text")
 ```
+```{r}
+counts.norm.eggs.filt %>% rownames() %>% length()
+```
 
 ## PCAs using prcomp with just egg samples & variances analysis
 
@@ -123,21 +135,34 @@ counts.norm.eggs <- counts.norm %>% as.data.frame() %>% select(contains("F")) %>
 ### Pre-filtering - remove low-frequency genes, those with less than 10 summed across all samples
 keep.eggs <- rowSums(counts.norm.eggs, na.rm=TRUE) >= 10 
 counts.norm.eggs.filt <- counts.norm.eggs[keep.eggs,]
+
+#counts.norm.eggs.filt <- counts.norm.eggs
+
 print(paste("# genes remaining after pre-filtering:", nrow(counts.norm.eggs.filt)))
 print(paste("# of genes dropped:", nrow(counts.norm.eggs) - nrow(counts.norm.eggs.filt), sep=" "))
 print(paste("% of transcripts dropped: ", signif(100*(sum(counts.norm.eggs)-sum(counts.norm.eggs.filt))/sum(counts.norm.eggs), digits = 5), "%", sep=""))
 
 #pca.princomp.eggs <- prcomp(cov(t(counts.norm.eggs.filt)), scale=F) #scale=F for variance-covariance matrix
-pca.princomp.eggs <- prcomp(t(counts.norm.eggs.filt)) 
+pca.princomp.eggs <- prcomp(counts.norm.eggs.filt, center=T, scale = T) 
+
 pca.eigenval(pca.princomp.eggs) #The Proporation of Variance = %variance 
 pc.percent.eggs <- pca.eigenval(pca.princomp.eggs)[2,1:5]*100
 screeplot(pca.princomp.eggs, bstick=TRUE) #looks like PC 1 & maybe 2 are significant 
+
+# tab.expr.eggs <- data.frame(sample.id = colnames(counts.norm.eggs.filt),
+#     PC1 = pca.princomp.eggs$x[,1],    # the first eigenvector
+#     PC2 = pca.princomp.eggs$x[,2],    # the second eigenvector
+#     PC3 = pca.princomp.eggs$x[,3],    # the first eigenvector
+#     stringsAsFactors = FALSE)
+# shapiro.test(pca.princomp.eggs$x) #multivariate normality not met, hmmmm  
+
 tab.expr.eggs <- data.frame(sample.id = colnames(counts.norm.eggs.filt),
-    PC1 = pca.princomp.eggs$x[,1],    # the first eigenvector
-    PC2 = pca.princomp.eggs$x[,2],    # the second eigenvector
-    PC3 = pca.princomp.eggs$x[,3],    # the first eigenvector
+    PC1 = pca.princomp.eggs$rotation[,1],    # the first eigenvector
+    PC2 = pca.princomp.eggs$rotation[,2],    # the second eigenvector
+    PC3 = pca.princomp.eggs$rotation[,3],    # the first eigenvector
     stringsAsFactors = FALSE)
-shapiro.test(pca.princomp.eggs$x) #multivariate normality not met, hmmmm  
+shapiro.test(pca.princomp.eggs$rotation) #multivariate normality not met, hmmmm  
+
 tab.expr.annot.eggs <- left_join(tab.expr.eggs, sample.info, by=c("sample.id"="Sample.ID")) %>% droplevels()
 
 # ggplotly(ggplot(tab.expr.annot.eggs, aes(x=PC1, y=PC2, text=sample.id)) + 
@@ -150,7 +175,7 @@ tab.expr.annot.eggs <- left_join(tab.expr.eggs, sample.info, by=c("sample.id"="S
 #   guides(colour = guide_legend(override.aes = list(size=3.5))) + 
 #   stat_ellipse(aes(color=Treatment), size=0.3), tooltip="text")
 
-require(ggpubr)
+#require(ggpubr)
 # GGSCATTER with ellipses and stars - PC1 PC2
 ggscatter(tab.expr.annot.eggs, x="PC1", y="PC2",
           col="Treatment", size=2.5, alpha=0.85, ellipse = TRUE, star.plot = TRUE, 
@@ -201,6 +226,62 @@ hist(distances.eggs$dist.cent) #normal distribution?
 shapiro.test(distances.eggs$dist.cent)
 summary(aov(dist.cent~Treatment, data=distances.eggs)) # centroids tend to differ 
 TukeyHSD(aov(dist.cent~Treatment, data=distances.eggs)) # centroids tend to differ 
+
+# Some cool code from https://tavareshugo.github.io/data-carpentry-rnaseq/03_rnaseq_pca.html#Variance_explained_by_PCs 
+pc_eigenvalues <- pca.princomp.eggs$sdev^2
+pc_eigenvalues <- tibble(PC = factor(1:length(pc_eigenvalues)), 
+                         variance = pc_eigenvalues) %>% 
+  # add a new column with the percent variance
+  mutate(pct = variance/sum(variance)*100) %>% 
+  # add another column with the cumulative variance explained
+  mutate(pct_cum = cumsum(pct))
+
+# print the result
+pc_eigenvalues
+pc_eigenvalues %>% 
+  ggplot(aes(x = PC)) +
+  geom_col(aes(y = pct)) +
+  geom_line(aes(y = pct_cum, group = 1)) + 
+  geom_point(aes(y = pct_cum)) +
+  labs(x = "Principal component", y = "Fraction variance explained")
+pc_loadings <- pca.princomp.eggs$x
+(pc_loadings <- pc_loadings %>% 
+  as_tibble(rownames = "gene"))
+
+(top_genes <- pc_loadings %>% 
+  # select only the PCs we are interested in
+  dplyr::select(gene, PC1, PC2) %>%
+  # convert to a "long" format
+  pivot_longer(matches("PC"), names_to = "PC", values_to = "loading") %>% 
+  # for each PC
+  group_by(PC) %>% 
+  # arrange by descending order of loading
+  arrange(desc(abs(loading))) %>% 
+  # take the 100 top rows
+  dplyr::slice(1:10) %>% 
+  # pull the gene column as a vector
+  pull(gene) %>% 
+  # ensure only unique genes are retained
+  unique())
+
+top_loadings <- pc_loadings %>% 
+  filter(gene %in% top_genes)
+
+loadings_plot <- ggplot(data = top_loadings) +
+  geom_segment(aes(x = 0, y = 0, xend = PC1, yend = PC2), 
+               arrow = arrow(length = unit(0.1, "in")),
+               colour = "brown") +
+  geom_text(aes(x = PC1, y = PC2, label = gene),
+            nudge_y = 0.005, size = 3) +
+  scale_x_continuous(expand = c(0.02, 0.02))
+loadings_plot
+
+counts.norm.eggs.filt[top_genes,] %>% as.data.frame() %>% rownames_to_column("gene") %>% 
+  pivot_longer(contains("F"), names_to = "sample", values_to = "fpkm") %>% 
+  mutate_if(is.character, as.factor) %>% 
+  left_join(sample.info.female[c("Sample.ID", "Treatment")], by=c("sample"="Sample.ID")) %>% 
+  ggplot(aes(x=Treatment, y=fpkm, color=Treatment)) + geom_point() + theme_minimal() + 
+  facet_wrap(~gene, nrow=4, ncol=5, scales="free") + theme(legend.position = "none")
 ```
 
 ```{r}
@@ -219,17 +300,37 @@ print(paste("# genes remaining after pre-filtering:", nrow(counts.norm.sperm.fil
 print(paste("# of genes dropped:", nrow(counts.norm.sperm) - nrow(counts.norm.sperm.filt), sep=" "))
 
 #pca.princomp.sperm <- prcomp(cov(counts.norm.sperm.filt), scale=F) #scale=F for variance-covariance matrix
-pca.princomp.sperm <- prcomp(t(counts.norm.sperm.filt)) #scale=F for variance-covariance matrix
+#pca.princomp.sperm <- prcomp(t(counts.norm.sperm.filt)) #scale=F for variance-covariance matrix
+#pca.princomp.sperm <- prcomp(counts.norm.sperm.filt, scale=T, center=T) 
+pca.princomp.sperm <- prcomp(counts.norm.sperm.filt, scale=T) 
+
 pca.eigenval(pca.princomp.sperm) #The Proporation of Variance = %variance 
 pc.percent.sperm <- pca.eigenval(pca.princomp.sperm)[2,1:5]*100
 screeplot(pca.princomp.sperm, bstick=TRUE) #looks like PC 1 & 2 are significant 
+
 tab.expr.sperm <- data.frame(sample.id = colnames(counts.norm.sperm.filt),
-    PC1 = pca.princomp.sperm$x[,1],    # the first eigenvector
-    PC2 = pca.princomp.sperm$x[,2],    # the second eigenvector
-    PC3 = pca.princomp.sperm$x[,3],    # the first eigenvector
+    PC1 = pca.princomp.sperm$rotation[,1],    # the first eigenvector
+    PC2 = pca.princomp.sperm$rotation[,2],    # the second eigenvector
+    PC3 = pca.princomp.sperm$rotation[,3],    # the first eigenvector
     stringsAsFactors = FALSE)
-shapiro.test(pca.princomp.sperm$x) #multivariate normality not met, hmmmm  
+shapiro.test(pca.princomp.sperm$rotation) #multivariate normality not met, hmmmm  
+
+# tab.expr.sperm <- data.frame(sample.id = colnames(counts.norm.sperm.filt),
+#     PC1 = pca.princomp.sperm$x[,1],    # the first eigenvector
+#     PC2 = pca.princomp.sperm$x[,2],    # the second eigenvector
+#     PC3 = pca.princomp.sperm$x[,3],    # the first eigenvector
+#     stringsAsFactors = FALSE)
+# shapiro.test(pca.princomp.sperm$x) #multivariate normality not met, hmmmm  
 tab.expr.annot.sperm <- left_join(tab.expr.sperm, sample.info, by=c("sample.id"="Sample.ID")) %>% droplevels()
+
+ggscatter(tab.expr.annot.sperm, x="PC1", y="PC2",
+          col="Treatment", size=2.5, alpha=0.85, ellipse = TRUE, star.plot = TRUE, 
+           palette = c(Control="#2c7bb6", Exposed="#d7191c")) +
+  theme_minimal() + ggtitle("Eggs, PC1xPC2") + 
+  xlab(paste("PC1 (", round(pc.percent.sperm[1], digits = 1), "%)", sep="")) + 
+  ylab(paste("PC2 (", round(pc.percent.sperm[2], digits = 1), "%)", sep="")) + 
+  theme(legend.position = "right") + 
+  guides(colour = guide_legend(override.aes = list(size=3.5, linetype="blank"))) 
 
 ggplotly(ggplot(tab.expr.annot.sperm, aes(x=PC1, y=PC2, text=sample.id)) +  
   geom_point(aes(col=Treatment), pch=16, size=3, alpha=0.4) + 
@@ -242,15 +343,18 @@ ggplotly(ggplot(tab.expr.annot.sperm, aes(x=PC1, y=PC2, text=sample.id)) +
   stat_ellipse(aes(color=Treatment), size=0.3), tooltip="text")
 ```
 
-# DESeq2 workflow 
+# DESeq2 workflow - NOTE: this uses a different dataframe, raw counts 
+
+# UPDATE JUNE 13TH- THIS COUNT MATRIX IS WRONG!!! A RAW COUNT MATRIX DOESN'T EXIST YET. WOULD NEED TO 
 
 ### Import raw counts matrix file as dataframe, extract sample # from file/column names to simplify them 
 
 ```{r}
 # These are raw counts 
-counts <- read_delim(file = "../data/transcript-counts_per-gene-per-sample.csv", delim = ",", ) %>%
-    column_to_rownames("gene_name")
-colnames(counts) = gsub("transcript_counts.S", "", colnames(counts))
+counts <- read_delim(file = "../output/14-RNA-kallisto/run02.isoform.counts.matrix", delim = "\t") %>%
+    column_to_rownames("X1") %>% 
+  mutate_if(is.numeric, round)
+colnames(counts) = gsub("S", "", colnames(counts))
 ```
 
 ```{r}
@@ -269,7 +373,7 @@ print(paste("Number of samples:", ncol(counts)))
 print(paste("Total number of genes in dataframe:", prettyNum(nrow(counts), sep=" ")))
 print(paste("Average number of genes per sample:", prettyNum(round(mean(colSums(counts != 0)), digits = 0), big.mark = ","), sep=" "))
 
-library(plotly)
+#library(plotly)
 #inspect total counts (normalized) by sample
  ggplotly(
    ggplot(
@@ -302,7 +406,6 @@ WOULD NEED TO UPDATE FOR TRANSPOSED DATAFRAME
 NOTE: Should i do this? DESeq2 throws out low-frequency genes anyway, BUT other folks do pre-filter. For example in https://doi.org/10.1186/s12864-017-4392-0 "Genes with mean count less than ten across all samples were removed."
 
 ```{r}
-summary(counts)
 counts.t <- t(counts)
 keep <- colSums(counts.t, na.rm=TRUE) >= 10 #use sum
 #keep <- colMeans(counts.t, na.rm=TRUE) >= 10 #use mean
@@ -387,7 +490,16 @@ Split count data into sperm and eggs to analyze separately
 sample.info %>% filter(Sex=="F") %>% rownames()
 
 counts.ts.male <- counts.ts[ sample.info %>% filter(Sex=="M") %>% rownames() , ]
+keepmale <- colSums(counts.ts.male, na.rm=TRUE) >= 10 #use sum
+#keep <- colMeans(counts.t, na.rm=TRUE) >= 10 #use mean
+counts.ts.male <- counts.ts.male[,keepmale]
+print(paste("# genes remaining after pre-filtering:", ncol(counts.ts.male)))
+
 counts.ts.female <- counts.ts[ sample.info %>% filter(Sex=="F") %>% rownames() , ]
+keepfemale <- colSums(counts.ts.female, na.rm=TRUE) >= 10 #use sum
+#keep <- colMeans(counts.t, na.rm=TRUE) >= 10 #use mean
+counts.ts.female <- counts.ts.female[,keepfemale]
+print(paste("# genes remaining after pre-filtering:", ncol(counts.ts.female)))
 
 sample.info.male <- sample.info %>% filter(Sex=="M")
 sample.info.female <- sample.info %>% filter(Sex=="F")
@@ -422,6 +534,10 @@ dds.male <- DESeqDataSetFromMatrix(countData = counts.ts.male %>% t(),
 dds.female <- DESeqDataSetFromMatrix(countData = counts.ts.female %>% t(),
                               colData = sample.info.female[,"Treatment", drop=FALSE],
                               design = ~ Treatment)
+
+# dds.female.top <- DESeqDataSetFromMatrix(countData = (counts.ts.female %>% t())[top_genes %>% str_replace("gene-", ""),], 
+#                               colData = sample.info.female[,"Treatment", drop=FALSE],
+#                               design = ~ Treatment)
 ```
 
 
@@ -466,20 +582,20 @@ ggplotly(
 
 # PCA of female only, by treatment 
 ggplotly(
-  plotPCA(vsd.female, intgroup=c("Treatment")) +
+  plotPCA(vsd.female, intgroup=c("Treatment"),  ntop=1000) +
            ggtitle("PCA of eggs (var-stabilizing transformed)") +
     geom_point(size=3, aes(text=colnames(vsd.female))) +
    theme_minimal()+ stat_ellipse(), tooltip = "text")
-
 
 PCA.data.sex <- plotPCA(vsd.sex, intgroup=c("Sex"), returnData=TRUE)
 PCA.data.treatment <- plotPCA(vsd.treatment, intgroup=c("Treatment"), returnData=TRUE)
 ```
 
 ### PCA from variance stabilized-transformed data using DESeq2 
+## EGGS 
 ```{r}
 # Generate PCA 
-a <- plotPCA(vsd.female, intgroup="Treatment")
+a <- plotPCA(vsd.female, intgroup="Treatment", ntop=1000)
 
 # calculate centroids for each 
 b <- a$data %>% group_by(Treatment) %>% dplyr::summarize(PC1.mean=mean(PC1), 
@@ -518,6 +634,51 @@ all((sample.info %>% filter(Sex=="F"))$Sample.ID == t(assay(vsd.female)) %>% as.
 vsd.female.t <- t(assay(vsd.female)) %>% as.data.frame()
 print(perm.female <- adonis(vsd.female.t ~ Treatment, 
                             data=sample.info %>% filter(Sex=="F"), permutations = 1000, method="bray"))
+```
+
+## SPERM 
+
+```{r}
+# Generate PCA 
+a <- plotPCA(vsd.male, intgroup="Treatment", ntop=1000)
+
+# calculate centroids for each 
+b <- a$data %>% group_by(Treatment) %>% dplyr::summarize(PC1.mean=mean(PC1), 
+                                             PC1.sd=sd(PC1),
+                                             PC2.mean=mean(PC2),
+                                             PC2.sd=sd(PC2))
+
+# calculate euclidean distance from treatment centroid for each sample 
+c <- a$data %>% left_join(b, by = "Treatment") %>% 
+  mutate(dist.cent=sqrt((PC1-PC1.mean)^2+(PC2-PC2.mean)^2)) %>%
+  mutate(Treatment=factor(Treatment, levels=c("Control", "Exposed")))
+  
+ggplot(data=c, aes(x=PC1, y=PC2, group=Treatment, colour=Treatment)) + 
+  geom_point() + 
+    theme_minimal()+ stat_ellipse() +
+  geom_segment(aes(x=PC1.mean, y=PC2.mean, xend=PC1, yend=PC2)) +
+      geom_point(aes(x=PC1.mean, y=PC2.mean,fill=Treatment), col="black", shape=22, size=4) +
+   ggtitle("PCA by Treatment, All genes\n(var-stabilizing transformed)") + theme(legend.position = c(0.9, 0.15))
+
+# examine euclidean distances from centroid 
+ggplot(c, aes(x=Treatment, y=dist.cent, colour=Treatment)) + 
+  geom_boxplot() + geom_jitter(width = .2) +
+  ggtitle("Euclidean distances to centroid of PCA by treatment\nAll genes") +
+  theme_minimal() + theme(legend.position = "none", axis.title.x = element_blank())
+hist(c$dist.cent) #normal distribution? 
+shapiro.test(c$dist.cent) #marginal
+summary(aov(dist.cent~Treatment, data=c)) # centroids are not significantly different 
+
+hist(log(c$dist.cent)) #log transformed = yes  
+shapiro.test(log(c$dist.cent)) #log transformed = yes  
+summary(aov(log(dist.cent)~Treatment, data=c)) # centroids are not significantly different 
+
+## perMANOVA - multivariate analysis of variance 
+## Using variance-stabilized transformation
+all((sample.info %>% filter(Sex=="M"))$Sample.ID == t(assay(vsd.male)) %>% as.data.frame() %>% rownames()) #double check samples are in same order
+vsd.male.t <- t(assay(vsd.male)) %>% as.data.frame()
+print(perm.male <- adonis(vsd.male.t ~ Treatment, 
+                            data=sample.info %>% filter(Sex=="M"), permutations = 1000, method="bray"))
 ```
 
 ### Heatmap of the sample-to-sample distances
@@ -625,3 +786,126 @@ ggplot(e, aes(x=Treatment, y=log2(CV), colour=Treatment)) + geom_violin() +geom_
 ggplot(e, aes(x=mean, y=sqrt(CV), colour=Treatment)) + geom_point(size=1) + facet_wrap(~Treatment) + theme_minimal() + ggtitle("Standard deviation ~ mean of normalized counts by treatment\nAll genes")
 ```
 
+```{r}
+z %>% mutate(PC1 = as.numeric(PC1)) %>%  select(PC1) %>% hist()
+
+# Create vectors of gene names that are top contributors to PC1 and PC2 
+PC1.neg <- (z %>% mutate(PC1 = as.numeric(PC1)) %>%  arrange(PC1))[1:20,] %>% rownames() #%>% str_replace("gene-", "")
+PC1.pos <- (z %>% mutate(PC1 = as.numeric(PC1)) %>%  arrange(desc(PC1)))[1:20,] %>% rownames() #%>% str_replace("gene-", "")
+PC2.neg <- (z %>% mutate(PC2 = as.numeric(PC1)) %>%  arrange(PC1))[1:20,] %>% rownames() #%>% str_replace("gene-", "")
+PC2.pos <- (z %>% mutate(PC2 = as.numeric(PC1)) %>%  arrange(desc(PC1)))[1:20,] %>% rownames() #%>% str_replace("gene-", "")
+
+x <- PC1.neg
+counts.norm.eggs.filt %>% as.data.frame() %>% rownames_to_column("gene") %>% filter(gene %in% x) %>% 
+  pivot_longer(-gene, names_to = "sample", values_to = "fpkm") %>% mutate_if(is.character,as.factor) %>% 
+  left_join(sample.info.female[c("Sample.ID", "Treatment")], by = c("sample"="Sample.ID")) %>%
+  ggplot(aes(x=Treatment, y=fpkm, color=Treatment, shape=sample)) +
+  geom_point(size=1.2, alpha=0.75, position=position_jitter(w = 0.15,h = 0)) +
+  ggtitle("Top contributors to PC1 (-)") +
+    #geom_text(size=1.5) +
+    theme_bw() +
+    facet_wrap(~gene, scales="free") +
+    theme(plot.title = element_text(hjust = 0.5, size=12),
+          axis.text = element_text( size = 7),
+          strip.text = element_text(size = 6.5),
+          legend.position = "none")
+
+
+x <- PC1.pos
+counts.norm.eggs.filt %>% as.data.frame() %>% rownames_to_column("gene") %>% filter(gene %in% x) %>% 
+  pivot_longer(-gene, names_to = "sample", values_to = "fpkm") %>% mutate_if(is.character,as.factor) %>% 
+  left_join(sample.info.female[c("Sample.ID", "Treatment")], by = c("sample"="Sample.ID")) %>%
+  ggplot(aes(x=Treatment, y=fpkm, color=Treatment, shape=sample)) +
+  geom_point(size=1.2, alpha=0.75, position=position_jitter(w = 0.15,h = 0)) +
+  ggtitle("Top contributors to PC1 (+)") +
+    #geom_text(size=1.5) +
+    theme_bw() +
+    facet_wrap(~gene, scales="free") +
+    theme(plot.title = element_text(hjust = 0.5, size=12),
+          axis.text = element_text( size = 7),
+          strip.text = element_text(size = 6.5),
+          legend.position = "none")
+
+x <- PC2.neg
+counts.norm.eggs.filt %>% as.data.frame() %>% rownames_to_column("gene") %>% filter(gene %in% x) %>% 
+  pivot_longer(-gene, names_to = "sample", values_to = "fpkm") %>% mutate_if(is.character,as.factor) %>% 
+  left_join(sample.info.female[c("Sample.ID", "Treatment")], by = c("sample"="Sample.ID")) %>%
+  ggplot(aes(x=Treatment, y=fpkm, color=Treatment, label=sample)) +
+  geom_point(size=1.2, alpha=0.75, position=position_jitter(w = 0.15,h = 0)) +
+  ggtitle("Top contributors to PC2 (-)") +
+    #geom_text() +
+    theme_bw() +
+    facet_wrap(~gene, scales="free") +
+    theme(plot.title = element_text(hjust = 0.5, size=12),
+          axis.text = element_text( size = 7),
+          strip.text = element_text(size = 6.5),
+          legend.position = "none")
+
+x <- PC2.pos
+counts.norm.eggs.filt %>% as.data.frame() %>% rownames_to_column("gene") %>% filter(gene %in% x) %>% 
+  pivot_longer(-gene, names_to = "sample", values_to = "fpkm") %>% mutate_if(is.character,as.factor) %>% 
+  left_join(sample.info.female[c("Sample.ID", "Treatment")], by = c("sample"="Sample.ID")) %>%
+  ggplot(aes(x=Treatment, y=fpkm, color=Treatment, label=sample)) +
+  geom_point(size=1.2, alpha=0.75, position=position_jitter(w = 0.15,h = 0)) +
+  ggtitle("Top contributors to PC2 (+)") +
+    #geom_text() +
+    theme_bw()  +
+    facet_wrap(~gene, scales="free") +
+    theme(plot.title = element_text(hjust = 0.5, size=12),
+          axis.text = element_text( size = 7),
+          strip.text = element_text(size = 6.5),
+          legend.position = "none")
+
+# Calculate & inspect coefficient of variation for each of the top contributor genes 
+counts.norm.eggs.filt %>% as.data.frame() %>% rownames_to_column("gene") %>% 
+  pivot_longer(-gene, names_to = "sample", values_to = "fpkm") %>% mutate_if(is.character,as.factor) %>% 
+  left_join(sample.info.female[c("Sample.ID", "Treatment")], by = c("sample"="Sample.ID")) %>%
+  group_by(Treatment, gene) %>% 
+  dplyr::summarize(mean=mean(fpkm), CV=var(fpkm)) %>%
+  filter(gene %in% c(PC1.neg, PC1.pos, PC2.neg, PC2.pos)) %>%
+#  filter(gene %in% PC1.pos) %>%
+#  filter(gene %in% PC1.neg) %>%
+#  filter(gene %in% PC2.pos) %>%
+  ggplot(aes(x=Treatment, y=CV, colour=Treatment)) + 
+  geom_boxplot() + geom_jitter(width = .2) +
+  ggtitle("CV of top-contributing genes to PCAs\n
+          (PC1 and PC2, both + and -)") +
+  theme_minimal() + theme(legend.position = "none", axis.title.x = element_blank()) +
+  scale_color_manual(values = c(Control="#2c7bb6", Exposed="#d7191c"))
+  
+  
+```
+
+
+
+```{r}
+diff_plots = list()
+for (i in 1:length(x)) {
+a <-  plotCounts(dds.DESeq.female, gene=x[i], intgroup=c("Treatment"), returnData = TRUE)
+b <- ggplot(a %>% filter(Treatment==c("Control", "Exposed"))
+                         %>% rownames_to_column("sample"),
+       aes(x=Treatment, y=count, color=Treatment, label=sample)) +
+  geom_point(position=position_jitter(w = 0.1,h = 0)) +
+    geom_text() +
+    theme_bw() +
+    ggtitle(x[i]) +
+    theme(plot.title = element_text(hjust = 0.5))
+diff_plots[[i]] <- b
+}
+diff_plots
+```
+
+NEXT TO DO: 
+- DAPC analysis? 
+- Hypothesis testing to look at differences in variation among functional  
+  - Use CpG O/E to generate sets of a) housekeeping b) stress-response genes 
+  - 
+  - Eukaryotic ortholog gene sets  
+  - 
+
+DAPC  - code here: https://github.com/jrcunning/mcav_shuffle/blob/master/Rmd/transcriptome_analysis.Rmd
+
+```{r}
+
+```
+  
