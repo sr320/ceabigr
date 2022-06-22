@@ -11,3 +11,4 @@ bg_data
 *.bam
 output/12M_te.tab
 output/test
+blastdb
