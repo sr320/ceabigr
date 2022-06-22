@@ -3,26 +3,46 @@ title: "17-Swiss-Prot-Annotation"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+https://www.uniprot.org/downloads
+```{bash}
+cd ../blastdb
+curl -O https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz
+mv uniprot_sprot.fasta.gz uniprot_sprot_r2022_02.fasta.gz
+gunzip -k uniprot_sprot_r2022_02.fasta.gz
+```
+```{bash}
+/home/shared/ncbi-blast-2.11.0+/bin/makeblastdb \
+-in ../blastdb/uniprot_sprot_r2022_02.fasta \
+-dbtype prot \
+-out ../blastdb/uniprot_sprot_r2022_02
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{bash}
+cd ../genome-features 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+curl -O https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/022/765/GCF_002022765.2_C_virginica-3.0/GCF_002022765.2_C_virginica-3.0_protein.faa.gz
 
-```{r cars}
-summary(cars)
+gunzip -k GCF_002022765.2_C_virginica-3.0_protein.faa.gz
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+
+
+```{bash}
+/home/shared/ncbi-blast-2.11.0+/bin/blastp \
+-query ../genome-features/GCF_002022765.2_C_virginica-3.0_protein.faa \
+-db ../blastdb/uniprot_sprot_r2022_02 \
+-out ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp.tab \
+-evalue 1E-20 \
+-num_threads 40 \
+-max_target_seqs 1 \
+-outfmt 6
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+
