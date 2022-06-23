@@ -43,6 +43,7 @@ gunzip -k GCF_002022765.2_C_virginica-3.0_protein.faa.gz
 
 
 
+```{bash}
+wc -l  ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp.tab
 
-
-
+```

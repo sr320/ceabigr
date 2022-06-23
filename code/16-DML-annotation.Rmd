@@ -10,6 +10,15 @@ Working with to dml files
 head ../data/*dml.bed
 ```
 
+```{bash}
+cat ../data/male_dml.bed | awk -v OFS='\t' '{print $1, $2, $3}' > ../output/16-DML-annotation/male-dml-simple.bed
+```
+
+
+
+
+
+
 
 ```{bash}
 wc -l ../data/*dml.bed
@@ -35,15 +44,30 @@ Where do these DMLs overlap in genome?
 
 
 ```{bash}
-head ../data/female_dml.bed
-head ../genome-features/cgigas_uk_roslin_v1_gene.gff
+/home/shared/bedtools2/bin/intersectBed \
+-wb \
+-a ../data/female_dml.bed \
+-b ../genome-features/C_virginica-3.0_Gnomon_genes.bed | head
 ```
+
+
+
+
+
+
+
 
 ```{bash}
 /home/shared/bedtools2/bin/intersectBed \
 -wb \
--a ../genome-features/cgigas_uk_roslin_v1_gene.gff \
--b ../genome-features/GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff
+-a ../data/female_dml.bed \
+-b ../genome-features/C_virginica-3.0_Gnomon_genes.bed | awk '{print $9}' | awk -F'-' '{print $2}' > ../output/16-DML-annotation/female_dml_geneID.txt
 ```
 
 
+```{bash}
+/home/shared/bedtools2/bin/intersectBed \
+-wb \
+-a ../data/male_dml.bed \
+-b ../genome-features/C_virginica-3.0_Gnomon_genes.bed | awk '{print $9}' | awk -F'-' '{print $2}' > ../output/16-DML-annotation/male_dml_geneID.txt
+```
