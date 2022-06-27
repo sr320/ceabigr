@@ -63,5 +63,17 @@ tr '|' '\t' < ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp.tab
 
 ```{bash}
 tr '|' '\t' < ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp.tab \
-../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp_sep.tab
+> ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp_sep.tab
 ```
+
+
+
+Connect GENE IDS to PROTEIN IDs
+
+Protein example = XP_022286068.1
+Gene example = LOC111110166
+
+
+
+
+
