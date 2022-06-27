@@ -1,0 +1,241 @@
+---
+title: "Genomic Location of DML"
+author: "Yaamini Venkataraman"
+output: github_document
+---
+
+In this script, I'll create summary tables for genomic location information, run statistcal tests, and visualize the distribution of DML in the genome. I'll also count the number of genes with multiple DML.
+
+# Prepare R Markdown file
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/Users/yaaminivenkataraman/Documents/ceabigr/output/DML-characterization/") #Set root directory
+```
+
+# Install packages
+
+```{r}
+#Packages for visualization
+
+#install.packages("dichromat")
+#install.packages("broom")
+
+require(dichromat)
+require(broom)
+```
+
+# Obtain session information
+
+```{r}
+sessionInfo()
+```
+
+# Establish color scheme
+
+```{r}
+plotColors <- rev(RColorBrewer::brewer.pal(5, "Blues")) #Create a color palette for the barplots. Use 5 shades from RColorBrewer. Reverse the order so the darkest shade is used first.
+```
+
+```{r}
+plotColors2 <- rev(RColorBrewer::brewer.pal(8, "Blues")) #Create a color palette for the barplots. Use 8 shades from RColorBrewer. Reverse the order so the darkest shade is used first.
+```
+
+# Genomic location of DML
+
+I will look at genomic locations of each sex-specific DML list, then create a plot for visualization.
+
+## Female samples
+
+### Import file counts
+
+```{r}
+cpgFeatureOverlapsFem <- read.table("female_dml-Overlap-counts.txt", header = FALSE, sep = "\t", col.names = c("femaleDML", "filename")) #Import line counts
+cpgFeatureOverlapsFem <- cpgFeatureOverlapsFem[-c(2),] #Drop extra lines
+cpgFeatureOverlapsFem <- cpgFeatureOverlapsFem[c(4, 1, 6, 8, 3, 7, 2, 5),] #Reorganize rows to match order: exon UTR, CDS, intron, upstream, downstream, lncRNA, TE, intergenic
+head(cpgFeatureOverlapsFem, n = 9) #Confirm import
+```
+
+```{r}
+cpgFeatureOverlapsFem$Meth <- femCpGFeatureOverlaps$allCpGs #Add 10x CpG information
+rownames(cpgFeatureOverlapsFem) <- row.names(femCpGFeatureOverlaps) #Add rowname information
+cpgFeatureOverlapsFem <- cpgFeatureOverlapsFem[,-2] #Drop filename column
+head(cpgFeatureOverlapsFem)
+```
+
+### Contingency test
+
+```{r}
+cpgLocationStatTestFem <- data.frame(t(cpgFeatureOverlapsFem)) #Transpose for statistical testing
+head(cpgLocationStatTestFem) #Confirm formatting
+```
+
+```{r}
+CpGLocationMethDMLFem <- data.frame() #Create empty dataframe to store chi-squared results
+for(i in 1:ncol(cpgLocationStatTestFem)) { #For each genome feature
+  MethFeature <- cpgLocationStatTestFem[2,i] #Variable for # genome feature overlaps for 10x CpGs
+  FemFeature <- cpgLocationStatTestFem[1,i] #Variable for # genome feature overlaps for female DML
+  MethNotFeature <- sum(cpgLocationStatTestFem[2,-i]) #Variable for # other CpG types for 10x CpGs
+  FemNotFeature <- sum(cpgLocationStatTestFem[1,-i]) #Variable for # other CpG types for female DML
+  ct <- matrix(c(MethFeature, FemFeature, MethNotFeature, FemNotFeature), ncol = 2) #Create contingency table
+  colnames(ct) <- c(as.character(colnames(cpgLocationStatTestFem[i])), paste0("Not", colnames(cpgLocationStatTestFem[i]))) #Assign column names: type, not type
+  rownames(ct) <- c(as.character(row.names(cpgLocationStatTestFem)[c(1,2)])) #Assign row names: 10x CpGs, female DML
+  print(ct) #Confirm table is correct
+  ctResults <- data.frame(broom::tidy(chisq.test(ct))) #Create dataframe storing chi-sq stats results. Use broom::tidy to extract results from test output
+  ctResults$GenomeFeature <- as.character(colnames(cpgLocationStatTestFem)[i]) #Add CpG type to results
+  CpGLocationMethDMLFem <- rbind(CpGLocationMethDMLFem, ctResults) #Add test statistics to master table
+}
+```
+
+```{r}
+head(CpGLocationMethDMLFem)
+```
+
+```{r}
+CpGLocationMethDMLFem$p.adj <- p.adjust(CpGLocationMethDMLFem$p.value, method = "fdr") #Correct p-value using FDR
+range(CpGLocationMethDMLFem$p.adj) #Look at range of p-values
+head(CpGLocationMethDMLFem) #Confirm changes
+```
+
+```{r}
+write.csv(CpGLocationMethDMLFem, "CpG-location-statResults-Fem.txt", quote = FALSE, row.names = TRUE) #Save statistical output
+```
+
+## Male samples
+
+### Import file counts
+
+```{r}
+cpgFeatureOverlapsMale <- read.table("male_dml-Overlap-counts.txt", header = FALSE, sep = "\t", col.names = c("maleDML", "filename")) #Import line counts
+cpgFeatureOverlapsMale <- cpgFeatureOverlapsMale[-c(2),] #Drop extra lines
+cpgFeatureOverlapsMale <- cpgFeatureOverlapsMale[c(4, 1, 6, 8, 3, 7, 2, 5),] #Reorganize rows to match order: exon UTR, CDS, intron, upstream, downstream, lncRNA, TE, intergenic
+head(cpgFeatureOverlapsMale, n = 9) #Confirm import
+```
+
+```{r}
+cpgFeatureOverlapsMale$Meth <- maleCpGFeatureOverlaps$allCpGs #Add 10x CpG information
+rownames(cpgFeatureOverlapsMale) <- row.names(maleCpGFeatureOverlaps) #Add rowname information
+cpgFeatureOverlapsMale <- cpgFeatureOverlapsMale[,-2] #Drop filename column
+head(cpgFeatureOverlapsMale)
+```
+
+### Contingency test
+
+```{r}
+cpgLocationStatTestMale <- data.frame(t(cpgFeatureOverlapsMale)) #Transpose for statistical testing
+head(cpgLocationStatTestMale) #Confirm formatting
+```
+
+```{r}
+CpGLocationMethDMLMale <- data.frame() #Create empty dataframe to store chi-squared results
+for(i in 1:ncol(cpgLocationStatTestMale)) { #For each genome feature
+  MethFeature <- cpgLocationStatTestMale[2,i] #Variable for # genome feature overlaps for 10x CpGs
+  MaleFeature <- cpgLocationStatTestMale[1,i] #Variable for # genome feature overlaps for male DML
+  MethNotFeature <- sum(cpgLocationStatTestMale[2,-i]) #Variable for # other CpG types for 10x CpGs
+  MaleNotFeature <- sum(cpgLocationStatTestMale[1,-i]) #Variable for # other CpG types for male DML
+  ct <- matrix(c(MethFeature, MaleFeature, MethNotFeature, MaleNotFeature), ncol = 2) #Create contingency table
+  colnames(ct) <- c(as.character(colnames(cpgLocationStatTestMale[i])), paste0("Not", colnames(cpgLocationStatTestMale[i]))) #Assign column names: type, not type
+  rownames(ct) <- c(as.character(row.names(cpgLocationStatTestMale)[c(1,2)])) #Assign row names: 10x CpGs, male DML
+  print(ct) #Confirm table is correct
+  ctResults <- data.frame(broom::tidy(chisq.test(ct))) #Create dataframe storing chi-sq stats results. Use broom::tidy to extract results from test output
+  ctResults$GenomeFeature <- as.character(colnames(cpgLocationStatTestMale)[i]) #Add CpG type to results
+  CpGLocationMethDMLMale <- rbind(CpGLocationMethDMLMale, ctResults) #Add test statistics to master table
+}
+```
+
+```{r}
+head(CpGLocationMethDMLMale)
+```
+
+```{r}
+CpGLocationMethDMLMale$p.adj <- p.adjust(CpGLocationMethDMLMale$p.value, method = "fdr") #Correct p-value using FDR
+range(CpGLocationMethDMLMale$p.adj) #Look at range of p-values
+head(CpGLocationMethDMLMale) #Confirm changes
+```
+
+```{r}
+write.csv(CpGLocationMethDMLMale, "CpG-location-statResults-Male.txt", quote = FALSE, row.names = TRUE) #Save statistical output
+```
+
+## Create stacked barplot
+
+```{r}
+cpgFeatureOverlapsPercentsFem <- cpgFeatureOverlapsFem #Duplicate dataframe
+for (i in 1:length(cpgFeatureOverlapsFem)) {
+  cpgFeatureOverlapsPercentsFem[,i] <- (cpgFeatureOverlapsPercentsFem[,i] / (sum(cpgFeatureOverlapsPercentsFem[,i]))) * 100
+} #Divide every entry by sum of the column and multiply by 100 to get percentages. Do not include gene information
+head(cpgFeatureOverlapsPercentsFem) #Check calculations
+```
+
+```{r}
+cpgFeatureOverlapsPercentsMale <- cpgFeatureOverlapsMale #Duplicate dataframe
+for (i in 1:length(cpgFeatureOverlapsMale)) {
+  cpgFeatureOverlapsPercentsMale[,i] <- (cpgFeatureOverlapsPercentsMale[,i] / (sum(cpgFeatureOverlapsPercentsMale[,i]))) * 100
+} #Divide every entry by sum of the column and multiply by 100 to get percentages. Do not include gene information
+head(cpgFeatureOverlapsPercentsMale) #Check calculations
+```
+
+```{r}
+cpgFeatureOverlapsPercentsBind <- cbind(cpgFeatureOverlapsPercentsFem, cpgFeatureOverlapsPercentsMale) #Combine dataframes
+head(cpgFeatureOverlapsPercentsBind)
+```
+
+```{bash}
+mkdir figures
+```
+
+
+```{r}
+#pdf("figures/DML-feature-overlaps.pdf", width = 11, height = 8.5)
+
+par(mar = c(3,5,1,1), oma = c(0, 1, 1, 11), mfrow = c(2, 1)) #Change figure boundaries
+
+#Females
+
+barplot(t(t(cpgFeatureOverlapsPercentsBind[,c(2,1)])), 
+        col= plotColors2, 
+        axes = FALSE,
+        names.arg = c("10x CpGs", "Female DML"), cex.names = 1.5,
+        ylim = c(0, 110)) #Create base plot. Everything should be white. Do not plot axes. Include sequencing type as labels and set size. Set y-axis specs. 
+
+axis(side = 2, at = seq(0, 100, by = 10), las = 2, col = "grey80", cex.axis = 1.2) #Add y-axis
+mtext(side = 2, "% CpGs", line = 3, cex = 1.5) #Add y-axis label
+mtext("A) Females", x = 0, y = 105, cex = 1.5, adj = 0) #Add panel title
+
+#Males
+
+barplot(t(t(cpgFeatureOverlapsPercentsBind[,c(4,3)])), 
+        col= plotColors2, 
+        axes = FALSE, 
+        names.arg = c("10x CpGs", "Male DML"), cex.names = 1.5,
+        ylim = c(0, 110)) #Create base plot. Everything should be white. Do not plot axes. Include sequencing type as labels and set size. Set y-axis specs. 
+
+axis(side = 2, at = seq(0, 100, by = 10), las = 2, col = "grey80", cex.axis = 1.2) #Add y-axis
+mtext(side = 2, "% CpGs", line = 3, cex = 1.5) #Add y-axis label
+mtext("B) Males", x = 0, y = 105, cex = 1.5, adj = 0) #Add panel title
+
+#Legend
+
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE) #Create new plot
+plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n") #Add new plot on top of current plot
+legend(x = 0.57, y = 0.87, 
+       xpd = TRUE,
+       legend = rev(c("Exon UTR", 
+                  "CDS", 
+                  "Introns", 
+                  "Upstream Flank", 
+                  "Downstream Flank", 
+                  "lncRNA", 
+                  "TE", 
+                  "Intergenic")),
+       pch = 22, 
+        col = "black", 
+        pt.bg = rev(plotColors2),
+       bty = "n",
+       cex = 1.5, 
+       x.intersp = 0.7, xjust = 0) #Place a legend in the top right of the figure with no box
+text("Genome Feature", x = 0.785, y = 0.879, cex = 1.5) #Add legend title that is aligned with legend
+
+#dev.off()
+```
+
