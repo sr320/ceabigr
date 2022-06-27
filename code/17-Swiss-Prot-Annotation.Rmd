@@ -47,3 +47,21 @@ gunzip -k GCF_002022765.2_C_virginica-3.0_protein.faa.gz
 wc -l  ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp.tab
 
 ```
+
+
+```{bash}
+head  ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp.tab
+
+```
+
+
+!tr '|' '\t' < $blastout
+
+```{bash}
+tr '|' '\t' < ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp.tab | head
+```
+
+```{bash}
+tr '|' '\t' < ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp.tab \
+../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp_sep.tab
+```

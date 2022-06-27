@@ -3,26 +3,26 @@ title: "20-BS-snper"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{bash}
+cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/big
+wget -r \
+--no-check-certificate \
+--quiet \
+--no-directories --no-parent \
+-P . \
+-A *sorted.bam \
+https://gannet.fish.washington.edu/seashell/bu-mox/scrubbed/120321-cvBS/
 ```
 
-## R Markdown
+```{bash}
+cd ../data
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+    perl /home/shared/BS-Snper-master/BS-Snper.pl \
+    big/3F_R1_val_1_bismark_bt2_pe.deduplicated.sorted.bam \
+    --fa Cvirginica_v300.fa \
+    --output ../output/20-BS-Snper/SNP-candidates.txt \
+    --methcg ../output/20-BS-Snper/CpG-meth-info.tab \
+    --methchg ../output/20-BS-Snper/CHG-meth-info.tab \
+    --methchh ../output/20-BS-Snper/CHH-meth-info.tab \
+    > ../output/20-BS-Snper/SNP.out 2> ../output/20-BS-Snper/ERR.log
 ```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
