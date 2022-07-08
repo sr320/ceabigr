@@ -1,0 +1,87 @@
+---
+title: "31-transcript-viz"
+output: html_document
+---
+
+```{r}
+library(dplyr)
+```
+
+```{bash}
+cd ../data
+
+curl -O https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/analyses/transcript_counts_per_gene_per_sample_controls_males.csv
+
+curl -O https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/analyses/transcript_counts_per_gene_per_sample_exposed_males.csv
+```
+
+```{r}
+m_con <- read.csv("../data/transcript_counts_per_gene_per_sample_controls_males.csv")
+```
+
+```{r}
+head(m_con)
+```
+
+
+
+```{r}
+m_exp <- read.csv("../data/transcript_counts_per_gene_per_sample_exposed_males.csv")
+
+```
+
+
+```{r}
+library(ggplot2)
+```
+
+
+
+```{r}
+males <- inner_join(m_con, m_exp, by = "gene_name")
+
+```
+
+
+
+```{r}
+ggplot(m_con, aes(x = control_males_max_transcript_counts)) +
+  geom_histogram(bins = 80) +
+  xlim(0,50) +
+  scale_y_log10() 
+
+ggplot(m_exp, aes(x = exposed_males_max_transcript_counts)) +
+  geom_histogram(bins = 80) +
+  xlim(0,50) +
+  scale_y_log10() 
+    
+```
+```{r}
+library(tidyverse)
+max <- males %>% 
+  pivot_longer(c(`control_males_max_transcript_counts`, `exposed_males_max_transcript_counts`), names_to = "max", values_to = "counts")
+```
+
+ggplot(birthwt_mod, aes(x = bwt, fill = smoke)) +
+  geom_histogram(position = "identity", alpha = 0.4)
+
+```{r}
+ggplot(max, aes(x = counts, fill = max)) +
+  geom_histogram(bins = 80, alpha = 0.2, position = "identity") +
+  xlim(0,50) +
+  scale_y_log10() 
+    
+```
+ggplot() +
+  geom_histogram(data = avian, aes(x = M_mass), fill = "blue", alpha = 0.3) +
+  geom_histogram(data = avian, aes(x = F_mass), fill = "green", alpha = 0.3) +
+  scale_x_log10() +
+  labs(x = "Mass(g)")
+  
+```{r}
+ggplot() +
+  geom_histogram(data = m_con, aes(x = control_males_max_transcript_counts), fill = "blue", alpha = 0.2) +
+  geom_histogram(data = m_exp, aes(x = exposed_males_max_transcript_counts), fill = "green", alpha = 0.2) +
+  scale_y_log10()
+```
+
