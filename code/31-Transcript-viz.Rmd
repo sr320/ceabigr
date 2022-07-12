@@ -75,6 +75,7 @@ ggplot() +
 ```
 ```{r}
 m2 <- males %>% mutate(diffmean = abs(control_males_mean_transcript_counts - exposed_males_mean_transcript_counts)) %>% 
+  mutate(diffmed = abs(control_males_median_transcript_counts - exposed_males_median_transcript_counts)) %>%
   mutate(covar_exp = exposed_males_std_dev_transcript_counts / exposed_males_mean_transcript_counts) %>%
   mutate(covar_con = control_males_std_dev_transcript_counts / control_males_mean_transcript_counts)
 ```
@@ -99,6 +100,21 @@ ggplot(m2, aes(x = control_males_mean_transcript_counts, y = exposed_males_mean_
   xlim(0,20)
 
 ```
+```{r}
+
+myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
+sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(0, 1.7))
+
+ggplot(m2, aes(x = control_males_median_transcript_counts, y = exposed_males_median_transcript_counts)) +
+  #geom_point(alpha = 0.1, size = 1) +
+  geom_smooth(method = "lm") +
+  geom_abline(size=1.0,colour="red") +
+  geom_jitter(alpha = 0.3, size =0.5) +
+  sc 
+```
+
+
+
 
 ```{r}
 
