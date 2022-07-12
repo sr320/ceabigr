@@ -1,0 +1,103 @@
+---
+title: "32-transcript-viz"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+
+Here I want to explore the best way to visualize the transcript presence data.... eventually this will be integrated with DNA methylation data.
+
+**A comparison of males and females irrespective of treatment**
+
+
+```{bash}
+cd ../data
+
+curl -O https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/analyses/transcript_counts_per_gene_per_sample_males.csv
+
+curl -O https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/analyses/transcript_counts_per_gene_per_sample_females.csv
+```
+
+```{r}
+male.all <- read.csv("../data/transcript_counts_per_gene_per_sample_males.csv")
+```
+
+
+```{r}
+female.all <- read.csv("../data/transcript_counts_per_gene_per_sample_females.csv")
+
+```
+
+
+
+```{r}
+all <- inner_join(male.all, female.all, by = "gene_name")
+
+```
+
+
+
+
+```{r}
+ggplot() +
+  geom_histogram(data = male.all, aes(x = male_max_transcript_counts), fill = "blue", alpha = 0.2) +
+  geom_histogram(data = female.all, aes(x = female_max_transcript_counts), fill = "green", alpha = 0.2) +
+  scale_y_log10()
+```
+
+
+
+```{r}
+all.wstats <- all %>% mutate(diffmean = abs(male_mean_transcript_counts - female_mean_transcript_counts)) %>% 
+  mutate(m.covar = male_std_dev_transcript_counts / male_mean_transcript_counts) %>%
+  mutate(f.covar = female_std_dev_transcript_counts / female_mean_transcript_counts)
+```
+
+
+```{r}
+library("RColorBrewer")
+```
+
+
+```{r}
+
+myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
+sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(0, 30))
+
+ggplot(all.wstats, aes(x = male_mean_transcript_counts, y = female_mean_transcript_counts, color = diffmean)) +
+  geom_point(alpha = 0.6, size = 3) +
+  geom_smooth(method = "lm") +
+  geom_abline(size=1.0,colour="red") +
+  sc 
+  #ylim(0,20) +
+  #xlim(0,20)
+
+```
+```{r}
+
+myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
+sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(0, 30))
+
+ggplot(all.wstats, aes(x = male_median_transcript_counts, y = female_median_transcript_counts, color = diffmean)) +
+  geom_point(alpha = 0.6, size = 3) +
+  geom_smooth(method = "lm") +
+  geom_abline(size=1.0,colour="red") +
+  sc 
+  #ylim(0,20) +
+  #xlim(0,20)
+
+```
+```{r}
+
+myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
+sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(0, 30))
+
+ggplot(all.wstats, aes(x = m.covar, y = f.covar, color = diffmean)) +
+  geom_point(alpha = 0.1, size = 2) +
+  geom_smooth(method = "lm") +
+  geom_abline(size=1.0,colour="red") +
+  sc 
+```
