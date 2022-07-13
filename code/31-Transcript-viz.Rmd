@@ -89,23 +89,23 @@ library("RColorBrewer")
 ```{r}
 
 myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
-sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(1, 7))
+sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(1, 4))
 
 ggplot(m2, aes(x = control_males_mean_transcript_counts, y = exposed_males_mean_transcript_counts, color = diffmean)) +
   geom_point(alpha = 0.6, size = 3) +
   geom_smooth(method = "lm") +
   geom_abline(size=1.0,colour="red") +
-  sc +
-  ylim(0,20) +
-  xlim(0,20)
+  sc 
+ # ylim(0,20) +
+  #xlim(0,20)
 
 ```
 ```{r}
 
 myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
-sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(0, 1.7))
+sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(0, 3))
 
-ggplot(m2, aes(x = control_males_median_transcript_counts, y = exposed_males_median_transcript_counts)) +
+ggplot(m2, aes(x = control_males_median_transcript_counts, y = exposed_males_median_transcript_counts, color = diffmean)) +
   #geom_point(alpha = 0.1, size = 1) +
   geom_smooth(method = "lm") +
   geom_abline(size=1.0,colour="red") +
