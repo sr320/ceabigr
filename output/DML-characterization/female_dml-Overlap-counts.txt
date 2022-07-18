@@ -1,9 +1,9 @@
-41	female_dml-CDS.bed
-110	female_dml-Gene.bed
-2	female_dml-TE.bed
-7	female_dml-downstream.bed
-10	female_dml-exonUTR.bed
+29	female_dml-CDS.bed
+74	female_dml-Gene.bed
+1	female_dml-TE.bed
+4	female_dml-downstream.bed
+8	female_dml-exonUTR.bed
 7	female_dml-intergenic.bed
-59	female_dml-intron.bed
+37	female_dml-intron.bed
 1	female_dml-lncRNA.bed
 4	female_dml-upstream.bed
