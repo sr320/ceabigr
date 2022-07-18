@@ -55,6 +55,10 @@ cpgFeatureOverlapsFem <- cpgFeatureOverlapsFem[-c(2),] #Drop extra lines
 cpgFeatureOverlapsFem <- cpgFeatureOverlapsFem[c(4, 1, 6, 8, 3, 7, 2, 5),] #Reorganize rows to match order: exon UTR, CDS, intron, upstream, downstream, lncRNA, TE, intergenic
 head(cpgFeatureOverlapsFem, n = 9) #Confirm import
 ```
+```{r}
+femCpGFeatureOverlaps <- read.csv("../methylation-landscape/fem-CpG-feature-overlaps.csv", row.names = 1) #Import female methylation landscape
+head(femCpGFeatureOverlaps) #Confirm formatting
+```
 
 ```{r}
 cpgFeatureOverlapsFem$Meth <- femCpGFeatureOverlaps$allCpGs #Add 10x CpG information
@@ -110,6 +114,11 @@ cpgFeatureOverlapsMale <- read.table("male_dml-Overlap-counts.txt", header = FAL
 cpgFeatureOverlapsMale <- cpgFeatureOverlapsMale[-c(2),] #Drop extra lines
 cpgFeatureOverlapsMale <- cpgFeatureOverlapsMale[c(4, 1, 6, 8, 3, 7, 2, 5),] #Reorganize rows to match order: exon UTR, CDS, intron, upstream, downstream, lncRNA, TE, intergenic
 head(cpgFeatureOverlapsMale, n = 9) #Confirm import
+```
+
+```{r}
+maleCpGFeatureOverlaps <- read.csv("../methylation-landscape/male-CpG-feature-overlaps.csv", row.names = 1) #Import female methylation landscape
+head(maleCpGFeatureOverlaps) #Confirm formatting
 ```
 
 ```{r}
