@@ -128,3 +128,14 @@ ggplot(m2, aes(x = covar_con, y = covar_exp, color = diffmean)) +
   sc
 
 ```
+
+
+
+```{r}
+model2 <- lm(covar_exp ~ covar_con, data = m2)
+
+summary(model2)
+```
+
+
+

@@ -78,6 +78,15 @@ ggplot(all.wstats, aes(x = male_mean_transcript_counts, y = female_mean_transcri
   #xlim(0,20)
 
 ```
+
+```{r}
+model <- lm(female_mean_transcript_counts ~ male_mean_transcript_counts, data = all.wstats)
+
+summary(model)
+```
+
+
+
 ```{r}
 
 myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
