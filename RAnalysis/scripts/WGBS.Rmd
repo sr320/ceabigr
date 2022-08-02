@@ -102,6 +102,9 @@ done
 
 
 ```{bash}
+
+#SKIP IF YOU DON'T WANT TO FILTER OUT LOCI THAT AREN'T PRESENT IN ALL SAMPLES
+
 #intersect with file to subset only those positions found in all samples
 for f in RAnalysis/data/*F_R1_val_1_10x.tab_gene
 do
