@@ -1,0 +1,12 @@
+---
+title: "33-isoform-count_meth"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+
+Will try to take each individual samples isoform count and correlate with gene methylation.
+
