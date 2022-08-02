@@ -10,3 +10,7 @@ library(tidyverse)
 
 Will try to take each individual samples isoform count and correlate with gene methylation.
 
+
+```{r}
+count_all <- read.csv("https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/analyses/transcript_counts_per_gene_per_sample.csv")
+```
