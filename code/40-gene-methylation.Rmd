@@ -1,0 +1,101 @@
+---
+title: "40-gene-methylation"
+output: html_document
+---
+
+Lets see if we can get gene methylation with a 10x bed file.. and gene gff via intersect bed...
+
+
+
+```
+#Use intersectBed to find where loci and genes intersect, allowing loci to be mapped to annotated genes
+#wb: Print all lines in the second file
+#a: file that ends in posOnly
+#b: annotated gene list
+#Save output in a new file that has the same base name and ends in -Annotated.txt
+for f in RAnalysis/data/*F_R1_val_1_10x.tab
+do
+  intersectBed \
+  -wb \
+  -a ${f} \
+  -b RAnalysis/data/C_virginica-3.0_Gnomon_genes.bed \
+  > ${f}_gene
+done
+```
+
+
+
+
+```{bash}
+cd ../data/big
+
+wget -r \
+--no-check-certificate \
+--quiet \
+--no-directories --no-parent \
+-P . \
+-A R1_val_1_10x.bedgraph \
+https://gannet.fish.washington.edu/seashell/bu-mox/scrubbed/120321-cvBS/
+
+```
+
+
+
+
+```{bash}
+head ../data/big/3F_R1_val_1_10x.bedgraph
+```
+```{bash}
+head ../genome-features/C_virginica-3.0_Gnomon_genes.bed
+```
+
+
+```{bash}
+/home/shared/bedtools2/bin/intersectBed \
+-wb \
+-a ../data/big/3F_R1_val_1_10x.bedgraph \
+-b ../genome-features/C_virginica-3.0_Gnomon_genes.bed \
+| head
+```
+
+
+```
+ cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/data
+ FILES=$(ls *bedgraph)
+ for file in ${FILES}
+ do
+    NAME=$(echo ${file} | awk -F "_" '{print $1}')
+    echo ${NAME}
+   /home/shared/bedtools2/bin/intersectBed \
+   -wb \
+   -a ${NAME}_R1_val_1_10x.bedgraph \
+   -b ../genome-features/C_virginica-3.0_Gnomon_genes.bed \
+   > ~/ceabigr/output/${NAME}mGene.out
+ done  
+``` 
+ 
+
+
+```{bash}
+ cd ../data/big/
+ 
+ FILES=$(ls *bedgraph)
+ 
+ cd -
+ 
+ for file in ${FILES}
+ do
+    NAME=$(echo ${file} | awk -F "_" '{print $1}')
+    echo ${NAME}
+   /home/shared/bedtools2/bin/intersectBed \
+   -wb \
+   -a ../data/big/${NAME}_R1_val_1_10x.bedgraph \
+   -b ../genome-features/C_virginica-3.0_Gnomon_genes.bed \
+   > ../output/40-gene-methylation/${NAME}_mGene.out
+ done  
+
+
+```
+
+
+

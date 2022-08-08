@@ -14,3 +14,18 @@ Will try to take each individual samples isoform count and correlate with gene m
 ```{r}
 count_all <- read.csv("https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/analyses/transcript_counts_per_gene_per_sample.csv")
 ```
+
+Need to do pivot longer
+```{r}
+count_all %>%
+  pivot_longer(cols = c(2:33)) %>%
+  mutate(geneID = paste("gene", gene_name, sep = '-'))
+```
+
+
+```{r}
+count_all %>%
+  pivot_longer(cols = c(2:33)) %>%
+  mutate(geneID = paste("gene", gene_name, sep = '-')) %>%
+  separate(name, c("tr", "sample"), sep = ".")
+```
