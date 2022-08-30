@@ -18,14 +18,26 @@ count_all <- read.csv("https://raw.githubusercontent.com/epigeneticstoocean/2018
 Need to do pivot longer
 ```{r}
 count_all %>%
-  pivot_longer(cols = c(2:33)) %>%
+  pivot_longer(cols = c(2:27)) %>%
   mutate(geneID = paste("gene", gene_name, sep = '-'))
+```
+```{r}
+count_all %>%
+  pivot_longer(cols = c(2:27)) %>%
+  mutate(geneID = paste("gene", gene_name, sep = '-')) %>%
+  separate(name, into = c("tr", "sample"), sep = 19) %>%
+  mutate(art = paste(geneID, sample, sep = '_' )) %>%
+  rename(isoform_count = value) %>%
+  select(art, isoform_count)
 ```
 
 
 ```{r}
-count_all %>%
-  pivot_longer(cols = c(2:33)) %>%
+ic <- count_all %>%
+  pivot_longer(cols = c(2:27)) %>%
   mutate(geneID = paste("gene", gene_name, sep = '-')) %>%
-  separate(name, c("tr", "sample"), sep = ".")
+  separate(name, into = c("tr", "sample"), sep = 19) %>%
+  mutate(art = paste(geneID, sample, sep = '_' )) %>%
+  rename(isoform_count = value) %>%
+  select(art, isoform_count)
 ```
