@@ -3,3 +3,4 @@ transposon_summary_allsamples.txt
 *vcf.gz
 11-RNAseq-snps/*bam
 20-BS-Snper
+40-gene-methylation

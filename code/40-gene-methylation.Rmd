@@ -179,3 +179,20 @@ ggplot(mc, aes(x = avg_meth)) +
   geom_histogram() +
   facet_wrap(~sex)
 ```
+
+
+#Creating gene methylation file where libary is row
+
+
+```{r}
+gm %>%
+  separate(art, into = c("gene", "sample_id"), sep = '_') %>%
+  spread(value = avg_meth, key = gene) %>%
+  write.csv(., "../output/40-gene-methylation.csv")
+```
+
+
+
+
+
+
