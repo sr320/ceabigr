@@ -1,0 +1,68 @@
+---
+title: "42-predominant-isoform"
+output: html_document
+---
+
+
+```{r}
+library(tidyverse)
+```
+
+https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/data/whole_tx_table.csv
+
+
+```{r}
+tx_exp <- read.csv("https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/data/whole_tx_table.csv")
+```
+
+
+
+
+```{r}
+transcript_counts <- tx_exp %>%
+  select(starts_with(c("gene_name", "FPKM"))) %>%
+  group_by(gene_name) %>%
+  summarise((across(everything(), ~sum(. > 0))))
+```
+
+
+
+
+```{r}
+tx_exp %>%
+  select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
+  group_by(gene_name) %>%
+  summarise((across(everything(), max)))
+```
+
+
+```{r}
+tx_exp %>%
+  select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
+  pivot_longer(cols = c(3:28)) %>%
+  group_by(gene_name, t_name) %>%
+  summarise(Predom_exp = mean(value)) %>%
+  group_by(gene_name) %>%
+  summarise(Predom_exp = max(Predom_exp))         
+```
+
+
+
+```{r}
+tx_exp %>%
+  select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
+  pivot_longer(cols = c(3:28)) %>%
+  group_by(gene_name, t_name) %>%
+  summarise(Predom_exp = mean(value)) %>%
+  group_by(gene_name) %>%
+  slice(which.max(Predom_exp))
+```
+
+
+
+```{r}
+tx_exp %>%
+  group_by(gene_name) %>%
+  summarise(Predom_exp = max(mass, na.rm = T)
+```
+
