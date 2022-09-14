@@ -56,4 +56,6 @@ predom_all <- tx_exp %>%
   slice(which.max(Predom_exp))
 ```
 
-
+```{r}
+write.table(predom_all, file = "../output/42-predominant-isoform/predom_iso-all.txt",quote = F, row.names = F, sep = "\t")
+```
