@@ -15,6 +15,9 @@ https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/
 tx_exp <- read.csv("https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/data/whole_tx_table.csv")
 ```
 
+```{r}
+tx_exp
+```
 
 
 
@@ -26,13 +29,7 @@ tx_exp %>%
   summarise(Predom_exp = mean(value))
 ```
 
-```{r}
-tx_exp %>%
-  select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
-  pivot_longer(cols = c(3:28)) %>%
-  group_by(gene_name, t_name) %>%
-  summarise(Predom_exp = n())
-```
+
 
 
 ```{r}
@@ -58,4 +55,119 @@ predom_all <- tx_exp %>%
 
 ```{r}
 write.table(predom_all, file = "../output/42-predominant-isoform/predom_iso-all.txt",quote = F, row.names = F, sep = "\t")
+```
+
+
+Now can we do it for each "treatment"
+Let first just try to separate males and females
+
+females first....
+
+
+```{r}
+tx_exp %>%
+  select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
+  select(ends_with(c("name", "name", "F"))) %>%
+  pivot_longer(cols = c(3:18)) %>%
+  group_by(gene_name, t_name) %>%
+  summarise(Predom_exp = mean(value)) %>%
+  group_by(gene_name) %>%
+  slice(which.max(Predom_exp)) %>%
+  write.table(file = "../output/42-predominant-isoform/predom_iso-FEMALE.txt",quote = F, row.names = F, sep = "\t")
+```
+
+
+Males
+
+```{r}
+tx_exp %>%
+  select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
+  select(ends_with(c("name", "name", "M"))) %>%
+  pivot_longer(cols = c(3:12)) %>%
+  group_by(gene_name, t_name) %>%
+  summarise(Predom_exp = mean(value)) %>%
+  group_by(gene_name) %>%
+  slice(which.max(Predom_exp)) %>%
+  write.table(file = "../output/42-predominant-isoform/predom_iso-MALE.txt",quote = F, row.names = F, sep = "\t")
+```
+
+
+Lets join male and female.
+
+```{r}
+mpre <- tx_exp %>%
+  select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
+  select(ends_with(c("name", "name", "M"))) %>%
+  pivot_longer(cols = c(3:12)) %>%
+  group_by(gene_name, t_name) %>%
+  summarise(Predom_exp = mean(value)) %>%
+  group_by(gene_name) %>%
+  slice(which.max(Predom_exp))
+```
+
+
+```{r}
+fpre <- tx_exp %>%
+  select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
+  select(ends_with(c("name", "name", "F"))) %>%
+  pivot_longer(cols = c(3:18)) %>%
+  group_by(gene_name, t_name) %>%
+  summarise(Predom_exp = mean(value)) %>%
+  group_by(gene_name) %>%
+  slice(which.max(Predom_exp))
+```
+
+```{r}
+full_join(mpre, fpre, by = "gene_name") %>%
+  filter(t_name.x!=t_name.y) %>%
+  filter(abs(Predom_exp.x - Predom_exp.y) > 100)
+```
+```{r}
+anti_join(mpre, fpre, by = "t_name")
+```
+
+```{r}
+anti_join(fpre, mpre, by = "t_name")
+```
+
+
+
+
+
+
+
+NOW withing MALES can we see difference in OA....
+
+
+EXPOSED
+```{r}
+mex <- tx_exp %>%
+  select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
+  select(ends_with(c("name", "name", "12M", "23M", "31M", "48M", "59M", "9M"))) %>%
+  pivot_longer(cols = c(3:8)) %>%
+  group_by(gene_name, t_name) %>%
+  summarise(Predom_exp = mean(value)) %>%
+  group_by(gene_name) %>%
+  slice(which.max(Predom_exp))
+```
+
+
+
+CONTROL
+```{r}
+mco <- tx_exp %>%
+  select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
+  select(ends_with(c("name", "name", "13M", "64M", "6M", "7M"))) %>%
+  pivot_longer(cols = c(3:6)) %>%
+  group_by(gene_name, t_name) %>%
+  summarise(Predom_exp = mean(value)) %>%
+  group_by(gene_name) %>%
+  slice(which.max(Predom_exp))
+```
+
+
+```{r}
+full_join(mco, mex, by = "gene_name") %>%
+  filter(t_name.x!=t_name.y) %>%
+  filter(abs(Predom_exp.x - Predom_exp.y) > 10)
 ```
