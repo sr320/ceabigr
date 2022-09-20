@@ -57,23 +57,32 @@ geneExpressionHist <- geneExpressionMod %>%
 plot_ly(x = geneExpressionHist$range, type = "histogram") #Interactive plot of gene expression value ranges
 ```
 
+```{r}
+geneExpressionHist <- geneExpressionMod %>%
+  t(.) %>%
+  as.data.frame(.) %>%
+  drop_na(.) %>%
+  mutate(var = matrixStats::rowVars(as.matrix(.))) #Calculate the variance of gene expression values across each sample
+
+range(geneExpressionHist$var)
+  
+plot_ly(x = geneExpressionHist$var, type = "histogram") #Interactive plot of gene expression value ranges
+```
+
 Based on the interactive histogram, I'll remove data where the range is < 10.
 
 ```{r}
 #Transpose expression data
 #Remove rows with missing data
 #Rowwise range operation
-#Remove rows without big differences in gene expression
+#Remove rows with near zero variance
 geneExpressionFilt <- geneExpressionMod %>%
   t(.) %>%
   as.data.frame(.) %>%
-  rownames_to_column("gene") %>%
   drop_na(.) %>%
-  rowwise() %>%
-  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
-  column_to_rownames("gene") %>%
-  filter(., range > 10) %>%
-  select(., !range) %>%
+  mutate(var = matrixStats::rowVars(as.matrix(.))) %>%
+  filter(., var > 5) %>%
+  select(., !var) %>%
   t(.) %>%
   as.data.frame(.)
 head(geneExpressionFilt) #Confirm formatting
@@ -99,13 +108,10 @@ ncol(geneMethylationMod) #Count number of genes with data
 geneMethylationFilt <- geneMethylationMod %>%
   t(.) %>%
   as.data.frame(.) %>%
-  rownames_to_column("gene") %>%
   drop_na(.) %>%
-  rowwise() %>%
-  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
-  column_to_rownames("gene") %>%
-  filter(., range > 10) %>%
-  select(., !range) %>%
+  mutate(var = matrixStats::rowVars(as.matrix(.))) %>%
+  filter(., var > 5) %>%
+  select(., !var) %>%
   t(.) %>%
   as.data.frame(.)
 head(geneMethylationFilt) #Confirm formatting
@@ -163,13 +169,10 @@ geneExpressionFem <- geneExpressionMod %>%
   filter(., grepl("F", rownames(.), fixed = TRUE)) %>%
   t(.) %>%
   as.data.frame(.) %>%
-  rownames_to_column("gene") %>%
   drop_na(.) %>%
-  rowwise() %>%
-  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
-  column_to_rownames("gene") %>%
-  filter(., range > 10) %>%
-  select(., !range) %>%
+  mutate(var = matrixStats::rowVars(as.matrix(.))) %>%
+  filter(., var > 5) %>%
+  select(., !var) %>%
   t(.) %>%
   as.data.frame(.) #Filter female samples only, remove genes with missing expression data (NA) for any sample, remove samples with low variation, and make sample IDs rownames
 head(geneExpressionFem) #Confirm formatting
@@ -182,13 +185,10 @@ geneExpressionMale <- geneExpressionMod %>%
   filter(., grepl("M", rownames(.), fixed = TRUE)) %>%
   t(.) %>%
   as.data.frame(.) %>%
-  rownames_to_column("gene") %>%
-  drop_na() %>%
-  rowwise() %>%
-  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
-  column_to_rownames("gene") %>%
-  filter(., range > 10) %>%
-  select(., !range) %>%
+  drop_na(.) %>%
+  mutate(var = matrixStats::rowVars(as.matrix(.))) %>%
+  filter(., var > 5) %>%
+  select(., !var) %>%
   t(.) %>%
   as.data.frame(.) #Filter male samples only, remove genes with missing expression data (NA) for any sample, remove samples with low variation, and make sample IDs rownames
 head(geneExpressionMale) #Confirm formatting
@@ -203,13 +203,10 @@ geneMethylationFem <- geneMethylationMod %>%
   filter(., grepl("F", rownames(.), fixed = TRUE)) %>% 
   t(.) %>%
   as.data.frame(.) %>%
-  rownames_to_column("gene") %>%
   drop_na(.) %>%
-  rowwise() %>%
-  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
-  column_to_rownames("gene") %>%
-  filter(., range > 10) %>%
-  select(., !range) %>%
+  mutate(var = matrixStats::rowVars(as.matrix(.))) %>%
+  filter(., var > 5) %>%
+  select(., !var) %>%
   t(.) %>%
   as.data.frame(.) #Filter female samples only
 head(geneMethylationFem) #Confirm formatting
@@ -222,25 +219,16 @@ geneMethylationMale <- geneMethylationMod %>%
   filter(., grepl("M", rownames(.), fixed = TRUE)) %>% 
   t(.) %>%
   as.data.frame(.) %>%
-  rownames_to_column("gene") %>%
   drop_na(.) %>%
-  rowwise() %>%
-  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
-  column_to_rownames("gene") %>%
-  filter(., range > 10) %>%
-  select(., !range) %>%
+  mutate(var = matrixStats::rowVars(as.matrix(.))) %>%
+  filter(., var > 5) %>%
+  select(., !var) %>%
   t(.) %>%
   as.data.frame(.) #Filter male samples only
 head(geneMethylationMale) #Confirm formatting
 sum(is.na(geneMethylationMale)) #Confirm there are no NAs
 ncol(geneMethylationMale) #Count genes with data for all samples
 ```
-
-# THINGS TO DO BEFORE YOU DO ANYTHING YOU FOOL:
-
-tune sex-specific parameters
-run sex-specific spls
-extract VIPs from spls: value > 1
 
 ## Female SPLS
 
@@ -349,9 +337,15 @@ plotLoadings(geneResult.spls, comp = 2, size.name = rel(0.5)) #Loadings for seco
 ```
 
 
-# QUESTIONS
+# THINGS TO DO BEFORE YOU DO ANYTHING YOU FOOL:
 
 - REDO FILTERING FOR NEAR ZERO VARIANCE
 - TRY DEV PACKAGE
-- remove sample 59?
+- replace NA vs drop NA
+- remove sample 59? check mapping stats, library size, etc. 
 - why is there much lower # fpkm genes for females? did i filter too much?
+- tune sex-specific parameters
+- run sex-specific spls
+- extract VIPs from spls: value > 1
+- add categorial isoform information
+- add numerical CV information
