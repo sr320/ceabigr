@@ -17,6 +17,8 @@ knitr::opts_knit$set(root.dir = "../output/gene-methylation-expression-mixomics/
 #     install.packages("BiocManager")
 #  BiocManager::install("mixOmics") #Install BiocManager and mixOmics
 # install.packages("plotly")
+require(devtools)
+install_github("mixOmicsTeam/mixOmics", ref = github_pull("197"), force = TRUE) #Install dev version: https://github.com/mixOmicsTeam/mixOmics/issues/196
 require(mixOmics)
 require(tidyverse)
 require(plotly)
@@ -31,7 +33,7 @@ sessionInfo()
 ```{r}
 metadata <- read.csv("../data/adult-meta.csv", header = TRUE) #Import metadata
 metadata <- metadata %>%
-  select(., Sample.ID, Treatment, Sex, TreatmentN) %>%
+  dplyr::select(., Sample.ID, Treatment, Sex, TreatmentN) %>%
   rename(., sample_id = Sample.ID) #Retain necessary columns, rename sample_id
 head(metadata) #Confirm formatting
 ```
@@ -41,7 +43,7 @@ head(metadata) #Confirm formatting
 ```{r}
 geneExpression <- read.csv("../../2018_L18-adult-methylation/analyses/gene_fpkm.csv", header = TRUE, row.names = metadata$sample_id)
 geneExpressionMod <- geneExpression %>%
-  select(., -c(1:6)) #Remove extra information to have just FPKM for each gene
+  dplyr::select(., -c(1:6)) #Remove extra information to have just FPKM for each gene
 head(geneExpressionMod) #Confirm formatting
 ncol(geneExpressionMod) #Count number of genes with data
 ```
@@ -153,6 +155,14 @@ plotIndiv(geneResult.spls, group= metadata$Sex,
 #dev.off()
 ```
 
+```{r}
+geneArrow <- plotArrow(geneResult.spls, group = metadata$TreatmentN, legend = TRUE,
+                       X.label = 'PLS comp 1', Y.label = 'PLS comp 2') #Group by treatment and sex
+geneArrow$data
+plot(geneArrow)
+```
+
+
 ## Separate sex-specific data
 
 ```{r}
@@ -172,7 +182,7 @@ geneExpressionFem <- geneExpressionMod %>%
   drop_na(.) %>%
   mutate(var = matrixStats::rowVars(as.matrix(.))) %>%
   filter(., var > 5) %>%
-  select(., !var) %>%
+  dplyr::select(., !var) %>%
   t(.) %>%
   as.data.frame(.) #Filter female samples only, remove genes with missing expression data (NA) for any sample, remove samples with low variation, and make sample IDs rownames
 head(geneExpressionFem) #Confirm formatting
@@ -188,7 +198,7 @@ geneExpressionMale <- geneExpressionMod %>%
   drop_na(.) %>%
   mutate(var = matrixStats::rowVars(as.matrix(.))) %>%
   filter(., var > 5) %>%
-  select(., !var) %>%
+  dplyr::select(., !var) %>%
   t(.) %>%
   as.data.frame(.) #Filter male samples only, remove genes with missing expression data (NA) for any sample, remove samples with low variation, and make sample IDs rownames
 head(geneExpressionMale) #Confirm formatting
@@ -206,7 +216,7 @@ geneMethylationFem <- geneMethylationMod %>%
   drop_na(.) %>%
   mutate(var = matrixStats::rowVars(as.matrix(.))) %>%
   filter(., var > 5) %>%
-  select(., !var) %>%
+  dplyr::select(., !var) %>%
   t(.) %>%
   as.data.frame(.) #Filter female samples only
 head(geneMethylationFem) #Confirm formatting
@@ -222,7 +232,7 @@ geneMethylationMale <- geneMethylationMod %>%
   drop_na(.) %>%
   mutate(var = matrixStats::rowVars(as.matrix(.))) %>%
   filter(., var > 5) %>%
-  select(., !var) %>%
+  dplyr::select(., !var) %>%
   t(.) %>%
   as.data.frame(.) #Filter male samples only
 head(geneMethylationMale) #Confirm formatting
@@ -294,10 +304,10 @@ geneResult.splsFem <- spls(X = geneMethylationFem, Y = geneExpressionFem,
 ```
 
 ```{r}
-geneArrow <- plotArrow(geneResult.spls, group = metadata$TreatmentN, legend = TRUE,
+geneArrowFem <- plotArrow(geneResult.splsFem, group = metadataFem$Treatment, legend = TRUE,
                        X.label = 'PLS comp 1', Y.label = 'PLS comp 2') #Group by treatment and sex
-geneArrow$data
-plot(geneArrow)
+geneArrowFem$data
+plot(geneArrowFem)
 ```
 
 ### Component-level information
@@ -339,10 +349,9 @@ plotLoadings(geneResult.spls, comp = 2, size.name = rel(0.5)) #Loadings for seco
 
 # THINGS TO DO BEFORE YOU DO ANYTHING YOU FOOL:
 
-- REDO FILTERING FOR NEAR ZERO VARIANCE
-- TRY DEV PACKAGE
+- perf error still present even after rm samples w nzv + using dev package
 - replace NA vs drop NA
-- remove sample 59? check mapping stats, library size, etc. 
+- remove outliers from arrow plot? check mapping stats, library size, etc. 
 - why is there much lower # fpkm genes for females? did i filter too much?
 - tune sex-specific parameters
 - run sex-specific spls
