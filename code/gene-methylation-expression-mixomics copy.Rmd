@@ -1,0 +1,360 @@
+---
+title: "gene-methylation-expression-mixomics"
+output: html_document
+---
+
+# Set up R Markdown document
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "../output/gene-methylation-expression-mixomics/") #Set root directory
+```
+
+#Install packages
+
+```{r}
+#if (!requireNamespace("BiocManager", quietly = TRUE))
+#    install.packages("BiocManager")
+# BiocManager::install("mixOmics") #Install BiocManager and mixOmics
+#install.packages("plotly")
+require(mixOmics)
+require(tidyverse)
+require(plotly)
+```
+
+```{r}
+sessionInfo()
+```
+
+# Import and reformat data
+
+```{r}
+metadata <- read.csv("../RAnalysis/data/adult-meta.csv", header = TRUE) #Import metadata
+metadata <- metadata %>%
+  select(., Sample.ID, Treatment, Sex, TreatmentN) %>%
+  rename(., sample_id = Sample.ID) #Retain necessary columns, rename sample_id
+head(metadata) #Confirm formatting
+```
+
+## gene expression data
+
+```{r}
+geneExpression <- read.csv("/home/shared/8TB_HDD_02/ashuff/Projects/ceabigr/output/AH_gene_coverage_gene.csv", header = TRUE, row.names = 1)
+geneExpressionMod <- geneExpression %>%
+  unite(., geneID, 1:3) %>%
+  select(., geneID, genes, sample_id) %>%
+  distinct(.) %>%
+  slice(., -212243) %>%
+  spread(., key = geneID, value = genes, fill = NA) %>%
+  column_to_rownames(., var = "sample_id") #Create geneID column with chr-start-end, select only geneID, gene_cov, and sample_id information, filter unique rows, spread data for mixOmics formatting requirements
+head(geneExpressionMod) #Confirm formatting
+ncol(geneExpressionMod) #Count number of genes with data
+```
+
+```{r}
+geneExpressionHist <- geneExpressionMod %>%
+  t(.) %>%
+  as.data.frame(.) %>%
+  drop_na(.) %>%
+  rowwise() %>%
+  summarise(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) #Calculate the range of gene expression values across each sample
+  
+plot_ly(x = geneExpressionHist$range, type = "histogram") #Interactive plot of gene expression value ranges
+```
+
+Based on the interactive histogram, I'll remove data where the range is < 20.
+
+```{r}
+#Transpose expression data
+#Remove rows with missing data
+#Rowwise range operation
+#Remove rows without big differences in gene expression
+geneExpressionFilt <- geneExpressionMod %>%
+  t(.) %>%
+  as.data.frame(.) %>%
+  rownames_to_column("gene") %>%
+  drop_na(.) %>%
+  rowwise() %>%
+  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
+  column_to_rownames("gene") %>%
+  filter(., range > 20) %>%
+  select(., !range) %>%
+  t(.) %>%
+  as.data.frame(.)
+head(geneExpressionFilt) #Confirm formatting
+sum(is.na(geneExpressionFilt)) #Confirm there are no NAs
+ncol(geneExpressionFilt) #Number of genes remaining
+```
+
+## gene methylation data
+
+```{r}
+geneMethylation <- read.delim("/home/shared/8TB_HDD_02/strigg/ceabigr/output/gene_summary_allsamples.txt", header = TRUE)
+geneMethylation$sample <- gsub("_", "", geneMethylation$sample) #Remove _ from sample name
+geneMethylationMod <- geneMethylation %>%
+  unite(., geneID, 1:3) %>%
+  select(., geneID, median_meth, sample) %>%
+  distinct(.) %>%
+  spread(., key = geneID, value = median_meth, fill = NA) %>%
+  column_to_rownames(., var = "sample") #Create geneID column with chr-start-end, select only geneID, gene_cov, and sample_id information, filter unique rows, spread data for mixOmics formatting requirements
+head(geneMethylationMod) #Confirm formatting
+ncol(geneMethylationMod) #Count number of genes with data
+```
+
+```{r}
+#Transpose methylation data
+#Remove rows with missing data
+#Rowwise range operation
+#Remove rows without big differences in gene methylation
+geneMethylationFilt <- geneMethylationMod %>%
+  t(.) %>%
+  as.data.frame(.) %>%
+  rownames_to_column("gene") %>%
+  drop_na(.) %>%
+  rowwise() %>%
+  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
+  column_to_rownames("gene") %>%
+  filter(., range > 10) %>%
+  select(., !range) %>%
+  t(.) %>%
+  as.data.frame(.)
+head(geneMethylationFilt) #Confirm formatting
+sum(is.na(geneMethylationFilt)) #Confirm there are no NAs
+ncol(geneMethylationFilt) #Number of genes remaining
+```
+
+# Sparse PLS
+
+Followed [`mixOmics` manual](https://mixomicsteam.github.io/Bookdown/pls.html#inputs-and-outputs-1) for analysis methods.
+
+## Run SPLS with all samples
+
+I'm going to run an SPLS with default settings for all parameters to confirm there are large sex differences that should be accounted for in follow-up analyses.
+
+```{r}
+geneResult.spls <- spls(X = geneMethylationFilt, Y = geneExpressionFilt, 
+                        keepX = c(25, 25), keepY = c(25,25)) #Run SPLS
+```
+
+```{r}
+#pdf("../output/gene-methylation-expression-mixomics/yrv-geneSPLS-Full1.pdf", width = 11, height = 8.5)
+plotIndiv(geneResult.spls, group = metadata$Sex,
+          legend = TRUE,
+          legend.title = 'Sex',
+          ind.names = metadata$sample_id,
+          title = "gene: sPLS") #Plot samples. Group by sex and add titles for treatment
+#dev.off()
+```
+
+```{r}
+#pdf("../output/gene-methylation-expression-mixomics/yrv-geneSPLS-Full2.pdf", width = 11, height = 8.5)
+plotIndiv(geneResult.spls, group= metadata$Sex,
+          pch = metadata$TreatmentN,
+          rep.space = "XY-variate",  legend = TRUE,
+          legend.title = "Sex", legend.title.pch = "Sex + Treatment",
+          ind.names = FALSE,
+          title = "gene: sPLS") #Plot samples. Group by sex and add symbols for sex + treatment
+#dev.off()
+```
+
+## Separate sex-specific data
+
+```{r}
+metadataFem <- metadata %>%
+    filter(., Sex == "F") #Select female metadata
+metadataMale <- metadata %>%
+    filter(., Sex == "M") #Select male metadata
+```
+
+### gene expression
+
+```{r}
+geneExpressionFem <- geneExpressionMod %>%
+  filter(., grepl("F", rownames(.), fixed = TRUE)) %>%
+  t(.) %>%
+  as.data.frame(.) %>%
+  rownames_to_column("gene") %>%
+  drop_na(.) %>%
+  rowwise() %>%
+  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
+  column_to_rownames("gene") %>%
+  filter(., range > 20) %>%
+  select(., !range) %>%
+  t(.) %>%
+  as.data.frame(.) #Filter female samples only, remove genes with missing expression data (NA) for any sample, remove samples with low variation, and make sample IDs rownames
+head(geneExpressionFem) #Confirm formatting
+sum(is.na(geneExpressionFem)) #Confirm there are no NAs
+ncol(geneExpressionFem) #Count genes with data for all samples
+```
+
+```{r}
+geneExpressionMale <- geneExpressionMod %>%
+  filter(., grepl("M", rownames(.), fixed = TRUE)) %>%
+  t(.) %>%
+  as.data.frame(.) %>%
+  rownames_to_column("gene") %>%
+  drop_na() %>%
+  rowwise() %>%
+  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
+  column_to_rownames("gene") %>%
+  filter(., range > 20) %>%
+  select(., !range) %>%
+  t(.) %>%
+  as.data.frame(.) #Filter male samples only, remove genes with missing expression data (NA) for any sample, remove samples with low variation, and make sample IDs rownames
+head(geneExpressionMale) #Confirm formatting
+sum(is.na(geneExpressionMale)) #Confirm there are no NAs
+ncol(geneExpressionMale) #Count genes with data for all samples
+```
+
+### gene methylation
+
+```{r}
+geneMethylationFem <- geneMethylationMod %>%
+  filter(., grepl("F", rownames(.), fixed = TRUE)) %>% 
+  t(.) %>%
+  as.data.frame(.) %>%
+  rownames_to_column("gene") %>%
+  drop_na(.) %>%
+  rowwise() %>%
+  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
+  column_to_rownames("gene") %>%
+  filter(., range > 10) %>%
+  select(., !range) %>%
+  t(.) %>%
+  as.data.frame(.) #Filter female samples only
+head(geneMethylationFem) #Confirm formatting
+sum(is.na(geneMethylationFem)) #Confirm there are no NAs
+ncol(geneMethylationFem) #Count genes with data for all samples
+```
+
+```{r}
+geneMethylationMale <- geneMethylationMod %>%
+  filter(., grepl("M", rownames(.), fixed = TRUE)) %>% 
+  t(.) %>%
+  as.data.frame(.) %>%
+  rownames_to_column("gene") %>%
+  drop_na(.) %>%
+  rowwise() %>%
+  mutate(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) %>%
+  column_to_rownames("gene") %>%
+  filter(., range > 10) %>%
+  select(., !range) %>%
+  t(.) %>%
+  as.data.frame(.) #Filter male samples only
+head(geneMethylationMale) #Confirm formatting
+sum(is.na(geneMethylationMale)) #Confirm there are no NAs
+ncol(geneMethylationMale) #Count genes with data for all samples
+```
+
+# THINGS TO DO BEFORE YOU DO ANYTHING YOU FOOL:
+
+tune sex-specific parameters
+run sex-specific spls
+extract VIPs from spls: value > 1
+
+## Female SPLS
+
+### Tune parameters
+
+#### Number of components
+
+```{r}
+geneResult.plsFem <- pls(geneMethylationFem, geneExpressionFem, ncomp = 4) #Run a PLS with a sufficient number of components
+```
+
+```{r}
+genePerf.plsFem <- perf(geneResult.plsFem, validation = "Mfold", folds = 2,
+                     progressBar = FALSE, nrepeat = 10) #Use perf for repeated k-fold cross-validation to determine the number of components that should be included
+```
+
+```{r}
+#pdf(“../output/gene-methylation-expression-mixomics/yrv-geneSPLS-Fem-CompTune.pdf”, width = 11, height = 8.5)
+plot(genePerf.plsFem$Q2.total) #Plot perf results
+abline(h = 0.0975) #Only include components with value is ≤ 0.0975
+#dev.off()
+```
+
+#### `keepX`: Number of variables per component
+
+```{r}
+list.keepX <- c(2:10, 15, 20, 25, 30) #Number of drivers to pull
+tune.spls.RSS.FemX <- tune.spls(geneMethylationFem, geneExpressionFem, ncomp = FIX,
+  test.keepX = list.keepX,
+  validation = "Mfold", folds = 2,
+  nrepeat = 10, progressBar = TRUE,
+  measure = "RSS") #Tune parameters based on Mean Absolute Value with 5 folds and 1000 repeats
+```
+
+```{r}
+#pdf(“../output/gene-methylation-expression-mixomics/yrv-geneSPLS-Fem-XTune.pdf”, width = 11, height = 8.5)
+plot(tune.spls.MAE.FemX, legend.position = "topright") #Plot tuning results
+#dev.off()
+```
+
+#### `keepY`: Number of variables per component
+
+```{r}
+list.keepY <- c(2:10, 15, 20, 25, 30) #Number of drivers to pull
+tune.spls.MAE.FemY <- tune.spls(geneMethylationFem, geneExpressionFem, ncomp = FIX,
+  test.keepY = list.keepY,
+  validation = "Mfold", folds = 10,
+  nrepeat = 1000, progressBar = FALSE,
+  measure = "MAE") #Tune parameters based on Mean Absolute Value with 5 folds and 1000 repeats
+```
+
+```{r}
+#pdf(“../output/gene-methylation-expression-mixomics/yrv-geneSPLS-Fem-YTune.pdf”, width = 11, height = 8.5)
+plot(tune.spls.MAE.FemY, legend.position = "topright") #Plot tuning results
+#dev.off()
+```
+
+### Run SPLS 
+
+```{r}
+geneResult.splsFem <- spls(X = geneMethylationFem, Y = geneExpressionFem,
+                        keepX = c(25, 25), keepY = c(25,25)) #Run SPLS for female samples
+```
+
+```{r}
+geneArrow <- plotArrow(geneResult.spls, group = metadata$TreatmentN, legend = TRUE,
+                       X.label = 'PLS comp 1', Y.label = 'PLS comp 2') #Group by treatment and sex
+geneArrow$data
+plot(geneArrow)
+```
+
+### Component-level information
+
+#### Component 1
+
+```{r}
+geneSelectedVariables1 <- selectVar(geneResult.spls, comp = 1) #Selected variables for first component
+geneSelectedVariables1$X$name #Selected genes from methylation data
+geneSelectedVariables1$Y$name #Selected genes from expression data
+```
+
+```{r}
+pdf("../output/gene-methylation-expression-mixomics/yrv-geneSPLS-cimPlot.pdf", width = 11, height = 8.5)
+cim(geneResult.spls, comp = 1) #Clustered image map for first component
+dev.off()
+```
+
+```{r}
+plotLoadings(geneResult.spls, comp = 1, size.name = rel(0.5)) #Loadings for first component
+```
+
+#### Component 2
+
+```{r}
+geneSelectedVariables2 <- selectVar(geneResult.spls, comp = 2) #Selected variables for second component
+geneSelectedVariables2$X$name #Selected genes from methylation data
+geneSelectedVariables2$Y$name #Selected genes from expression data
+```
+
+```{r}
+cim(geneResult.spls, comp = 2) #Clustered image map for second component
+```
+
+```{r}
+plotLoadings(geneResult.spls, comp = 2, size.name = rel(0.5)) #Loadings for second component
+```
+
