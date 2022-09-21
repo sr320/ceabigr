@@ -153,29 +153,31 @@ NOW withing MALES can we see difference in OA....
 
 
 EXPOSED
-```{r}
-mex <- tx_exp %>%
+```{r exposed-males-predominant-isoforms}
+tx_exp %>%
   select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
-  select(ends_with(c("name", "name", "12M", "23M", "31M", "48M", "59M", "9M"))) %>%
-  pivot_longer(cols = c(3:8)) %>%
+  select(ends_with(c("name", "name", exposed_males))) %>%
+  pivot_longer(cols = c(3:length(exposed_males) + 2)) %>% # Adds length of vector "exposed males" + "name" + "name" from previous line
   group_by(gene_name, t_name) %>%
   summarise(Predom_exp = mean(value)) %>%
   group_by(gene_name) %>%
-  slice(which.max(Predom_exp))
+  slice(which.max(Predom_exp)) %>% 
+  write.table(file = "../output/42-predominant-isoform/predom_iso-exposed-MALE.txt",quote = F, row.names = F, sep = "\t")
 ```
 
 
 
 CONTROL
-```{r}
+```{r controls-males-predominant-isoforms}
 mco <- tx_exp %>%
   select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
-  select(ends_with(c("name", "name", "13M", "64M", "6M", "7M"))) %>%
-  pivot_longer(cols = c(3:6)) %>%
+  select(ends_with(c("name", "name", controls_males))) %>%
+  pivot_longer(cols = c(3:length(controls_males) + 2)) %>%
   group_by(gene_name, t_name) %>%
   summarise(Predom_exp = mean(value)) %>%
   group_by(gene_name) %>%
-  slice(which.max(Predom_exp))
+  slice(which.max(Predom_exp)) %>% 
+  write.table(file = "../output/42-predominant-isoform/predom_iso-controls-MALE.txt",quote = F, row.names = F, sep = "\t")
 ```
 
 
