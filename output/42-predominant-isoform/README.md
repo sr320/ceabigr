@@ -11,7 +11,7 @@
 
   - [42-predominant-isoform.Rmd](https://github.com/sr320/ceabigr/blob/main/code/42-predominant-isoform.Rmd)
 
-- [`predom_iso-controls-FEMALE-unique.txt`](predom_iso-controls-FEMALE-unique.txt): Table of predominant isoforms across female controls. Format is:
+- [`predom_iso-controls-FEMALE-unique.txt`](predom_iso-controls-FEMALE-unique.txt): Table of predominant isoforms unique to female controls when compared to female exposed. Format is:
 
   |gene_name | t_name	| Predom_exp |
   |----------|--------|------------|
@@ -122,7 +122,7 @@
 
   - [42-predominant-isoform.Rmd](https://github.com/sr320/ceabigr/blob/main/code/42-predominant-isoform.Rmd)
 
-- [`predom_iso-FEMALE-unique.txt`](predom_iso-FEMALE-unique.txt): Table of genes having different predominant isoforms in females and corresponding isoform name. Format is:
+- [`predom_iso-FEMALE-unique.txt`](predom_iso-FEMALE-unique.txt): Table of predominant isoforms unique to females when compared to males. Format is:
 
     | gene_name | predominant_isoform |
     |-----------|---------------------|
@@ -140,7 +140,8 @@
 
   - [42-predominant-isoform.Rmd](https://github.com/sr320/ceabigr/blob/main/code/42-predominant-isoform.Rmd)
 
-- [`predom_iso-MALE-unique.txt`](predom_iso-MALE-unique.txt): Table of genes having different predominant isoforms in males and corresponding isoform name. Format is:
+- [`predom_iso-MALE-unique.txt`](predom_iso-MALE-unique.txt): Table of predominant isoforms unique to males when compared to females. Format is:
+
 
     | gene_name | predominant_isoform |
     |-----------|---------------------|
