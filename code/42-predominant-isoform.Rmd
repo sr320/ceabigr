@@ -181,6 +181,36 @@ mco <- tx_exp %>%
 ```
 
 
+### Separate treatments within FEMALES
+
+EXPOSED
+```{r exposed-females-predominant-isoforms}
+tx_exp %>%
+  select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
+  select(ends_with(c("name", "name", exposed_females))) %>%
+  pivot_longer(cols = c(3:length(exposed_females) + 2)) %>% # Adds length of vector "exposed males" + "name" + "name" from previous line
+  group_by(gene_name, t_name) %>%
+  summarise(Predom_exp = mean(value)) %>%
+  group_by(gene_name) %>%
+  slice(which.max(Predom_exp)) %>% 
+  write.table(file = "../output/42-predominant-isoform/predom_iso-exposed-FEMALE.txt",quote = F, row.names = F, sep = "\t")
+```
+
+
+
+CONTROL
+```{r controls-females-predominant-isoforms}
+tx_exp %>%
+  select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
+  select(ends_with(c("name", "name", controls_females))) %>%
+  pivot_longer(cols = c(3:length(controls_females) + 2)) %>%
+  group_by(gene_name, t_name) %>%
+  summarise(Predom_exp = mean(value)) %>%
+  group_by(gene_name) %>%
+  slice(which.max(Predom_exp)) %>% 
+  write.table(file = "../output/42-predominant-isoform/predom_iso-controls-FEMALE.txt",quote = F, row.names = F, sep = "\t")
+```
+
 ```{r}
 full_join(mco, mex, by = "gene_name") %>%
   filter(t_name.x!=t_name.y) %>%
