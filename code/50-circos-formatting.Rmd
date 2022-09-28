@@ -1,0 +1,590 @@
+---
+title: "Circos-formatting"
+author: "Sam White"
+date: "2022-09-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Collect and format various data for use in Circos.
+
+REQUIRES the following R libraries:
+
+- `tidyverse`
+
+## Load `R` libraries
+
+```{r}
+library("tidyverse")
+```
+
+## Set variables
+
+```{r set-variables}
+# Vectors for subsetting samples by different groups
+all <- c("S13M", "S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S64M", "S6M", "S76F", "S7M", "S12M", "S22F", "S23M", "S29F", "S31M", "S35F", "S36F", "S3F", "S41F", "S48M", "S50F", "S59M", "S77F", "S9M")
+controls <- c("S13M", "S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S64M", "S6M", "S76F", "S7M")
+exposed <- c("S12M", "S22F", "S23M", "S29F", "S31M", "S35F", "S36F", "S3F", "S41F", "S48M", "S50F", "S59M", "S77F", "S9M")
+controls_males <- c("S13M", "S64M", "S6M", "S7M")
+exposed_males <- c("S12M", "S23M", "S31M", "S48M", "S59M", "S9M")
+controls_females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F")
+exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
+```
+
+
+## Read in _C.virginica_ genes BED file
+```{r read-in-genes-BED}
+genes_BED <- read.table(file = "https://gannet.fish.washington.edu/Atumefaciens/20220926-cvir-gff-to-bed-genes_and_pseudogenes/20220926-cvir-GCF_002022765.2-genes-and-pseudogenes.bed")
+
+# Add BED column names for more clarity
+colnames(genes_BED) <- c("chr", "start", "end", "name", "score", "strand")
+head(genes_BED)
+```
+
+
+## Load all gene expression data
+```{r load-gene-expression-data}
+whole_gx_table <-  read.csv("https://github.com/epigeneticstoocean/2018_L18-adult-methylation/raw/main/data/whole_gx_table.csv", header = TRUE)
+
+head(whole_gx_table)
+```
+
+## Join gene expression and bed tables
+```{r join-expression-bed-tables}
+# Join tables to get gene coordinates and expression
+gx_fpkm_coordinates <- whole_gx_table %>% left_join(genes_BED, by = "name")
+```
+
+## Calculate mean expression for all samples
+```{r calculate-mean-gene-expression-all-samples}
+# Calculate mean expression and sort by chromosome
+gx_all_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
+  select(starts_with(c("chr", "start", "end", "FPKM"))) %>% 
+  mutate(fpkm_mean = rowMeans(select(., contains("FPKM", ignore.case = FALSE)))) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) %>% # Sort by chromosome name, followed by start coordinates
+  filter(!str_detect(chr, 'NA')) # Removes errant row leftover from Ballgown FPKM sum of all samples
+
+# Add "cvir" to chromosome name to match existing Circos files.
+gx_all_fpkm_coordinates_circos$chr <- paste("cvir", gx_all_fpkm_coordinates_circos$chr, sep = "")
+
+```
+
+## Calculate mean expression for female samples
+```{r calculate-mean-gene-expression-females}
+# Calculate mean expression and sort by chromosome
+gx_females_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
+  select(starts_with(c("chr", "start", "end", "FPKM"))) %>% 
+  select(ends_with(c("chr", "start", "end", controls_females, exposed_females))) %>% 
+  mutate(mean = rowMeans(select(., contains("FPKM", ignore.case = FALSE)))) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) %>% # Sort by chromosome name, followed by start coordinates
+  filter(!str_detect(chr, 'NA')) # Removes errant row leftover from Ballgown FPKM sum of all samples %>% # Sort by chromosome name, followed by start coordinates   filter(!str_detect(chr, 'NA')) # Removes errant row leftover from Ballgown FPKM sum of all samples
+
+# Add "cvir" to chromosome name to match existing Circos files.
+gx_females_fpkm_coordinates_circos$chr <- paste("cvir", gx_females_fpkm_coordinates_circos$chr, sep = "")
+```
+
+## Calculate mean expression for male samples
+```{r calculate-mean-gene-expression-males}
+# Calculate mean expression and sort by chromosome
+gx_males_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
+  select(starts_with(c("chr", "start", "end", "FPKM"))) %>% 
+            select(ends_with(c("chr", "start", "end", controls_males, exposed_males))) %>% 
+  mutate(mean = rowMeans(select(., contains("FPKM", ignore.case = FALSE)))) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) %>% # Sort by chromosome name, followed by start coordinates
+  filter(!str_detect(chr, 'NA')) # Removes errant row leftover from Ballgown FPKM sum of all samples
+
+# Add "cvir" to chromosome name to match existing Circos files.
+gx_males_fpkm_coordinates_circos$chr <- paste("cvir", gx_males_fpkm_coordinates_circos$chr, sep = "")
+```
+
+
+## Calculate mean expression for control samples
+```{r calculate-mean-gene-expression-controls}
+# Calculate mean expression and sort by chromosome
+gx_controls_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
+  select(starts_with(c("chr", "start", "end", "FPKM"))) %>% 
+  select(ends_with(c("chr", "start", "end", controls_females, controls_males))) %>% 
+  mutate(mean = rowMeans(select(., contains("FPKM", ignore.case = FALSE)))) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) %>% # Sort by chromosome name, followed by start coordinates
+  filter(!str_detect(chr, 'NA')) # Removes errant row leftover from Ballgown FPKM sum of all samples
+
+# Add "cvir" to chromosome name to match existing Circos files.
+gx_controls_fpkm_coordinates_circos$chr <- paste("cvir", gx_controls_fpkm_coordinates_circos$chr, sep = "")
+```
+
+
+## Calculate mean expression for exposed samples
+```{r calculate-mean-gene-expression-exposed}
+# Calculate mean expression and sort by chromosome
+gx_exposed_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
+  select(starts_with(c("chr", "start", "end", "FPKM"))) %>% 
+  select(ends_with(c("chr", "start", "end", exposed_females, exposed_males))) %>% 
+  mutate(mean = rowMeans(select(., contains("FPKM", ignore.case = FALSE)))) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) %>% # Sort by chromosome name, followed by start coordinates
+  filter(!str_detect(chr, 'NA')) # Removes errant row leftover from Ballgown FPKM sum of all samples
+
+# Add "cvir" to chromosome name to match existing Circos files.
+gx_exposed_fpkm_coordinates_circos$chr <- paste("cvir", gx_exposed_fpkm_coordinates_circos$chr, sep = "")
+```
+
+## Calculate mean expression for controls female samples
+```{r calculate-mean-gene-expression-controls-females}
+# Calculate mean expression and sort by chromosome
+gx_controls_females_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
+  select(starts_with(c("chr", "start", "end", "FPKM"))) %>% 
+  select(ends_with(c("chr", "start", "end", controls_females))) %>% 
+  mutate(mean = rowMeans(select(., contains("FPKM", ignore.case = FALSE)))) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) %>% # Sort by chromosome name, followed by start coordinates
+  filter(!str_detect(chr, 'NA')) # Removes errant row leftover from Ballgown FPKM sum of all samples
+
+# Add "cvir" to chromosome name to match existing Circos files.
+gx_controls_females_fpkm_coordinates_circos$chr <- paste("cvir", gx_controls_females_fpkm_coordinates_circos$chr, sep = "")
+```
+
+## Calculate mean expression for exposed female samples
+```{r calculate-mean-gene-expression-exposed-females}
+# Calculate mean expression and sort by chromosome
+gx_exposed_females_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
+  select(starts_with(c("chr", "start", "end", "FPKM"))) %>% 
+  select(ends_with(c("chr", "start", "end", exposed_females))) %>% 
+  mutate(mean = rowMeans(select(., contains("FPKM", ignore.case = FALSE)))) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) %>% # Sort by chromosome name, followed by start coordinates
+  filter(!str_detect(chr, 'NA')) # Removes errant row leftover from Ballgown FPKM sum of all samples
+
+# Add "cvir" to chromosome name to match existing Circos files.
+gx_exposed_females_fpkm_coordinates_circos$chr <- paste("cvir", gx_exposed_females_fpkm_coordinates_circos$chr, sep = "")
+```
+
+## Calculate mean expression for controls male samples
+```{r calculate-mean-gene-expression-controls-males}
+# Calculate mean expression and sort by chromosome
+gx_controls_males_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
+  select(starts_with(c("chr", "start", "end", "FPKM"))) %>% 
+  select(ends_with(c("chr", "start", "end", controls_males))) %>% 
+  mutate(mean = rowMeans(select(., contains("FPKM", ignore.case = FALSE)))) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) %>% # Sort by chromosome name, followed by start coordinates
+  filter(!str_detect(chr, 'NA')) # Removes errant row leftover from Ballgown FPKM sum of all samples
+
+# Add "cvir" to chromosome name to match existing Circos files.
+gx_controls_males_fpkm_coordinates_circos$chr <- paste("cvir", gx_controls_males_fpkm_coordinates_circos$chr, sep = "")
+```
+
+## Calculate mean expression for exposed male samples
+```{r calculate-mean-gene-expression-exposed-males}
+# Calculate mean expression and sort by chromosome
+gx_exposed_males_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
+  select(starts_with(c("chr", "start", "end", "FPKM"))) %>% 
+  select(ends_with(c("chr", "start", "end", exposed_males))) %>% 
+  mutate(mean = rowMeans(select(., contains("FPKM", ignore.case = FALSE)))) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) %>% # Sort by chromosome name, followed by start coordinates
+  filter(!str_detect(chr, 'NA')) # Removes errant row leftover from Ballgown FPKM sum of all samples
+
+# Add "cvir" to chromosome name to match existing Circos files.
+gx_exposed_males_fpkm_coordinates_circos$chr <- paste("cvir", gx_exposed_males_fpkm_coordinates_circos$chr, sep = "")
+```
+
+## Write the Circos-formatted mean gene expression data to tab-delimited files
+```{r write-circos-gene-mean-fpkm-tables-to-files}
+write.table(gx_all_fpkm_coordinates_circos,
+          file ="../output/50-circos-formatting/circos-genes-all-mean_fpkm.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
+
+write.table(gx_controls_females_fpkm_coordinates_circos,
+          file ="../output/50-circos-formatting/circos-genes-controls_females-mean_fpkm.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
+
+write.table(gx_controls_fpkm_coordinates_circos,
+          file ="../output/50-circos-formatting/circos-genes-controls-mean_fpkm.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
+
+write.table(gx_controls_males_fpkm_coordinates_circos,
+          file ="../output/50-circos-formatting/circos-genes-controls_males-mean_fpkm.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
+
+write.table(gx_exposed_females_fpkm_coordinates_circos,
+          file ="../output/50-circos-formatting/circos-genes-exposed_females-mean_fpkm.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
+
+write.table(gx_exposed_fpkm_coordinates_circos,
+          file ="../output/50-circos-formatting/circos-genes-exposed-mean_fpkm.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
+
+write.table(gx_exposed_males_fpkm_coordinates_circos,
+          file ="../output/50-circos-formatting/circos-genes-exposed_males-mean_fpkm.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
+
+write.table(gx_females_fpkm_coordinates_circos,
+          file ="../output/50-circos-formatting/circos-genes-females-mean_fpkm.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
+
+write.table(gx_males_fpkm_coordinates_circos,
+          file ="../output/50-circos-formatting/circos-genes-males-mean_fpkm.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
+```
+
+
+# Prep average gene methylation data (>= 10x coverage)
+
+Methylation file generated by Steven Roberts here: 
+
+https://github.com/sr320/ceabigr/blob/main/code/40-gene-methylation.Rmd
+
+
+## Load average gene methylation data
+```{r load-methylation-data}
+methylation <- read.csv("../output/40-gene-methylaiton.csv")
+```
+
+## Prepare methylation file for joining with BED
+```{r prep-methylation-file-for-joining-with-BED}
+
+# Need to transpose to get gene names as rows
+# For joining with BED
+methylation.transposed <- as.data.frame(t(methylation))
+
+# Convert rownames to a column of data
+methylation.transposed.rownames <- rownames_to_column(methylation.transposed)
+
+# Remove top row created during transposition
+methylation.minus1 <- methylation.transposed.rownames[-1,]
+
+# Convert first row to header
+names(methylation.minus1) <- as.character(unlist(methylation.minus1[1,]))
+methylation.minus1 <- methylation.minus1[-1,]
+
+# Replace "." in gene names with "-"
+# Will match gene names in BED file
+methylation.minus1$sample_id <- str_replace_all(methylation.minus1$sample_id, "\\.", "-")
+
+# Rename sample name columns to match sample grouping vectors
+# Capture column names
+# Took lazy approach and applied to all columns instead of subsetting desired columns
+original_cols <- colnames(methylation.minus1)
+
+# Append "S" to beginning of all samples names
+colnames(methylation.minus1) <- paste("S", original_cols, sep = "")
+
+# Replace "Ssample_id" with "name" to match BED file
+names(methylation.minus1)[names(methylation.minus1) == "Ssample_id"] <- "name"
+
+```
+
+## Join tables to get gene coordinates and methylation
+```{r join-BED-methylation}
+methylation_coordinates <- methylation.minus1 %>% left_join(genes_BED, by = "name")
+
+# Convert to numeric
+methylation_coordinates <- methylation_coordinates %>% mutate(across(all_of(contains(all)), as.numeric))
+```
+
+## Calculate mean methylation for all samples
+```{r calculate-mean-methylation-for-all-samples}
+
+# Calculate mean methylation and sort by chromosome
+methylation_coordinates_all_circos <- methylation_coordinates %>%
+  select(starts_with(c("chr", "start", "end", all))) %>% 
+  mutate(
+    methylation_mean = 
+      rowMeans(
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+methylation_coordinates_all_circos$chr <- paste("cvir", methylation_coordinates_all_circos$chr, sep = "")
+
+```
+
+
+# Calculate mean methylation for female samples
+```{r calculate-mean-methylation-for-females}
+
+# Calculate mean expression and sort by chromosome
+methylation_coordinates_females_circos <- methylation_coordinates %>%
+  select(starts_with(c("chr", "start", "end", controls_females, exposed_females))) %>% 
+  mutate(
+    methylation_mean = 
+      rowMeans(
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+methylation_coordinates_females_circos$chr <- paste("cvir", methylation_coordinates_females_circos$chr, sep = "")
+
+```
+
+## Calculate mean methylation for male samples
+```{r calculate-mean-methylation-for-males}
+
+# Calculate mean expression and sort by chromosome
+methylation_coordinates_males_circos <- methylation_coordinates %>%
+  select(starts_with(c("chr", "start", "end", controls_males, exposed_males))) %>% 
+  mutate(
+    methylation_mean = 
+      rowMeans(
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+methylation_coordinates_males_circos$chr <- paste("cvir", methylation_coordinates_males_circos$chr, sep = "")
+
+```
+
+## Calculate mean methylation for controls female samples
+```{r calculate-mean-methylation-for-controls-females}
+
+# Calculate mean expression and sort by chromosome
+methylation_coordinates_controls_females_circos <- methylation_coordinates %>%
+  select(starts_with(c("chr", "start", "end", controls_females))) %>% 
+  mutate(
+    methylation_mean = 
+      rowMeans(
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+methylation_coordinates_controls_females_circos$chr <- paste("cvir", methylation_coordinates_controls_females_circos$chr, sep = "")
+
+```
+
+# Calculate mean methylation for exposed female samples
+```{r calculate-mean-methylation-for-exposed-females}
+
+# Calculate mean expression and sort by chromosome
+methylation_coordinates_exposed_females_circos <- methylation_coordinates %>%
+  select(starts_with(c("chr", "start", "end", exposed_females))) %>% 
+  mutate(
+    methylation_mean = 
+      rowMeans(
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+methylation_coordinates_exposed_females_circos$chr <- paste("cvir", methylation_coordinates_exposed_females_circos$chr, sep = "")
+
+```
+
+## Calculate mean methylation for controls male samples
+```{r calculate-mean-methylation-for-controls-fmales}
+
+# Calculate mean expression and sort by chromosome
+methylation_coordinates_controls_males_circos <- methylation_coordinates %>%
+  select(starts_with(c("chr", "start", "end", controls_males))) %>% 
+  mutate(
+    methylation_mean = 
+      rowMeans(
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+methylation_coordinates_controls_males_circos$chr <- paste("cvir", methylation_coordinates_controls_males_circos$chr, sep = "")
+
+```
+
+## Calculate mean methylation for exposed male samples
+```{r calculate-mean-methylation-for-exposed-males}
+
+# Calculate mean expression and sort by chromosome
+methylation_coordinates_exposed_males_circos <- methylation_coordinates %>%
+  select(starts_with(c("chr", "start", "end", exposed_males))) %>% 
+  mutate(
+    methylation_mean = 
+      rowMeans(
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+methylation_coordinates_exposed_males_circos$chr <- paste("cvir", methylation_coordinates_exposed_males_circos$chr, sep = "")
+
+```
+
+## Calculate mean methylation for controls samples
+```{r calculate-mean-methylation-for-controls}
+
+# Calculate mean expression and sort by chromosome
+methylation_coordinates_controls_circos <- methylation_coordinates %>%
+  select(starts_with(c("chr", "start", "end", controls_females, controls_males))) %>% 
+  mutate(
+    methylation_mean = 
+      rowMeans(
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+methylation_coordinates_controls_circos$chr <- paste("cvir", methylation_coordinates_controls_circos$chr, sep = "")
+
+```
+
+## Calculate mean methylation for exposed samples
+```{r  calculate-mean-methylation-for-exposed-samples}
+
+# Calculate mean expression and sort by chromosome
+methylation_coordinates_exposed_circos <- methylation_coordinates %>%
+  select(starts_with(c("chr", "start", "end", exposed_females, exposed_males))) %>% 
+  mutate(
+    methylation_mean = 
+      rowMeans(
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>% # Calculate mean FPKM for each gene
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+methylation_coordinates_exposed_circos$chr <- paste("cvir", methylation_coordinates_exposed_circos$chr, sep = "")
+
+```
+
+## Write the Circos-formatted mean methylation data to tab-delimited files
+```{r write-circos-gene-mean-methylation-tables-to-files}
+write.table(methylation_coordinates_all_circos,
+          file ="../output/50-circos-formatting/circos-genes-all-mean_methylation.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
+
+write.table(methylation_coordinates_females_circos,
+          file ="../output/50-circos-formatting/circos-genes-controls_females-mean_methylation.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
+
+write.table(methylation_coordinates_controls_circos,
+          file ="../output/50-circos-formatting/circos-genes-controls-mean_methylation.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
+
+write.table(methylation_coordinates_controls_males_circos,
+          file ="../output/50-circos-formatting/circos-genes-controls_males-mean_methylation.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
+
+write.table(methylation_coordinates_exposed_females_circos,
+          file ="../output/50-circos-formatting/circos-genes-exposed_females-mean_methylation.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
+
+write.table(methylation_coordinates_exposed_circos,
+          file ="../output/50-circos-formatting/circos-genes-exposed-mean_methylation.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
+
+write.table(methylation_coordinates_exposed_males_circos,
+          file ="../output/50-circos-formatting/circos-genes-exposed_males-mean_methylation.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
+
+write.table(methylation_coordinates_females_circos,
+          file ="../output/50-circos-formatting/circos-genes-females-mean_methylation.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
+
+write.table(methylation_coordinates_males_circos,
+          file ="../output/50-circos-formatting/circos-genes-males-mean_methylation.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          sep = "\t")
