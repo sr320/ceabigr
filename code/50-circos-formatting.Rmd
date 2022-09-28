@@ -56,6 +56,8 @@ head(whole_gx_table)
 ```{r join-expression-bed-tables}
 # Join tables to get gene coordinates and expression
 gx_fpkm_coordinates <- whole_gx_table %>% left_join(genes_BED, by = "name")
+
+head(gx_fpkm_coordinates)
 ```
 
 ## Calculate mean expression for all samples
@@ -70,6 +72,8 @@ gx_all_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
 
 # Add "cvir" to chromosome name to match existing Circos files.
 gx_all_fpkm_coordinates_circos$chr <- paste("cvir", gx_all_fpkm_coordinates_circos$chr, sep = "")
+
+head(gx_all_fpkm_coordinates_circos)
 
 ```
 
@@ -86,6 +90,8 @@ gx_females_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
 
 # Add "cvir" to chromosome name to match existing Circos files.
 gx_females_fpkm_coordinates_circos$chr <- paste("cvir", gx_females_fpkm_coordinates_circos$chr, sep = "")
+
+head(gx_females_fpkm_coordinates_circos)
 ```
 
 ## Calculate mean expression for male samples
@@ -101,6 +107,8 @@ gx_males_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
 
 # Add "cvir" to chromosome name to match existing Circos files.
 gx_males_fpkm_coordinates_circos$chr <- paste("cvir", gx_males_fpkm_coordinates_circos$chr, sep = "")
+
+head(gx_males_fpkm_coordinates_circos)
 ```
 
 
@@ -117,6 +125,8 @@ gx_controls_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
 
 # Add "cvir" to chromosome name to match existing Circos files.
 gx_controls_fpkm_coordinates_circos$chr <- paste("cvir", gx_controls_fpkm_coordinates_circos$chr, sep = "")
+
+head(gx_controls_fpkm_coordinates_circos)
 ```
 
 
@@ -133,6 +143,8 @@ gx_exposed_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
 
 # Add "cvir" to chromosome name to match existing Circos files.
 gx_exposed_fpkm_coordinates_circos$chr <- paste("cvir", gx_exposed_fpkm_coordinates_circos$chr, sep = "")
+
+head(gx_exposed_fpkm_coordinates_circos)
 ```
 
 ## Calculate mean expression for controls female samples
@@ -148,6 +160,8 @@ gx_controls_females_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
 
 # Add "cvir" to chromosome name to match existing Circos files.
 gx_controls_females_fpkm_coordinates_circos$chr <- paste("cvir", gx_controls_females_fpkm_coordinates_circos$chr, sep = "")
+
+head(gx_controls_females_fpkm_coordinates_circos)
 ```
 
 ## Calculate mean expression for exposed female samples
@@ -163,6 +177,8 @@ gx_exposed_females_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
 
 # Add "cvir" to chromosome name to match existing Circos files.
 gx_exposed_females_fpkm_coordinates_circos$chr <- paste("cvir", gx_exposed_females_fpkm_coordinates_circos$chr, sep = "")
+
+head(gx_exposed_females_fpkm_coordinates_circos)
 ```
 
 ## Calculate mean expression for controls male samples
@@ -178,6 +194,8 @@ gx_controls_males_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
 
 # Add "cvir" to chromosome name to match existing Circos files.
 gx_controls_males_fpkm_coordinates_circos$chr <- paste("cvir", gx_controls_males_fpkm_coordinates_circos$chr, sep = "")
+
+head(gx_controls_males_fpkm_coordinates_circos)
 ```
 
 ## Calculate mean expression for exposed male samples
@@ -193,6 +211,8 @@ gx_exposed_males_fpkm_coordinates_circos <- gx_fpkm_coordinates %>%
 
 # Add "cvir" to chromosome name to match existing Circos files.
 gx_exposed_males_fpkm_coordinates_circos$chr <- paste("cvir", gx_exposed_males_fpkm_coordinates_circos$chr, sep = "")
+
+head(gx_exposed_males_fpkm_coordinates_circos)
 ```
 
 ## Write the Circos-formatted mean gene expression data to tab-delimited files
@@ -201,54 +221,63 @@ write.table(gx_all_fpkm_coordinates_circos,
           file ="../output/50-circos-formatting/circos-genes-all-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
 
 write.table(gx_controls_females_fpkm_coordinates_circos,
           file ="../output/50-circos-formatting/circos-genes-controls_females-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
 
 write.table(gx_controls_fpkm_coordinates_circos,
           file ="../output/50-circos-formatting/circos-genes-controls-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
 
 write.table(gx_controls_males_fpkm_coordinates_circos,
           file ="../output/50-circos-formatting/circos-genes-controls_males-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
 
 write.table(gx_exposed_females_fpkm_coordinates_circos,
           file ="../output/50-circos-formatting/circos-genes-exposed_females-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
 
 write.table(gx_exposed_fpkm_coordinates_circos,
           file ="../output/50-circos-formatting/circos-genes-exposed-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
 
 write.table(gx_exposed_males_fpkm_coordinates_circos,
           file ="../output/50-circos-formatting/circos-genes-exposed_males-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
 
 write.table(gx_females_fpkm_coordinates_circos,
           file ="../output/50-circos-formatting/circos-genes-females-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
 
 write.table(gx_males_fpkm_coordinates_circos,
           file ="../output/50-circos-formatting/circos-genes-males-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
 ```
 
@@ -263,6 +292,8 @@ https://github.com/sr320/ceabigr/blob/main/code/40-gene-methylation.Rmd
 ## Load average gene methylation data
 ```{r load-methylation-data}
 methylation <- read.csv("../output/40-gene-methylaiton.csv")
+
+head(methylation)
 ```
 
 ## Prepare methylation file for joining with BED
@@ -297,6 +328,7 @@ colnames(methylation.minus1) <- paste("S", original_cols, sep = "")
 # Replace "Ssample_id" with "name" to match BED file
 names(methylation.minus1)[names(methylation.minus1) == "Ssample_id"] <- "name"
 
+head(methylation.minus1)
 ```
 
 ## Join tables to get gene coordinates and methylation
@@ -305,6 +337,8 @@ methylation_coordinates <- methylation.minus1 %>% left_join(genes_BED, by = "nam
 
 # Convert to numeric
 methylation_coordinates <- methylation_coordinates %>% mutate(across(all_of(contains(all)), as.numeric))
+
+head(methylation_coordinates)
 ```
 
 ## Calculate mean methylation for all samples
@@ -329,6 +363,8 @@ methylation_coordinates_all_circos <- methylation_coordinates %>%
 
 # Add "cvir" to chromosome name to match existing Circos files.
 methylation_coordinates_all_circos$chr <- paste("cvir", methylation_coordinates_all_circos$chr, sep = "")
+
+head(methylation_coordinates_all_circos)
 
 ```
 
@@ -356,6 +392,8 @@ methylation_coordinates_females_circos <- methylation_coordinates %>%
 # Add "cvir" to chromosome name to match existing Circos files.
 methylation_coordinates_females_circos$chr <- paste("cvir", methylation_coordinates_females_circos$chr, sep = "")
 
+head(methylation_coordinates_females_circos)
+
 ```
 
 ## Calculate mean methylation for male samples
@@ -381,6 +419,7 @@ methylation_coordinates_males_circos <- methylation_coordinates %>%
 # Add "cvir" to chromosome name to match existing Circos files.
 methylation_coordinates_males_circos$chr <- paste("cvir", methylation_coordinates_males_circos$chr, sep = "")
 
+head(methylation_coordinates_males_circos)
 ```
 
 ## Calculate mean methylation for controls female samples
@@ -406,6 +445,7 @@ methylation_coordinates_controls_females_circos <- methylation_coordinates %>%
 # Add "cvir" to chromosome name to match existing Circos files.
 methylation_coordinates_controls_females_circos$chr <- paste("cvir", methylation_coordinates_controls_females_circos$chr, sep = "")
 
+head(methylation_coordinates_controls_females_circos)
 ```
 
 # Calculate mean methylation for exposed female samples
@@ -431,6 +471,7 @@ methylation_coordinates_exposed_females_circos <- methylation_coordinates %>%
 # Add "cvir" to chromosome name to match existing Circos files.
 methylation_coordinates_exposed_females_circos$chr <- paste("cvir", methylation_coordinates_exposed_females_circos$chr, sep = "")
 
+head(methylation_coordinates_exposed_females_circos)
 ```
 
 ## Calculate mean methylation for controls male samples
@@ -456,6 +497,7 @@ methylation_coordinates_controls_males_circos <- methylation_coordinates %>%
 # Add "cvir" to chromosome name to match existing Circos files.
 methylation_coordinates_controls_males_circos$chr <- paste("cvir", methylation_coordinates_controls_males_circos$chr, sep = "")
 
+head(methylation_coordinates_controls_males_circos)
 ```
 
 ## Calculate mean methylation for exposed male samples
@@ -481,6 +523,7 @@ methylation_coordinates_exposed_males_circos <- methylation_coordinates %>%
 # Add "cvir" to chromosome name to match existing Circos files.
 methylation_coordinates_exposed_males_circos$chr <- paste("cvir", methylation_coordinates_exposed_males_circos$chr, sep = "")
 
+head(methylation_coordinates_exposed_males_circos)
 ```
 
 ## Calculate mean methylation for controls samples
@@ -506,6 +549,7 @@ methylation_coordinates_controls_circos <- methylation_coordinates %>%
 # Add "cvir" to chromosome name to match existing Circos files.
 methylation_coordinates_controls_circos$chr <- paste("cvir", methylation_coordinates_controls_circos$chr, sep = "")
 
+head(methylation_coordinates_controls_circos)
 ```
 
 ## Calculate mean methylation for exposed samples
@@ -531,6 +575,7 @@ methylation_coordinates_exposed_circos <- methylation_coordinates %>%
 # Add "cvir" to chromosome name to match existing Circos files.
 methylation_coordinates_exposed_circos$chr <- paste("cvir", methylation_coordinates_exposed_circos$chr, sep = "")
 
+head(methylation_coordinates_exposed_circos)
 ```
 
 ## Write the Circos-formatted mean methylation data to tab-delimited files
@@ -539,52 +584,62 @@ write.table(methylation_coordinates_all_circos,
           file ="../output/50-circos-formatting/circos-genes-all-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
 
 write.table(methylation_coordinates_females_circos,
           file ="../output/50-circos-formatting/circos-genes-controls_females-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
 
 write.table(methylation_coordinates_controls_circos,
           file ="../output/50-circos-formatting/circos-genes-controls-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
 
 write.table(methylation_coordinates_controls_males_circos,
           file ="../output/50-circos-formatting/circos-genes-controls_males-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
 
 write.table(methylation_coordinates_exposed_females_circos,
           file ="../output/50-circos-formatting/circos-genes-exposed_females-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
 
 write.table(methylation_coordinates_exposed_circos,
           file ="../output/50-circos-formatting/circos-genes-exposed-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
 
 write.table(methylation_coordinates_exposed_males_circos,
           file ="../output/50-circos-formatting/circos-genes-exposed_males-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
 
 write.table(methylation_coordinates_females_circos,
           file ="../output/50-circos-formatting/circos-genes-females-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
 
 write.table(methylation_coordinates_males_circos,
           file ="../output/50-circos-formatting/circos-genes-males-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
+          col.names = FALSE,
           sep = "\t")
+```
