@@ -218,63 +218,63 @@ head(gx_exposed_males_fpkm_coordinates_circos)
 ## Write the Circos-formatted mean gene expression data to tab-delimited files
 ```{r write-circos-gene-mean-fpkm-tables-to-files}
 write.table(gx_all_fpkm_coordinates_circos,
-          file ="../output/50-circos-formatting/circos-genes-all-mean_fpkm.tab",
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-all-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
           sep = "\t")
 
 write.table(gx_controls_females_fpkm_coordinates_circos,
-          file ="../output/50-circos-formatting/circos-genes-controls_females-mean_fpkm.tab",
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-controls_females-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
           sep = "\t")
 
 write.table(gx_controls_fpkm_coordinates_circos,
-          file ="../output/50-circos-formatting/circos-genes-controls-mean_fpkm.tab",
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-controls-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
           sep = "\t")
 
 write.table(gx_controls_males_fpkm_coordinates_circos,
-          file ="../output/50-circos-formatting/circos-genes-controls_males-mean_fpkm.tab",
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-controls_males-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
           sep = "\t")
 
 write.table(gx_exposed_females_fpkm_coordinates_circos,
-          file ="../output/50-circos-formatting/circos-genes-exposed_females-mean_fpkm.tab",
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-exposed_females-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
           sep = "\t")
 
 write.table(gx_exposed_fpkm_coordinates_circos,
-          file ="../output/50-circos-formatting/circos-genes-exposed-mean_fpkm.tab",
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-exposed-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
           sep = "\t")
 
 write.table(gx_exposed_males_fpkm_coordinates_circos,
-          file ="../output/50-circos-formatting/circos-genes-exposed_males-mean_fpkm.tab",
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-exposed_males-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
           sep = "\t")
 
 write.table(gx_females_fpkm_coordinates_circos,
-          file ="../output/50-circos-formatting/circos-genes-females-mean_fpkm.tab",
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-females-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
           sep = "\t")
 
 write.table(gx_males_fpkm_coordinates_circos,
-          file ="../output/50-circos-formatting/circos-genes-males-mean_fpkm.tab",
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-males-mean_fpkm.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
@@ -581,63 +581,63 @@ head(methylation_coordinates_exposed_circos)
 ## Write the Circos-formatted mean methylation data to tab-delimited files
 ```{r write-circos-gene-mean-methylation-tables-to-files}
 write.table(methylation_coordinates_all_circos,
-          file ="../output/50-circos-formatting/circos-genes-all-mean_methylation.tab",
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-all-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
           sep = "\t")
 
 write.table(methylation_coordinates_females_circos,
-          file ="../output/50-circos-formatting/circos-genes-controls_females-mean_methylation.tab",
+          file ="..//code/circos-cvir-ceabigr/data/circos-genes-controls_females-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
           sep = "\t")
 
 write.table(methylation_coordinates_controls_circos,
-          file ="../output/50-circos-formatting/circos-genes-controls-mean_methylation.tab",
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-controls-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
           sep = "\t")
 
 write.table(methylation_coordinates_controls_males_circos,
-          file ="../output/50-circos-formatting/circos-genes-controls_males-mean_methylation.tab",
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-controls_males-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
           sep = "\t")
 
 write.table(methylation_coordinates_exposed_females_circos,
-          file ="../output/50-circos-formatting/circos-genes-exposed_females-mean_methylation.tab",
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-exposed_females-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
           sep = "\t")
 
 write.table(methylation_coordinates_exposed_circos,
-          file ="../output/50-circos-formatting/circos-genes-exposed-mean_methylation.tab",
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-exposed-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
           sep = "\t")
 
 write.table(methylation_coordinates_exposed_males_circos,
-          file ="../output/50-circos-formatting/circos-genes-exposed_males-mean_methylation.tab",
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-exposed_males-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
           sep = "\t")
 
 write.table(methylation_coordinates_females_circos,
-          file ="../output/50-circos-formatting/circos-genes-females-mean_methylation.tab",
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-females-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
           sep = "\t")
 
 write.table(methylation_coordinates_males_circos,
-          file ="../output/50-circos-formatting/circos-genes-males-mean_methylation.tab",
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-males-mean_methylation.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
