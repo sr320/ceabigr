@@ -44,6 +44,17 @@ colnames(genes_BED) <- c("chr", "start", "end", "name", "score", "strand")
 head(genes_BED)
 ```
 
+## Read in transcript count file(s)
+```{r read-in-transcript-counts}
+# Read in CSV and rename first column for joining downstream
+transcripts_counts <- rename(read.csv("../data/transcript-counts_per-gene-per-sample.csv"), name = gene_name)
+
+# Append "gene-" to beginning on gene names in "name" column for joining downstream
+transcripts_counts$name <- paste("gene-", transcripts_counts$name, sep = "")
+
+head(transcripts_counts)
+```
+
 
 ## Load all gene expression data
 ```{r load-gene-expression-data}
@@ -59,6 +70,7 @@ gx_fpkm_coordinates <- whole_gx_table %>% left_join(genes_BED, by = "name")
 
 head(gx_fpkm_coordinates)
 ```
+
 
 ## Calculate mean expression for all samples
 ```{r calculate-mean-gene-expression-all-samples}
@@ -369,7 +381,7 @@ head(methylation_coordinates_all_circos)
 ```
 
 
-# Calculate mean methylation for female samples
+## Calculate mean methylation for female samples
 ```{r calculate-mean-methylation-for-females}
 
 # Calculate mean expression and sort by chromosome
@@ -448,7 +460,7 @@ methylation_coordinates_controls_females_circos$chr <- paste("cvir", methylation
 head(methylation_coordinates_controls_females_circos)
 ```
 
-# Calculate mean methylation for exposed female samples
+## Calculate mean methylation for exposed female samples
 ```{r calculate-mean-methylation-for-exposed-females}
 
 # Calculate mean expression and sort by chromosome
@@ -638,6 +650,311 @@ write.table(methylation_coordinates_females_circos,
 
 write.table(methylation_coordinates_males_circos,
           file ="../code/circos-cvir-ceabigr/data/circos-genes-males-mean_methylation.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          col.names = FALSE,
+          sep = "\t")
+```
+
+# Prep transcript counts data
+
+## Join transcript counts and bed tables
+```{r join-transcript-counts-bed-tables}
+# Join tables to get gene coordinates and expression
+transcripts_coordinates <- transcripts_counts %>% left_join(genes_BED, by = "name")
+
+head(transcripts_coordinates)
+```
+
+## Calculate mean transcript counts for all samples
+```{r calculate-mean-transcripts-all-samples}
+# Calculate mean expression and sort by chromosome
+transcripts_coordinates_all_circos <- transcripts_coordinates %>%
+  select(contains(c("chr", "start", "end", all))) %>% 
+  mutate(
+    transcripts_mean = 
+      rowMeans(  # Calculate mean transcripts for each gene
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>%
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+transcripts_coordinates_all_circos$chr <- paste("cvir", transcripts_coordinates_all_circos$chr, sep = "")
+
+head(transcripts_coordinates_all_circos)
+
+```
+
+## Calculate mean transcript counts for female samples
+```{r calculate-mean-transcripts-female-samples}
+# Calculate mean expression and sort by chromosome
+transcripts_coordinates_females_circos <- transcripts_coordinates %>%
+  select(contains(c("chr", "start", "end", controls_females, exposed_females))) %>% 
+  mutate(
+    transcripts_mean = 
+      rowMeans(  # Calculate mean transcripts for each gene
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>%
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+transcripts_coordinates_females_circos$chr <- paste("cvir", transcripts_coordinates_females_circos$chr, sep = "")
+
+head(transcripts_coordinates_females_circos)
+
+```
+
+## Calculate mean transcript counts for male samples
+```{r calculate-mean-transcripts-female-samples}
+# Calculate mean expression and sort by chromosome
+transcripts_coordinates_males_circos <- transcripts_coordinates %>%
+  select(contains(c("chr", "start", "end", controls_males, exposed_males))) %>% 
+  mutate(
+    transcripts_mean = 
+      rowMeans(  # Calculate mean transcripts for each gene
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>%
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+transcripts_coordinates_males_circos$chr <- paste("cvir", transcripts_coordinates_males_circos$chr, sep = "")
+
+head(transcripts_coordinates_males_circos)
+```
+
+## Calculate mean transcript counts for controls female samples
+```{r calculate-mean-transcripts-controls-female-samples}
+# Calculate mean expression and sort by chromosome
+transcripts_coordinates_controls_females_circos <- transcripts_coordinates %>%
+  select(contains(c("chr", "start", "end", controls_females))) %>% 
+  mutate(
+    transcripts_mean = 
+      rowMeans(  # Calculate mean transcripts for each gene
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>%
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+transcripts_coordinates_controls_females_circos$chr <- paste("cvir", transcripts_coordinates_controls_females_circos$chr, sep = "")
+
+head(transcripts_coordinates_controls_females_circos)
+```
+
+## Calculate mean transcript counts for exposed female samples
+```{r calculate-mean-transcripts-exposed-female-samples}
+# Calculate mean expression and sort by chromosome
+transcripts_coordinates_exposed_females_circos <- transcripts_coordinates %>%
+  select(contains(c("chr", "start", "end", exposed_females))) %>% 
+  mutate(
+    transcripts_mean = 
+      rowMeans(  # Calculate mean transcripts for each gene
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>%
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+transcripts_coordinates_exposed_females_circos$chr <- paste("cvir", transcripts_coordinates_exposed_females_circos$chr, sep = "")
+
+head(transcripts_coordinates_exposed_females_circos)
+```
+
+## Calculate mean transcript counts for controls male samples
+```{r calculate-mean-transcripts-controls-male-samples}
+# Calculate mean expression and sort by chromosome
+transcripts_coordinates_controls_male_circos <- transcripts_coordinates %>%
+  select(contains(c("chr", "start", "end", controls_males))) %>% 
+  mutate(
+    transcripts_mean = 
+      rowMeans(  # Calculate mean transcripts for each gene
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>%
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+transcripts_coordinates_controls_male_circos$chr <-paste("cvir",transcripts_coordinates_controls_male_circos$chr, sep = "")
+
+head(transcripts_coordinates_controls_male_circos)
+```
+
+## Calculate mean transcript counts for exposed male samples
+```{r calculate-mean-transcripts-exposed-male-samples}
+# Calculate mean expression and sort by chromosome
+transcripts_coordinates_exposed_male_circos <- transcripts_coordinates %>%
+  select(contains(c("chr", "start", "end", exposed_males))) %>% 
+  mutate(
+    transcripts_mean = 
+      rowMeans(  # Calculate mean transcripts for each gene
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>%
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+transcripts_coordinates_exposed_male_circos$chr <-paste("cvir",transcripts_coordinates_exposed_male_circos$chr, sep = "")
+
+head(transcripts_coordinates_exposed_male_circos)
+```
+
+## Calculate mean transcript counts for controls samples
+```{r calculate-mean-transcripts-controls-samples}
+# Calculate mean expression and sort by chromosome
+transcripts_coordinates_controls_circos <- transcripts_coordinates %>%
+  select(contains(c("chr", "start", "end", controls))) %>% 
+  mutate(
+    transcripts_mean = 
+      rowMeans(  # Calculate mean transcripts for each gene
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>%
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+transcripts_coordinates_controls_circos$chr <-paste("cvir",transcripts_coordinates_controls_circos$chr, sep = "")
+
+head(transcripts_coordinates_controls_circos)
+```
+
+## Calculate mean transcript counts for exposed samples
+```{r calculate-mean-transcripts-exposed-samples}
+# Calculate mean expression and sort by chromosome
+transcripts_coordinates_exposed_circos <- transcripts_coordinates %>%
+  select(contains(c("chr", "start", "end", exposed))) %>% 
+  mutate(
+    transcripts_mean = 
+      rowMeans(  # Calculate mean transcripts for each gene
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>%
+  select(ends_with(c("chr", "start", "end", "mean"))) %>% # Retain/reorder rows to match Circos format
+  arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+
+# Add "cvir" to chromosome name to match existing Circos files.
+transcripts_coordinates_exposed_circos$chr <-paste("cvir",transcripts_coordinates_exposed_circos$chr, sep = "")
+
+head(transcripts_coordinates_exposed_circos)
+```
+
+
+
+## Write the Circos-formatted mean transcripts data to tab-delimited files
+```{r write-circos-gene-mean-transcripts-tables-to-files}
+write.table(transcripts_coordinates_all_circos,
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-all-mean_transcripts.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          col.names = FALSE,
+          sep = "\t")
+
+write.table(transcripts_coordinates_females_circos,
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-females-mean_transcripts.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          col.names = FALSE,
+          sep = "\t")
+
+write.table(transcripts_coordinates_males_circos,
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-males-mean_transcripts.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          col.names = FALSE,
+          sep = "\t")
+
+write.table(transcripts_coordinates_controls_females_circos,
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-controls-females-mean_transcripts.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          col.names = FALSE,
+          sep = "\t")
+
+write.table(transcripts_coordinates_exposed_females_circos,
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-exposed-females-mean_transcripts.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          col.names = FALSE,
+          sep = "\t")
+
+write.table(transcripts_coordinates_controls_male_circos,
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-controls-males-mean_transcripts.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          col.names = FALSE,
+          sep = "\t")
+
+write.table(transcripts_coordinates_exposed_male_circos,
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-exposed-males-mean_transcripts.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          col.names = FALSE,
+          sep = "\t")
+
+write.table(transcripts_coordinates_controls_circos,
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-controls-mean_transcripts.tab",
+          quote = FALSE,
+          row.names = FALSE,
+          col.names = FALSE,
+          sep = "\t")
+
+write.table(transcripts_coordinates_exposed_circos,
+          file ="../code/circos-cvir-ceabigr/data/circos-genes-exposed-mean_transcripts.tab",
           quote = FALSE,
           row.names = FALSE,
           col.names = FALSE,
