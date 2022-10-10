@@ -17,11 +17,14 @@ knitr::opts_knit$set(root.dir = "../output/gene-methylation-expression-mixomics/
 #     install.packages("BiocManager")
 #  BiocManager::install("mixOmics") #Install BiocManager and mixOmics
 # install.packages("plotly")
+# install.packages("RColorBrewer")
 require(devtools)
-install_github("mixOmicsTeam/mixOmics", ref = github_pull("197"), force = TRUE) #Install dev version: https://github.com/mixOmicsTeam/mixOmics/issues/196
+install_github("mixOmicsTeam/mixOmics", ref = github_pull("197"), force = TRUE) #Install dev version: https://github.com/mixOmicsTeam/mixOmics/issues/196 (used for running SPLS)
+#install_github("mixOmicsTeam/mixOmics", ref = github_pull("234"), force = TRUE) #Install dev version: https://github.com/mixOmicsTeam/mixOmics/issues/233 (used for network plot customization)
 require(mixOmics)
 require(tidyverse)
 require(plotly)
+require(RColorBrewer)
 ```
 
 ```{r}
@@ -34,14 +37,18 @@ sessionInfo()
 metadata <- read.csv("../data/adult-meta.csv", header = TRUE) #Import metadata
 metadata <- metadata %>%
   dplyr::select(., Sample.ID, Treatment, Sex, TreatmentN) %>%
-  rename(., sample_id = Sample.ID) #Retain necessary columns, rename sample_id
+  rename(., sample_id = Sample.ID) %>% 
+  mutate(SexTreatment = case_when(TreatmentN == 1 ~ "Control Male",
+                                  TreatmentN == 2 ~ "Control Female",
+                                  TreatmentN == 3 ~ "Exposed Male",
+                                  TreatmentN == 4 ~ "Exposed Female")) #Retain necessary columns, rename sample_id, and create a new descriptive treatment column
 head(metadata) #Confirm formatting
 ```
 
 ## Gene expression data
 
 ```{r}
-geneExpression <- read.csv("../../2018_L18-adult-methylation/analyses/gene_fpkm.csv", header = TRUE, row.names = metadata$sample_id)
+geneExpression <- read.csv("../data/gene_fpkm.csv", header = TRUE, row.names = metadata$sample_id)
 geneExpressionMod <- geneExpression %>%
   dplyr::select(., -c(1:6)) #Remove extra information to have just FPKM for each gene
 head(geneExpressionMod) #Confirm formatting
@@ -156,8 +163,9 @@ plotIndiv(geneResult.spls, group= metadata$Sex,
 ```
 
 ```{r}
-geneArrow <- plotArrow(geneResult.spls, group = metadata$TreatmentN, legend = TRUE,
-                       X.label = 'PLS comp 1', Y.label = 'PLS comp 2') #Group by treatment and sex
+geneArrow <- plotArrow(geneResult.spls, group = metadata$SexTreatment, ind.names = FALSE,
+                       legend = TRUE, legend.title = "Treatment + Sex") + 
+  labs(x = "PLS Comp 1", y = "PLS Comp 2") #Group by treatment and sex
 geneArrow$data
 plot(geneArrow)
 ```
@@ -303,11 +311,53 @@ geneResult.splsFem <- spls(X = geneMethylationFem, Y = geneExpressionFem,
                         keepX = c(25, 25), keepY = c(25,25)) #Run SPLS for female samples
 ```
 
+#### Visualize results
+
 ```{r}
-geneArrowFem <- plotArrow(geneResult.splsFem, group = metadataFem$Treatment, legend = TRUE,
-                       X.label = 'PLS comp 1', Y.label = 'PLS comp 2') #Group by treatment and sex
+plotIndiv(geneResult.splsFem, group = metadataFem$Treatment,
+          legend = TRUE,
+          legend.title = 'Treatment',
+          ind.names = metadataFem$sample_id,
+          title = "gene: sPLS") #Plot samples. Group by treatment
+ggsave("../output/gene-methylation-expression-mixomics/geneSPLS-fem.pdf", width = 11, height = 8.5)
+```
+
+```{r}
+geneArrowFem <- plotArrow(geneResult.splsFem, group = metadataFem$Treatment, ind.names = FALSE,
+                          legend = TRUE, legend.title = "Treatment") + 
+  labs(x = "PLS Comp 1", y = "PLS Comp 2") #Group by treatment. Short arrows indicate good agreement found by the PLS between both data sets
 geneArrowFem$data
 plot(geneArrowFem)
+ggsave("../output/gene-methylation-expression-mixomics/arrowPlot-fem.pdf", width = 11, height = 8.5)
+```
+
+```{r}
+plotVar(geneResult.splsFem, cex = c(3,2), var.names = FALSE, cutoff = 0.8,
+        title = "Female Correlation Circle Plot", legend = FALSE,
+        X.label = "PLS Comp 1", Y.label = "PLS Comp 2") #Create correlation circle plot using 0.8 correlation cutoff. Variables that are close together are highly correlated. Variables with < 90º angle between them have a positive correlation, with variables having > 90º angle between them having a negative correlation. Variables at a right angle have 0 correlation.
+ggsave("../output/gene-methylation-expression-mixomics/corrCircle-fem.pdf", width = 11, height = 8.5)
+```
+```{r}
+femCircCoordinates <- plotVar(geneResult.splsFem, plot = FALSE) 
+head(femCircCoordinates)
+```
+
+```{r}
+cim(margins = c(10,10), geneResult.splsFem,
+    xlab = "Expression", ylab = "Methylation",
+    save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/PLScim-fem") #Show Pearson correlations between X and Y variables on the first component. Cell color is based on values of the similarity matrix.
+```
+
+```{r}
+femNetwork <- network(geneResult.splsFem, cutoff = 0.8,
+                row.names = FALSE, col.names = FALSE, 
+                color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
+                color.edge = rev(brewer.pal(10, "RdBu")),
+                save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/network-fem") #Create and save network plot. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff. The network plot is split based on components
+```
+
+```{r}
+write.graph(femNetwork$gR, "../output/gene-methylation-expression-mixomics/femNetwork.gml", format = "gml") #Export for cytoscape
 ```
 
 ### Component-level information
@@ -315,46 +365,261 @@ plot(geneArrowFem)
 #### Component 1
 
 ```{r}
-geneSelectedVariables1 <- selectVar(geneResult.spls, comp = 1) #Selected variables for first component
-geneSelectedVariables1$X$name #Selected genes from methylation data
-geneSelectedVariables1$Y$name #Selected genes from expression data
+femNetworkComp1 <- network(geneResult.splsFem, cutoff = 0.8, comp = 1,
+                row.names = FALSE, col.names = FALSE, 
+                color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
+                color.edge = rev(brewer.pal(10, "RdBu")),
+                save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/comp1Network-fem") #Create and save network plot for component 1. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff.
 ```
 
 ```{r}
-pdf("../output/gene-methylation-expression-mixomics/yrv-geneSPLS-cimPlot.pdf", width = 11, height = 8.5)
-cim(geneResult.spls, comp = 1) #Clustered image map for first component
-dev.off()
+femSelectedVariables1 <- selectVar(geneResult.splsFem, comp = 1) #Selected variables for first component
+femSelectedVariables1$X$name #Selected genes from methylation data
+femSelectedVariables1$Y$name #Selected genes from expression data
 ```
 
 ```{r}
-plotLoadings(geneResult.spls, comp = 1, size.name = rel(0.5)) #Loadings for first component
+range(femSelectedVariables1$X$value) #Selected genes from methylation data
+range(femSelectedVariables1$Y$value) #Selected genes from expression data
+```
+
+```{r}
+rbind(as.data.frame(femSelectedVariables1$X$value),
+      as.data.frame(femSelectedVariables1$Y$value)) %>% write.csv(., "../output/gene-methylation-expression-mixomics/comp1SelectedVariables-Fem.csv")
+```
+
+```{r}
+plotLoadings(geneResult.splsFem, comp = 1, 
+             size.name = rel(0.7),
+             xlim = matrix(c(-0.45, 0.1, -0.35, 0.45), nrow = 2, byrow = TRUE),
+             subtitle = c("Methylation", "Expression"), size.subtitle = 2) #Loadings for first component
+ggsave("../output/gene-methylation-expression-mixomics/comp1Loadings-fem.pdf", width = 11, height = 8.5)
 ```
 
 #### Component 2
 
 ```{r}
-geneSelectedVariables2 <- selectVar(geneResult.spls, comp = 2) #Selected variables for second component
-geneSelectedVariables2$X$name #Selected genes from methylation data
-geneSelectedVariables2$Y$name #Selected genes from expression data
+femNetworkComp2 <- network(geneResult.splsFem, cutoff = 0.8, comp = 2,
+                row.names = FALSE, col.names = FALSE, 
+                color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
+                color.edge = rev(brewer.pal(10, "RdBu")),
+                save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/comp2Network-fem") #Create and save network plot for component 1. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff.
 ```
 
 ```{r}
-cim(geneResult.spls, comp = 2) #Clustered image map for second component
+femSelectedVariables2 <- selectVar(geneResult.splsFem, comp = 2) #Selected variables for second component
+femSelectedVariables2$X$name #Selected genes from methylation data
+femSelectedVariables2$Y$name #Selected genes from expression data
 ```
 
 ```{r}
-plotLoadings(geneResult.spls, comp = 2, size.name = rel(0.5)) #Loadings for second component
+range(femSelectedVariables2$X$value) #Selected genes from methylation data
+range(femSelectedVariables2$Y$value) #Selected genes from expression data
 ```
 
+```{r}
+rbind(as.data.frame(femSelectedVariables2$X$value),
+      as.data.frame(femSelectedVariables2$Y$value)) %>% write.csv(., "../output/gene-methylation-expression-mixomics/comp2SelectedVariables-Fem.csv")
+```
+
+```{r}
+plotLoadings(geneResult.splsFem, comp = 2, 
+             size.name = rel(0.7),
+             xlim = matrix(c(0, 0.6, 0, 0.4), nrow = 2, byrow = TRUE),
+             subtitle = c("Methylation", "Expression"), size.subtitle = 2) #Loadings for first component
+ggsave("../output/gene-methylation-expression-mixomics/comp2Loadings-fem.pdf", width = 11, height = 8.5)
+```
+
+## Male SPLS
+
+### Tune parameters
+
+#### Number of components
+
+```{r}
+geneResult.plsMale <- pls(geneMethylationMale, geneExpressionMale, ncomp = 4) #Run a PLS with a sufficient number of components
+```
+
+```{r}
+genePerf.plsMale <- perf(geneResult.plsMale, validation = "Mfold", folds = 2,
+                     progressBar = FALSE, nrepeat = 10) #Use perf for repeated k-fold cross-validation to determine the number of components that should be included
+```
+
+```{r}
+#pdf(“../output/gene-methylation-expression-mixomics/yrv-geneSPLS-Male-CompTune.pdf”, width = 11, height = 8.5)
+plot(genePerf.plsMale$Q2.total) #Plot perf results
+abline(h = 0.0975) #Only include components with value is ≤ 0.0975
+#dev.off()
+```
+
+#### `keepX`: Number of variables per component
+
+```{r}
+list.keepX <- c(2:10, 15, 20, 25, 30) #Number of drivers to pull
+tune.spls.RSS.MaleX <- tune.spls(geneMethylationMale, geneExpressionMale, ncomp = FIX,
+  test.keepX = list.keepX,
+  validation = "Mfold", folds = 2,
+  nrepeat = 10, progressBar = TRUE,
+  measure = "RSS") #Tune parameters based on Mean Absolute Value with 5 folds and 1000 repeats
+```
+
+```{r}
+#pdf(“../output/gene-methylation-expression-mixomics/yrv-geneSPLS-Male-XTune.pdf”, width = 11, height = 8.5)
+plot(tune.spls.MAE.MaleX, legend.position = "topright") #Plot tuning results
+#dev.off()
+```
+
+#### `keepY`: Number of variables per component
+
+```{r}
+list.keepY <- c(2:10, 15, 20, 25, 30) #Number of drivers to pull
+tune.spls.MAE.MaleY <- tune.spls(geneMethylationMale, geneExpressionMale, ncomp = FIX,
+  test.keepY = list.keepY,
+  validation = "Mfold", folds = 10,
+  nrepeat = 1000, progressBar = FALSE,
+  measure = "MAE") #Tune parameters based on Mean Absolute Value with 5 folds and 1000 repeats
+```
+
+```{r}
+#pdf(“../output/gene-methylation-expression-mixomics/yrv-geneSPLS-Male-YTune.pdf”, width = 11, height = 8.5)
+plot(tune.spls.MAE.MaleY, legend.position = "topright") #Plot tuning results
+#dev.off()
+```
+
+### Run SPLS 
+
+```{r}
+geneResult.splsMale <- spls(X = geneMethylationMale, Y = geneExpressionMale,
+                        keepX = c(25, 25), keepY = c(25,25)) #Run SPLS for Maleale samples
+```
+
+#### Visualize results
+
+```{r}
+plotIndiv(geneResult.splsMale, group = metadataMale$Treatment,
+          legend = TRUE,
+          legend.title = 'Treatment',
+          ind.names = metadataMale$sample_id,
+          title = "gene: sPLS") #Plot samples. Group by treatment
+ggsave("../output/gene-methylation-expression-mixomics/geneSPLS-Male.pdf", width = 11, height = 8.5)
+```
+
+```{r}
+geneArrowMale <- plotArrow(geneResult.splsMale, group = metadataMale$Treatment, ind.names = FALSE,
+                          legend = TRUE, legend.title = "Treatment") + 
+  labs(x = "PLS Comp 1", y = "PLS Comp 2") #Group by treatment. Short arrows indicate good agreement found by the PLS between both data sets
+geneArrowMale$data
+plot(geneArrowMale)
+ggsave("../output/gene-methylation-expression-mixomics/arrowPlot-Male.pdf", width = 11, height = 8.5)
+```
+
+```{r}
+plotVar(geneResult.splsMale, cex = c(3,2), var.names = FALSE, cutoff = 0.8,
+        title = "Male Correlation Circle Plot", legend = FALSE,
+        X.label = "PLS Comp 1", Y.label = "PLS Comp 2") #Create correlation circle plot using 0.8 correlation cutoff. Variables that are close together are highly correlated. Variables with < 90º angle between them have a positive correlation, with variables having > 90º angle between them having a negative correlation. Variables at a right angle have 0 correlation.
+ggsave("../output/gene-methylation-expression-mixomics/corrCircle-Male.pdf", width = 11, height = 8.5)
+```
+
+```{r}
+MaleCircCoordinates <- plotVar(geneResult.splsMale, plot = FALSE) 
+head(MaleCircCoordinates)
+```
+
+```{r}
+cim(margins = c(10,10), geneResult.splsMale,
+    xlab = "Expression", ylab = "Methylation",
+    save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/PLScim-Male") #Show Pearson correlations between X and Y variables on the first component. Cell color is based on values of the similarity matrix.
+```
+
+```{r}
+MaleNetwork <- network(geneResult.splsMale, cutoff = 0.8,
+                row.names = FALSE, col.names = FALSE, 
+                color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
+                color.edge = rev(brewer.pal(10, "RdBu")),
+                save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/network-Male") #Create and save network plot. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff. The network plot is split based on components
+```
+
+```{r}
+write.graph(MaleNetwork$gR, "../output/gene-methylation-expression-mixomics/MaleNetwork.gml", format = "gml") #Export for cytoscape
+```
+
+### Component-level information
+
+#### Component 1
+
+```{r}
+MaleNetworkComp1 <- network(geneResult.splsMale, cutoff = 0.8, comp = 1,
+                row.names = FALSE, col.names = FALSE, 
+                color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
+                color.edge = rev(brewer.pal(10, "RdBu")),
+                save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/comp1Network-Male") #Create and save network plot for component 1. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff.
+```
+
+```{r}
+MaleSelectedVariables1 <- selectVar(geneResult.splsMale, comp = 1) #Selected variables for first component
+MaleSelectedVariables1$X$name #Selected genes from methylation data
+MaleSelectedVariables1$Y$name #Selected genes from expression data
+```
+
+```{r}
+range(MaleSelectedVariables1$X$value) #Selected genes from methylation data
+range(MaleSelectedVariables1$Y$value) #Selected genes from expression data
+```
+
+```{r}
+rbind(as.data.frame(MaleSelectedVariables1$X$value),
+      as.data.frame(MaleSelectedVariables1$Y$value)) %>% write.csv(., "../output/gene-methylation-expression-mixomics/comp1SelectedVariables-Male.csv")
+```
+
+```{r}
+plotLoadings(geneResult.splsMale, comp = 1, 
+             size.name = rel(0.7),
+             xlim = matrix(c(-0.2, 0.35, 0, 0.45), nrow = 2, byrow = TRUE),
+             subtitle = c("Methylation", "Expression"), size.subtitle = 2) #Loadings for first component
+ggsave("../output/gene-methylation-expression-mixomics/comp1Loadings-male.pdf", width = 11, height = 8.5)
+```
+
+#### Component 2
+
+```{r}
+MaleNetworkComp2 <- network(geneResult.splsMale, cutoff = 0.8, comp = 2,
+                row.names = FALSE, col.names = FALSE, 
+                color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
+                color.edge = rev(brewer.pal(10, "RdBu")),
+                save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/comp2Network-Male") #Create and save network plot for component 1. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff.
+```
+
+```{r}
+MaleSelectedVariables2 <- selectVar(geneResult.splsMale, comp = 2) #Selected variables for second component
+MaleSelectedVariables2$X$name #Selected genes from methylation data
+MaleSelectedVariables2$Y$name #Selected genes from expression data
+```
+
+```{r}
+range(MaleSelectedVariables2$X$value) #Selected genes from methylation data
+range(MaleSelectedVariables2$Y$value) #Selected genes from expression data
+```
+
+```{r}
+rbind(as.data.frame(MaleSelectedVariables2$X$value),
+      as.data.frame(MaleSelectedVariables2$Y$value)) %>% write.csv(., "../output/gene-methylation-expression-mixomics/comp2SelectedVariables-Male.csv")
+```
+
+```{r}
+plotLoadings(geneResult.splsMale, comp = 2, 
+             size.name = rel(0.7),
+             xlim = matrix(c(0, 0.45, 0, 0.4), nrow = 2, byrow = TRUE),
+             subtitle = c("Methylation", "Expression"), size.subtitle = 2) #Loadings for first component
+ggsave("../output/gene-methylation-expression-mixomics/comp2Loadings-male.pdf", width = 11, height = 8.5)
+```
 
 # THINGS TO DO BEFORE YOU DO ANYTHING YOU FOOL:
 
 - perf error still present even after rm samples w nzv + using dev package
-- replace NA vs drop NA
 - remove outliers from arrow plot? check mapping stats, library size, etc. 
 - why is there much lower # fpkm genes for females? did i filter too much?
 - tune sex-specific parameters
 - run sex-specific spls
-- extract VIPs from spls: value > 1
+- extract VIPs from spls: loading value > 1
 - add categorial isoform information
 - add numerical CV information
