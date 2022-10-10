@@ -384,16 +384,73 @@ range(femSelectedVariables1$Y$value) #Selected genes from expression data
 ```
 
 ```{r}
-rbind(as.data.frame(femSelectedVariables1$X$value),
-      as.data.frame(femSelectedVariables1$Y$value)) %>% write.csv(., "../output/gene-methylation-expression-mixomics/comp1SelectedVariables-Fem.csv")
-```
-
-```{r}
 plotLoadings(geneResult.splsFem, comp = 1, 
              size.name = rel(0.7),
              xlim = matrix(c(-0.45, 0.1, -0.35, 0.45), nrow = 2, byrow = TRUE),
              subtitle = c("Methylation", "Expression"), size.subtitle = 2) #Loadings for first component
 ggsave("../output/gene-methylation-expression-mixomics/comp1Loadings-fem.pdf", width = 11, height = 8.5)
+```
+
+```{r}
+rbind(as.data.frame(femSelectedVariables1$X$value),
+      as.data.frame(femSelectedVariables1$Y$value)) %>% 
+  mutate(., block = c(rep("X", times = 25),
+                      rep("Y", times = 25))) %>%
+  rownames_to_column(., var = "gene") %>%
+  write.csv(., "../output/gene-methylation-expression-mixomics/comp1SelectedVariables-Fem.csv", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+mRNATrack <- read.delim("../genome-features/C_virginica-3.0-mRNA.gff", header = FALSE) %>%
+  separate(., V9, into = c("V10", "V11"), sep = "ID=rna-") %>%
+  separate(., V11, into = c("V12", "V13"), sep = ";Parent=") %>%
+  separate(., V13, into = c("V14", "V15"), sep = ";Dbxref=") %>%
+  separate(., V15, into = c("V16", "V17"), sep = ";product=") %>%
+  separate(., V17, into = c("V18", "V19"), sep = ";transcript_id=") %>%
+  select(., c("V12", "V14", "V18")) %>%
+  rename(., transcript = V12, gene = V14, product = V18) #Winnow down mRNA track
+mRNATrack$gene <- gsub("gene-", "gene.", mRNATrack$gene) #Make gene naming consistent
+head(mRNATrack) #Confirm changes
+```
+
+```{bash}
+wget https://gannet.fish.washington.edu/spartina/paper-gonad-meth/analyses/2018-12-02-Gene-Enrichment-Analysis/_blast-GO-unfolded.sorted > ../genome-features/_blast-GO-unfolded.sorted
+```
+
+```{bash}
+wget https://gannet.fish.washington.edu/spartina/project-gigas-oa-meth/output/GO-term-annotation/GO-GOslim.sorted > ../genome-features/GO-GOslim.sorted
+```
+
+```{r}
+GOterms <- read.delim("../genome-features/_blast-GO-unfolded.sorted", header = FALSE, col.names = c("GO", "transcript"))
+head(GOterms)
+```
+
+```{r}
+GOslim <- read.delim("../genome-features/GO-GOslim.sorted", header = FALSE, col.names = c("GO", "GOterm", "GOslim", "process"))
+head(GOslim)
+```
+
+```{r}
+annotfemSelectedVariables1X <- femSelectedVariables1$X %>%
+  as.data.frame(.) %>%
+  rename(., gene = name) %>%
+  left_join(., mRNATrack, by = "gene") %>% 
+  left_join(., GOterms, by = "transcript") %>% 
+  left_join(., GOslim, by = "GO") #Annotate genes
+head(annotfemSelectedVariables1X) #Confirm annotation
+```
+
+```{r}
+annotfemSelectedVariables1XP <- annotfemSelectedVariables1X %>%
+  dplyr::filter(., process == "P")
+as.data.frame(table(annotfemSelectedVariables1XP$GOslim))
+```
+
+```{r}
+annotfemSelectedVariables1XF <- annotfemSelectedVariables1X %>%
+  dplyr::filter(., process == "F")
+as.data.frame(table(annotfemSelectedVariables1XF$GOslim))
 ```
 
 #### Component 2
@@ -419,7 +476,10 @@ range(femSelectedVariables2$Y$value) #Selected genes from expression data
 
 ```{r}
 rbind(as.data.frame(femSelectedVariables2$X$value),
-      as.data.frame(femSelectedVariables2$Y$value)) %>% write.csv(., "../output/gene-methylation-expression-mixomics/comp2SelectedVariables-Fem.csv")
+      as.data.frame(femSelectedVariables2$Y$value)) %>% 
+  mutate(., block = c(rep("X", times = 25),
+                      rep("Y", times = 25))) %>%
+  rownames_to_column(., var = "gene") %>% write.csv(., "../output/gene-methylation-expression-mixomics/comp2SelectedVariables-Fem.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
@@ -428,6 +488,52 @@ plotLoadings(geneResult.splsFem, comp = 2,
              xlim = matrix(c(0, 0.6, 0, 0.4), nrow = 2, byrow = TRUE),
              subtitle = c("Methylation", "Expression"), size.subtitle = 2) #Loadings for first component
 ggsave("../output/gene-methylation-expression-mixomics/comp2Loadings-fem.pdf", width = 11, height = 8.5)
+```
+
+#### Annotate genes
+
+```{r}
+annotfemSelectedVariables1X <- femSelectedVariables1$X %>%
+  as.data.frame(.) %>%
+  rename(., gene = name) %>%
+  left_join(., mRNATrack, by = "gene") %>% 
+  left_join(., GOterms, by = "transcript") %>% 
+  left_join(., GOslim, by = "GO") #Annotate genes
+head(annotfemSelectedVariables1X) #Confirm annotation
+```
+
+```{r}
+annotfemSelectedVariables1XP <- annotfemSelectedVariables1X %>%
+  dplyr::filter(., process == "P")
+as.data.frame(table(annotfemSelectedVariables1XP$GOslim))
+```
+
+```{r}
+annotfemSelectedVariables1XF <- annotfemSelectedVariables1X %>%
+  dplyr::filter(., process == "F")
+as.data.frame(table(annotfemSelectedVariables1XF$GOslim))
+```
+
+```{r}
+annotfemSelectedVariables1Y <- femSelectedVariables1$Y %>%
+  as.data.frame(.) %>%
+  rename(., gene = name) %>%
+  left_join(., mRNATrack, by = "gene") %>% 
+  left_join(., GOterms, by = "transcript") %>% 
+  left_join(., GOslim, by = "GO") #Annotate genes
+head(annotfemSelectedVariables1Y) #Confirm annotation
+```
+
+```{r}
+annotfemSelectedVariables1YP <- annotfemSelectedVariables1Y %>%
+  dplyr::filter(., process == "P")
+as.data.frame(table(annotfemSelectedVariables1YP$GOslim))
+```
+
+```{r}
+annotfemSelectedVariables1YF <- annotfemSelectedVariables1Y %>%
+  dplyr::filter(., process == "F")
+as.data.frame(table(annotfemSelectedVariables1YF$GOslim))
 ```
 
 ## Male SPLS
@@ -568,7 +674,10 @@ range(MaleSelectedVariables1$Y$value) #Selected genes from expression data
 
 ```{r}
 rbind(as.data.frame(MaleSelectedVariables1$X$value),
-      as.data.frame(MaleSelectedVariables1$Y$value)) %>% write.csv(., "../output/gene-methylation-expression-mixomics/comp1SelectedVariables-Male.csv")
+      as.data.frame(MaleSelectedVariables1$Y$value)) %>% 
+  mutate(., block = c(rep("X", times = 25),
+                      rep("Y", times = 25))) %>%
+  rownames_to_column(., var = "gene") %>% write.csv(., "../output/gene-methylation-expression-mixomics/comp1SelectedVariables-Male.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
@@ -602,7 +711,11 @@ range(MaleSelectedVariables2$Y$value) #Selected genes from expression data
 
 ```{r}
 rbind(as.data.frame(MaleSelectedVariables2$X$value),
-      as.data.frame(MaleSelectedVariables2$Y$value)) %>% write.csv(., "../output/gene-methylation-expression-mixomics/comp2SelectedVariables-Male.csv")
+      as.data.frame(MaleSelectedVariables2$Y$value)) %>% 
+  mutate(., block = c(rep("X", times = 25),
+                      rep("Y", times = 25))) %>%
+  rownames_to_column(., var = "gene") %>%
+  write.csv(., "../output/gene-methylation-expression-mixomics/comp2SelectedVariables-Male.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
@@ -612,6 +725,53 @@ plotLoadings(geneResult.splsMale, comp = 2,
              subtitle = c("Methylation", "Expression"), size.subtitle = 2) #Loadings for first component
 ggsave("../output/gene-methylation-expression-mixomics/comp2Loadings-male.pdf", width = 11, height = 8.5)
 ```
+
+#### Annotate genes
+
+```{r}
+annotmaleSelectedVariables1X <- MaleSelectedVariables1$X %>%
+  as.data.frame(.) %>%
+  rename(., gene = name) %>%
+  left_join(., mRNATrack, by = "gene") %>% 
+  left_join(., GOterms, by = "transcript") %>% 
+  left_join(., GOslim, by = "GO") #Annotate genes
+head(annotmaleSelectedVariables1X) #Confirm annotation
+```
+
+```{r}
+annotmaleSelectedVariables1XP <- annotmaleSelectedVariables1X %>%
+  dplyr::filter(., process == "P")
+as.data.frame(table(annotmaleSelectedVariables1XP$GOslim))
+```
+
+```{r}
+annotmaleSelectedVariables1XF <- annotmaleSelectedVariables1X %>%
+  dplyr::filter(., process == "F")
+as.data.frame(table(annotmaleSelectedVariables1XF$GOslim))
+```
+
+```{r}
+annotmaleSelectedVariables1Y <- MaleSelectedVariables1$Y %>%
+  as.data.frame(.) %>%
+  rename(., gene = name) %>%
+  left_join(., mRNATrack, by = "gene") %>% 
+  left_join(., GOterms, by = "transcript") %>% 
+  left_join(., GOslim, by = "GO") #Annotate genes
+head(annotmaleSelectedVariables1Y) #Confirm annotation
+```
+
+```{r}
+annotmaleSelectedVariables1YP <- annotmaleSelectedVariables1Y %>%
+  dplyr::filter(., process == "P")
+as.data.frame(table(annotmaleSelectedVariables1YP$GOslim))
+```
+
+```{r}
+annotmaleSelectedVariables1YF <- annotmaleSelectedVariables1Y %>%
+  dplyr::filter(., process == "F")
+as.data.frame(table(annotmaleSelectedVariables1YF$GOslim))
+```
+
 
 # THINGS TO DO BEFORE YOU DO ANYTHING YOU FOOL:
 
