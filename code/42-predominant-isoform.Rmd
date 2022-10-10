@@ -11,6 +11,19 @@ library(tidyverse)
 https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/data/whole_tx_table.csv
 
 
+
+## Set variables
+
+```{r set-variables}
+# Vectors for subsetting samples by different groups
+controls <- c("S13M", "S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S64M", "S6M", "S76F", "S7M")
+exposed <- c("S12M", "S22F", "S23M", "S29F", "S31M", "S35F", "S36F", "S3F", "S41F", "S48M", "S50F", "S59M", "S77F", "S9M")
+controls_males <- c("S13M", "S64M", "S6M", "S7M")
+exposed_males <- c("S12M", "S23M", "S31M", "S48M", "S59M", "S9M")
+controls_females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F")
+exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
+```
+
 ```{r}
 tx_exp <- read.csv("https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/data/whole_tx_table.csv")
 ```
@@ -140,31 +153,63 @@ NOW withing MALES can we see difference in OA....
 
 
 EXPOSED
-```{r}
-mex <- tx_exp %>%
+```{r exposed-males-predominant-isoforms}
+tx_exp %>%
   select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
-  select(ends_with(c("name", "name", "12M", "23M", "31M", "48M", "59M", "9M"))) %>%
-  pivot_longer(cols = c(3:8)) %>%
+  select(ends_with(c("name", "name", exposed_males))) %>%
+  pivot_longer(cols = c(3:length(exposed_males) + 2)) %>% # Adds length of vector "exposed males" + "name" + "name" from previous line
   group_by(gene_name, t_name) %>%
   summarise(Predom_exp = mean(value)) %>%
   group_by(gene_name) %>%
-  slice(which.max(Predom_exp))
+  slice(which.max(Predom_exp)) %>% 
+  write.table(file = "../output/42-predominant-isoform/predom_iso-exposed-MALE.txt",quote = F, row.names = F, sep = "\t")
 ```
 
 
 
 CONTROL
-```{r}
+```{r controls-males-predominant-isoforms}
 mco <- tx_exp %>%
   select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
-  select(ends_with(c("name", "name", "13M", "64M", "6M", "7M"))) %>%
-  pivot_longer(cols = c(3:6)) %>%
+  select(ends_with(c("name", "name", controls_males))) %>%
+  pivot_longer(cols = c(3:length(controls_males) + 2)) %>%
   group_by(gene_name, t_name) %>%
   summarise(Predom_exp = mean(value)) %>%
   group_by(gene_name) %>%
-  slice(which.max(Predom_exp))
+  slice(which.max(Predom_exp)) %>% 
+  write.table(file = "../output/42-predominant-isoform/predom_iso-controls-MALE.txt",quote = F, row.names = F, sep = "\t")
 ```
 
+
+### Separate treatments within FEMALES
+
+EXPOSED
+```{r exposed-females-predominant-isoforms}
+tx_exp %>%
+  select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
+  select(ends_with(c("name", "name", exposed_females))) %>%
+  pivot_longer(cols = c(3:length(exposed_females) + 2)) %>% # Adds length of vector "exposed males" + "name" + "name" from previous line
+  group_by(gene_name, t_name) %>%
+  summarise(Predom_exp = mean(value)) %>%
+  group_by(gene_name) %>%
+  slice(which.max(Predom_exp)) %>% 
+  write.table(file = "../output/42-predominant-isoform/predom_iso-exposed-FEMALE.txt",quote = F, row.names = F, sep = "\t")
+```
+
+
+
+CONTROL
+```{r controls-females-predominant-isoforms}
+tx_exp %>%
+  select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
+  select(ends_with(c("name", "name", controls_females))) %>%
+  pivot_longer(cols = c(3:length(controls_females) + 2)) %>%
+  group_by(gene_name, t_name) %>%
+  summarise(Predom_exp = mean(value)) %>%
+  group_by(gene_name) %>%
+  slice(which.max(Predom_exp)) %>% 
+  write.table(file = "../output/42-predominant-isoform/predom_iso-controls-FEMALE.txt",quote = F, row.names = F, sep = "\t")
+```
 
 ```{r}
 full_join(mco, mex, by = "gene_name") %>%
