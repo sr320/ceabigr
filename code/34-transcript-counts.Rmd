@@ -19,7 +19,7 @@ library("tidyverse")
 
 ## Set variables
 
-```{r set-varaibles}
+```{r set-variables}
 # Vectors for subsetting samples by different groups
 all <- c("S13M", "S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S64M", "S6M", "S76F", "S7M", "S12M", "S22F", "S23M", "S29F", "S31M", "S35F", "S36F", "S3F", "S41F", "S48M", "S50F", "S59M", "S77F", "S9M")
 controls <- c("S13M", "S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S64M", "S6M", "S76F", "S7M")
@@ -97,14 +97,16 @@ list_transcript_counts_dfs <- list()
 # Expression data
 whole_tx_table <-  read.csv("../data/whole_tx_table.csv")
 
-# Rename gene_names listed as a "."
+head(whole_tx_table)
+
+# Rename gene_names listed as a "." to the associated transcript name
 whole_tx_table <- whole_tx_table %>% mutate(gene_name = ifelse(gene_name == ".", t_name, gene_name))
 
 head(whole_tx_table)
 ```
 
 ## Count transcripts for each gene for each sample.
-## A transcript is counted if it has an FPKM value > 0.
+A transcript is counted if it has an FPKM value > 0.
 ```{r count-transcripts-per-gene-per-sample}
 
 # Create table of transcript counts per gene per sample
@@ -127,9 +129,11 @@ max_transcripts_per_gene <- transcript_counts %>%
   rowwise() %>% 
   mutate(transcripts.max = max(across(contains(all, ignore.case = FALSE)))) %>% 
   select(ends_with(c("name", "max")))
+
+head(max_transcripts_per_gene)
 ```
 
-## Write max transcripts to file
+## Write max transcripts to tab-delimited file
 ```{r write-max-transcripts-to-file}
 write.table(max_transcripts_per_gene,
           file ="../output/34-transcript-counts/transcripts-counts-max_per_gene.tab",
@@ -268,11 +272,11 @@ head(transcript_counts)
 
 ```{r write-transcript-per-gene-counts-to-files}
 
-# Write data frames to CSVs in ../analyses/dir
+# Write data frames to CSVs in ../output/34-transcript-counts/ dir
 # Uses names of data frames as names of output files.
 sapply(names(list_transcript_counts_dfs),
        function(x) write.csv(list_transcript_counts_dfs[[x]],
-                             file = file.path("../analyses/", paste(x, "csv", sep=".")),
+                             file = file.path("../output/34-transcript-counts/", paste(x, "csv", sep=".")),
                              quote = FALSE,
                              row.names = FALSE)
        )
