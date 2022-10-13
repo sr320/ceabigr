@@ -99,6 +99,18 @@ sum(is.na(geneExpressionFilt)) #Confirm there are no NAs
 ncol(geneExpressionFilt) #Number of genes remaining
 ```
 
+```{r}
+exp.pca <- pca(geneExpressionFilt) #PCA analysis of expression
+plotIndiv(exp.pca, ind.names = FALSE,
+          group = metadata$Treatment,
+          pch = as.factor(metadata$Sex), col = c("#74C476", "#006D2C"),
+          cex = 10, size.axis = 8, size.legend = 8,
+          legend = TRUE, title = 'Gene Expression',
+          legend.title = 'Treatment', legend.title.pch = 'Sex')
+ggsave("../output/gene-methylation-expression-mixomics/all-exp-pca.pdf", height = 8.5, width = 11)
+```
+
+
 ## Gene methylation data
 
 ```{r}
@@ -127,6 +139,19 @@ head(geneMethylationFilt) #Confirm formatting
 sum(is.na(geneMethylationFilt)) #Confirm there are no NAs
 ncol(geneMethylationFilt) #Number of genes remaining
 ```
+
+
+```{r}
+meth.pca <- pca(geneMethylationFilt) #PCA analysis of methylation
+plotIndiv(meth.pca, ind.names = FALSE,
+          group = metadata$Treatment,
+          pch = as.factor(metadata$Sex), col = c("#74C476", "#006D2C"),
+          cex = 10, size.axis = 8, size.legend = 8,
+          legend = TRUE, title = 'Gene Methylation',
+          legend.title = 'Treatment', legend.title.pch = 'Sex')
+ggsave("../output/gene-methylation-expression-mixomics/all-meth-pca.pdf", height = 8.5, width = 11)
+```
+
 
 # Sparse PLS
 
