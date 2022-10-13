@@ -5,7 +5,7 @@ date: "1/27/2022"
 output: html_document
 ---
 
-# Uses [Ballgown](https://github.com/alyssafrazee/ballgown) all transcripts expression table for calculating transcript counts per gene per sample in _C.virginica_ gonad tissue exposed to elevated pCO<sub>2</sub>.
+# Uses all transcripts expression table, generated using [Ballgown](https://github.com/alyssafrazee/ballgown), for calculating transcript counts per gene per sample in _C.virginica_ gonad tissue exposed to elevated pCO<sub>2</sub>.
 
 REQUIRES the following R libraries:
 
@@ -270,6 +270,7 @@ list_transcript_counts_dfs <- mget(grep("^(?!list).*", ls(pattern = "transcript_
 head(transcript_counts)
 ```
 
+## Write transcript per gene counts to files.
 ```{r write-transcript-per-gene-counts-to-files}
 
 # Write data frames to CSVs in ../output/34-transcript-counts/ dir
