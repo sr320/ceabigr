@@ -30,3 +30,5 @@ genome-features/C_virginica-3.0-exon.gff
 genome-features/C_virginica-3.0-downstream.gff
 genome-features/C_virginica-3.0-CDS.gff
 *checkpoint.ipynb
+*.ctab
+*.md5
