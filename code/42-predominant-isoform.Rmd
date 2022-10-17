@@ -25,7 +25,7 @@ exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77
 ```
 
 ```{r}
-tx_exp <- read.csv("https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/data/whole_tx_table.csv")
+tx_exp <- read.csv("../data/whole_tx_table.csv")
 ```
 
 ```{r}
