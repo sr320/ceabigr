@@ -17,3 +17,5 @@
 - [`42-predominant_isoform-female_male.ipynb`](https://github.com/sr320/ceabigr/blob/main/code/42-predominant_isoform-female_male.ipynb): Jupyter notebook identifying differences in predominant isoforms between sexes.
 
 - [`50-circos-formatting.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/50-circos-formatting.Rmd): Creates tab-delimited Circos-formatted files for mean gene expression (FPKM) and mean methylation across samples/treatments.
+
+- [60-expression-fpkm-coefficients_of_variation.Rmd](https://github.com/sr320/ceabigr/blob/main/code/60-expression-fpkm-coefficients_of_variation.Rmd): R Markdown file for calculating FPKM coefficients of variation (CoV) for genes and transcripts.
