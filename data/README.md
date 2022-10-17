@@ -48,7 +48,7 @@ Metadata for individual [_Crassostrea virginica_ (Eastern oyster)](https://en.wi
 
   - [20220217-cvir-lncRNA_subsetting.ipynb](https://nbviewer.ipython.org/github/RobertsLab/code/blob/master/notebooks/sam/20220217-cvir-lncRNA_subsetting.ipynb)
 
-- `GCF_002022765.2_C_virginica-3.0_lncRNA.fa.fai`: FastA index file for corresponding FastA with same prefix. Jupyter notebook (nbviewer):
+- [`GCF_002022765.2_C_virginica-3.0_lncRNA.fa.fai`](https://github.com/sr320/ceabigr/blob/main/data/GCF_002022765.2_C_virginica-3.0_lncRNA.fa.fai): FastA index file for corresponding FastA with same prefix. Jupyter notebook (nbviewer):
 
   - [20220217-cvir-lncRNA_subsetting.ipynb](https://nbviewer.ipython.org/github/RobertsLab/code/blob/master/notebooks/sam/20220217-cvir-lncRNA_subsetting.ipynb)
 
@@ -56,7 +56,7 @@ Metadata for individual [_Crassostrea virginica_ (Eastern oyster)](https://en.wi
 
   - [20220217-cvir-lncRNA_subsetting.ipynb](https://nbviewer.ipython.org/github/RobertsLab/code/blob/master/notebooks/sam/20220217-cvir-lncRNA_subsetting.ipynb)
 
-- `GCF_002022765.2_C_virginica-3.0_lncRNA.gtf`: General Transfer Format (GTF) file of all long, non-coding RNA (lncRNA) coordinates in the NCBI _C.virginica_ genome. Jupyter notebook (nbviewer):
+- [`GCF_002022765.2_C_virginica-3.0_lncRNA.gtf`](https://github.com/sr320/ceabigr/blob/main/data/GCF_002022765.2_C_virginica-3.0_lncRNA.gtf): General Transfer Format (GTF) file of all long, non-coding RNA (lncRNA) coordinates in the NCBI _C.virginica_ genome. Jupyter notebook (nbviewer):
 
   - [20220217-cvir-lncRNA_subsetting.ipynb](https://nbviewer.ipython.org/github/RobertsLab/code/blob/master/notebooks/sam/20220217-cvir-lncRNA_subsetting.ipynb)
 
