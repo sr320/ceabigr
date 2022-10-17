@@ -58,7 +58,7 @@ head(transcripts_counts)
 
 ## Load all gene expression data
 ```{r load-gene-expression-data}
-whole_gx_table <-  read.csv("https://github.com/epigeneticstoocean/2018_L18-adult-methylation/raw/main/data/whole_gx_table.csv", header = TRUE)
+whole_gx_table <-  read.csv("../data/whole_gx_table.csv", header = TRUE)
 
 head(whole_gx_table)
 ```
