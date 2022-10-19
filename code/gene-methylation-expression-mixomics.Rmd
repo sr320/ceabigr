@@ -376,7 +376,7 @@ cim(margins = c(10,10), geneResult.splsFem,
 ```{r}
 femNetwork <- network(geneResult.splsFem, cutoff = 0.8,
                 row.names = FALSE, col.names = FALSE, 
-                color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
+                color.node = c("grey50", "grey50"), shape.node = c("circle", "rectangle"), size.node = 0.2,
                 color.edge = rev(brewer.pal(10, "RdBu")),
                 save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/network-fem") #Create and save network plot. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff. The network plot is split based on components
 ```

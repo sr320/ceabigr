@@ -3,16 +3,35 @@ title: "42-predominant-isoform"
 output: html_document
 ---
 
+# Set up R Markdown document
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "../output/42-predominant-isoform/") #Set root directory
+```
+
+# Install packages
+
+```{r}
+#install.packages("ggpubr")
+#install.packages("lme4")
+#install.packages("data.table")
+```
 
 ```{r}
 library(tidyverse)
+require(ggpubr)
+require(lme4)
+require(data.table)
 ```
 
-https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/data/whole_tx_table.csv
+```{r}
+sessionInfo()
+```
 
+<https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/data/whole_tx_table.csv>
 
-
-## Set variables
+# Set variables
 
 ```{r set-variables}
 # Vectors for subsetting samples by different groups
@@ -32,8 +51,6 @@ tx_exp <- read.csv("../data/whole_tx_table.csv")
 tx_exp
 ```
 
-
-
 ```{r}
 tx_exp %>%
   select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
@@ -41,9 +58,6 @@ tx_exp %>%
   group_by(gene_name, t_name) %>%
   summarise(Predom_exp = mean(value))
 ```
-
-
-
 
 ```{r}
 tx_exp %>%
@@ -54,7 +68,6 @@ tx_exp %>%
   group_by(gene_name) %>%
   slice(which.max(Predom_exp))
 ```
-
 
 ```{r}
 predom_all <- tx_exp %>%
@@ -70,27 +83,28 @@ predom_all <- tx_exp %>%
 write.table(predom_all, file = "../output/42-predominant-isoform/predom_iso-all.txt",quote = F, row.names = F, sep = "\t")
 ```
 
+Now can we do it for each "treatment" Let first just try to separate males and females
 
-Now can we do it for each "treatment"
-Let first just try to separate males and females
+# Separate by sex
 
-females first....
-
+## Females
 
 ```{r}
-tx_exp %>%
+fem_exp <- tx_exp %>%
   select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
   select(ends_with(c("name", "name", "F"))) %>%
   pivot_longer(cols = c(3:18)) %>%
   group_by(gene_name, t_name) %>%
   summarise(Predom_exp = mean(value)) %>%
   group_by(gene_name) %>%
-  slice(which.max(Predom_exp)) %>%
-  write.table(file = "../output/42-predominant-isoform/predom_iso-FEMALE.txt",quote = F, row.names = F, sep = "\t")
+  slice(which.max(Predom_exp))
 ```
 
+```{r}
+write.table(fem_exp, file = "../output/42-predominant-isoform/predom_iso-FEMALE.txt",quote = F, row.names = F, sep = "\t")
+```
 
-Males
+## Males
 
 ```{r}
 tx_exp %>%
@@ -104,7 +118,6 @@ tx_exp %>%
   write.table(file = "../output/42-predominant-isoform/predom_iso-MALE.txt",quote = F, row.names = F, sep = "\t")
 ```
 
-
 Lets join male and female.
 
 ```{r}
@@ -117,7 +130,6 @@ mpre <- tx_exp %>%
   group_by(gene_name) %>%
   slice(which.max(Predom_exp))
 ```
-
 
 ```{r}
 fpre <- tx_exp %>%
@@ -135,6 +147,7 @@ full_join(mpre, fpre, by = "gene_name") %>%
   filter(t_name.x!=t_name.y) %>%
   filter(abs(Predom_exp.x - Predom_exp.y) > 100)
 ```
+
 ```{r}
 anti_join(mpre, fpre, by = "t_name")
 ```
@@ -143,16 +156,14 @@ anti_join(mpre, fpre, by = "t_name")
 anti_join(fpre, mpre, by = "t_name")
 ```
 
+# Separate by sex and treatment
 
+**NOTE: SAM DID THIS IN A JUPYTER NOTEBOOK: <https://nbviewer.org/github/sr320/ceabigr/blob/main/code/20220920-cvir-ceabigr-predominant_isoform-female_male.ipynb>**
 
+## Males
 
+### Exposed
 
-
-
-NOW withing MALES can we see difference in OA....
-
-
-EXPOSED
 ```{r exposed-males-predominant-isoforms}
 tx_exp %>%
   select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
@@ -165,9 +176,8 @@ tx_exp %>%
   write.table(file = "../output/42-predominant-isoform/predom_iso-exposed-MALE.txt",quote = F, row.names = F, sep = "\t")
 ```
 
+### Control
 
-
-CONTROL
 ```{r controls-males-predominant-isoforms}
 mco <- tx_exp %>%
   select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
@@ -176,14 +186,18 @@ mco <- tx_exp %>%
   group_by(gene_name, t_name) %>%
   summarise(Predom_exp = mean(value)) %>%
   group_by(gene_name) %>%
-  slice(which.max(Predom_exp)) %>% 
-  write.table(file = "../output/42-predominant-isoform/predom_iso-controls-MALE.txt",quote = F, row.names = F, sep = "\t")
+  slice(which.max(Predom_exp))
+head(mco)
 ```
 
+```{r}
+write.table(mco, file = "../output/42-predominant-isoform/predom_iso-controls-MALE.txt",quote = F, row.names = F, sep = "\t")
+```
 
-### Separate treatments within FEMALES
+## Females
 
-EXPOSED
+### Exposed
+
 ```{r exposed-females-predominant-isoforms}
 tx_exp %>%
   select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
@@ -196,9 +210,8 @@ tx_exp %>%
   write.table(file = "../output/42-predominant-isoform/predom_iso-exposed-FEMALE.txt",quote = F, row.names = F, sep = "\t")
 ```
 
+### Control
 
-
-CONTROL
 ```{r controls-females-predominant-isoforms}
 tx_exp %>%
   select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
@@ -214,5 +227,422 @@ tx_exp %>%
 ```{r}
 full_join(mco, mex, by = "gene_name") %>%
   filter(t_name.x!=t_name.y) %>%
-  filter(abs(Predom_exp.x - Predom_exp.y) > 10)
+  filter(abs(Predom_exp.x - Predom_exp.y) > 10) %>%
+  head()
 ```
+
+# Analyse data
+
+Based on the files from [Sam's Jupyter notebook](https://nbviewer.org/github/sr320/ceabigr/blob/main/code/20220920-cvir-ceabigr-predominant_isoform-female_male.ipynb), I will address the following questions:
+
+-   How often does the predominant isoform change under OA conditions? Is this more than expected by random chance?
+-   Is there a connection between predominant isoform changes, gene expression, and gene methylation?
+
+I will do this for each sex separately.
+
+## Import data
+
+```{r}
+metadata <- read.csv("../data/adult-meta.csv", header = TRUE) #Import metadata
+head(metadata)
+```
+
+### Isoform data
+
+```{r}
+predIsoFem <- read.delim("../output/42-predominant-isoform/predom_iso-diff-controls_vs_exposed-female.tab", sep = "\t", header = FALSE, col.names = c("gene_name", "change"))
+predIsoFem$gene_name <- str_trim(predIsoFem$gene_name, "right") #Remove extra spaces at end of gene name 
+head(predIsoFem) #Confirm import
+```
+
+```{r}
+predIsoMale <- read.delim("../output/42-predominant-isoform/predom_iso-diff-controls_vs_exposed-male.tab", sep = "\t", header = FALSE, col.names = c("gene_name", "change"))
+predIsoMale$gene_name <- str_trim(predIsoMale$gene_name, "right") #Remove extra spaces at end of gene name 
+head(predIsoMale) #Confirm import
+```
+
+```{r}
+totTranscripts <- read.delim("../output/34-transcript-counts/transcripts-counts-max_per_gene.tab", sep = "\t", header = FALSE, col.names = c("gene_name", "max_transcript")) #Import max transcript expressed per gene
+head(totTranscripts)
+```
+
+### Methylation data
+
+```{r}
+geneMethylation <- read.csv("../output/40-gene-methylaiton.csv", header = TRUE, row.names = 2)
+geneMethylationMod <- geneMethylation %>%
+  select(., -1) #Remove extra column
+```
+
+```{r}
+geneMethylationFem <- geneMethylationMod %>%
+  filter(., grepl("F", rownames(.), fixed = TRUE)) %>% 
+  t(.) %>%
+  as.data.frame(.) %>%
+  drop_na(.) %>%
+  as.data.frame(.) %>% 
+  rownames_to_column(., var = "gene_name") %>%
+  pivot_longer(., !gene_name, names_to = "sample", values_to = "meth") #Filter female samples and reformat data
+geneMethylationFem$gene_name <- gsub("gene.", "", geneMethylationFem$gene_name) #Remove excess information from gene name column
+head(geneMethylationFem) #Confirm formatting
+```
+
+```{r}
+geneMethylationMale <- geneMethylationMod %>%
+  filter(., grepl("M", rownames(.), fixed = TRUE)) %>% 
+  t(.) %>%
+  as.data.frame(.) %>%
+  drop_na(.) %>%
+  as.data.frame(.) %>% 
+  rownames_to_column(., var = "gene_name")  %>%
+  pivot_longer(., !gene_name, names_to = "sample", values_to = "meth") #Filter female samples and reformat data
+geneMethylationMale$gene_name <- gsub("gene.", "", geneMethylationMale$gene_name) #Remove excess information from gene name column
+head(geneMethylationMale) #Confirm formatting
+```
+
+### Expression data
+
+```{r}
+geneExpression <- read.csv("../data/gene_fpkm.csv", header = TRUE, row.names = metadata$Sample.ID)
+geneExpressionMod <- geneExpression %>%
+  dplyr::select(., -c(1:6)) #Remove extra information to have just FPKM for each gene
+```
+
+```{r}
+geneExpressionFem <- geneExpressionMod %>%
+  filter(., grepl("F", rownames(.), fixed = TRUE)) %>%
+  t(.) %>%
+  as.data.frame(.) %>%
+  drop_na(.) %>%
+  as.data.frame(.) %>% 
+  rownames_to_column(., var = "gene_name")  %>%
+  pivot_longer(., !gene_name, names_to = "sample", values_to = "exp") %>% 
+  mutate(., log_exp = log(exp + 1) ) #Filter female samples and reformat
+geneExpressionFem$gene_name <- gsub("gene.", "", geneExpressionFem$gene_name) #Remove excess information from gene name column
+head(geneExpressionFem) #Confirm formatting
+```
+
+```{r}
+geneExpressionMale <- geneExpressionMod %>%
+  filter(., grepl("M", rownames(.), fixed = TRUE)) %>%
+  t(.) %>%
+  as.data.frame(.) %>%
+  drop_na(.) %>%
+  as.data.frame(.) %>% 
+  rownames_to_column(., var = "gene_name")  %>%
+  pivot_longer(., !gene_name, names_to = "sample", values_to = "exp") %>% 
+  mutate(., log_exp = log(exp)) #Filter female samples and reformat
+geneExpressionMale$gene_name <- gsub("gene.", "", geneExpressionMale$gene_name) #Remove excess information from gene name column
+head(geneExpressionMale) #Confirm formatting
+```
+
+### CV data
+
+```{r}
+
+```
+
+## Females
+
+### Format data
+
+The file has data for all genes, but I want to remove genes that did not have any expression data. I also want to include the number of transcripts per gene. If there is only one transcript for the gene, I don't want to include it in the analysis.
+
+```{r}
+#Join predominant isoform data with expression data
+#Keep rows where exp > 0
+#Join with number of transcript information
+#Keep rows where # transcripts > 1
+
+predIsoFemFilt <- predIsoFem %>%
+  inner_join(., fem_exp, by = "gene_name") %>%
+  filter(., Predom_exp > 0) %>%
+  inner_join(., totTranscripts, by = "gene_name") %>%
+  filter(., max_transcript > 1)
+head(predIsoFemFilt) #Confirm formatting
+```
+
+### Isoform change
+
+```{r}
+nrow(predIsoFemFilt) #10559 genes total
+sum(predIsoFemFilt$change) #2198 with shift in predominant isoform
+sum(predIsoFemFilt$change) / nrow(predIsoFemFilt) * 100 #20.81637% of genes have predominant isoforms that change under OA conditions
+```
+
+```{r}
+predIsoFemTest <- prop.test(x = 2198, n = 10559, p = 0.50,
+                            alternative = "two.sided",
+                            conf.level = 0.95) #Conduct 1-sample z-test. 
+predIsoFemTest
+predIsoFemTest$statistic
+predIsoFemTest$p.value #Isoform shifts happen significantly less than what would be expected by random chance
+```
+
+#### Annotate isoforms
+
+```{r}
+mRNATrack <- read.delim("../genome-features/C_virginica-3.0-mRNA.gff", header = FALSE) %>%
+  separate(., V9, into = c("V10", "V11"), sep = "ID=rna-") %>%
+  separate(., V11, into = c("V12", "V13"), sep = ";Parent=") %>%
+  separate(., V13, into = c("V14", "V15"), sep = ";Dbxref=") %>%
+  separate(., V15, into = c("V16", "V17"), sep = ";product=") %>%
+  separate(., V17, into = c("V18", "V19"), sep = ";transcript_id=") %>%
+  select(., c("V12", "V14", "V18")) %>%
+  rename(., transcript = V12, gene = V14, product = V18) #Winnow down mRNA track
+mRNATrack$gene_name <- gsub("gene-", "", mRNATrack$gene) #Make gene naming consistent
+head(mRNATrack) #Confirm changes
+```
+
+```{bash}
+wget https://gannet.fish.washington.edu/spartina/paper-gonad-meth/analyses/2018-12-02-Gene-Enrichment-Analysis/_blast-GO-unfolded.sorted > ../genome-features/_blast-GO-unfolded.sorted
+```
+
+```{bash}
+wget https://gannet.fish.washington.edu/spartina/project-gigas-oa-meth/output/GO-term-annotation/GO-GOslim.sorted > ../genome-features/GO-GOslim.sorted
+```
+
+```{r}
+GOterms <- read.delim("../genome-features/_blast-GO-unfolded.sorted", header = FALSE, col.names = c("GO", "transcript"))
+head(GOterms)
+```
+
+```{r}
+GOslim <- read.delim("../genome-features/GO-GOslim.sorted", header = FALSE, col.names = c("GO", "GOterm", "GOslim", "process"))
+head(GOslim)
+```
+
+```{r}
+head(predIsoFemFilt)
+```
+
+```{r}
+predIsoFemFiltAnnot <- inner_join(predIsoFemFilt, mRNATrack, by = "gene_name") %>%
+  inner_join(., GOterms, by = "transcript") %>%
+  inner_join(., GOslim, by = "GO")
+head(predIsoFemFiltAnnot)
+```
+
+```{r}
+predIsoFemFiltAnnotP <- predIsoFemFiltAnnot %>%
+  filter(., process == "P") %>%
+  filter(., change == 0)
+#  filter(., change == 1)
+as.data.frame(table(predIsoFemFiltAnnotP$GOslim))
+```
+
+```{r}
+predIsoFemFiltAnnotF <- predIsoFemFiltAnnot %>%
+  filter(., process == "F") %>%
+#    filter(., change == 0)
+  filter(., change == 1)
+as.data.frame(table(predIsoFemFiltAnnotF$GOslim))
+```
+
+### Isoforms and methylation
+
+```{r}
+head(geneMethylationFem)
+head(geneExpressionFem)
+```
+
+```{r}
+femMethExp <- inner_join(geneMethylationFem, geneExpressionFem, by = c("gene_name", "sample")) %>%
+  inner_join(., predIsoFemFilt, by = "gene_name") %>%
+  select(., 1:6) %>%
+  mutate(bins = case_when(meth < 10 ~ "0",
+                          meth >= 10 & meth < 20 ~ "10",
+                          meth >= 20 & meth < 30 ~ "20",
+                          meth >= 30 & meth < 40 ~ "30",
+                          meth >= 40 & meth < 50 ~ "40",
+                          meth >= 50 & meth < 60 ~ "50",
+                          meth >= 60 & meth < 70 ~ "60",
+                          meth >= 70 & meth < 80 ~ "70",
+                          meth >= 80 & meth < 90 ~ "80",
+                          meth >= 90 & meth < 100 ~ "90",
+                          meth >= 100 ~ "100")) %>%
+  mutate(treatment = case_when(sample == "16F" ~ "control",
+                               sample == "19F" ~ "control",
+                               sample == "39F" ~ "control",
+                               sample == "44F" ~ "control",
+                               sample == "52F" ~ "control",
+                               sample == "53F" ~ "control",
+                               sample == "54F" ~ "control",
+                               sample == "76F" ~ "control",
+                               sample == "22F" ~ "exposed",
+                               sample == "29F" ~ "exposed",
+                               sample == "35F" ~ "exposed",
+                               sample == "36F" ~ "exposed",
+                               sample == "3F" ~ "exposed",
+                               sample == "41F" ~ "exposed",
+                               sample == "50F" ~ "exposed",
+                               sample == "77F" ~ "exposed"))
+head(femMethExp)
+```
+
+#### XY Plots
+
+```{r}
+femMethExp %>%
+  filter(., change == 1) %>%
+  ggplot(.) + geom_point(aes(x = meth, y = log_exp), colour = "#006D2C") +    
+  labs(x = "Methylation (%)", y = "log FPKM") +
+  geom_smooth(aes(x = meth, y = log_exp), method = lm, colour = "grey20", size = 2, na.rm = TRUE) +
+  theme_minimal()
+ggsave("../output/42-predominant-isoform/fem-pred-isoform-meth-exp-xy.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+femMethExp %>%
+ggplot(.) + geom_point(aes(x = meth, y = log_exp), colour = "#006D2C") +    
+  labs(x = "Methylation (%)", y = "log FPKM") +
+  geom_smooth(aes(x = meth, y = log_exp), method = lm, colour = "grey20", size = 2, na.rm = TRUE) +
+  theme_minimal()
+ggsave("../output/42-predominant-isoform/fem-meth-exp-xy.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+femMethExp %>%
+  filter(., meth !=0 & log_exp !=0) %>%
+  ggplot(.) + geom_point(aes(x = meth, y = log_exp, colour = factor(change)), alpha = 0.7) +
+  scale_color_manual(values = c("grey", "black")) +
+  theme_minimal()
+```
+
+```{r}
+femMethExp %>%
+  filter(., meth !=0 & log_exp !=0) %>%
+  filter(., change == 1) %>%
+  ggplot(.) + geom_point(aes(x = meth, y = log_exp, colour = bins)) +
+  stat_smooth(method = lm, aes(x = meth, y = log_exp)) +
+  stat_regline_equation(aes(x = meth, y = log_exp, label = paste(..eq.label.., ..rr.label.., ..adj.rr.label.., sep = "~~~~")), formula = y ~ x, size = 5) +
+  theme_minimal()
+
+femMethExp %>%
+  filter(., meth !=0 & log_exp !=0) %>%
+  filter(., change == 0) %>%
+  ggplot(.) + geom_point(aes(x = meth, y = log_exp, color = bins)) +
+  stat_smooth(method = lm, aes(x = meth, y = log_exp)) +
+  stat_regline_equation(aes(x = meth, y = log_exp, label = paste(..eq.label.., ..rr.label.., ..adj.rr.label.., sep = "~~~~")), formula = y ~ x, size = 5) +
+  theme_minimal()
+```
+
+
+```{r}
+femMethExp %>%
+  filter(., meth !=0 & log_exp !=0) %>%
+  filter(., change == 1) %>%
+  ggplot(.) + geom_density(aes(x = log_exp, color = bins)) +
+  theme_minimal()
+
+femMethExp %>%
+  filter(., meth !=0 & log_exp !=0) %>%
+  filter(., change == 0) %>%
+  ggplot(.) + geom_density(aes(x = log_exp, color = bins)) +
+  theme_minimal()
+```
+
+### Modeling differences
+
+```{r}
+femMixedModel <- lmer(data = femMethExp,
+                      exp ~ meth + (1 | treatment))
+summary(femMixedModel)
+```
+
+```{r}
+femModel <- glm(data = femMethExp,
+                exp ~ meth + factor(change) + factor(treatment))
+summary(femModel)
+```
+
+### Transcriptional noise analysis
+
+#### Load data
+
+```{r}
+cov_data <- fread("https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/analyses/genes_treatment_fpkm_CoV_df.csv")
+Cvir_genom_feats <- fread("https://gannet.fish.washington.edu/Atumefaciens/20211209_cvir_gff-to-bed/20211209_cvir_GCF_002022765.2_genes.bed")
+```
+
+#### Format data
+
+```{r}
+colnames(cov_data) <- c("gene_ids", "M_control","F_control", "M_treated", "F_treated")
+
+cov_data_l <- cov_data %>% pivot_longer(names_to = "sample",values_to = "CoV_FPKM", cols = 2:5)
+
+Cvir_genom_feats$length <- Cvir_genom_feats$V3 - Cvir_genom_feats$V2 + 1
+
+colnames(Cvir_genom_feats)[4] <- "gene_ids"
+
+cov_data_l <- merge(cov_data_l, Cvir_genom_feats[,c("gene_ids", "length")], by = "gene_ids")
+
+head(cov_data_l) #Confirm formatting
+```
+
+```{r}
+cov_data_fem <- cov_data_l %>%
+  mutate(., sex = case_when(sample == "M_treated" ~ "M",
+                                  sample == "M_control" ~ "M",
+                                  sample == "F_treated" ~ "F",
+                                  sample == "F_control" ~ "F")) %>%
+  mutate(., treatment = case_when(sample == "M_treated" ~ "exposed",
+                                  sample == "M_control" ~ "control",
+                                  sample == "F_treated" ~ "exposed",
+                                  sample == "F_control" ~ "control")) %>%
+  filter(., sex == "F")
+cov_data_fem$gene_name <- gsub("gene-", "", cov_data_fem$gene_ids) 
+cov_data_fem <- select(cov_data_fem, 3:7) #Remove excess columns
+head(cov_data_fem)
+```
+
+```{r}
+femMethExpCV <- inner_join(femMethExp, cov_data_fem, by = c("gene_name", "treatment"))
+head(femMethExpCV)
+```
+
+#### Plot data
+
+```{r}
+femMethExpCV %>%
+  filter(., change == 1) %>%
+  ggplot(.) + geom_point(aes(x = meth, y = CoV_FPKM), colour = "#006D2C") +    
+  labs(x = "Methylation (%)", y = "CV") +
+  scale_y_continuous(limits = c(0,3)) +
+  geom_smooth(aes(x = meth, y = CoV_FPKM), method = lm, colour = "grey20", size = 2, na.rm = TRUE) +
+  theme_minimal()
+ggsave("../output/42-predominant-isoform/fem-pred-isoform-meth-CV-xy.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+femMethExpCV %>%
+ggplot(.) + geom_point(aes(x = meth, y = CoV_FPKM), colour = "#006D2C") +    
+  labs(x = "Methylation (%)", y = "CV") +
+  scale_y_continuous(limits = c(0,3)) +
+  geom_smooth(aes(x = meth, y = CoV_FPKM), method = lm, colour = "grey20", size = 2, na.rm = TRUE) +
+  theme_minimal()
+ggsave("../output/42-predominant-isoform/fem-meth-CV-xy.pdf", height = 8.5, width = 11)
+```
+
+#### Model data
+
+Model needed based on Wu et al. 2020:
+
+log10(transcriptional noise) ~ gene body methylation + log2(gene expression) + log10(gene length) + pH treatment
+
+```{r}
+transNoiseFem <- lm(data = femMethExpCV,
+                    log10(CoV_FPKM) ~ meth + log2(exp + 1) + log10(length) + as.factor(treatment))
+summary(transNoiseFem) #Significant effect of all parameters on transcriptional noise (CV of expression)
+```
+
+```{r}
+femMethExpCV %>%
+ggplot(.) + geom_point(aes(x = exp, y = CoV_FPKM), colour = as.factor(treatment)) +    
+  labs(x = "FPKM", y = "Transcriptional Noise") +
+  geom_smooth(aes(x = meth, y = CoV_FPKM), method = lm, colour = "grey20", size = 2, na.rm = TRUE) +
+  theme_minimal()
+```
+
+
