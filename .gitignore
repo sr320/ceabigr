@@ -32,3 +32,4 @@ genome-features/C_virginica-3.0-CDS.gff
 *checkpoint.ipynb
 *.ctab
 *.md5
+*.RData
