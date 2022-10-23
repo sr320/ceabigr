@@ -1,0 +1,198 @@
+---
+title: "40-gene-methylation"
+output: html_document
+---
+
+Lets see if we can get gene methylation with a 10x bed file.. and gene gff via intersect bed...
+
+
+
+```
+#Use intersectBed to find where loci and genes intersect, allowing loci to be mapped to annotated genes
+#wb: Print all lines in the second file
+#a: file that ends in posOnly
+#b: annotated gene list
+#Save output in a new file that has the same base name and ends in -Annotated.txt
+for f in RAnalysis/data/*F_R1_val_1_10x.tab
+do
+  intersectBed \
+  -wb \
+  -a ${f} \
+  -b RAnalysis/data/C_virginica-3.0_Gnomon_genes.bed \
+  > ${f}_gene
+done
+```
+
+
+
+
+```{bash}
+cd ../data/big
+
+wget -r \
+--no-check-certificate \
+--quiet \
+--no-directories --no-parent \
+-P . \
+-A R1_val_1_10x.bedgraph \
+https://gannet.fish.washington.edu/seashell/bu-mox/scrubbed/120321-cvBS/
+
+```
+
+
+
+
+```{bash}
+head ../data/big/3F_R1_val_1_10x.bedgraph
+```
+```{bash}
+head ../genome-features/C_virginica-3.0_Gnomon_genes.bed
+```
+
+
+```{bash}
+NAME=5F
+
+/home/shared/bedtools2/bin/intersectBed \
+-wb \
+-a ../data/big/3F_R1_val_1_10x.bedgraph \
+-b ../genome-features/C_virginica-3.0_Gnomon_genes.bed \
+| awk -v name=$NAME -v OFS="\t" '{ print $0, name}' \
+| head
+```
+
+
+```
+ cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/data
+ FILES=$(ls *bedgraph)
+ for file in ${FILES}
+ do
+    NAME=$(echo ${file} | awk -F "_" '{print $1}')
+    echo ${NAME}
+   /home/shared/bedtools2/bin/intersectBed \
+   -wb \
+   -a ${NAME}_R1_val_1_10x.bedgraph \
+   -b ../genome-features/C_virginica-3.0_Gnomon_genes.bed \
+   > ~/ceabigr/output/${NAME}mGene.out
+ done  
+``` 
+ 
+
+
+```{bash}
+ cd ../data/big/
+ 
+ FILES=$(ls *bedgraph)
+ 
+ cd -
+ 
+ for file in ${FILES}
+ do
+    NAME=$(echo ${file} | awk -F "_" '{print $1}')
+    echo ${NAME}
+   /home/shared/bedtools2/bin/intersectBed \
+   -wb \
+   -a ../data/big/${NAME}_R1_val_1_10x.bedgraph \
+   -b ../genome-features/C_virginica-3.0_Gnomon_genes.bed \
+   | awk -v name=$NAME -v OFS="\t" '{ print $0, name}' \
+   > ../output/40-gene-methylation/${NAME}_mGene.out
+ done  
+
+
+```
+```{bash}
+head ../output/40-gene-methylation/36F_mGene.out
+```
+```{bash}
+cat ../output/40-gene-methylation/*_mGene.out > ../output/40-gene-methylation/meth_all-samples.out
+```
+
+
+
+```{r}
+meth_all <- read.delim("../output/40-gene-methylation/meth_all-samples.out", header = FALSE)
+```
+
+```{r}
+library(tidyverse)
+```
+```{r}
+meth_all
+```
+```{r}
+ggplot() +
+  geom_histogram(data = meth_all, aes(x = V4), fill = "blue", alpha = 0.2) 
+```
+
+
+```{r}
+gm <- meth_all %>%
+   mutate(art = paste(V8, V11, sep = '_')) %>%
+   group_by(art) %>%
+   summarize(avg_meth = mean(V4))
+
+
+```
+
+```{r}
+mc <- inner_join(gm, ic, by = "art") %>%
+   separate(art, into = c("gene", "sample"), sep = "_") %>%
+   separate(sample, into = c("number", "sex"), sep = -1)
+
+```
+
+```{r}
+library("RColorBrewer")
+```
+
+```{r, fig.width=20,fig.height=10}
+
+ggplot(mc, aes(x = avg_meth, y = isoform_count, color = sex)) +
+  geom_point(alpha = 0.6, size = 1) +
+  facet_wrap(~number) +
+  geom_hline(yintercept=10)
+```
+```{r, fig.width=20,fig.height=10}
+
+ggplot(mc, aes(x = avg_meth, y = isoform_count, color = sex)) +
+  geom_point(alpha = 0.6, size = 1) +
+  facet_wrap(~number) +
+  stat_smooth(method = glm, method.args = list(family = binomial))
+```
+
+```{r}
+library("ggExtra")
+```
+
+
+```{r}
+
+p <- ggplot(mc, aes(x = avg_meth, y = isoform_count)) +
+  geom_point(alpha = 0.2, size = 1) +
+  facet_wrap(~sex) 
+ggMarginal(p, type = "histogram")
+```
+
+
+```{r}
+ggplot(mc, aes(x = avg_meth)) +
+  geom_histogram() +
+  facet_wrap(~sex)
+```
+
+
+#Creating gene methylation file where libary is row
+
+
+```{r}
+gm %>%
+  separate(art, into = c("gene", "sample_id"), sep = '_') %>%
+  spread(value = avg_meth, key = gene) %>%
+  write.csv(., "../output/40-gene-methylation.csv")
+```
+
+
+
+
+
+
