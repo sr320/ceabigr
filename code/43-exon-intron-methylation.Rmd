@@ -1,28 +1,30 @@
 ---
-title: "40-gene-methylation"
+title: "43-intron-exon-methylation"
 output: html_document
 ---
 
-Lets see if we can get gene methylation with a 10x bed file.. and gene gff via intersect bed...
+Lets see if we can get methylation information for intron and exon component of each gene
 
+should get feature tracks
 
+http://eagle.fish.washington.edu/Cvirg_tracks/C_virginica-3.0_intron.bed
+http://eagle.fish.washington.edu/Cvirg_tracks/C_virginica-3.0_Gnomon_exon.bed
 
+```{bash}
+cd ../genome-features
+wget http://eagle.fish.washington.edu/Cvirg_tracks/C_virginica-3.0_intron.bed
 ```
-#Use intersectBed to find where loci and genes intersect, allowing loci to be mapped to annotated genes
-#wb: Print all lines in the second file
-#a: file that ends in posOnly
-#b: annotated gene list
-#Save output in a new file that has the same base name and ends in -Annotated.txt
-for f in RAnalysis/data/*F_R1_val_1_10x.tab
-do
-  intersectBed \
-  -wb \
-  -a ${f} \
-  -b RAnalysis/data/C_virginica-3.0_Gnomon_genes.bed \
-  > ${f}_gene
-done
+```{bash}
+cd ../genome-features
+wget http://eagle.fish.washington.edu/Cvirg_tracks/C_virginica-3.0_Gnomon_exon.bed
 ```
 
+```{bash}
+head ../genome-features/C_virginica-3.0_Gnomon_exon.bed
+```
+```{bash}
+head ../genome-features/C_virginica-3.0_intron.bed
+```
 
 
 
