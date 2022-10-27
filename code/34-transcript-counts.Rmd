@@ -29,6 +29,14 @@ exposed_males <- c("S12M", "S23M", "S31M", "S48M", "S59M", "S9M")
 controls_females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F")
 exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
 
+# Vector of comparisons
+comparisons <- c("f_vs_m",
+                 "c_vs_e",
+                 "c.f_vs_e.f",
+                 "c.m_vs_e.m",
+                 "c.f_vs_c.m",
+                 "e.f_vs_e.m")
+
 # Vector of count calculations column names
 count_calcs <- c("sum_transcript_counts",
                  "median_transcript_counts",
