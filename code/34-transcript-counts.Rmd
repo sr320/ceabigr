@@ -95,8 +95,9 @@ count_calcs <- c("sum_transcript_counts",
                  
 )
 
-# Initialize list of data frames
+# Initialize lists of data frames
 list_transcript_counts_dfs <- list()
+list_transcript_max_diffs_dfs <- list()
 ```
 
 ```{r define-function(s)}
@@ -338,12 +339,56 @@ sapply(names(list_transcript_counts_dfs),
 for (comparison in comparisons) {
   
   if (comparison == "f_vs_m") {
-    df1 <- transcript_counts_per_gene_per_sample_females %>% 
-      select(gene_name, female_max_transcript_counts)
-    
-    df2 <- transcript_counts_per_gene_per_sample_males %>% 
-      select(gene_name, male_max_transcript_counts)
+    diffs.max.transcripts_per_gene.females.vs.males <-
+     diff_max_transcripts(transcript_counts_per_gene_per_sample_females,
+                         transcript_counts_per_gene_per_sample_males,
+                         comparison)
+  } else if (comparison == "c_vs_e") {
+    diffs.max.transcripts_per_gene.controls.vs.exposed <-
+      diff_max_transcripts(transcript_counts_per_gene_per_sample_controls,
+                         transcript_counts_per_gene_per_sample_exposed,
+                         comparison)
+  } else if (comparison == "c.f_vs_e.f") {
+    diffs.max.transcripts_per_gene.controls_females.vs.exposed_females <-
+      diff_max_transcripts(transcript_counts_per_gene_per_sample_controls_females,
+                         transcript_counts_per_gene_per_sample_exposed_females,
+                         comparison)
+  } else if (comparison == "c.m_vs_e.m") {
+    diffs.max.transcripts_per_gene.controls_males.vs.exposed_males <-
+      diff_max_transcripts(transcript_counts_per_gene_per_sample_controls_males,
+                         transcript_counts_per_gene_per_sample_exposed_males,
+                         comparison)
+  } else if (comparison == "c.f_vs_c.m") {
+    diffs.max.transcripts_per_gene.controls_females.vs.controls_males <-
+      diff_max_transcripts(transcript_counts_per_gene_per_sample_controls_females,
+                         transcript_counts_per_gene_per_sample_controls_males,
+                         comparison)
+  } else if (comparison == "e.f_vs_e.m") {
+    diffs.max.transcripts_per_gene.exposed_females.vs.exposed_males <-
+      diff_max_transcripts(transcript_counts_per_gene_per_sample_exposed_females,
+                         transcript_counts_per_gene_per_sample_exposed_males,
+                         comparison)
   }
+  
 }
 
+# Add data frames to list
+# Wraps ls() with grep to allow for needed perl regex (the  "^(?!list).*" aspect) because
+# ls() doesn't support perl regex
+# Regex excludes any results beginning with the word "list"
+list_transcript_max_diffs_dfs <- mget(grep("^(?!list).*", ls(pattern = "max.transcripts_per_gene"), value = TRUE, perl = TRUE))
+
+```
+
+## Write max transcript diffs to files.
+```{r write-transcript-per-gene-counts-to-files}
+
+# Write data frames to CSVs in ../output/34-transcript-counts/ dir
+# Uses names of data frames as names of output files.
+sapply(names(list_transcript_max_diffs_dfs),
+       function(x) write.csv(list_transcript_max_diffs_dfs[[x]],
+                             file = file.path("../output/34-transcript-counts/", paste(x, "csv", sep=".")),
+                             quote = FALSE,
+                             row.names = FALSE)
+       )
 ```
