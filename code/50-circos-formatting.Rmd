@@ -961,16 +961,22 @@ write.table(transcripts_coordinates_exposed_circos,
           sep = "\t")
 ```
 
+
+---
+
+# Prep differences in max transcripts
+
 ## Read in diffs max transcript file(s)
 ```{r read-in-diffs-max-transcripts}
 
+# Read all diffs max transcript files into list
 diffs.max.tx.list <-
     lapply(list.files(path = "../output/34-transcript-counts/",
                       pattern = "diffs.max*",
                       full.names = T),
            read.csv)
 
-# Rename first column "gene_name" to "name" for joining downstream
+# Rename first column "gene_name" to "name" for joining with BED file downstream
 diffs.max.tx.list <- lapply(diffs.max.tx.list,
                             rename,
                             name = gene_name)
@@ -984,10 +990,9 @@ str(diffs.max.tx.list)
 
 ## Join tables to get gene coordinates and methylation
 ```{r join-BED-diffs-max-transcripts}
-methylation_coordinates <- methylation.minus1 %>% left_join(genes_BED, by = "name")
+# Join with BED file
+diffs_max_transcripts_coordinates <- lapply(diffs.max.tx.list, merge, genes_BED, by = "name")
 
-# Convert to numeric
-methylation_coordinates <- methylation_coordinates %>% mutate(across(all_of(contains(all)), as.numeric))
 
-head(methylation_coordinates)
+str(diffs_max_transcripts_coordinates)
 ```
