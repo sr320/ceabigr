@@ -28,17 +28,16 @@ REQUIRES the following R libraries:
 
 - `tidyverse`
 
-## Load `R` libraries
+# Load `R` libraries
 
 ```{r}
 library("ballgown")
 library("tidyverse")
 library("ggplot2")
-library("Rfast")
 ```
 
 
-## Set user variables!
+# Set user variables!
 ```{r}
 # Set maximum pvalue for isoform expression cutoff
 pvalue <- 0.05
@@ -49,7 +48,7 @@ qvalue <- 0.05
 
 
 
-## Download Ballgown input files.
+# Download Ballgown input files.
 
 Notebooks detailing their creation:
 
@@ -74,7 +73,7 @@ wget \
 --accept "*.ctab,*checksums.md5" https://gannet.fish.washington.edu/Atumefaciens/20220225_cvir_stringtie_GCF_002022765.2_isoforms/
 ```
 
-## Verify checksums
+# Verify checksums
 
 NOTE: Warnings are expected, as the checksums files have checksums for files that are not downloaded for this project.
 ```{bash}
@@ -111,23 +110,23 @@ tree
 
 
 
-## Read in _C.virginica_ genes BED file
+# Read in _C.virginica_ genes BED file
 ```{r read-in-genes-BED}
-genes_BED <- read.table(file = "../igv/C_virginica-3.0_Gnomon_genes.bed")
+genes_BED <- read.table(file = "../data/C_virginica-3.0_Gnomon_genes.bed")
 
 # Add BED column names for more clarity
 colnames(genes_BED) <- c("chr", "start", "end", "name", "score", "strand")
 head(genes_BED)
 ```
 
-## Find Ballgown installation location
+# Find Ballgown installation location
 ```{r}
 data_directory <-  system.file('extdata', package='ballgown') # automatically finds ballgown's installation directory
 # examine data_directory:
 data_directory
 ```
 
-## Create Ballgown object
+# Create Ballgown object
 ```{r}
 # Uses regular expression in samplePattern to find all pertinent folders
 # Load all measurement data
@@ -142,7 +141,7 @@ bg_males
 ```
 
 
-## Download and filter metadata file
+# Download and filter metadata file
 
 Filtered metadata will be used to create a phenotype dataframe needed for Ballgown differential expression analysis.
 
@@ -156,7 +155,7 @@ exposed females = 4
 
 ```{r create-dataframes-for-ballgwon-pData}
 # Read in metadata file from URL
-sample_metadata_full <- read.csv("https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/data/adult-meta.csv")
+sample_metadata_full <- read.csv("../data/adult-meta.csv")
 
 # View full metadata
 head(sample_metadata_full)
@@ -220,8 +219,8 @@ structure(bg)$intron
 structure(bg)$trans
 ```
 
-## Load all transcript expression data
-```{r}
+# Load all transcript expression data
+```{r load-all-transcript-expression-data}
 # Expression data
 whole_tx_table <-  texpr(bg, 'all')
 
@@ -237,14 +236,24 @@ transcript_fpkm <- as.data.frame(texpr(bg, 'FPKM'))
 # Put rownames into column for further manipulation
 transcript_fpkm <- rownames_to_column(transcript_fpkm, "t_id")
 head(transcript_fpkm)
+
+
+# Gene table
+gene_table <- whole_tx_table %>% select(!t_name)
+head(gene_table)
+
+
+```
+
+
+## Write all transcript data to files
+```{r write-transcript-data-to-file}
+# Write all transcript FPKM data to file
 write.csv(transcript_fpkm,
           file = "../data/fpkm-all_transcripts.csv",
           quote = FALSE,
           row.names = FALSE)
 
-# Gene table
-gene_table <- whole_tx_table %>% select(!t_name)
-head(gene_table)
 
 # Write whole_tx_table to file
 write.csv(whole_tx_table,
@@ -253,7 +262,7 @@ write.csv(whole_tx_table,
           row.names = FALSE)
 ```
 
-## Load all gene expression data
+# Load all gene expression data
 ```{r load-gene-expression-data}
 whole_gx_table <-  gexpr(bg)
 
@@ -263,14 +272,19 @@ whole_gx_table <- as.data.frame(whole_gx_table)
 # Convert rownames to a column
 whole_gx_table <- rownames_to_column(whole_gx_table, "name")
 
-# Write whole_tx_table to file
+head(whole_gx_table)
+```
+
+## Write all gene data to files
+```{r write-gene-data-to-file}
+# Write whole_gx_table to file
 write.csv(whole_gx_table,
           file ="../data/whole_gx_table.csv",
           quote = FALSE,
           row.names = FALSE)
 ```
 
-## Generate boxplots to compare FPKM across all samples
+# Generate boxplots to compare FPKM across all samples
 ```{r boxplots-to-compare-FPKM-across-all-samples} 
 # Load phenotype info into Ballgown
 pData(bg) <- sample_metadata_subset
@@ -317,13 +331,13 @@ ggplot(fpkm_df_pivot, aes(library, value, color = sex)) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
 
 # Save boxplot as PDF
-ggsave(filename = "../figures/fpkm_f-vs-m_boxplot.pdf")
+ggsave(filename = "../output/18-differential-gene-expression-ballgown/figures/fpkm_f-vs-m_boxplot.pdf")
 
 ```
 
-## Identify differentially expressed transcripts (DETs) between sex.
-## Returns FoldChange, too (getFC = TRUE)
-```{r DETs-female-vs.-male}
+# Identify differentially expressed transcripts (DETs) between sex.
+Returns FoldChange, too (getFC = TRUE)
+```{r DETs-female-vs-male}
 # Set string describing comparison
 # Used for final printout in chunk
 comparison <- "female vs. male"
@@ -354,7 +368,7 @@ head(merged_DET_sex_filtered)
 DET_sex_filtered_female <- filter(merged_DET_sex_filtered, fc < 1) %>% mutate(start = start - 1)
 head(DET_sex_filtered_female)
 
-# Filter for male up-regulated transcripts (i.e. fold-change < 1)
+# Filter for male up-regulated transcripts (i.e. fold-change > 1)
 # Convert to BED coordinate system, which is 0-based start
 # and end EXCLUSIVE; so need to subtract 1 from start coordinates ONLY
 DET_sex_filtered_male <- filter(merged_DET_sex_filtered, fc > 1) %>% mutate(start = start - 1)
@@ -377,13 +391,14 @@ count_DET_sex_filtered_male <-  nrow(DET_sex_filtered_male)
 
 # Print number of male DET
 cat("Number of male DET with p-values and q-values <= ", pvalue, ":", count_DET_sex_filtered_male, "\n")
+```
 
 
-#########################################################################################################
-# Write merged dataframe to CSV
+## Write female vs male DET dataframes to files
+```{r write-DETs-female-vs-male-to-files}
 write.csv(
   merged_DET_sex_filtered, 
-  file = "../analyses/merged_DET_sex_filtered_p-0.05_q-0.05.csv", 
+  file = "../output/18-differential-gene-expression-ballgown/DET_sex_filtered_p-0.05_q-0.05.csv", 
   quote = FALSE, 
   row.names = FALSE)
 
@@ -398,7 +413,7 @@ write.table(
         .before = "strand"
         )
     ), 
-  file = "../analyses/DET_sex_filtered_p-0.05_q-0.05.bed",
+  file = "../output/18-differential-gene-expression-ballgown/DET_sex_filtered_p-0.05_q-0.05.bed",
   sep = "\t",
   col.names = FALSE,
   row.names = FALSE,
@@ -415,7 +430,7 @@ write.table(
         .before = "strand"
         )
     ), 
-  file = "../analyses/DET_sex_female_filtered_p-0.05_q-0.05.bed",
+  file = "../output/18-differential-gene-expression-ballgown/DET_sex_female_filtered_p-0.05_q-0.05.bed",
   sep = "\t",
   col.names = FALSE,
   row.names = FALSE,
@@ -432,7 +447,7 @@ write.table(
         .before = "strand"
         )
     ), 
-  file = "../analyses/DET_sex_male_filtered_p-0.05_q-0.05.bed",
+  file = "../output/18-differential-gene-expression-ballgown/DET_sex_male_filtered_p-0.05_q-0.05.bed",
   sep = "\t",
   col.names = FALSE,
   row.names = FALSE,
@@ -440,8 +455,8 @@ write.table(
 )
 ```
 
-## Identify differentially expressed genes (DEG) between Sex.
-## Returns FoldChange, too (getFC = TRUE)
+# Identify differentially expressed genes (DEG) between Sex.
+Returns FoldChange, too (getFC = TRUE)
 ```{r DEGs-female-vs.-male}
 # Set string describing comparison
 # Used for final printout in chunk
@@ -499,12 +514,14 @@ count_DEG_sex_filtered_male <-  nrow(DEG_sex_filtered_male)
 
 # Print number of male DEG.
 cat("Number of male DEG with p-values and q-values <= ", pvalue, ":", count_DEG_sex_filtered_male, "\n")
+```
 
-#########################################################################################################
+## Write DEGs male vs. female dataframes to files
+```{r write-DEGs-female-vs-male-to-files}
 # Write merged dataframe to CSV
 write.csv(
   merged_DEG_sex_filtered, 
-  file = "../analyses/merged_DEG_sex_filtered_p-0.05_q-0.05.csv", 
+  file = "../output/18-differential-gene-expression-ballgown/DEG_sex_filtered_p-0.05_q-0.05.csv", 
   quote = FALSE, 
   row.names = FALSE)
 
@@ -514,7 +531,7 @@ write.table(
   (merged_DEG_sex_filtered_genes_only %>% 
     select(chr, start, end, id, score, strand)
     ), 
-  file = "../analyses/DEG_sex_filtered_p-0.05_q-0.05.bed",
+  file = "../output/18-differential-gene-expression-ballgown/DEG_sex_filtered_p-0.05_q-0.05.bed",
   sep = "\t",
   col.names = FALSE,
   row.names = FALSE,
@@ -527,7 +544,7 @@ write.table(
     DEG_sex_filtered_female %>% 
     select(chr, start, end, id, score, strand)
     ),
-  file = "../analyses/DEG_sex_female_filtered_p-0.05_q-0.05.bed",
+  file = "../output/18-differential-gene-expression-ballgown/DEG_sex_female_filtered_p-0.05_q-0.05.bed",
   sep = "\t",
   col.names = FALSE,
   row.names = FALSE,
@@ -540,7 +557,7 @@ write.table(
     DEG_sex_filtered_male %>% 
     select(chr, start, end, id, score, strand)
     ),
-  file = "../analyses/DEG_sex_male_filtered_p-0.05_q-0.05.bed",
+  file = "../output/18-differential-gene-expression-ballgown/DEG_sex_male_filtered_p-0.05_q-0.05.bed",
   sep = "\t",
   col.names = FALSE,
   row.names = FALSE,
@@ -549,9 +566,9 @@ write.table(
 ```
 
 
-## Identify differentially expressed isofroms between Treatment.
-## NOTE: Will not return fold change; not possible in multi-group comparisons
-```{r}
+# Identify differentially expressed isofroms between Treatment.
+NOTE: Will not return fold change; not possible in multi-group comparisons
+```{r DETS-treatments}
 stat_results = stattest(bg, feature='transcript', meas='FPKM', covariate="TreatmentN")
 head(stat_results)
 
@@ -561,7 +578,7 @@ head(filtered_stat_results)
 
 # Count number of DET.
 # Subtract "1" to account for header row.
-count_filtered_stat_results <-  nrow(filtered_stat_results) - 1
+count_filtered_stat_results <-  nrow(filtered_stat_results)
 
 # Print number of DET
 cat("Number of DET with p-values and q-values <= ", pvalue, ":", count_filtered_stat_results)
@@ -569,10 +586,11 @@ cat("Number of DET with p-values and q-values <= ", pvalue, ":", count_filtered_
 
 
 ## Examine if differential expression results are affected by TreatmentN numbering
-## I.e. are DET based off of alphanumeric comparisons?
-## Change one of the `TreatmentN` numbers to `0` and compare to results from analysis in chunk above.
+I.e. Are DET based off of alphanumeric comparisons?
+Uses the `mutated_sample_metadata_subset` with a `0` in place of `4` in `TreatmentN` numbers to see
+if different number of DETs occur. Compare to results from analysis in chunk above.
 ```{r}
-# Load phenotype info into Ballgown
+# Load mutated phenotype info into Ballgown for testing
 pData(bg) <- mutated_sample_metadata_subset
 # Examine phenotype data as it exists in Ballgown
 phenotype_table <-  pData(bg)
@@ -586,15 +604,15 @@ head(filtered_stat_results)
 
 # Count number of DET.
 # Subtract "1" to account for header row.
-count_filtered_stat_results <-  nrow(filtered_stat_results) - 1
+count_filtered_stat_results <-  nrow(filtered_stat_results)
 
 # Print number of DET
 cat("Number of DET with p-values and q-values <= ", pvalue, ":", count_filtered_stat_results)
 ```
 
 
-## Identify differentially expressed transcripts between Treatment (control/exposed).
-## Returns FoldChange, too (getFC = TRUE)
+# Identify differentially expressed transcripts between Treatment (control/exposed).
+Returns FoldChange, too (getFC = TRUE)
 ```{r control-exposed-DET}
 # Load phenotype info into Ballgown
 pData(bg) <- sample_metadata_subset
@@ -609,15 +627,14 @@ filtered_stat_results <- filter(stat_results, pval <= pvalue & qval <= qvalue)
 head(filtered_stat_results)
 
 # Count number of DET.
-# Subtract "1" to account for header row.
-count_filtered_stat_results <-  nrow(filtered_stat_results) - 1
+count_filtered_stat_results <-  nrow(filtered_stat_results)
 
 # Print number of DET
 cat("Number of DET with p-values and q-values <= ", pvalue, ":", count_filtered_stat_results)
 ```
 
-## Identify differentially expressed genes between Treatment (control/exposed).
-## Returns FoldChange, too (getFC = TRUE)
+# Identify differentially expressed genes between Treatment (control/exposed).
+Returns FoldChange, too (getFC = TRUE)
 ```{r control-exposed-DEG}
 # Load phenotype info into Ballgown
 pData(bg) <- sample_metadata_subset
@@ -637,8 +654,9 @@ count_filtered_stat_results <-  nrow(filtered_stat_results)
 # Print number of DEG
 cat("Number of DEG with p-values and q-values <= ", pvalue, ":", count_filtered_stat_results)
 ```
-## Identify differentially expressed genes between Treatment.
-## NOTE: Will not return fold change; not possible in multi-group comparisons
+
+# Identify differentially expressed genes between all treatments (TreatmentN).
+NOTE: Will not return fold change; not possible in multi-group comparisons
 ```{r all-treatments-DEG}
 # Load phenotype info into Ballgown
 pData(bg) <- sample_metadata_subset
@@ -658,8 +676,8 @@ cat("Number of DEG with p-values and q-values <= ", pvalue, ":", count_filtered_
 ```
 
 
-## Identify differentially expressed transcripts (DETs) between Treatment within females.
-## Returns FoldChange, too (getFC = TRUE)
+# Identify differentially expressed transcripts (DETs) between `Treatment` within females.
+Returns FoldChange, too (getFC = TRUE)
 ```{r DETs-female-OA}
 # Load phenotype info into Ballgown
 pData(bg_females) <- sample_metadata_subset_female_only
@@ -671,15 +689,109 @@ head(stat_results)
 filtered_stat_results <- filter(stat_results, pval <= pvalue & qval <= qvalue)
 head(filtered_stat_results)
 
-# Count number of DETG.
+# Merge with full table to get subset of just differentially expressed isoforms
+merged_filtered_stat_results <- merge(x = filtered_stat_results, y = whole_tx_table, by.x = "id", by.y = "t_id")
+head(merged_filtered_stat_results)
+
+# Count number of DET.
 count_filtered_stat_results <-  nrow(filtered_stat_results)
 
-# Print number of DEG
-cat("Number of female OA DETs with p-values and q-values <= ", pvalue, ":", count_filtered_stat_results)
+# Print number of DET
+cat("Number of female controls vs exposed DETs with p-values and q-values <= ", pvalue, ":", count_filtered_stat_results, "\n")
+
+# Convert to BED coordinate system, which is 0-based start
+# and end EXCLUSIVE; so need to subtract 1 from start coordinates ONLY
+merged_filtered_stat_results <- merged_filtered_stat_results %>% mutate(start = start - 1)
+head(merged_filtered_stat_results)
+
+# Filter for female up-regulated transcripts (i.e. fold-change < 1)
+# Convert to BED coordinate system, which is 0-based start
+# and end EXCLUSIVE; so need to subtract 1 from start coordinates ONLY
+DET_females_controls <- filter(merged_filtered_stat_results, fc < 1) %>% mutate(start = start - 1)
+head(DET_females_controls)
+
+# Filter for male up-regulated transcripts (i.e. fold-change > 1)
+# Convert to BED coordinate system, which is 0-based start
+# and end EXCLUSIVE; so need to subtract 1 from start coordinates ONLY
+DET_females_exposed <- filter(merged_filtered_stat_results, fc > 1) %>% mutate(start = start - 1)
+head(DET_females_exposed)
+
+# Count number of female controls DET.
+count_DET_females_controls <-  nrow(DET_females_controls)
+
+# Print number of female controls DET
+cat("Number of female control samples DET with p-values and q-values <= ", pvalue, ":", count_DET_females_controls, "\n")
+
+# Count number of female exposed DET.
+count_DET_females_exposed <-  nrow(DET_females_exposed)
+
+# Print number of female exposed DET
+cat("Number of female exposed samples DET with p-values and q-values <= ", pvalue, ":", count_DET_females_exposed, "\n")
+```
+## Write DETs females control vs. exposed to files
+```{r write-DETs-female-OA-to-files}
+write.csv(
+  merged_filtered_stat_results, 
+  file = "../output/18-differential-gene-expression-ballgown/DET_females_controls_vs_exposed_p-0.05_q-0.05.csv", 
+  quote = FALSE, 
+  row.names = FALSE)
+
+
+# Creates a BED file of all DETs and inserts necessary columns to create properly formatted BED file. 
+write.table(
+  (
+    merged_filtered_stat_results %>% 
+    select(chr, start, end, t_name, strand) %>% 
+      add_column(
+        score = "0", # Inserts a "score" column and assigns a value of "0" to all rows.
+        .before = "strand"
+        )
+    ), 
+  file = "../output/18-differential-gene-expression-ballgown/DET_females_controls_vs_exposed_p-0.05_q-0.05.bed",
+  sep = "\t",
+  col.names = FALSE,
+  row.names = FALSE,
+  quote = FALSE
+)
+
+
+# Creates a BED file of female controls DETs and inserts necessary columns to create properly formatted BED file. 
+write.table(
+  (
+    DET_females_controls %>% 
+    select(chr, start, end, t_name, strand) %>% 
+      add_column(
+        score = "0", # Inserts a "score" column and assigns a value of "0" to all rows.
+        .before = "strand"
+        )
+    ), 
+  file = "../output/18-differential-gene-expression-ballgown/DET_females_controls_p-0.05_q-0.05.bed",
+  sep = "\t",
+  col.names = FALSE,
+  row.names = FALSE,
+  quote = FALSE
+)
+
+# Creates a BED file of female exposed DETs and inserts necessary columns to create properly formatted BED file. 
+write.table(
+  (
+    DET_females_exposed %>% 
+    select(chr, start, end, t_name, strand) %>% 
+      add_column(
+        score = "0", # Inserts a "score" column and assigns a value of "0" to all rows.
+        .before = "strand"
+        )
+    ), 
+  file = "../output/18-differential-gene-expression-ballgown/DET_females_exposed_p-0.05_q-0.05.bed",
+  sep = "\t",
+  col.names = FALSE,
+  row.names = FALSE,
+  quote = FALSE
+)
 ```
 
-## Identify differentially expressed transcripts (DETs) between Treatment within males
-## Returns FoldChange, too (getFC = TRUE)
+# Identify differentially expressed transcripts (DETs) between Treatment within males
+Returns FoldChange, too (getFC = TRUE)
 ```{r DETs-male-OA}
 # Load phenotype info into Ballgown
 pData(bg_males) <- sample_metadata_subset_male_only
@@ -698,8 +810,8 @@ count_filtered_stat_results <-  nrow(filtered_stat_results)
 cat("Number of male OA DETs with p-values and q-values <= ", pvalue, ":", count_filtered_stat_results)
 ```
 
-## Identify differentially expressed genes (DEGs) between Treatment within females.
-## Returns FoldChange, too (getFC = TRUE)
+# Identify differentially expressed genes (DEGs) between Treatment within females.
+Returns FoldChange, too (getFC = TRUE)
 ```{r DEGs-female-OA}
 # Load phenotype info into Ballgown
 pData(bg_females) <- sample_metadata_subset_female_only
@@ -718,8 +830,8 @@ count_filtered_stat_results <-  nrow(filtered_stat_results)
 cat("Number of female OA DEGs with p-values and q-values <= ", pvalue, ":", count_filtered_stat_results)
 ```
 
-## Identify differentially expressed genes (DETs) between Treatment within males
-## Returns FoldChange, too (getFC = TRUE)
+# Identify differentially expressed genes (DETs) between Treatment within males
+Returns FoldChange, too (getFC = TRUE)
 ```{r DEGs-male-OA}
 # Load phenotype info into Ballgown
 pData(bg_males) <- sample_metadata_subset_male_only
@@ -736,30 +848,4 @@ count_filtered_stat_results <-  nrow(filtered_stat_results)
 
 # Print number of DEG
 cat("Number of male OA DEGs with p-values and q-values <= ", pvalue, ":", count_filtered_stat_results)
-```
-
-
-
-```{r gene-fpkm-data-formatting-for-machine-learning}
-# Flips gene names to be columns, while FPKM values are placed in rows
-whole_gx_table_t <- as.data.frame(t(whole_gx_table))
-
-# Put rownames into column for further manipulation
-whole_gx_table_t_rownames <- rownames_to_column(whole_gx_table_t, "library")
-
-# Create new column of old sample IDs
-# Will be used for merging with phenotyp table
-whole_gx_table_t_rownames <- whole_gx_table_t_rownames %>%
-  mutate(OldSample.ID = (str_remove(library, "FPKM."))) %>% 
-  relocate(OldSample.ID, .after = library)
-
-# Merge FPKM gene table with phenotype table to get Treatments and Sex for each library
-merged_whole_gx_table_t_rownames <- merge(whole_gx_table_t_rownames, phenotype_table, by = "OldSample.ID") %>% relocate(OldSample.ID, Treatment, TreatmentN, Sex, .after = library)
-
-# Rename FPKM summed column
-merged_whole_gx_table_t_rownames <- rename(merged_whole_gx_table_t_rownames, FPKM_sum = ".")
-
-# Write to file
-write.csv(merged_whole_gx_table_t_rownames, "../analyses/gene_fpkm.csv" ,row.names = FALSE, quote = FALSE)
-
 ```
