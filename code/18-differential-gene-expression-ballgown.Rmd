@@ -455,7 +455,7 @@ write.table(
 )
 ```
 
-# Identify differentially expressed genes (DEG) between Sex.
+# Identify differentially expressed genes (DEGs) between Sex.
 Returns FoldChange, too (getFC = TRUE)
 ```{r DEGs-female-vs.-male}
 # Set string describing comparison
@@ -566,7 +566,7 @@ write.table(
 ```
 
 
-# Identify differentially expressed isofroms between Treatment.
+# Identify differentially expressed transcripts (DETs) between Treatment.
 NOTE: Will not return fold change; not possible in multi-group comparisons
 ```{r DETS-treatments}
 stat_results = stattest(bg, feature='transcript', meas='FPKM', covariate="TreatmentN")
@@ -611,7 +611,7 @@ cat("Number of DET with p-values and q-values <= ", pvalue, ":", count_filtered_
 ```
 
 
-# Identify differentially expressed transcripts between Treatment (control/exposed).
+# Identify differentially expressed transcripts (DETs) between `Treatment` (control/exposed).
 Returns FoldChange, too (getFC = TRUE)
 ```{r control-exposed-DET}
 # Load phenotype info into Ballgown
@@ -633,7 +633,7 @@ count_filtered_stat_results <-  nrow(filtered_stat_results)
 cat("Number of DET with p-values and q-values <= ", pvalue, ":", count_filtered_stat_results)
 ```
 
-# Identify differentially expressed genes between Treatment (control/exposed).
+# Identify differentially expressed genes (DEGs) between `Treatment` (control/exposed).
 Returns FoldChange, too (getFC = TRUE)
 ```{r control-exposed-DEG}
 # Load phenotype info into Ballgown
@@ -682,7 +682,7 @@ Returns FoldChange, too (getFC = TRUE)
 # Load phenotype info into Ballgown
 pData(bg_females) <- sample_metadata_subset_female_only
 
-stat_results = stattest(bg_females, feature='transcript', meas='FPKM', covariate="TreatmentN", getFC = TRUE)
+stat_results = stattest(bg_females, feature='transcript', meas='FPKM', covariate="Treatment", getFC = TRUE)
 head(stat_results)
 
 # Filter DT based on set p-values and q-values
@@ -790,13 +790,13 @@ write.table(
 )
 ```
 
-# Identify differentially expressed transcripts (DETs) between Treatment within males
+# Identify differentially expressed transcripts (DETs) between `Treatment` within males
 Returns FoldChange, too (getFC = TRUE)
 ```{r DETs-male-OA}
 # Load phenotype info into Ballgown
 pData(bg_males) <- sample_metadata_subset_male_only
 
-stat_results = stattest(bg_males, feature='transcript', meas='FPKM', covariate="TreatmentN", getFC = TRUE)
+stat_results = stattest(bg_males, feature='transcript', meas='FPKM', covariate="Treatment", getFC = TRUE)
 head(stat_results)
 
 # Filter DT based on set p-values and q-values
