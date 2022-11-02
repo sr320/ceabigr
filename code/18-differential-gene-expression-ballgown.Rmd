@@ -799,14 +799,14 @@ pData(bg_males) <- sample_metadata_subset_male_only
 stat_results = stattest(bg_males, feature='transcript', meas='FPKM', covariate="Treatment", getFC = TRUE)
 head(stat_results)
 
-# Filter DT based on set p-values and q-values
+# Filter DETs based on set p-values and q-values
 filtered_stat_results <- filter(stat_results, pval <= pvalue & qval <= qvalue)
 head(filtered_stat_results)
 
-# Count number of DETG.
+# Count number of DETs.
 count_filtered_stat_results <-  nrow(filtered_stat_results)
 
-# Print number of DEG
+# Print number of DETs
 cat("Number of male OA DETs with p-values and q-values <= ", pvalue, ":", count_filtered_stat_results)
 ```
 
