@@ -976,6 +976,14 @@ diffs.max.tx.list <-
                       full.names = T),
            read.csv)
 
+# Name dataframes based on filenames
+# Save just the filenames to a vector
+# By NOT using the `full.names = TRUE`
+filenames <- list.files(path = "../output/34-transcript-counts/", pattern = "diffs.max")
+
+# Assign filenames to dataframes in list
+names(diffs.max.tx.list) = filenames
+
 # Rename first column "gene_name" to "name" for joining with BED file downstream
 diffs.max.tx.list <- lapply(diffs.max.tx.list,
                             rename,
