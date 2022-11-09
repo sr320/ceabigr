@@ -979,7 +979,12 @@ diffs.max.tx.list <-
 # Name dataframes based on filenames
 # Save just the filenames to a vector
 # By NOT using the `full.names = TRUE`
-filenames <- list.files(path = "../output/34-transcript-counts/", pattern = "diffs.max")
+# Use gsub() to remove .csv extension
+filenames <- gsub(".csv",
+                  "",
+                  list.files(path = "../output/34-transcript-counts/",
+                             pattern = "diffs.max")
+                  )
 
 # Assign filenames to dataframes in list
 names(diffs.max.tx.list) = filenames
@@ -991,12 +996,16 @@ diffs.max.tx.list <- lapply(diffs.max.tx.list,
 
 # Append "gene-" to beginning on gene names in "name" column for joining downstream
 diffs.max.tx.list <- map(diffs.max.tx.list, ~.x %>%
-                           mutate(name = paste("gene-", name, sep = "")))
+                           mutate(name = paste("gene-",
+                                               name,
+                                               sep = "")
+                                  )
+                         )
 
 str(diffs.max.tx.list)
 ```
 
-## Join tables to get gene coordinates and methylation
+## Join tables to get gene coordinates
 ```{r join-BED-diffs-max-transcripts}
 # Join with BED file
 diffs_max_transcripts_coordinates <- lapply(diffs.max.tx.list, merge, genes_BED, by = "name")
