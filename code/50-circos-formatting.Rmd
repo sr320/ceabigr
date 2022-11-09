@@ -1036,3 +1036,20 @@ diffs.max.tx.coordinates.circos.cvir.list <-
 str(diffs.max.tx.coordinates.circos.cvir.list)
 ```
 
+## Write the Circos-formatted diffs max transcripts to tab-delimited files
+
+```{r write-circos-diffs-max-transcripts-tables-to-files}
+# Uses dataframe names from list as source filenames
+# Each filenames is modified using paste().
+sapply(names(diffs.max.tx.coordinates.circos.cvir.list),
+       function (x){
+         write.table(diffs.max.tx.coordinates.circos.cvir.list[[x]],
+                     file = paste("../output/circos-",
+                                              x,".tab",
+                                              sep="")
+              )
+       }
+)
+```
+
+
