@@ -1008,8 +1008,31 @@ str(diffs.max.tx.list)
 ## Join tables to get gene coordinates
 ```{r join-BED-diffs-max-transcripts}
 # Join with BED file
-diffs_max_transcripts_coordinates <- lapply(diffs.max.tx.list, merge, genes_BED, by = "name")
+diffs.max.tx.coordinates.list <- lapply(diffs.max.tx.list, merge, genes_BED, by = "name")
 
 
-str(diffs_max_transcripts_coordinates)
+str(diffs.max.tx.coordinates.list)
 ```
+
+## Format for Circos
+```{r create-circos-formatted-diffs-max-transcripts}
+diffs.max.tx.coordinates.circos.list <-
+  diffs.max.tx.coordinates.list %>%
+  map(~.x %>%
+        select(ends_with(c("chr", "start", "end", "difference"))) %>% # Retain/reorder rows to match Circos format
+        arrange(chr, start) # Sort by chromosome name, followed by start coordinates
+      )
+
+# Add "cvir" to chromosome name to match existing Circos files.
+diffs.max.tx.coordinates.circos.cvir.list <-
+  lapply(diffs.max.tx.coordinates.circos.list,
+         transform,
+         chr = paste("cvir",
+                     chr,
+                     sep = ""
+                     )
+         )
+
+str(diffs.max.tx.coordinates.circos.cvir.list)
+```
+
