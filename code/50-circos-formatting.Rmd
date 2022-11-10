@@ -1044,10 +1044,14 @@ str(diffs.max.tx.coordinates.circos.cvir.list)
 sapply(names(diffs.max.tx.coordinates.circos.cvir.list),
        function (x){
          write.table(diffs.max.tx.coordinates.circos.cvir.list[[x]],
-                     file = paste("../output/circos-",
-                                              x,".tab",
-                                              sep="")
-              )
+                     file = paste("./circos-cvir-ceabigr/data/circos-",
+                                  x,
+                                  ".tab",
+                                  sep = ""),
+                     quote = FALSE,
+                     row.names = FALSE,
+                     col.names = FALSE,
+                     sep = "\t")
        }
 )
 ```
