@@ -41,3 +41,32 @@ ic <- count_all %>%
   rename(isoform_count = value) %>%
   select(art, isoform_count)
 ```
+
+# Correlation of differences in max transcripts per gene with average gene methylation
+
+NOTE: Incomplete as of 20221110 - SJW
+```{r}
+df <-diffs.max.tx.coordinates.list[["diffs.max.transcripts_per_gene.controls.vs.exposed"]] %>% select(name, difference) %>% arrange(name)
+
+
+# Calculate mean methylation and sort by chromosome
+meth.mean.gene <- methylation_coordinates %>%
+  select(starts_with(c("chr", "name", "start", "end", all))) %>% 
+  mutate(
+    methylation_mean = 
+      rowMeans(
+        select(
+          ., 
+          contains(
+            all, ignore.case = FALSE
+            )
+          ), na.rm = TRUE
+        )
+    ) %>%
+  select(ends_with(c("name", "mean"))) %>% # Retain/reorder rows for joining
+  arrange(name) # Sort by gene name
+
+merged.meth.diffs.max.tx <- merge(df, meth.mean.gene, by = "name", all.x = TRUE)
+
+plot(merged.meth.diffs.max.tx$methylation_mean, merged.meth.diffs.max.tx$difference, pch = 19, col = "lightblue");abline(lm(merged.meth.diffs.max.tx$difference ~ merged.meth.diffs.max.tx$methylation_mean), col = "red", lwd = 3)
+```
