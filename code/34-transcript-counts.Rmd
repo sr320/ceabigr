@@ -11,13 +11,13 @@ REQUIRES the following R libraries:
 
 - `tidyverse`
 
-## Load `R` libraries
+# Load `R` libraries
 
 ```{r}
 library("tidyverse")
 ```
 
-## Set variables
+# Set variables
 
 ```{r set-variables}
 # Vectors for subsetting samples by different groups
@@ -100,7 +100,11 @@ list_transcript_counts_dfs <- list()
 list_transcript_max_diffs_dfs <- list()
 ```
 
+# Define functions
 ```{r define-function(s)}
+
+#### Function for determining maximum transcripts per gene#####
+
 # Function accepts two data frames (df1 and df2), and a string (comparison)
 # Returns data frame containing:
 # gene_name
@@ -140,9 +144,11 @@ diff_max_transcripts <- function(df1, df2, comparison) {
     filter(difference != 0)
 
 }
+
+########################################################################
 ```
 
-## Load all transcript expression data
+# Load all transcript expression data
 ```{r load-transcript-data}
 # Expression data
 whole_tx_table <-  read.csv("../data/whole_tx_table.csv")
@@ -155,7 +161,7 @@ whole_tx_table <- whole_tx_table %>% mutate(gene_name = ifelse(gene_name == ".",
 head(whole_tx_table)
 ```
 
-## Count transcripts for each gene for each sample.
+# Count transcripts for each gene for each sample.
 A transcript is counted if it has an FPKM value > 0.
 ```{r count-transcripts-per-gene-per-sample}
 
@@ -173,7 +179,7 @@ names(transcript_counts) <- gsub(x = names(transcript_counts), pattern = "FPKM",
 head(transcript_counts)
 ```
 
-## Calculate max transcripts per gene across all samples
+# Calculate max transcripts per gene across all samples
 ```{r max-transcripts-per-gene}
 max_transcripts_per_gene <- transcript_counts %>% 
   rowwise() %>% 
@@ -193,7 +199,7 @@ write.table(max_transcripts_per_gene,
           sep = "\t")
 ```
 
-## Perform transcript count calcs
+# Perform transcript count calcs
 ```{r perform-transcript-count-calcs}
 # Perform calculations
 transcript_counts_per_gene_per_sample <- transcript_counts %>%
@@ -312,8 +318,8 @@ transcript_counts_per_gene_per_sample_exposed_males <- transcript_counts %>%
   )
 
 # Add data frames to list
-# Wraps ls() with grep to allow for needed perl regex (the  "^(?!list).*" aspect) because
-# ls() doesn't support perl regex
+# Wraps ls() with grep to allow for needed Perl regex (the  "^(?!list).*" aspect) because
+# ls() doesn't support Perl regex
 # Regex excludes any results beginning with the word "list"
 list_transcript_counts_dfs <- mget(grep("^(?!list).*", ls(pattern = "transcript_counts_per_gene_per_sample"), value = TRUE, perl = TRUE))
 
@@ -333,14 +339,14 @@ sapply(names(list_transcript_counts_dfs),
        )
 ```
 
-## Determine differences in max number of transcripts between comparisons
+# Determine differences in max number of transcripts between comparisons
 ```{r calculate-difference-max-transcripts}
 
 for (comparison in comparisons) {
   
   if (comparison == "f_vs_m") {
     diffs.max.transcripts_per_gene.females.vs.males <-
-     diff_max_transcripts(transcript_counts_per_gene_per_sample_females,
+      diff_max_transcripts(transcript_counts_per_gene_per_sample_females,
                          transcript_counts_per_gene_per_sample_males,
                          comparison)
   } else if (comparison == "c_vs_e") {
@@ -376,7 +382,11 @@ for (comparison in comparisons) {
 # Wraps ls() with grep to allow for needed perl regex (the  "^(?!list).*" aspect) because
 # ls() doesn't support perl regex
 # Regex excludes any results beginning with the word "list"
-list_transcript_max_diffs_dfs <- mget(grep("^(?!list).*", ls(pattern = "max.transcripts_per_gene"), value = TRUE, perl = TRUE))
+list_transcript_max_diffs_dfs <- mget(grep("^(?!list).*",
+                                           ls(pattern = "max.transcripts_per_gene"),
+                                           value = TRUE,
+                                           perl = TRUE)
+                                      )
 
 ```
 
