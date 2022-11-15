@@ -5,7 +5,8 @@ output: html_document
 
 Lets see if we can get gene methylation with a 10x bed file.. and gene gff via intersect bed...
 
-
+## NOTE: Due to the large file sizes generated in this Rmd file, numerous intermediate files cannot
+## be uploaded to GitHub. Thus, each user will have to run this Rmd file themselves.
 
 ```
 #Use intersectBed to find where loci and genes intersect, allowing loci to be mapped to annotated genes
@@ -23,10 +24,19 @@ do
 done
 ```
 
+# Load libraries
+```{r load-libraries}
+library(tidyverse)
+library("RColorBrewer")
+library("ggExtra")
+```
 
 
+# Download bedgraph files
 
-```{bash}
+```{bash download-bedgraphs}
+mkdir --parents ../data/big
+
 cd ../data/big
 
 wget -r \
@@ -41,15 +51,15 @@ https://gannet.fish.washington.edu/seashell/bu-mox/scrubbed/120321-cvBS/
 
 
 
-
-```{bash}
+# Examine data files
+```{bash glance-at-bedgraph-format}
 head ../data/big/3F_R1_val_1_10x.bedgraph
 ```
-```{bash}
+```{bash glance-at-genes-BED}
 head ../genome-features/C_virginica-3.0_Gnomon_genes.bed
 ```
 
-
+# Test intersectBed command
 ```{bash}
 NAME=5F
 
@@ -62,24 +72,8 @@ NAME=5F
 ```
 
 
-```
- cd /home/shared/8TB_HDD_01/sr320/github/ceabigr/data
- FILES=$(ls *bedgraph)
- for file in ${FILES}
- do
-    NAME=$(echo ${file} | awk -F "_" '{print $1}')
-    echo ${NAME}
-   /home/shared/bedtools2/bin/intersectBed \
-   -wb \
-   -a ${NAME}_R1_val_1_10x.bedgraph \
-   -b ../genome-features/C_virginica-3.0_Gnomon_genes.bed \
-   > ~/ceabigr/output/${NAME}mGene.out
- done  
-``` 
- 
-
-
-```{bash}
+# Run intersectBed on all files
+```{bash run-intersectBed-on-all-files}
  cd ../data/big/
  
  FILES=$(ls *bedgraph)
@@ -100,38 +94,45 @@ NAME=5F
 
 
 ```
-```{bash}
+
+## Glance at example output
+```{bash glance-at-example-output}
 head ../output/40-gene-methylation/36F_mGene.out
 ```
-```{bash}
+
+# Concatenate all gene methylation files
+```{bash concatenate-all-gene-methylation-files}
 cat ../output/40-gene-methylation/*_mGene.out > ../output/40-gene-methylation/meth_all-samples.out
 ```
 
 
-
+# Read in gene methylation file
 ```{r}
 meth_all <- read.delim("../output/40-gene-methylation/meth_all-samples.out", header = FALSE)
 ```
 
-```{r}
-library(tidyverse)
-```
-```{r}
+## View gene methylation dataframe
+```{r view-gene-methylation-dataframe}
 meth_all
 ```
-```{r}
+# Plot methylation distribution
+```{r plot-methylation-disctribution}
 ggplot() +
   geom_histogram(data = meth_all, aes(x = V4), fill = "blue", alpha = 0.2) 
 ```
 
-
-```{r}
+# Calculate mean methylation per gene per sample
+```{r calculate-mean-methylation-per-gene-per-sample}
 gm <- meth_all %>%
    mutate(art = paste(V8, V11, sep = '_')) %>%
    group_by(art) %>%
    summarize(avg_meth = mean(V4))
 
+```
 
+## View mean methylation per gene per sample
+```{r view-mean-methylation-per-gene-per-sample}
+gm
 ```
 
 ```{r}
@@ -139,10 +140,6 @@ mc <- inner_join(gm, ic, by = "art") %>%
    separate(art, into = c("gene", "sample"), sep = "_") %>%
    separate(sample, into = c("number", "sex"), sep = -1)
 
-```
-
-```{r}
-library("RColorBrewer")
 ```
 
 ```{r, fig.width=20,fig.height=10}
@@ -160,9 +157,6 @@ ggplot(mc, aes(x = avg_meth, y = isoform_count, color = sex)) +
   stat_smooth(method = glm, method.args = list(family = binomial))
 ```
 
-```{r}
-library("ggExtra")
-```
 
 
 ```{r}
@@ -181,14 +175,13 @@ ggplot(mc, aes(x = avg_meth)) +
 ```
 
 
-#Creating gene methylation file where libary is row
+# Create gene methylation file where libary is row
 
-
-```{r}
+```{r write-mean-gene-methylation-to-file}
 gm %>%
   separate(art, into = c("gene", "sample_id"), sep = '_') %>%
   spread(value = avg_meth, key = gene) %>%
-  write.csv(., "../output/40-gene-methylation.csv")
+  write.csv(., "../output/40-gene-methylation/40-gene-methylation.csv")
 ```
 
 
