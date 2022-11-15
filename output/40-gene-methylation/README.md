@@ -31,7 +31,7 @@ GitHub due to their large sizes, particularly `meth_all-samples.out` which is 11
 
 - `3F_mGene.out` (441M):
 
-- `40-gene-methylation.csv` (15M): Mean methylation per gene per sample.
+- [`40-gene-methylation.csv`](https://github.com/sr320/ceabigr/blob/main/output/40-gene-methylation/40-gene-methylation.csv) (15M): Mean methylation per gene per sample.
 
   - Rows: Samples
 
