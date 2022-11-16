@@ -184,7 +184,49 @@ gm %>%
   write.csv(., "../output/40-gene-methylation/40-gene-methylation.csv")
 ```
 
+# Prep average gene methylation coordinates file
 
+## Load average gene methylation data
+```{r load-mean-methylation-data}
+methylation <- gm %>%
+  separate(art, into = c("gene", "sample_id"), sep = '_') %>%
+  spread(value = avg_meth, key = gene)
+
+head(methylation)
+```
+
+## Prepare methylation file for joining with BED
+```{r prep-methylation-file-for-joining-with-BED}
+
+# Need to transpose to get gene names as rows
+# For joining with BED
+methylation.transposed <- as.data.frame(t(methylation))
+
+# Convert rownames to a column of data
+methylation.transposed.rownames <- rownames_to_column(methylation.transposed)
+
+# # Convert first row to header
+names(methylation.transposed.rownames) <- methylation.transposed.rownames[1, ]
+methylation.transposed.rownames <- methylation.transposed.rownames[-1, ]
+
+# Replace "." in gene names with "-"
+# Will match gene names in BED file
+methylation.transposed.rownames$sample_id <- str_replace_all(methylation.transposed.rownames$sample_id, "\\.", "-")
+
+# Rename sample name columns to match sample grouping vectors
+# Capture column names
+# Took lazy approach and applied to all columns instead of subsetting desired columns
+original_cols <- colnames(methylation.transposed.rownames)
+
+# Append "S" to beginning of all samples names
+colnames(methylation.transposed.rownames) <- paste("S", original_cols, sep = "")
+
+# Replace "Ssample_id" with "name" to match BED file
+names(methylation.transposed.rownames)[names(methylation.transposed.rownames) == "Ssample_id"] <- "name"
+
+head(methylation.transposed.rownames)
+
+```
 
 
 
