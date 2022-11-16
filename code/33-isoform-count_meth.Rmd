@@ -44,11 +44,60 @@ ic <- count_all %>%
 
 # Correlation of differences in max transcripts per gene with average gene methylation
 
-NOTE: Incomplete as of 20221110 - SJW
+## Read in diffs max transcript files
+NOTE: Incomplete as of 20221115 - SJW
+```{r read-in-diffs-max-tx-files}
+# Read all diffs max transcript files into list
+diffs.max.tx.list <-
+    lapply(list.files(path = "../output/34-transcript-counts/",
+                      pattern = "diffs.max*",
+                      full.names = T),
+           read.csv)
+```
+
+## Modify diffs max transcripts list for merging with BED file
+```{r modify-diff-max-tx-list-for-merging}
+# Name dataframes based on filenames
+# Save just the filenames to a vector
+# By NOT using the `full.names = TRUE`
+# Use gsub() to remove .csv extension
+filenames <- gsub(".csv",
+                  "",
+                  list.files(path = "../output/34-transcript-counts/",
+                             pattern = "diffs.max")
+                  )
+
+# Assign filenames to dataframes in list
+names(diffs.max.tx.list) = filenames
+
+# Rename first column "gene_name" to "name" for joining with BED file downstream
+diffs.max.tx.list <- lapply(diffs.max.tx.list,
+                            rename,
+                            name = gene_name)
+
+# Append "gene-" to beginning on gene names in "name" column for joining downstream
+diffs.max.tx.list <- map(diffs.max.tx.list, ~.x %>%
+                           mutate(name = paste("gene-",
+                                               name,
+                                               sep = "")
+                                  )
+                         )
+
+str(diffs.max.tx.list)
+
+```
+
+## Subset diffs max transcripts
 ```{r}
-df <-diffs.max.tx.coordinates.list[["diffs.max.transcripts_per_gene.controls.vs.exposed"]] %>% select(name, difference) %>% arrange(name)
+diffs.max.tx.column.subset.list <- diffs.max.tx.list %>% 
+  map(~.x %>% 
+        select(name, difference) %>% arrange(name)
+      )
 
+```
 
+## Calculate mean gene methylation
+```{r mean-methylation-calcs}
 # Calculate mean methylation and sort by chromosome
 meth.mean.gene <- methylation_coordinates %>%
   select(starts_with(c("chr", "name", "start", "end", all))) %>% 
@@ -66,7 +115,17 @@ meth.mean.gene <- methylation_coordinates %>%
   select(ends_with(c("name", "mean"))) %>% # Retain/reorder rows for joining
   arrange(name) # Sort by gene name
 
+```
+
+```{r merged-methylation-diffs-max-tx}
 merged.meth.diffs.max.tx <- merge(df, meth.mean.gene, by = "name", all.x = TRUE)
 
 plot(merged.meth.diffs.max.tx$methylation_mean, merged.meth.diffs.max.tx$difference, pch = 19, col = "lightblue");abline(lm(merged.meth.diffs.max.tx$difference ~ merged.meth.diffs.max.tx$methylation_mean), col = "red", lwd = 3)
+
+merged.meth.diffs.max.tx.controls.up <-  merged.meth.diffs.max.tx %>%  filter(difference > 0)
+
+ggplot(data = merged.meth.diffs.max.tx.controls.up,
+       mapping = aes(x = merged.meth.diffs.max.tx.controls.up$methylation_mean,
+                     y = merged.meth.diffs.max.tx.controls.up$difference)) +
+  geom_point(alpha = 0.5)
 ```
