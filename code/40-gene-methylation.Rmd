@@ -26,11 +26,12 @@ done
 
 # Load libraries
 ```{r load-libraries}
-library(tidyverse)
+library("tidyverse")
+library("Rfast") # For row-wise coeeficient of variation calcs
 library("RColorBrewer")
 library("ggExtra")
 ```
-##Set variables
+## Set variables
 
 ```{r set-variables}
 # Vectors for subsetting samples by different groups
@@ -41,6 +42,41 @@ controls_males <- c("S13M", "S64M", "S6M", "S7M")
 exposed_males <- c("S12M", "S23M", "S31M", "S48M", "S59M", "S9M")
 controls_females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F")
 exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
+
+# Declare list for storing methylation dataframes
+methylation.transposed.rownames.list <- list()
+
+# Vector of treatment comparisons
+comparisons <- c("all",
+                 "females_v_males",
+                 "controls_v_exposed",
+                 "females-controls_v_females-exposed",
+                 "males-controls_v_males-exposed",
+                 "females-controls_v_males-controls",
+                 "females-exposed_v_males-exposed"
+                 )
+
+```
+
+# Define functions
+```{r define-functions}
+### Function to convert 
+CoV.transform <- function(methylation.transposed.rownames) {
+  # Convert first column to rownames for rowcvs() compatibility - requires matrix as input
+  methylation.transposed.rownames.rownames <- methylation.transposed.rownames[,-1]
+
+  # Assign gene names to rownames - needed for rowcvs() compatibility - requires matrix as input
+  rownames(methylation.transposed.rownames.rownames) <- methylation.transposed.rownames[,1]
+
+  # Convert from "characters" to numbers
+  methylation.transposed.rownames.rownames.converted <- sapply(methylation.transposed.rownames.rownames, as.numeric)
+
+  # Coerce into matrix for use with `rowcvs()` function
+  methylation.transposed.matrix <- data.matrix(methylation.transposed.rownames.rownames.converted, rownames.force = TRUE)
+  
+  return(methylation.transposed.matrix)
+}
+
 ```
 
 # Download bedgraph files
@@ -52,6 +88,7 @@ cd ../data/big
 
 wget -r \
 --no-check-certificate \
+--continue \
 --quiet \
 --no-directories --no-parent \
 -P . \
@@ -195,10 +232,9 @@ gm %>%
   write.csv(., "../output/40-gene-methylation/40-gene-methylation.csv")
 ```
 
-# Prep average gene methylation coordinates file
 
-## Load average gene methylation data
-```{r load-mean-methylation-data}
+# Reorient gene methylation data
+```{r reorient-mean-methylation-data}
 methylation <- gm %>%
   separate(art, into = c("gene", "sample_id"), sep = '_') %>%
   spread(value = avg_meth, key = gene)
@@ -208,6 +244,15 @@ head(methylation)
 
 ## Prepare methylation file for joining with BED
 ```{r prep-methylation-file-for-joining-with-BED}
+
+
+
+
+
+
+
+
+
 
 # Need to transpose to get gene names as rows
 # For joining with BED
@@ -235,10 +280,74 @@ colnames(methylation.transposed.rownames) <- paste("S", original_cols, sep = "")
 # Replace "Ssample_id" with "name" to match BED file
 names(methylation.transposed.rownames)[names(methylation.transposed.rownames) == "Ssample_id"] <- "name"
 
+# Capture gene names
+gene.names <- pull(methylation.transposed.rownames, name)
+
 head(methylation.transposed.rownames)
+
+# Convert first column to rownames for rowcvs() compatibility - requires matrix as input
+methylation.transposed.rownames.rownames <- methylation.transposed.rownames[,-1]
+
+# Assign gene names to rownames - needed for rowcvs() compatibility - requires matrix as input
+rownames(methylation.transposed.rownames.rownames) <- methylation.transposed.rownames[,1]
+
+# Convert from "characters" to numbers
+methylation.transposed.rownames.rownames.converted <- sapply(methylation.transposed.rownames.rownames, as.numeric)
+
+# Coerce into matrix for use with `rowcvs()` function
+methylation.transposed.matrix <- data.matrix(methylation.transposed.rownames.rownames.converted, rownames.force = TRUE)
+
+head(methylation.transposed.matrix)
 
 ```
 
+## Calculate mean methylation for all samples
+```{r calculate-mean-methylation-for-all-samples}
 
 
+
+for (comparison in comparisons) {
+  
+  ### For all samples
+  if (comparison == "all") {
+    
+    # Set treatment column name
+    treatment_col <- paste("All", "Mean.Methylation.CoV", sep = ".")
+    
+    # Calculate coefficients of variation, convert to data fram and add to list
+    methylation.transposed.rownames.list <- list(as.data.frame(rowcvs(methylation.transposed.matrix, unbiased = TRUE)))
+    
+    names(methylation.transposed.rownames.list) <- comparison
+    
+    names(methylation.transposed.rownames.list)[comparison] <- treatment_col
+  }
+}
+
+
+
+
+# Convert first column to rownames for rowcvs() compatibility - requires matrix as input
+methylation.transposed.rownames.rownames <- methylation.transposed.rownames[,-1]
+
+# Assign gene names to rownames - needed for rowcvs() compatibility - requires matrix as input
+rownames(methylation.transposed.rownames.rownames) <- methylation.transposed.rownames[,1]
+
+# Convert from "characters" to numbers
+methylation.transposed.rownames.rownames.converted <- sapply(methylation.transposed.rownames.rownames, as.numeric)
+
+# Coerce into matrix for use with `rowcvs()` function
+methylation.transposed.matrix <- data.matrix(methylation.transposed.rownames.rownames.converted, rownames.force = TRUE)
+
+# Calculate mean methylation and sort by gene
+## Assign to first spot in list
+methylation.transposed.rownames.list[[1]] <- methylation.transposed.matrix
+
+## Calculate CoV of methylation
+methylation.Cov.all.df <- as.data.frame(rowcvs(methylation.transposed.rownames.list[[1]], unbiased = TRUE))
+
+
+head(methylation.CoV.all.df)
+
+# Apply gene names to column
+methylation.Cov.all.df <- cbind("gene.names" = gene.names, methylation.Cov.all.df)
 
