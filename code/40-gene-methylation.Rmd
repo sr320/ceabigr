@@ -314,12 +314,23 @@ for (comparison in comparisons) {
     # Set treatment column name
     treatment_col <- paste("All", "Mean.Methylation.CoV", sep = ".")
     
-    # Calculate coefficients of variation, convert to data fram and add to list
-    methylation.transposed.rownames.list <- list(as.data.frame(rowcvs(methylation.transposed.matrix, unbiased = TRUE)))
+    # Calculate coefficients of variation using rowcvs(), convert to data fram and add to list
+    # Requires list() to add data frame to list and keep data frame class
+    methylation.transposed.rownames.list[[comparison]] <-
+      as.data.frame(
+        rowcvs(
+          methylation.transposed.matrix,
+          unbiased = TRUE
+          )
+        )
     
-    names(methylation.transposed.rownames.list) <- comparison
+    # Names 
+    # names(methylation.transposed.rownames.list) <- comparison
     
-    names(methylation.transposed.rownames.list)[comparison] <- treatment_col
+    methylation.transposed.rownames.list[[comparison]] <- 
+      rename(methylation.transposed.rownames.list[[comparison]], 
+             !!treatment_col := `rowcvs(methylation.transposed.matrix, unbiased = TRUE)`
+             )
   }
 }
 
