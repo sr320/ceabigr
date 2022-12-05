@@ -323,10 +323,10 @@ for (comparison in comparisons) {
           unbiased = TRUE
           )
         )
-    
-    # Names 
-    # names(methylation.transposed.rownames.list) <- comparison
-    
+    # Rename Coefficient of Variation column
+    # the column is actually named: `rowcvs(methylation.transposed.matrix, unbiased = TRUE)`
+    # after the rowcvs() function runs
+    # Not sure what the `!! :=` notation means in the rename() function!!??
     methylation.transposed.rownames.list[[comparison]] <- 
       rename(methylation.transposed.rownames.list[[comparison]], 
              !!treatment_col := `rowcvs(methylation.transposed.matrix, unbiased = TRUE)`
