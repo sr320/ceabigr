@@ -42,8 +42,8 @@ controls.males <- c("S13M", "S64M", "S6M", "S7M")
 exposed.males <- c("S12M", "S23M", "S31M", "S48M", "S59M", "S9M")
 controls.females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F")
 exposed.females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
-females <- c(controls_females, exposed_females)
-males <- c(controls_males, exposed_males)
+females <- c(controls.females, exposed.females)
+males <- c(controls.males, exposed.males)
 
 # Declare list for storing methylation dataframes
 methylation.transposed.rownames.list <- list()
@@ -57,6 +57,8 @@ comparisons <- c("all",
                  "controls.females_v_controls.males",
                  "exposed.females_v_exposed.males"
                  )
+
+`%notin%` <- Negate(`%in%`)
 
 ```
 
@@ -332,114 +334,55 @@ for (comparison in comparisons) {
   
   # Set first treatment column name
   first_treatment_col <- paste(first_comparison,
-                         "Mean.Methylation.CoV",
+                         "mean.methylation.CoV",
                          sep = ".")
   
   # Se second treatment column name
   second_treatment_col <- paste(second_comparison,
-                         "Mean.Methylation.CoV",
+                         "mean.methylation.CoV",
                          sep = ".")
   
   ##### For all samples #####
   if (comparison == "all") {
     
     # Set treatment column name
-    treatment_col <- paste("All", "Mean.Methylation.CoV", sep = ".")
+    treatment_col <- paste("all", "mean.methylation.CoV", sep = ".")
     
     # Calculate coefficients of variation using rowcvs(), convert to data frame and add to list
     # Requires list() to add data frame to list and keep data frame class
-    methylation.transposed.rownames.list[[comparison]] <-
+    methylation.transposed.rownames.list[[comparison]][treatment_col] <-
       as.data.frame(
         rowcvs(
           methylation.transposed.matrix,
           unbiased = TRUE
           )
         )
-    # Rename Coefficient of Variation column
-    # the column is actually named: `rowcvs(methylation.transposed.matrix, unbiased = TRUE)`
-    # after the rowcvs() function runs
-    # Not sure what the `!! :=` notation means in the rename() function!!??
-    methylation.transposed.rownames.list[[comparison]] <- 
-      rename(methylation.transposed.rownames.list[[comparison]], 
-             !!treatment_col := `rowcvs(methylation.transposed.matrix, unbiased = TRUE)`
-             )
+
   }
   
   ##### Females vs males #####
   if (comparison == "females_v_males") {
-    # If matrix doesn't exist, create it
-    if (!exists(methylation.transposed.rownames.list[[comparison]])) {
       
-      
-    # Calculate coefficients of variation using rowcvs(), convert to data frame and add to list
-    # Requires list() to add data frame to list and keep data frame class
-    methylation.transposed.rownames.list[[comparison]] <-
-      as.data.frame(
-        methylation.transposed.matrix %>%
-          select(first_treatment_col) %>% 
-        rowcvs(
-          unbiased = TRUE
+      # Calculate coefficients of variation using rowcvs(), convert to data frame and add to list
+      # Requires list() to add data frame to list and keep data frame class
+      methylation.transposed.rownames.list[[comparison]][first_treatment_col] <-
+        as.data.frame(
+          methylation.transposed.matrix %>%
+            subset(., TRUE, get(first_comparison)) %>% 
+          rowcvs(., unbiased = TRUE)
           )
-        )
-
-    
-    # Rename Coefficient of Variation column
-    # the column is actually named: `rowcvs(methylation.transposed.matrix, unbiased = TRUE)`
-    # after the rowcvs() function runs
-    # Not sure what the `!! :=` notation means in the rename() function!!??
-    methylation.transposed.rownames.list[[comparison]] <- 
-      rename(methylation.transposed.rownames.list[[comparison]], 
-             !!first_treatment_col := `rowcvs(methylation.transposed.matrix, unbiased = TRUE)`
-             )
-        
-      # If matrix does exist, append column to matrix
-      } else
-        methylation.transposed.rownames.list[[comparison]] <- cbind(methylation.transposed.rownames.list[[comparison]])
       
         # Calculate coefficients of variation using rowcvs(), convert to data frame and add to list
         # Requires list() to add data frame to list and keep data frame class
-        methylation.transposed.rownames.list[[comparison]] <-
+        methylation.transposed.rownames.list[[comparison]][second_treatment_col] <-
           as.data.frame(
             methylation.transposed.matrix %>%
-              select(second_treatment_col) %>%
-              rowcvs(unbiased = TRUE)
-            )
-    
-    # Rename Coefficient of Variation column
-    # the column is actually named: `rowcvs(methylation.transposed.matrix, unbiased = TRUE)`
-    # after the rowcvs() function runs
-    # Not sure what the `!! :=` notation means in the rename() function!!??
-    methylation.transposed.rownames.list[[comparison]] <- 
-      rename(methylation.transposed.rownames.list[[comparison]], 
-             !!second_treatment_col := `rowcvs(methylation.transposed.matrix, unbiased = TRUE)`
-             )
+              subset(., TRUE, get(second_comparison)) %>%
+            rowcvs(., unbiased = TRUE)
+          )
+        }
   }
-}
 
-
-
-
-# Convert first column to rownames for rowcvs() compatibility - requires matrix as input
-methylation.transposed.rownames.rownames <- methylation.transposed.rownames[,-1]
-
-# Assign gene names to rownames - needed for rowcvs() compatibility - requires matrix as input
-rownames(methylation.transposed.rownames.rownames) <- methylation.transposed.rownames[,1]
-
-# Convert from "characters" to numbers
-methylation.transposed.rownames.rownames.converted <- sapply(methylation.transposed.rownames.rownames, as.numeric)
-
-# Coerce into matrix for use with `rowcvs()` function
-methylation.transposed.matrix <- data.matrix(methylation.transposed.rownames.rownames.converted, rownames.force = TRUE)
-
-# Calculate mean methylation and sort by gene
-## Assign to first spot in list
-methylation.transposed.rownames.list[[1]] <- methylation.transposed.matrix
-
-## Calculate CoV of methylation
-methylation.Cov.all.df <- as.data.frame(rowcvs(methylation.transposed.rownames.list[[1]], unbiased = TRUE))
-
-
-head(methylation.CoV.all.df)
 
 # Apply gene names to column
 methylation.Cov.all.df <- cbind("gene.names" = gene.names, methylation.Cov.all.df)
