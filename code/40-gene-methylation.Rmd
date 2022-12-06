@@ -52,10 +52,10 @@ methylation.transposed.rownames.list <- list()
 comparisons <- c("all",
                  "females_v_males",
                  "controls_v_exposed",
-                 "females.controls_v_females.exposed",
-                 "males.controls_v_males.exposed",
-                 "females.controls_v_males.controls",
-                 "females.exposed_v_males.exposed"
+                 "controls.females_v_exposed.females",
+                 "controls.males_v_exposed.males",
+                 "controls.females_v_controls.males",
+                 "exposed.females_v_exposed.males"
                  )
 
 ```
@@ -376,7 +376,7 @@ for (comparison in comparisons) {
     methylation.transposed.rownames.list[[comparison]] <-
       as.data.frame(
         methylation.transposed.matrix %>%
-          select(females) %>% 
+          select(first_treatment_col) %>% 
         rowcvs(
           unbiased = TRUE
           )
@@ -394,7 +394,16 @@ for (comparison in comparisons) {
         
       # If matrix does exist, append column to matrix
       } else
-          methylation.transposed.rownames.list[[comparison]] <- cbind(methylation.transposed.rownames.list[[comparison]])
+        methylation.transposed.rownames.list[[comparison]] <- cbind(methylation.transposed.rownames.list[[comparison]])
+      
+        # Calculate coefficients of variation using rowcvs(), convert to data frame and add to list
+        # Requires list() to add data frame to list and keep data frame class
+        methylation.transposed.rownames.list[[comparison]] <-
+          as.data.frame(
+            methylation.transposed.matrix %>%
+              select(second_treatment_col) %>%
+              rowcvs(unbiased = TRUE)
+            )
     
     # Rename Coefficient of Variation column
     # the column is actually named: `rowcvs(methylation.transposed.matrix, unbiased = TRUE)`
