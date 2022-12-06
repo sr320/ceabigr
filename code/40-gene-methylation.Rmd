@@ -310,6 +310,36 @@ head(methylation.transposed.matrix)
 
 for (comparison in comparisons) {
   
+  # Parse comparisons to use subsequent strings for
+  # column labels and file naming
+  
+  ## Get the left side of the comparison
+  first_comparison <- sapply(
+    strsplit(
+      comparison,
+      "_"
+      ),
+    head,1
+    )
+  
+  ## Get the right side of the comparison
+  second_comparison <- sapply(
+    strsplit(
+      comparison,
+      "_"), 
+    tail,1
+    )
+  
+  # Set first treatment column name
+  first_treatment_col <- paste(first_comparison,
+                         "Mean.Methylation.CoV",
+                         sep = ".")
+  
+  # Se second treatment column name
+  second_treatment_col <- paste(second_comparison,
+                         "Mean.Methylation.CoV",
+                         sep = ".")
+  
   ##### For all samples #####
   if (comparison == "all") {
     
@@ -340,40 +370,40 @@ for (comparison in comparisons) {
     # If matrix doesn't exist, create it
     if (!exists(methylation.transposed.rownames.list[[comparison]])) {
       
+      
     # Calculate coefficients of variation using rowcvs(), convert to data frame and add to list
     # Requires list() to add data frame to list and keep data frame class
     methylation.transposed.rownames.list[[comparison]] <-
       as.data.frame(
         methylation.transposed.matrix %>%
-          select(controls_females ) %>% 
+          select(females) %>% 
         rowcvs(
           unbiased = TRUE
           )
         )
+
+    
     # Rename Coefficient of Variation column
     # the column is actually named: `rowcvs(methylation.transposed.matrix, unbiased = TRUE)`
     # after the rowcvs() function runs
     # Not sure what the `!! :=` notation means in the rename() function!!??
     methylation.transposed.rownames.list[[comparison]] <- 
       rename(methylation.transposed.rownames.list[[comparison]], 
-             !!treatment_col := `rowcvs(methylation.transposed.matrix, unbiased = TRUE)`
+             !!first_treatment_col := `rowcvs(methylation.transposed.matrix, unbiased = TRUE)`
              )
         
       # If matrix does exist, append column to matrix
       } else
-          transcripts_females_matrix <- cbind(methylation.transposed.rownames.list[[comparison]])
+          methylation.transposed.rownames.list[[comparison]] <- cbind(methylation.transposed.rownames.list[[comparison]])
     
-    # Set treatment column name
-    # Splits comparison on "_" and keeps first entry using head()
-    treatment_col <- paste(
-      sapply(
-        strsplit(
-          comparison,
-          "_"), 
-        head,
-        1), 
-      "Mean.Methylation.CoV", 
-      sep = ".")
+    # Rename Coefficient of Variation column
+    # the column is actually named: `rowcvs(methylation.transposed.matrix, unbiased = TRUE)`
+    # after the rowcvs() function runs
+    # Not sure what the `!! :=` notation means in the rename() function!!??
+    methylation.transposed.rownames.list[[comparison]] <- 
+      rename(methylation.transposed.rownames.list[[comparison]], 
+             !!second_treatment_col := `rowcvs(methylation.transposed.matrix, unbiased = TRUE)`
+             )
   }
 }
 
