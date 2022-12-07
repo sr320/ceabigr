@@ -65,4 +65,18 @@ GitHub due to their large sizes, particularly `meth_all-samples.out` which is 11
 
 - `9M_mGene.out` (411M):
 
+ - [`all.CoV-mean-methylation.csv`](https://github.com/sr320/ceabigr/blob/main/output/40-gene-methylation/all.CoV-mean-methylation.csv): Coefficients of variation per gene of mean methylation across all samples.
+
+ - [`controls.females_v_controls.males.CoV-mean-methylation.csv`](https://github.com/sr320/ceabigr/blob/main/output/40-gene-methylation/controls.females_v_controls.males.CoV-mean-methylation.csv): Coefficients of variation per gene of mean methylation comparing controls females and controls males.
+
+ - [`controls.females_v_exposed.females.CoV-mean-methylation.csv`](https://github.com/sr320/ceabigr/blob/main/output/40-gene-methylation/controls.females_v_exposed.females.CoV-mean-methylation.csv): Coefficients of variation per gene of mean methylation comparing controls females and exposed females.
+
+ - [`controls.males_v_exposed.males.CoV-mean-methylation.csv`](https://github.com/sr320/ceabigr/blob/main/output/40-gene-methylation/controls.males_v_exposed.males.CoV-mean-methylation.csv): Coefficients of variation per gene of mean methylation comparing controls males and exposed males.
+
+ - [`controls_v_exposed.CoV-mean-methylation.csv`](https://github.com/sr320/ceabigr/blob/main/output/40-gene-methylation/controls_v_exposed.CoV-mean-methylation.csv): Coefficients of variation per gene of mean methylation comparing controls and exposed samples.
+
+ - [`exposed.females_v_exposed.males.CoV-mean-methylation.csv`](https://github.com/sr320/ceabigr/blob/main/output/40-gene-methylation/exposed.females_v_exposed.males.CoV-mean-methylation.csv): Coefficients of variation per gene of mean methylation comparing exposed females and exposed males.
+
+ - [`females_v_males.CoV-mean-methylation.csv`](https://github.com/sr320/ceabigr/blob/main/output/40-gene-methylation/females_v_males.CoV-mean-methylation.csv): Coefficients of variation per gene of mean methylation comparing females and males.
+
 - `meth_all-samples.out` (11G):
