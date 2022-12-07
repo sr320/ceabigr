@@ -58,29 +58,6 @@ comparisons <- c("all",
                  "exposed.females_v_exposed.males"
                  )
 
-`%notin%` <- Negate(`%in%`)
-
-```
-
-# Define functions
-```{r define-functions}
-### Function to convert 
-CoV.transform <- function(methylation.transposed.rownames) {
-  # Convert first column to rownames for rowcvs() compatibility - requires matrix as input
-  methylation.transposed.rownames.rownames <- methylation.transposed.rownames[,-1]
-
-  # Assign gene names to rownames - needed for rowcvs() compatibility - requires matrix as input
-  rownames(methylation.transposed.rownames.rownames) <- methylation.transposed.rownames[,1]
-
-  # Convert from "characters" to numbers
-  methylation.transposed.rownames.rownames.converted <- sapply(methylation.transposed.rownames.rownames, as.numeric)
-
-  # Coerce into matrix for use with `rowcvs()` function
-  methylation.transposed.matrix <- data.matrix(methylation.transposed.rownames.rownames.converted, rownames.force = TRUE)
-  
-  return(methylation.transposed.matrix)
-}
-
 ```
 
 # Download bedgraph files
@@ -249,15 +226,6 @@ head(methylation)
 ## Prepare methylation file for joining with BED
 ```{r prep-methylation-file-for-joining-with-BED}
 
-
-
-
-
-
-
-
-
-
 # Need to transpose to get gene names as rows
 # For joining with BED
 methylation.transposed <- as.data.frame(t(methylation))
@@ -337,7 +305,7 @@ for (comparison in comparisons) {
                          "mean.methylation.CoV",
                          sep = ".")
   
-  # Se second treatment column name
+  # Set second treatment column name
   second_treatment_col <- paste(second_comparison,
                          "mean.methylation.CoV",
                          sep = ".")
@@ -358,10 +326,7 @@ for (comparison in comparisons) {
           )
         )
 
-  }
-  
-  ##### Females vs males #####
-  if (comparison == "females_v_males") {
+  } else {
       
       # Calculate coefficients of variation using rowcvs(), convert to data frame and add to list
       # Requires list() to add data frame to list and keep data frame class
@@ -383,7 +348,9 @@ for (comparison in comparisons) {
         }
   }
 
+```
 
+```{r format-Cov-dataframes}
 # Apply gene names to column
 methylation.Cov.all.df <- cbind("gene.names" = gene.names, methylation.Cov.all.df)
 
