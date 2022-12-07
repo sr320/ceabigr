@@ -325,7 +325,7 @@ for (comparison in comparisons) {
     
     # Calculate coefficients of variation using rowcvs(), convert to data frame and add to list
     # Requires list() to add data frame to list and keep data frame class
-    # Uses get() to convert vector name to string
+    # Uses get() to convert string to name of the vector stored in "first_comparison"
     methylation.transposed.rownames.list[[comparison]][first_treatment_col] <-
       as.data.frame(
         methylation.transposed.matrix %>%
@@ -335,7 +335,7 @@ for (comparison in comparisons) {
     
     # Calculate coefficients of variation using rowcvs(), convert to data frame and add to list
     # Requires list() to add data frame to list and keep data frame class
-    # Uses get() to convert vector name to string
+    # Uses get() to convert string to name of the vector stored in "second_comparison"
     methylation.transposed.rownames.list[[comparison]][second_treatment_col] <-
       as.data.frame(
         methylation.transposed.matrix %>%
@@ -351,8 +351,9 @@ methylation.transposed.rownames.list <- lapply(methylation.transposed.rownames.l
 
 ```
 
-```{r format-Cov-dataframes}
+## Add gene names to rows for CoV data frames
+```{r gene-names-to-Cov-dataframes}
 # Apply gene names to column
-methylation.Cov.all.df <- cbind("gene.names" = gene.names, methylation.Cov.all.df)
+methylation.transposed.rownames.list <- lapply(methylation.transposed.rownames.list, "rownames<-", gene.names)
 
 ```
