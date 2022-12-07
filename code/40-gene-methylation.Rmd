@@ -285,18 +285,13 @@ for (comparison in comparisons) {
   
   ## Get the left side of the comparison
   first_comparison <- sapply(
-    strsplit(
-      comparison,
-      "_"
-      ),
+    strsplit(comparison, "_"),
     head,1
     )
   
   ## Get the right side of the comparison
   second_comparison <- sapply(
-    strsplit(
-      comparison,
-      "_"), 
+    strsplit(comparison,"_"), 
     tail,1
     )
   
@@ -327,26 +322,32 @@ for (comparison in comparisons) {
         )
 
   } else {
-      
-      # Calculate coefficients of variation using rowcvs(), convert to data frame and add to list
-      # Requires list() to add data frame to list and keep data frame class
-      methylation.transposed.rownames.list[[comparison]][first_treatment_col] <-
-        as.data.frame(
-          methylation.transposed.matrix %>%
-            subset(., TRUE, get(first_comparison)) %>% 
-          rowcvs(., unbiased = TRUE)
-          )
-      
-        # Calculate coefficients of variation using rowcvs(), convert to data frame and add to list
-        # Requires list() to add data frame to list and keep data frame class
-        methylation.transposed.rownames.list[[comparison]][second_treatment_col] <-
-          as.data.frame(
-            methylation.transposed.matrix %>%
-              subset(., TRUE, get(second_comparison)) %>%
-            rowcvs(., unbiased = TRUE)
-          )
-        }
-  }
+    
+    # Calculate coefficients of variation using rowcvs(), convert to data frame and add to list
+    # Requires list() to add data frame to list and keep data frame class
+    # Uses get() to convert vector name to string
+    methylation.transposed.rownames.list[[comparison]][first_treatment_col] <-
+      as.data.frame(
+        methylation.transposed.matrix %>%
+          subset(., TRUE, get(first_comparison)) %>% 
+        rowcvs(., unbiased = TRUE)
+        )
+    
+    # Calculate coefficients of variation using rowcvs(), convert to data frame and add to list
+    # Requires list() to add data frame to list and keep data frame class
+    # Uses get() to convert vector name to string
+    methylation.transposed.rownames.list[[comparison]][second_treatment_col] <-
+      as.data.frame(
+        methylation.transposed.matrix %>%
+          subset(., TRUE, get(second_comparison)) %>%
+        rowcvs(., unbiased = TRUE)
+      )
+    }
+}
+
+# Convert to data frames
+# Commands above create lists of lists
+methylation.transposed.rownames.list <- lapply(methylation.transposed.rownames.list, as.data.frame)
 
 ```
 
@@ -354,3 +355,4 @@ for (comparison in comparisons) {
 # Apply gene names to column
 methylation.Cov.all.df <- cbind("gene.names" = gene.names, methylation.Cov.all.df)
 
+```
