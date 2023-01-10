@@ -278,8 +278,8 @@ head(methylation.transposed.matrix)
 
 ```
 
-## Calculate mean methylation for all samples
-```{r calculate-mean-methylation-for-all-samples}
+## Calculate mean methylation coefficients of variation (CoV) for all samples
+```{r calculate-mean-methylation-coefficients-of-variation-for-all-samples}
 
 
 
