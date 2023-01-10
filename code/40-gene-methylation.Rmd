@@ -349,12 +349,14 @@ for (comparison in comparisons) {
 # Commands above create lists of lists
 methylation.transposed.rownames.list <- lapply(methylation.transposed.rownames.list, as.data.frame)
 
+save(methylation.transposed.rownames.list, file = "../output/40-gene-methylation/methylation.transposed.rownames.list.RData")
+
 ```
 
 ## Add gene names to rows for CoV data frames
 ```{r gene-names-to-Cov-dataframes}
 # Apply gene names to column
-methylation.transposed.rownames.list <- lapply(methylation.transposed.rownames.list, "rownames<-", gene.names)
+methylation.transposed.rownames.list <- lapply(methylation.transposed.rownames.list, function(x){ rownames(x) <- gene.names; x })
 
 ```
 
@@ -366,6 +368,6 @@ sapply(names(methylation.transposed.rownames.list),
        function(x) write.csv(methylation.transposed.rownames.list[[x]],
                              file = file.path("../output/40-gene-methylation/", paste(x, "CoV-mean-methylation", "csv", sep=".")),
                              quote = FALSE,
-                             row.names = FALSE)
+                             row.names = TRUE)
        )
 ```
