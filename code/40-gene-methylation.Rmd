@@ -221,7 +221,10 @@ methylation <- gm %>%
   spread(value = avg_meth, key = gene)
 
 head(methylation)
+```
 
+## Save methylation object
+```{r save-methylation-object}
 save(methylation, file = "../output/40-gene-methylation/methylation.RData")
 ```
 
@@ -351,6 +354,10 @@ for (comparison in comparisons) {
 # Commands above create lists of lists
 methylation.transposed.rownames.list <- lapply(methylation.transposed.rownames.list, as.data.frame)
 
+```
+
+## Save methylation.transposed.rownames.list as R Object
+```{r save-methylation-CoV-list-object}
 # Save as an object to avoid having to re-run all of the code which generates this list (it takes a long time to run)
 save(methylation.transposed.rownames.list, file = "../output/40-gene-methylation/methylation.transposed.rownames.list.RData")
 
