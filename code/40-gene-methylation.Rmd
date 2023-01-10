@@ -368,6 +368,9 @@ save(methylation.transposed.rownames.list, file = "../output/40-gene-methylation
 # Apply gene names to column
 methylation.transposed.rownames.list <- lapply(methylation.transposed.rownames.list, function(x){ rownames(x) <- gene.names; x })
 
+# Convert row names to column and assign column name
+methylation.transposed.rownames.list <- lapply(methylation.transposed.rownames.list, function(x){ rownames_to_column(x, var = "gene.id") })
+
 ```
 
 ## Write CoV data frames to CSVs
@@ -378,6 +381,6 @@ sapply(names(methylation.transposed.rownames.list),
        function(x) write.csv(methylation.transposed.rownames.list[[x]],
                              file = file.path("../output/40-gene-methylation/", paste(x, "CoV-mean-methylation", "csv", sep=".")),
                              quote = FALSE,
-                             row.names = TRUE)
+                             row.names = FALSE)
        )
 ```
