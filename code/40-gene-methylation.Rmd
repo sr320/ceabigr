@@ -221,6 +221,8 @@ methylation <- gm %>%
   spread(value = avg_meth, key = gene)
 
 head(methylation)
+
+save(methylation, file = "../output/40-gene-methylation/methylation.RData")
 ```
 
 ## Prepare methylation file for joining with BED
@@ -349,6 +351,7 @@ for (comparison in comparisons) {
 # Commands above create lists of lists
 methylation.transposed.rownames.list <- lapply(methylation.transposed.rownames.list, as.data.frame)
 
+# Save as an object to avoid having to re-run all of the code which generates this list (it takes a long time to run)
 save(methylation.transposed.rownames.list, file = "../output/40-gene-methylation/methylation.transposed.rownames.list.RData")
 
 ```
