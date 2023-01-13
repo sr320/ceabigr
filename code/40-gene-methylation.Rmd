@@ -224,6 +224,11 @@ head(methylation)
 ```
 
 ## Save methylation object
+
+Creating this object is useful for skipping time-consuming steps above.
+when needing to use this notebook in the future.
+
+Also avoids the need for high-memory computer that the previous steps above require.
 ```{r save-methylation-object}
 save(methylation, file = "../output/40-gene-methylation/methylation.RData")
 ```
@@ -346,6 +351,15 @@ for (comparison in comparisons) {
 # Commands above create lists of lists
 mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list, as.data.frame)
 
+# Calculate absolute value of difference between treatment CoV
+# Since each data frame is the same two-column format, can reference by column numbers 1 and 2
+mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list,
+                                          function(df) {
+                                            df$abs.delta.CoV <- abs(df[,1] - df[,2])
+                                            return(df)
+                                            }
+                                          )
+
 ```
 
 ## Save mean.gene.methylation.CoV.list as R Object
@@ -358,10 +372,14 @@ save(mean.gene.methylation.CoV.list, file = "../output/40-gene-methylation/mean.
 ## Add gene names to rows for CoV data frames
 ```{r gene-names-to-Cov-dataframes}
 # Apply gene names to column
-mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list, function(x){ rownames(x) <- gene.names; x })
+mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list,
+                                         function(x){ rownames(x) <- gene.names; x }
+                                         )
 
 # Convert row names to column and assign column name
-mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list, function(x){ rownames_to_column(x, var = "gene.id") })
+mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list,
+                                         function(x){ rownames_to_column(x, var = "gene.id") }
+                                         )
 
 ```
 
