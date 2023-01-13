@@ -262,6 +262,12 @@ gene.names <- pull(methylation.transposed.rownames, name)
 
 head(methylation.transposed.rownames)
 
+
+```
+
+
+## Convert to matrix
+```{r convert-to-matrix}
 # Convert first column to rownames for rowcvs() compatibility - requires matrix as input
 methylation.transposed.rownames.rownames <- methylation.transposed.rownames[,-1]
 
