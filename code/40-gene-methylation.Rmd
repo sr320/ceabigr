@@ -46,7 +46,7 @@ females <- c(controls.females, exposed.females)
 males <- c(controls.males, exposed.males)
 
 # Declare list for storing methylation dataframes
-methylation.transposed.rownames.list <- list()
+mean.gene.methylation.CoV.list <- list()
 
 # Vector of treatment comparisons
 comparisons <- c("all",
@@ -284,8 +284,8 @@ head(methylation.transposed.matrix)
 
 ```
 
-## Calculate mean methylation coefficients of variation (CoV) for all samples
-```{r calculate-mean-methylation-coefficients-of-variation-for-all-samples}
+## Calculate mean gene methylation coefficients of variation (CoV) for all samples
+```{r calculate-mean-gene-methylation-coefficients-of-variation-for-all-samples}
 
 
 
@@ -316,13 +316,13 @@ for (comparison in comparisons) {
                          "mean.methylation.CoV",
                          sep = ".")
   
-  ##### For all samples #####
+  # Calculate coefficients of variation
   if (comparison != "all") {
     
     # Calculate coefficients of variation using rowcvs(), convert to data frame and add to list
     # Requires list() to add data frame to list and keep data frame class
     # Uses get() to convert string to name of the vector stored in "first_comparison"
-    methylation.transposed.rownames.list[[comparison]][first_treatment_col] <-
+    mean.gene.methylation.CoV.list[[comparison]][first_treatment_col] <-
       as.data.frame(
         methylation.transposed.matrix %>%
           subset(., TRUE, get(first_comparison)) %>% 
@@ -332,7 +332,7 @@ for (comparison in comparisons) {
     # Calculate coefficients of variation using rowcvs(), convert to data frame and add to list
     # Requires list() to add data frame to list and keep data frame class
     # Uses get() to convert string to name of the vector stored in "second_comparison"
-    methylation.transposed.rownames.list[[comparison]][second_treatment_col] <-
+    mean.gene.methylation.CoV.list[[comparison]][second_treatment_col] <-
       as.data.frame(
         methylation.transposed.matrix %>%
           subset(., TRUE, get(second_comparison)) %>%
@@ -344,24 +344,24 @@ for (comparison in comparisons) {
 
 # Convert to data frames
 # Commands above create lists of lists
-methylation.transposed.rownames.list <- lapply(methylation.transposed.rownames.list, as.data.frame)
+mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list, as.data.frame)
 
 ```
 
-## Save methylation.transposed.rownames.list as R Object
+## Save mean.gene.methylation.CoV.list as R Object
 ```{r save-methylation-CoV-list-object}
 # Save as an object to avoid having to re-run all of the code which generates this list (it takes a long time to run)
-save(methylation.transposed.rownames.list, file = "../output/40-gene-methylation/methylation.transposed.rownames.list.RData")
+save(mean.gene.methylation.CoV.list, file = "../output/40-gene-methylation/mean.gene.methylation.CoV.list.RData")
 
 ```
 
 ## Add gene names to rows for CoV data frames
 ```{r gene-names-to-Cov-dataframes}
 # Apply gene names to column
-methylation.transposed.rownames.list <- lapply(methylation.transposed.rownames.list, function(x){ rownames(x) <- gene.names; x })
+mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list, function(x){ rownames(x) <- gene.names; x })
 
 # Convert row names to column and assign column name
-methylation.transposed.rownames.list <- lapply(methylation.transposed.rownames.list, function(x){ rownames_to_column(x, var = "gene.id") })
+mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list, function(x){ rownames_to_column(x, var = "gene.id") })
 
 ```
 
@@ -369,8 +369,8 @@ methylation.transposed.rownames.list <- lapply(methylation.transposed.rownames.l
 ```{r write-CoVs-to-CSVs}
 # Write data frames to CSVs in ../output/34-transcript-counts/ dir
 # Uses names of data frames as names of output files.
-sapply(names(methylation.transposed.rownames.list),
-       function(x) write.csv(methylation.transposed.rownames.list[[x]],
+sapply(names(mean.gene.methylation.CoV.list),
+       function(x) write.csv(mean.gene.methylation.CoV.list[[x]],
                              file = file.path("../output/40-gene-methylation/", paste(x, "CoV-mean-methylation", "csv", sep=".")),
                              quote = FALSE,
                              row.names = FALSE)
