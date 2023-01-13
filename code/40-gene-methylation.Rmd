@@ -363,6 +363,8 @@ mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list,
 ```
 
 ## Save mean.gene.methylation.CoV.list as R Object
+
+Useful for quick access to list without need for processing all steps above.
 ```{r save-methylation-CoV-list-object}
 # Save as an object to avoid having to re-run all of the code which generates this list (it takes a long time to run)
 save(mean.gene.methylation.CoV.list, file = "../output/40-gene-methylation/mean.gene.methylation.CoV.list.RData")
@@ -381,6 +383,39 @@ mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list,
                                          function(x){ rownames_to_column(x, var = "gene.id") }
                                          )
 
+```
+
+## Scatter plot all mean gene methylation CoV comparisons
+
+Since all data frames are formatted the same (comp1, comp2, abs.delta)
+we can refer to them by column numbers.
+
+HOWEVER, to do that, we need to extract the name of each data frame, using the `names()` function.
+
+IMPORTANT: These plots do _not_ plot rows containing `NA` or `NaN`!!! As such, there is
+a lot of missing data.
+```{r scatter-plot-all-mean-gene-methylation-CoV}
+
+# Set color palette
+# Not entirely sure how this works, as I took it from some plotting Steven was doing.
+myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
+
+# Set scale colors for absolute values of the delta between comparisons
+# Not entirely sure how this works, as I took it from some plotting Steven was doing.
+sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(0, 5))
+
+# 
+lapply(
+  mean.gene.methylation.CoV.list,
+  function(df) {
+    names <- names(df)
+    df %>% ggplot(aes_string(x=names[1], y=names[2], colour=names[3])) +
+      geom_point(alpha = 0.6, size = 3) +
+      geom_smooth(method = "lm") +
+      geom_abline(size=1.0,colour="red") +
+      sc
+  }
+)
 ```
 
 ## Write CoV data frames to CSVs
