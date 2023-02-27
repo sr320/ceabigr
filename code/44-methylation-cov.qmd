@@ -1,0 +1,36 @@
+---
+title: "Plotting Methylation CoV"
+format: markdown_github
+editor: visual
+---
+
+Plotting Methylation Variation
+
+```{r}
+library(tidyverse)
+```
+
+
+
+```{r}
+ 
+controls_males_v_exposed_males_CoV_mean_methylation <- read_csv("../output/40-gene-methylation/controls.males_v_exposed.males.CoV-mean-methylation.csv")
+```
+
+```{r}
+structure(controls_males_v_exposed_males_CoV_mean_methylation)
+```
+
+
+```{r}
+ggplot(controls_males_v_exposed_males_CoV_mean_methylation) +
+  geom_histogram(aes(x = controls.males.mean.methylation.CoV), bins = 140, color = "red") +
+  geom_histogram(aes(x = exposed.males.mean.methylation.CoV), bins = 140, alpha = 0.2, color = "green")
+```
+
+
+
+```{r}
+ggplot(controls_males_v_exposed_males_CoV_mean_methylation) +
+  geom_histogram(aes(x = abs.delta.CoV), bins = 2050)
+```
