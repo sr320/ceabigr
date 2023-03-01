@@ -9,6 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Load libraries
+```{r load-libraries}
+library("tidyverse")
+```
+
 # Load transcript FPKMs
 ```{r load-transcript-FPKMs}
 transcripts_fpkm <- read.csv("../data/fpkm-all_transcripts.csv")
@@ -91,4 +96,41 @@ colnames(transposed.genes_fpkm) <- transposed.genes_fpkm[1,]
 transposed.genes_fpkm <- transposed.genes_fpkm[-1,]
 
 head(transposed.genes_fpkm)
+```
+
+# Rename methylation columns/rows
+```{r rename-transcript-columns-and-rows}
+# Remove extra first column
+genes_methylation <- genes_methylation[,-1]
+
+head(genes_methylation)
+
+# Replace "gene." with "gene-" from all column names for consistency
+colnames(genes_methylation) <- gsub("gene.", "gene-", colnames(genes_methylation))
+
+head(genes_methylation)
+
+# Add ".meth" to end ("$") of all columns
+colnames(genes_methylation) <- sub("$", ".meth", colnames(genes_methylation))
+
+head(genes_methylation)
+
+# Convert first column to rownames
+genes_methylation <- genes_methylation %>%
+  remove_rownames%>%
+  column_to_rownames(var="sample_id.meth")
+```
+
+# Transpose methylation FPKM
+```{r transpose-genes-fpkm}
+# Transpose to have sample names as rows and transcript FPKM in columns
+transposed.genes_methylation <- as.data.frame(t(genes_methylation))
+
+head(transposed.genes_methylation)
+
+# Convert first row to column names
+colnames(transposed.genes_methylation) <- transposed.genes_methylation[1,]
+transposed.genes_methylation <- transposed.genes_methylation[-1,]
+
+head(transposed.genes_methylation)
 ```
