@@ -1,0 +1,46 @@
+---
+title: "Creation of comprehensive CSV"
+author: "Sam White"
+date: "3/1/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load transcript FPKMs
+```{r}
+transcripts_fpkm <- read.csv("../data/fpkm-all_transcripts.csv")
+
+head(transcripts_fpkm)
+```
+# Rename columns/rows
+```{r}
+# Remove "FPKM." from all column names
+colnames(transcripts_fpkm) <- gsub("FPKM.", "", colnames(transcripts_fpkm))
+
+head(transcripts_fpkm)
+
+# Add "t_id." to beginning ("^") of first column data
+transcripts_fpkm$t_id <- sub("^", "t_id.", transcripts_fpkm$t_id)
+
+head(transcripts_fpkm)
+
+# Add ".FPKM" to end ("$") of "t_id"
+transcripts_fpkm$t_id <- sub("$", ".FPKM", transcripts_fpkm$t_id)
+
+head(transcripts_fpkm)
+```
+
+# Transpose transcript FPKM
+```{r transpose-transcripts-fpkm}
+# Transpose to have sample names as rows and transcript FPKM in columns
+transposed.transcripts_fpkm <- t(transcripts_fpkm)
+
+head(transposed.transcripts_fpkm)
+
+# Convert first row to column names
+colnames(transposed.transcripts_fpkm) <- transposed.transcripts_fpkm[1,]
+transposed.transcripts_fpkm <- transposed.transcripts_fpkm[-1,]
+```
