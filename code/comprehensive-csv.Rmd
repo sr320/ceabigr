@@ -129,5 +129,30 @@ genes_methylation <- genes_methylation %>%
 
 head(genes_methylation)
 ```
+# Join data frames
 
+Joining solution taken from here:
 
+https://stackoverflow.com/a/49911159/3470742
+```{r join}
+# Create list of dataframes
+df_list <- list(transposed.transcripts_fpkm, transposed.genes_fpkm, genes_methylation)
+
+# Join all data frames by sample
+
+merged_by_sample <- df_list %>%
+  map(~ .x %>% 
+        as.data.frame %>% 
+        rownames_to_column('sample')
+      ) %>% 
+  reduce(full_join, by = 'sample') %>% 
+  column_to_rownames('sample')
+```
+
+## Write joined data frames to CSV
+```{r write-joined-dfs-to-CSV}
+write.csv(merged_by_sample,
+          file = file.path("../output/comprehensive.csv"),
+          quote = FALSE,
+          row.names = TRUE)
+```
