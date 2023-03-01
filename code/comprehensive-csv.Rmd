@@ -21,6 +21,12 @@ genes_fpkm <- read.csv("../data/whole_gx_table.csv")
 
 head(genes_fpkm)
 ```
+# Load gene methylation
+```{r load-gene-methylation}
+genes_methylation <- read.csv("../output/40-gene-methylation/40-gene-methylation.csv")
+
+head(genes_methylation)
+```
 
 # Rename transcript columns/rows
 ```{r rename-transcript-columns-and-rows}
@@ -30,7 +36,7 @@ colnames(transcripts_fpkm) <- gsub("FPKM.", "", colnames(transcripts_fpkm))
 head(transcripts_fpkm)
 
 # Add "t_id." to beginning ("^") of first column data
-transcripts_fpkm$t_id <- sub("^", "t_id.", transcripts_fpkm$t_id)
+transcripts_fpkm$t_id <- sub("^", "t_id-", transcripts_fpkm$t_id)
 
 head(transcripts_fpkm)
 
