@@ -26,6 +26,7 @@ genes_fpkm <- read.csv("../data/whole_gx_table.csv")
 
 head(genes_fpkm)
 ```
+
 # Load gene methylation
 ```{r load-gene-methylation}
 genes_methylation <- read.csv("../output/40-gene-methylation/40-gene-methylation.csv")
@@ -105,8 +106,14 @@ genes_methylation <- genes_methylation[,-1]
 
 head(genes_methylation)
 
+# Add "S" to beginning ("^") of sample names for consistency
+genes_methylation$sample_id <- sub("^", "S", genes_methylation$sample_id)
+
+head(genes_methylation)
+
 # Replace "gene." with "gene-" from all column names for consistency
 colnames(genes_methylation) <- gsub("gene.", "gene-", colnames(genes_methylation))
+
 
 head(genes_methylation)
 
@@ -119,18 +126,8 @@ head(genes_methylation)
 genes_methylation <- genes_methylation %>%
   remove_rownames%>%
   column_to_rownames(var="sample_id.meth")
+
+head(genes_methylation)
 ```
 
-# Transpose methylation FPKM
-```{r transpose-genes-fpkm}
-# Transpose to have sample names as rows and transcript FPKM in columns
-transposed.genes_methylation <- as.data.frame(t(genes_methylation))
 
-head(transposed.genes_methylation)
-
-# Convert first row to column names
-colnames(transposed.genes_methylation) <- transposed.genes_methylation[1,]
-transposed.genes_methylation <- transposed.genes_methylation[-1,]
-
-head(transposed.genes_methylation)
-```
