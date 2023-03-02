@@ -1,0 +1,21 @@
+---
+title: "45-oyster-data-table"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+comp <- read_csv("../output/comprehensive.csv")
+```
+
+```{r}
+head(comp)
+```
+
+```{r}
+str(comp)
+```
