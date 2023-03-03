@@ -674,9 +674,24 @@ summary(transNoiseFem) #Significant effect of all parameters.
 ```{r}
 femMethExpCV %>%
   ggplot(.) + geom_point(aes(x = log2(exp + 1), y = log10(CoV_FPKM), colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c("dodgerblue2", "firebrick2")) +
   labs(x = "FPKM", y = "Transcriptional Noise") +
-  geom_smooth(aes(x = log2(exp + 1), y = log10(CoV_FPKM)), method = lm, colour = "grey20", size = 2, na.rm = TRUE) +
-  theme_minimal()
+  geom_smooth(data = (. %>% filter(treatment == "control")), aes(x = log2(exp + 1), y = log10(CoV_FPKM)), method = lm, colour = "dodgerblue4", size = 2, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), aes(x = log2(exp + 1), y = log10(CoV_FPKM)), method = lm, colour = "firebrick4", size = 2, na.rm = TRUE) +
+  theme_classic()
+ggsave("fem-TN-FPKM.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+femMethExpCV %>%
+  ggplot(.) + geom_boxplot(aes(x = treatment, y = log10(CoV_FPKM), colour = treatment)) +    
+  labs(x = "Treatment", y = "Transcriptional Noise") +
+  theme_classic()
+
+femMethExpCV %>%
+  ggplot(.) + geom_boxplot(aes(x = as.factor(change), y = log10(CoV_FPKM), colour = as.factor(change))) +    
+  labs(x = "Predominant Isoform Shift", y = "Transcriptional Noise") +
+  theme_classic()
 ```
 
 ## Males
@@ -935,7 +950,23 @@ summary(transNoiseMale) #Significant effect of all parameters. Will remove lengt
 ```{r}
 maleMethExpCV %>%
   ggplot(.) + geom_point(aes(x = log2(exp + 1), y = log10(CoV_FPKM), colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c("dodgerblue2", "firebrick2")) +
   labs(x = "FPKM", y = "Transcriptional Noise") +
-  geom_smooth(aes(x = log2(exp + 1), y = log10(CoV_FPKM)), method = lm, colour = "grey20", size = 2, na.rm = TRUE) +
-  theme_minimal()
+  geom_smooth(data = (. %>% filter(treatment == "control")), aes(x = log2(exp + 1), y = log10(CoV_FPKM)), method = lm, colour = "dodgerblue4", size = 2, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), aes(x = log2(exp + 1), y = log10(CoV_FPKM)), method = lm, colour = "firebrick4", size = 2, na.rm = TRUE) +
+  theme_classic()
+ggsave("fem-TN-FPKM.pdf", height = 8.5, width = 11)
 ```
+
+```{r}
+maleMethExpCV %>%
+  ggplot(.) + geom_boxplot(aes(x = treatment, y = log10(CoV_FPKM), colour = treatment)) +    
+  labs(x = "Treatment", y = "Transcriptional Noise") +
+  theme_classic()
+
+maleMethExpCV %>%
+  ggplot(.) + geom_boxplot(aes(x = as.factor(change), y = log10(CoV_FPKM), colour = as.factor(change))) +    
+  labs(x = "Predominant Isoform Shift", y = "Transcriptional Noise") +
+  theme_classic()
+```
+
