@@ -684,16 +684,32 @@ ggsave("fem-TN-FPKM.pdf", height = 8.5, width = 11)
 
 ```{r}
 femMethExpCV %>%
-  ggplot(.) + geom_boxplot(aes(x = treatment, y = log10(CoV_FPKM), colour = treatment)) +    
+  ggplot(.) + geom_violin(aes(x = treatment, y = log10(CoV_FPKM), fill = treatment)) +   
+  scale_fill_manual(values = c("dodgerblue2", "firebrick2")) +
+  geom_boxplot(aes(x = treatment, y = log10(CoV_FPKM)), width = 0.1, colour = "grey20", alpha = 0.2) +
   labs(x = "Treatment", y = "Transcriptional Noise") +
   theme_classic()
-
-femMethExpCV %>%
-  ggplot(.) + geom_boxplot(aes(x = as.factor(change), y = log10(CoV_FPKM), colour = as.factor(change))) +    
-  labs(x = "Predominant Isoform Shift", y = "Transcriptional Noise") +
-  theme_classic()
+ggsave("fem-TN-treatment.pdf", height = 8.5, width = 11)
 ```
 
+```{r}
+femMethExpCV %>%
+  ggplot(.) + geom_violin(aes(x = as.factor(change), y = log10(CoV_FPKM), fill = as.factor(change))) +  
+  scale_fill_manual(values = c("dodgerblue2", "firebrick2")) +
+  geom_boxplot(aes(x = as.factor(change), y = log10(CoV_FPKM)), width = 0.1, colour = "grey20", alpha = 0.2) +
+  labs(x = "Predominant Isoform Shift", y = "Transcriptional Noise") +
+  theme_classic()
+ggsave("fem-TN-predIso.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+femMethExpCV %>%
+  ggplot(.) + geom_violin(aes(x = as.factor(bins), y = log10(CoV_FPKM), fill = as.factor(bins)), width = 1) +  
+  geom_boxplot(aes(x = as.factor(bins), y = log10(CoV_FPKM)), width = 0.1, colour = "grey20", alpha = 0.2) +
+  labs(x = "Gene Methylation", y = "Transcriptional Noise") +
+  theme_classic()
+ggsave("fem-TN-geneMeth.pdf", height = 8.5, width = 11)
+```
 ## Males
 
 ### Format data
@@ -955,18 +971,35 @@ maleMethExpCV %>%
   geom_smooth(data = (. %>% filter(treatment == "control")), aes(x = log2(exp + 1), y = log10(CoV_FPKM)), method = lm, colour = "dodgerblue4", size = 2, na.rm = TRUE) +
   geom_smooth(data = (. %>% filter(treatment == "exposed")), aes(x = log2(exp + 1), y = log10(CoV_FPKM)), method = lm, colour = "firebrick4", size = 2, na.rm = TRUE) +
   theme_classic()
-ggsave("fem-TN-FPKM.pdf", height = 8.5, width = 11)
+ggsave("male-TN-FPKM.pdf", height = 8.5, width = 11)
 ```
 
 ```{r}
 maleMethExpCV %>%
-  ggplot(.) + geom_boxplot(aes(x = treatment, y = log10(CoV_FPKM), colour = treatment)) +    
+  ggplot(.) + geom_violin(aes(x = treatment, y = log10(CoV_FPKM), fill = treatment)) +   
+  scale_fill_manual(values = c("dodgerblue2", "firebrick2")) +
+  geom_boxplot(aes(x = treatment, y = log10(CoV_FPKM)), width = 0.1, colour = "grey20", alpha = 0.2) +
   labs(x = "Treatment", y = "Transcriptional Noise") +
   theme_classic()
+ggsave("male-TN-treatment.pdf", height = 8.5, width = 11)
+```
 
+```{r}
 maleMethExpCV %>%
-  ggplot(.) + geom_boxplot(aes(x = as.factor(change), y = log10(CoV_FPKM), colour = as.factor(change))) +    
+  ggplot(.) + geom_violin(aes(x = as.factor(change), y = log10(CoV_FPKM), fill = as.factor(change))) +  
+  scale_fill_manual(values = c("dodgerblue2", "firebrick2")) +
+  geom_boxplot(aes(x = as.factor(change), y = log10(CoV_FPKM)), width = 0.1, colour = "grey20", alpha = 0.2) +
   labs(x = "Predominant Isoform Shift", y = "Transcriptional Noise") +
   theme_classic()
+ggsave("male-TN-predIso.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+maleMethExpCV %>%
+  ggplot(.) + geom_violin(aes(x = as.factor(bins), y = log10(CoV_FPKM), fill = as.factor(bins)), width = 1) +  
+  geom_boxplot(aes(x = as.factor(bins), y = log10(CoV_FPKM)), width = 0.1, colour = "grey20", alpha = 0.2) +
+  labs(x = "Gene Methylation", y = "Transcriptional Noise") +
+  theme_classic()
+ggsave("male-TN-geneMeth.pdf", height = 8.5, width = 11)
 ```
 
