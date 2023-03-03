@@ -6,39 +6,39 @@
 
 - [`adult-meta.csv`](https://github.com/sr320/ceabigr/blob/main/data/adult-meta.csv): Originally from the [2018_L18-adult-methylation repo](https://github.com/epigeneticstoocean/2018_L18-adult-methylation) (might be private) organized by Alan Downey-Wall and Katie Lotterhos.
 
-Metadata for individual [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) samples with the following columns:
+  Metadata for individual [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) samples with the following columns:
 
-  - `Sample.ID`: Unique sample ID for each individual designated in the following fashion:
+    - `Sample.ID`: Unique sample ID for each individual designated in the following fashion:
 
-    - `<integer>[FM]`:
-    
-      - `[FM]` indicates either `F`emale or `M`ale.
+      - `<integer>[FM]`:
+      
+        - `[FM]` indicates either `F`emale or `M`ale.
 
-  - `OldSample.ID`: Unique old sample ID, which preceded `Sample.ID`. Same as `Sample.ID`, but each ID is preceded by `S`.
+    - `OldSample.ID`: Unique old sample ID, which preceded `Sample.ID`. Same as `Sample.ID`, but each ID is preceded by `S`.
 
-  - `Treatment`: OA treatment. Either `Control` or `Exposed`.
+    - `Treatment`: OA treatment. Either `Control` or `Exposed`.
 
-  - `Sex`: `F`emale or `M`ale.
+    - `Sex`: `F`emale or `M`ale.
 
-  - `TreatmenN`: Numberical representation to identify combinations of `Sex` and `Treatment`:
+    - `TreatmenN`: Numberical representation to identify combinations of `Sex` and `Treatment`:
 
-    - `1`: Control, Male
+      - `1`: Control, Male
 
-    - `2`: Control, Female
+      - `2`: Control, Female
 
-    - `3`: Exposed, Male
+      - `3`: Exposed, Male
 
-    - `4`: Exposed, Female.
+      - `4`: Exposed, Female.
 
-  - `Parent.ID`: Unique ID of individual parents with the following designations:
+    - `Parent.ID`: Unique ID of individual parents with the following designations:
 
-    - `[CE][FM]<integer>`:
+      - `[CE][FM]<integer>`:
 
-      - `[CE]` indicates either `C`ontrol or `E`xposed.
+        - `[CE]` indicates either `C`ontrol or `E`xposed.
 
-      - `[FM]` indicates either `F`emale or `M`ale.
+        - `[FM]` indicates either `F`emale or `M`ale.
 
-      - `<integer>` indicates a two digit integer.
+        - `<integer>` indicates a two digit integer.
 
 - [`GCF_002022765.2_C_virginica-3.0_lncRNA.bed`](https://github.com/sr320/ceabigr/blob/632a54509603edd1157d43fae5e4e67212c7f034/data/GCF_002022765.2_C_virginica-3.0_lncRNA.bed): BED file with long, non-coding RNA (lncRNA) coordinates in the NCBI _C.virginica_ genome. Jupyter notebook (nbviewer):
 
