@@ -861,10 +861,11 @@ ggsave("transcriptional-noise/figures/fem-TN-CVmeth-GOslim.pdf", height = 8.5, w
 
 ```{r}
 femMethExpCV %>%
+  mutate(., treatment = case_when(treatment == "control" ~ "Control",
+                                  treatment == "exposed" ~ "Exposed")) %>%
   ggplot(aes(x = treatment, y = log10(CoV_FPKM))) + geom_violin(aes(fill = treatment)) +   
   scale_fill_manual(values = c(plotColors[5], plotColors[8]),
-                    name = "Treatment",
-                    labels = c("Control", "Exposed")) +
+                    guide = FALSE) +
   scale_alpha_continuous(guide = FALSE) +
   geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
   labs(x = "Treatment", y = "Transcriptional Noise") +
@@ -882,10 +883,11 @@ femMethExpCV %>%
   filter(., process == "P") %>%
   select(., -process) %>%
   distinct(.) %>%
+  mutate(., treatment = case_when(treatment == "control" ~ "Control",
+                                  treatment == "exposed" ~ "Exposed")) %>%
   ggplot(aes(x = treatment, y = log10(CoV_FPKM))) + geom_violin(aes(fill = treatment)) +   
   scale_fill_manual(values = c(plotColors[5], plotColors[8]),
-                    name = "Treatment",
-                    labels = c("Control", "Exposed")) +
+                    guide = FALSE) +
   scale_alpha_continuous(guide = FALSE) +
   geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
   labs(x = "Treatment", y = "Transcriptional Noise") +
@@ -900,8 +902,7 @@ ggsave("transcriptional-noise/figures/fem-TN-treatment-GOslim.pdf", height = 8.5
 femMethExpCV %>%
   ggplot(aes(x = as.factor(change), y = log10(CoV_FPKM))) + geom_violin(aes(fill = as.factor(change))) +  
   scale_fill_manual(values = c(plotColors[5], plotColors[8]),
-                    name = "Treatment",
-                    labels = c("Control", "Exposed")) +
+                    guide = FALSE) +
   scale_alpha_continuous(guide = FALSE) +
   geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
   labs(x = "Predominant Isoform Shift", y = "Transcriptional Noise") +
@@ -921,8 +922,7 @@ femMethExpCV %>%
   distinct(.) %>%
   ggplot(aes(x = as.factor(change), y = log10(CoV_FPKM))) + geom_violin(aes(fill = as.factor(change))) +  
   scale_fill_manual(values = c(plotColors[5], plotColors[8]),
-                    name = "Treatment",
-                    labels = c("Control", "Exposed")) +
+                    guide = FALSE) +
   scale_alpha_continuous(guide = FALSE) +
   geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
   labs(x = "Predominant Isoform Shift", y = "Transcriptional Noise") +
@@ -931,6 +931,67 @@ femMethExpCV %>%
   theme_classic() + theme(legend.position = "none",
                           strip.background = element_rect(linewidth = 0))
 ggsave("transcriptional-noise/figures/fem-TN-predIso-GOslim.pdf", height = 8.5, width = 11)
+```
+
+##### Create multipanel plot
+
+```{r}
+#Save individual plots
+
+#A. Treatment
+
+femTreatmentPlot <- femMethExpCV %>%
+  mutate(., treatment = case_when(treatment == "control" ~ "Control",
+                                  treatment == "exposed" ~ "Exposed")) %>%
+  ggplot(aes(x = treatment, y = log10(CoV_FPKM))) + geom_violin(aes(fill = treatment)) +   
+  scale_fill_manual(values = c(plotColors[5], plotColors[8]),
+                    guide = FALSE) +
+  scale_alpha_continuous(guide = FALSE) +
+  geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
+  labs(x = "Treatment", y = "Transcriptional Noise", title = "A") +
+  stat_summary(aes(group = 1), fun = median, geom = "line", col = "black", lty = 2) +
+  theme_classic(base_size = 15)
+
+#B. FPKM
+
+femFPKMPlot <- femMethExpCV %>%
+  ggplot(aes(x = log2(avg_exp + 1), y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c(plotColors[5], plotColors[8]),
+                      guide = FALSE) +
+  scale_alpha_continuous(guide = FALSE) +
+  labs(x = "FPKM", y = "", title = "B") +
+  geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], size = 2, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], size = 2, na.rm = TRUE) +
+  theme_classic(base_size = 15)
+
+#C. Methylation
+
+femMethPlot <- femMethExpCV %>%
+  ggplot(aes(x = avg_meth, y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c(plotColors[5], plotColors[8]),
+                      guide = FALSE) +
+  scale_alpha_continuous(guide = FALSE) +
+  labs(x = "Methylation (%)", y = "Transcriptional Noise", title = "C") +
+  geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], size = 2, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], size = 2, na.rm = TRUE) +
+  theme_classic(base_size = 15)
+
+#D. CV Methylation
+
+femCVMethPlot <- femMethExpCV %>%
+  ggplot(aes(x = log10(CoV_Meth), y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c(plotColors[5], plotColors[8]),
+                      guide = FALSE) +
+  scale_alpha_continuous(guide = FALSE) +
+  labs(x = "CV Methylation", y = "", title = "D") +
+  geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], size = 2, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], size = 2, na.rm = TRUE) +
+  theme_classic(base_size = 15)
+```
+
+```{r}
+(femTreatmentPlot | femFPKMPlot) / (femMethPlot | femCVMethPlot) #Create patchwork plot
+ggsave("transcriptional-noise/figures/fem-TN-multipanel.pdf", height = 8.5, width = 11)
 ```
 
 ## Males
@@ -1368,10 +1429,11 @@ ggsave("transcriptional-noise/figures/male-TN-CVmeth-GOslim.pdf", height = 8.5, 
 
 ```{r}
 maleMethExpCV %>%
+  mutate(., treatment = case_when(treatment == "control" ~ "Control",
+                                  treatment == "exposed" ~ "Exposed")) %>%
   ggplot(aes(x = treatment, y = log10(CoV_FPKM))) + geom_violin(aes(fill = treatment)) +   
   scale_fill_manual(values = c(plotColors[5], plotColors[8]),
-                      name = "Treatment",
-                      labels = c("Control", "Exposed")) +
+                    guide = FALSE) +
   scale_alpha_continuous(guide = FALSE) +
   geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
   labs(x = "Treatment", y = "Transcriptional Noise") +
@@ -1389,10 +1451,11 @@ maleMethExpCV %>%
   filter(., process == "P") %>%
   select(., -process) %>%
   distinct(.) %>%
+  mutate(., treatment = case_when(treatment == "control" ~ "Control",
+                                  treatment == "exposed" ~ "Exposed")) %>%
   ggplot(aes(x = treatment, y = log10(CoV_FPKM))) + geom_violin(aes(fill = treatment)) +   
   scale_fill_manual(values = c(plotColors[5], plotColors[8]),
-                      name = "Treatment",
-                      labels = c("Control", "Exposed")) +
+                    guide = FALSE) +
   scale_alpha_continuous(guide = FALSE) +
   geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
   labs(x = "Treatment", y = "Transcriptional Noise") +
@@ -1407,8 +1470,7 @@ ggsave("transcriptional-noise/figures/male-TN-treatment-GOslim.pdf", height = 8.
 maleMethExpCV %>%
   ggplot(aes(x = as.factor(change), y = log10(CoV_FPKM))) + geom_violin(aes(fill = as.factor(change))) +  
   scale_fill_manual(values = c(plotColors[5], plotColors[8]),
-                      name = "Treatment",
-                      labels = c("Control", "Exposed")) +
+                    guide = FALSE) +
   scale_alpha_continuous(guide = FALSE) +
   geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
   labs(x = "Predominant Isoform Shift", y = "Transcriptional Noise") +
@@ -1428,8 +1490,7 @@ maleMethExpCV %>%
   distinct(.) %>%
   ggplot(aes(x = as.factor(change), y = log10(CoV_FPKM))) + geom_violin(aes(fill = as.factor(change))) +  
   scale_fill_manual(values = c(plotColors[5], plotColors[8]),
-                      name = "Treatment",
-                      labels = c("Control", "Exposed")) +
+                    guide = FALSE) +
   scale_alpha_continuous(guide = FALSE) +
   geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
   labs(x = "Predominant Isoform Shift", y = "Transcriptional Noise") +
@@ -1439,4 +1500,62 @@ maleMethExpCV %>%
                           strip.background = element_rect(linewidth = 0))
 ggsave("transcriptional-noise/figures/male-TN-predIso-GOslim.pdf", height = 8.5, width = 11)
 ```
+
+```{r}
+#Save individual plots
+
+#A. Treatment
+
+maleTreatmentPlot <- maleMethExpCV %>%
+  mutate(., treatment = case_when(treatment == "control" ~ "Control",
+                                  treatment == "exposed" ~ "Exposed")) %>%
+  ggplot(aes(x = treatment, y = log10(CoV_FPKM))) + geom_violin(aes(fill = treatment)) +   
+  scale_fill_manual(values = c(plotColors[5], plotColors[8]),
+                    guide = FALSE) +
+  scale_alpha_continuous(guide = FALSE) +
+  geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
+  labs(x = "Treatment", y = "Transcriptional Noise", title = "A") +
+  stat_summary(aes(group = 1), fun = median, geom = "line", col = "black", lty = 2) +
+  theme_classic(base_size = 15)
+
+#B. FPKM
+
+maleFPKMPlot <- maleMethExpCV %>%
+  ggplot(aes(x = log2(avg_exp + 1), y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c(plotColors[5], plotColors[8]),
+                      guide = FALSE) +
+  scale_alpha_continuous(guide = FALSE) +
+  labs(x = "FPKM", y = "", title = "B") +
+  geom_smooth(method = lm, colour = "grey20", size = 2, na.rm = TRUE) +
+  theme_classic(base_size = 15)
+
+#C. Methylation
+
+maleMethPlot <- maleMethExpCV %>%
+  ggplot(aes(x = avg_meth, y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c(plotColors[5], plotColors[8]),
+                      guide = FALSE) +
+  scale_alpha_continuous(guide = FALSE) +
+  labs(x = "Methylation (%)", y = "Transcriptional Noise", title = "C") +
+  geom_smooth(method = lm, colour = "grey20", size = 2, na.rm = TRUE) +
+  theme_classic(base_size = 15)
+
+#D. CV Methylation
+
+maleCVMethPlot <- maleMethExpCV %>%
+  ggplot(aes(x = log10(CoV_Meth), y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c(plotColors[5], plotColors[8]),
+                      guide = FALSE) +
+  scale_alpha_continuous(guide = FALSE) +
+  labs(x = "CV Methylation", y = "", title = "D") +
+  geom_smooth(method = lm, colour = "grey20", size = 2, na.rm = TRUE) +
+  theme_classic(base_size = 15)
+```
+
+```{r}
+(maleTreatmentPlot | maleFPKMPlot) / (maleMethPlot | maleCVMethPlot) #Create patchwork plot
+ggsave("transcriptional-noise/figures/male-TN-multipanel.pdf", height = 8.5, width = 11)
+```
+
+
 
