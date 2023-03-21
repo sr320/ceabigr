@@ -658,7 +658,7 @@ ggsave("fem-pred-isoform-meth-CV-xy.pdf", height = 8.5, width = 11)
 
 ```{r}
 femMethExpCV %>%
-  ggplot(.) + geom_point(aes(x = avg_meth, y = CoV_FPKM), colour = "#006D2C") +    
+  ggplot(.) + geom_point(aes(x = avg_meth, y = CoV_FPKM), colour = plotColors[8]) +    
   labs(x = "Methylation (%)", y = "CV FPKM") +
   scale_y_continuous(limits = c(0,3)) +
   geom_smooth(aes(x = avg_meth, y = CoV_FPKM), method = lm, colour = "grey20", size = 2, na.rm = TRUE) +
@@ -669,7 +669,7 @@ ggsave("fem-meth-CV-xy.pdf", height = 8.5, width = 11)
 ```{r}
 femMethExpCV %>%
   filter(., change == 1) %>%
-  ggplot(.) + geom_point(aes(x = avg_meth, y = CoV_Meth), colour = "#006D2C") +    
+  ggplot(.) + geom_point(aes(x = avg_meth, y = CoV_Meth), colour = plotColors[8]) +    
   labs(x = "Methylation (%)", y = "CV Methylation") +
   scale_y_continuous(limits = c(0,3)) +
   geom_smooth(aes(x = avg_meth, y = CoV_Meth), method = lm, colour = "grey20", size = 2, na.rm = TRUE) +
@@ -679,7 +679,7 @@ ggsave("fem-pred-isoform-meth-CVMeth-xy.pdf", height = 8.5, width = 11)
 
 ```{r}
 femMethExpCV %>%
-  ggplot(.) + geom_point(aes(x = avg_meth, y = CoV_Meth), colour = "#006D2C") +    
+  ggplot(.) + geom_point(aes(x = avg_meth, y = CoV_Meth), colour = plotColors[8]) +    
   labs(x = "Methylation (%)", y = "CV Methylation") +
   scale_y_continuous(limits = c(0,3)) +
   geom_smooth(aes(x = avg_meth, y = CoV_Meth), method = lm, colour = "grey20", size = 2, na.rm = TRUE) +
@@ -704,6 +704,31 @@ hist(residuals(transNoiseFem)) #Residuals normally distributed
 
 plot(fitted(transNoiseFem), residuals(transNoiseFem)) #Variance of residuals roughly consistent for all observations. Borderline heteroscedasticity but probably okay...?
 abline(h = 0, lty = 2, col = "grey")
+```
+
+##### Calculate partial R2
+
+Partial R<sup>2</sup>, or the coefficient of partial determination, can tell us how much of the variation in the response variable is explained by the explanatory variable. This can tell us how "important" one variable is in the model.
+
+```{r}
+anova(transNoiseFem)
+```
+
+```{r}
+transNoiseFemVP <- data.frame("variable" = rownames(anova(transNoiseFem)),
+                              "SumSq" = anova(transNoiseFem)[[2]],
+                              "partialR2" = NA) #Create dataframe with variable names and sum of squares information from ANOVA output
+
+for (i in 1:nrow(transNoiseFemVP)) {
+  transNoiseFemVP$partialR2[i] <- transNoiseFemVP$SumSq[i] / sum(transNoiseFemVP$SumSq)
+} #Calculate partial r2 by dividing sum of squares for each variable by total sum of squares (including residuals)
+
+sum(transNoiseFemVP$partialR2)
+transNoiseFemVP #Confirm dataframe creation
+```
+
+```{r}
+write.csv(transNoiseFemVP, "transcriptional-noise/fem-model-partialR.csv", quote = FALSE, row.names = FALSE)
 ```
 
 #### Plot model findings
@@ -1195,7 +1220,7 @@ maleMethExpCV <- inner_join(maleMethExp, cov_data_male, by = c("gene_name", "tre
   inner_join(., methCovDataMale, by = c("gene_name", "treatment")) %>%
   select(., -c(t_name, sex)) %>%
   distinct(.) #Join CV information for expression and methylation with gene-level expression and methylation data for each sample.
-nrow(maleMethExpCV %>% select(gene_name) %>% distinct(.)) #9854 unique genes
+nrow(maleMethExpCV %>% select(gene_name) %>% distinct(.)) #9944 unique genes
 head(maleMethExpCV)
 ```
 
@@ -1272,6 +1297,31 @@ hist(residuals(transNoiseMale2)) #Residuals normally distributed
 
 plot(fitted(transNoiseMale2), residuals(transNoiseMale2)) #Variance of residuals roughly consistent for all observations
 abline(h = 0, lty = 2, col = "grey")
+```
+
+##### Calculate partial R2
+
+Partial R<sup>2</sup>, or the coefficient of partial determination, can tell us how much of the variation in the response variable is explained by the explanatory variable. This can tell us how "important" one variable is in the model.
+
+```{r}
+anova(transNoiseMale2)
+```
+
+```{r}
+transNoiseMale2VP <- data.frame("variable" = rownames(anova(transNoiseMale2)),
+                              "SumSq" = anova(transNoiseMale2)[[2]],
+                              "partialR2" = NA) #Create dataframe with variable names and sum of squares information from ANOVA output
+
+for (i in 1:nrow(transNoiseMale2VP)) {
+  transNoiseMale2VP$partialR2[i] <- transNoiseMale2VP$SumSq[i] / sum(transNoiseMale2VP$SumSq)
+} #Calculate partial r2 by dividing sum of squares for each variable by total sum of squares (including residuals)
+
+sum(transNoiseMale2VP$partialR2)
+transNoiseMale2VP #Confirm dataframe creation
+```
+
+```{r}
+write.csv(transNoiseMale2VP, "transcriptional-noise/male-model-partialR.csv", quote = FALSE, row.names = FALSE)
 ```
 
 #### Plot model findings
@@ -1500,6 +1550,8 @@ maleMethExpCV %>%
                           strip.background = element_rect(linewidth = 0))
 ggsave("transcriptional-noise/figures/male-TN-predIso-GOslim.pdf", height = 8.5, width = 11)
 ```
+
+##### Create multipanel plot
 
 ```{r}
 #Save individual plots
