@@ -483,7 +483,7 @@ head(geneExpressionFem)
 femMethExp <- inner_join(geneMethylationFem, geneExpressionFem, by = c("gene_name", "treatment")) %>%
   inner_join(., predIsoFemFilt, by = "gene_name") %>%
   select(., 1:6) %>%
-  mutate(bins = case_when(avg_meth < 10 ~ "0",
+  mutate(meth_bins = case_when(avg_meth < 10 ~ "0",
                           avg_meth >= 10 & avg_meth < 20 ~ "10",
                           avg_meth >= 20 & avg_meth < 30 ~ "20",
                           avg_meth >= 30 & avg_meth < 40 ~ "30",
@@ -493,7 +493,18 @@ femMethExp <- inner_join(geneMethylationFem, geneExpressionFem, by = c("gene_nam
                           avg_meth >= 70 & avg_meth < 80 ~ "70",
                           avg_meth >= 80 & avg_meth < 90 ~ "80",
                           avg_meth >= 90 & avg_meth < 100 ~ "90",
-                          avg_meth >= 100 ~ "100"))
+                          avg_meth >= 100 ~ "100")) %>%
+  mutate(exp_bins = case_when(avg_exp < 10 ~ "0",
+                          avg_exp >= 10 & avg_exp < 20 ~ "10",
+                          avg_exp >= 20 & avg_exp < 30 ~ "20",
+                          avg_exp >= 30 & avg_exp < 40 ~ "30",
+                          avg_exp >= 40 & avg_exp < 50 ~ "40",
+                          avg_exp >= 50 & avg_exp < 60 ~ "50",
+                          avg_exp >= 60 & avg_exp < 70 ~ "60",
+                          avg_exp >= 70 & avg_exp < 80 ~ "70",
+                          avg_exp >= 80 & avg_exp < 90 ~ "80",
+                          avg_exp >= 90 & avg_exp < 100 ~ "90",
+                          avg_exp >= 100 ~ "100"))
 head(femMethExp)
 ```
 
@@ -617,8 +628,10 @@ head(methCovDataFem)
 
 ```{r}
 femMethExpCV <- inner_join(femMethExp, cov_data_fem, by = c("gene_name", "treatment")) %>%
-  inner_join(., methCovDataFem, by = c("gene_name", "treatment")) #Join CV information for expression and methylation with gene-level expression and methylation data for each sample
-nrow(femMethExpCV)
+  inner_join(., methCovDataFem, by = c("gene_name", "treatment")) %>%
+  select(., -c(t_name, sex)) %>%
+  distinct(.) #Join CV information for expression and methylation with gene-level expression and methylation data for each sample.
+nrow(femMethExpCV %>% select(gene_name) %>% distinct(.)) #9854 unique genes
 head(femMethExpCV)
 ```
 
@@ -679,57 +692,211 @@ summary(transNoiseFem) #Significant effect of all parameters.
 ```
 
 ```{r}
-femMethExpCV %>%
-  ggplot(.) + geom_point(aes(x = log2(avg_exp + 1), y = log10(CoV_FPKM), colour = treatment, alpha = 0.5)) +    
-  scale_colour_manual(values = c("dodgerblue2", "firebrick2")) +
-  labs(x = "FPKM", y = "Transcriptional Noise") +
-  geom_smooth(data = (. %>% filter(treatment == "control")), aes(x = log2(avg_exp + 1), y = log10(CoV_FPKM)), method = lm, colour = "dodgerblue4", size = 2, na.rm = TRUE) +
-  geom_smooth(data = (. %>% filter(treatment == "exposed")), aes(x = log2(avg_exp + 1), y = log10(CoV_FPKM)), method = lm, colour = "firebrick4", size = 2, na.rm = TRUE) +
-  theme_classic()
-ggsave("fem-TN-FPKM.pdf", height = 8.5, width = 11)
+hist(residuals(transNoiseFem)) #Residuals normally distributed
+
+plot(fitted(transNoiseFem), residuals(transNoiseFem)) #Variance of residuals roughly consistent for all observations. Borderline heteroscedasticity but probably okay...?
+abline(h = 0, lty = 2, col = "grey")
+```
+
+#### Plot model findings
+
+```{bash}
+mkdir transcriptional-noise
+mkdir transcriptional-noise/figures
 ```
 
 ```{r}
 femMethExpCV %>%
-  ggplot(.) + geom_point(aes(x = avg_meth, y = log10(CoV_FPKM), colour = treatment, alpha = 0.5)) +    
-  scale_colour_manual(values = c("dodgerblue2", "firebrick2")) +
+  mutate(., exp_bins = factor(exp_bins, c("0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"))) %>%
+  ggplot(aes(x = exp_bins, y = log10(CoV_FPKM))) + geom_violin(fill = "grey80", width = 1) +  
+  geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
   labs(x = "FPKM", y = "Transcriptional Noise") +
-  geom_smooth(data = (. %>% filter(treatment == "control")), aes(x = avg_meth, y = log10(CoV_FPKM)), method = lm, colour = "dodgerblue4", size = 2, na.rm = TRUE) +
-  geom_smooth(data = (. %>% filter(treatment == "exposed")), aes(x = avg_meth, y = log10(CoV_FPKM)), method = lm, colour = "firebrick4", size = 2, na.rm = TRUE) +
-  theme_classic()
-ggsave("fem-TN-meth.pdf", height = 8.5, width = 11)
+  stat_summary(aes(group = 1), fun = median, geom = "line", col = "black", lty = 2) +
+  facet_grid(. ~ treatment, labeller = labeller(treatment = c(control = "Control", exposed = "Exposed"))) +
+  theme_classic() + theme(legend.position = "none",
+                          strip.text.x = element_text(size = 10, face = "bold"),
+                          strip.background = element_rect(linewidth = 0))
+ggsave("transcriptional-noise/figures/fem-TN-geneExp.pdf", height = 8.5, width = 11)
 ```
-
-
 
 ```{r}
 femMethExpCV %>%
-  ggplot(.) + geom_violin(aes(x = treatment, y = log10(CoV_FPKM), fill = treatment)) +   
+  ggplot(aes(x = log2(avg_exp + 1), y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c("dodgerblue2", "firebrick2")) +
+  labs(x = "FPKM", y = "Transcriptional Noise") +
+  geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = "dodgerblue4", size = 2, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = "firebrick4", size = 2, na.rm = TRUE) +
+  theme_classic()
+ggsave("transcriptional-noise/figures/fem-TN-FPKM.pdf", height = 8.5, width = 11)
+```
+
+There is lower transcriptional noise noise with higher gene expression expression, with exposed female oysters showing lower transcriptional noise. Two potential explanations: 1) under low pH stress, there is a directed stress response such that multiple isoforms are not necessary or 2) the pattern is driven by gene function (housekeeping vs. environmental response gene).
+
+I'll make the same plot, but facet by GO Slim term to see if functional differences are driving the relationship between gene expression and transcriptional noise.
+
+```{r}
+femMethExpCV %>%
+  left_join(., mRNATrack, by = "gene_name") %>%
+  left_join(., GOterms, by = "transcript") %>%
+  left_join(., GOslim, by = "GO") %>%
+  select(., -c(transcript, gene, product, GO, GOterm)) %>%
+  filter(., process == "P") %>%
+  select(., -process) %>%
+  distinct(.) %>%
+  ggplot(aes(x = log2(avg_exp + 1), y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c("dodgerblue2", "firebrick2")) +
+  labs(x = "FPKM", y = "Transcriptional Noise") +
+  geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = "dodgerblue4", size = 1.5, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = "firebrick4", size = 1.5, na.rm = TRUE) +
+  facet_wrap(. ~ GOslim, ncol = 3) +
+  theme_classic() + theme(legend.position = "none",
+                          strip.background = element_rect(linewidth = 0))
+ggsave("transcriptional-noise/figures/fem-TN-FPKM-GOslim.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+femMethExpCV %>%
+  mutate(., meth_bins = factor(meth_bins, c("0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"))) %>%
+  ggplot(aes(x = meth_bins, y = log10(CoV_FPKM))) + geom_violin(fill = "grey80", width = 1) +  
+  geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
+  labs(x = "Methylation (%)", y = "Transcriptional Noise") +
+  stat_summary(aes(group = 1), fun = median, geom = "line", col = "black", lty = 2) +
+  facet_grid(. ~ treatment, labeller = labeller(treatment = c(control = "Control", exposed = "Exposed"))) +
+  theme_classic() + theme(legend.position = "none",
+                          strip.text.x = element_text(size = 10, face = "bold"),
+                          strip.background = element_rect(linewidth = 0))
+ggsave("transcriptional-noise/figures/fem-TN-geneMeth.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+femMethExpCV %>%
+  ggplot(aes(x = avg_meth, y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c("dodgerblue2", "firebrick2")) +
+  labs(x = "Methylation (%)", y = "Transcriptional Noise") +
+  geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = "dodgerblue4", size = 2, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = "firebrick4", size = 2, na.rm = TRUE) +
+  theme_classic()
+ggsave("transcriptional-noise/figures/fem-TN-meth.pdf", height = 8.5, width = 11)
+```
+
+Increased methylation decreases transcriptional noise, with exposed female oysters still having lower overall transcriptional noise. This fits in with the idea that methylation reduces spurious transcription or alternative splicing.
+
+I'll facet by GOSlim term for the rest of the plots too.
+
+```{r}
+femMethExpCV %>%
+  left_join(., mRNATrack, by = "gene_name") %>%
+  left_join(., GOterms, by = "transcript") %>%
+  left_join(., GOslim, by = "GO") %>%
+  select(., -c(transcript, gene, product, GO, GOterm)) %>%
+  filter(., process == "P") %>%
+  select(., -process) %>%
+  distinct(.) %>%
+  ggplot(aes(x = avg_meth, y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c("dodgerblue2", "firebrick2")) +
+  labs(x = "Methylation (%)", y = "Transcriptional Noise") +
+  geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = "dodgerblue4", size = 2, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = "firebrick4", size = 2, na.rm = TRUE) +
+  facet_wrap(. ~ GOslim, ncol = 3) +
+  theme_classic() + theme(legend.position = "none",
+                          strip.background = element_rect(linewidth = 0))
+ggsave("transcriptional-noise/figures/fem-TN-meth-GOslim.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+femMethExpCV %>%
+  ggplot(aes(x = log10(CoV_Meth), y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c("dodgerblue2", "firebrick2")) +
+  labs(x = "CV Methylation", y = "Transcriptional Noise") +
+  geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = "dodgerblue4", size = 2, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = "firebrick4", size = 2, na.rm = TRUE) +
+  theme_classic()
+ggsave("transcriptional-noise/figures/fem-TN-CVmeth.pdf", height = 8.5, width = 11)
+```
+
+Variation in methylation increases transcriptional noise.
+
+```{r}
+femMethExpCV %>%
+  left_join(., mRNATrack, by = "gene_name") %>%
+  left_join(., GOterms, by = "transcript") %>%
+  left_join(., GOslim, by = "GO") %>%
+  select(., -c(transcript, gene, product, GO, GOterm)) %>%
+  filter(., process == "P") %>%
+  select(., -process) %>%
+  distinct(.) %>%
+  ggplot(aes(x = log10(CoV_Meth), y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c("dodgerblue2", "firebrick2")) +
+  labs(x = "CV Methylation", y = "Transcriptional Noise") +
+  geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = "dodgerblue4", size = 2, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = "firebrick4", size = 2, na.rm = TRUE) +
+  facet_wrap(. ~ GOslim, ncol = 3) +
+  theme_classic() + theme(legend.position = "none",
+                          strip.background = element_rect(linewidth = 0))
+ggsave("transcriptional-noise/figures/fem-TN-CVmeth-GOslim.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+femMethExpCV %>%
+  ggplot(aes(x = treatment, y = log10(CoV_FPKM))) + geom_violin(aes(fill = treatment)) +   
   scale_fill_manual(values = c("dodgerblue2", "firebrick2")) +
-  geom_boxplot(aes(x = treatment, y = log10(CoV_FPKM)), width = 0.1, colour = "grey20", alpha = 0.2) +
+  geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
   labs(x = "Treatment", y = "Transcriptional Noise") +
+  stat_summary(aes(group = 1), fun = median, geom = "line", col = "black", lty = 2) +
   theme_classic()
-ggsave("fem-TN-treatment.pdf", height = 8.5, width = 11)
+ggsave("transcriptional-noise/figures/fem-TN-treatment.pdf", height = 8.5, width = 11)
 ```
-
 ```{r}
 femMethExpCV %>%
-  ggplot(.) + geom_violin(aes(x = as.factor(change), y = log10(CoV_FPKM), fill = as.factor(change))) +  
+  left_join(., mRNATrack, by = "gene_name") %>%
+  left_join(., GOterms, by = "transcript") %>%
+  left_join(., GOslim, by = "GO") %>%
+  select(., -c(transcript, gene, product, GO, GOterm)) %>%
+  filter(., process == "P") %>%
+  select(., -process) %>%
+  distinct(.) %>%
+  ggplot(aes(x = treatment, y = log10(CoV_FPKM))) + geom_violin(aes(fill = treatment)) +   
   scale_fill_manual(values = c("dodgerblue2", "firebrick2")) +
-  geom_boxplot(aes(x = as.factor(change), y = log10(CoV_FPKM)), width = 0.1, colour = "grey20", alpha = 0.2) +
-  labs(x = "Predominant Isoform Shift", y = "Transcriptional Noise") +
-  theme_classic()
-ggsave("fem-TN-predIso.pdf", height = 8.5, width = 11)
+  geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
+  labs(x = "Treatment", y = "Transcriptional Noise") +
+  stat_summary(aes(group = 1), fun = median, geom = "line", col = "black", lty = 2) +
+  facet_wrap(. ~ GOslim, ncol = 3) +
+  theme_classic() + theme(legend.position = "none",
+                          strip.background = element_rect(linewidth = 0))
+ggsave("transcriptional-noise/figures/fem-TN-treatment-GOslim.pdf", height = 8.5, width = 11)
 ```
 
 ```{r}
 femMethExpCV %>%
-  ggplot(.) + geom_violin(aes(x = as.factor(bins), y = log10(CoV_FPKM), fill = as.factor(bins)), width = 1) +  
-  geom_boxplot(aes(x = as.factor(bins), y = log10(CoV_FPKM)), width = 0.1, colour = "grey20", alpha = 0.2) +
-  labs(x = "Gene Methylation", y = "Transcriptional Noise") +
+  ggplot(aes(x = as.factor(change), y = log10(CoV_FPKM))) + geom_violin(aes(fill = as.factor(change))) +  
+  scale_fill_manual(values = c("dodgerblue2", "firebrick2")) +
+  geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
+  labs(x = "Predominant Isoform Shift", y = "Transcriptional Noise") +
+  stat_summary(aes(group = 1), fun = median, geom = "line", col = "black", lty = 2) +
   theme_classic()
-ggsave("fem-TN-geneMeth.pdf", height = 8.5, width = 11)
+ggsave("transcriptional-noise/figures/fem-TN-predIso.pdf", height = 8.5, width = 11)
 ```
+
+```{r}
+femMethExpCV %>%
+  left_join(., mRNATrack, by = "gene_name") %>%
+  left_join(., GOterms, by = "transcript") %>%
+  left_join(., GOslim, by = "GO") %>%
+  select(., -c(transcript, gene, product, GO, GOterm)) %>%
+  filter(., process == "P") %>%
+  select(., -process) %>%
+  distinct(.) %>%
+  ggplot(aes(x = as.factor(change), y = log10(CoV_FPKM))) + geom_violin(aes(fill = as.factor(change))) +  
+  scale_fill_manual(values = c("dodgerblue2", "firebrick2")) +
+  geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
+  labs(x = "Predominant Isoform Shift", y = "Transcriptional Noise") +
+  stat_summary(aes(group = 1), fun = median, geom = "line", col = "black", lty = 2) +
+  facet_wrap(. ~ GOslim, ncol = 3) +
+  theme_classic() + theme(legend.position = "none",
+                          strip.background = element_rect(linewidth = 0))
+ggsave("transcriptional-noise/figures/fem-TN-predIso-GOslim.pdf", height = 8.5, width = 11)
+```
+
 ## Males
 
 ### Format data
@@ -968,21 +1135,36 @@ ggsave("male-meth-CVMeth-xy.pdf", height = 8.5, width = 11)
 
 #### Model data
 
-Model needed based on Wu et al. 2020:
-
-log10(transcriptional noise) ~ gene body methylation + log2(gene expression) + log10(gene length) + indication of predominant isoform shift + pH treatment
-
 ```{r}
 transNoiseMale <- lm(data = maleMethExpCV,
-                    log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + log2(avg_exp + 1) + log10(length) + as.factor(treatment) + as.factor(treatment)*avg_meth + as.factor(treatment)*log2(avg_exp + 1))
+                     log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + log2(avg_exp + 1) + log10(length) + as.factor(treatment) + as.factor(treatment)*avg_meth + as.factor(treatment)*log2(avg_exp + 1))
 summary(transNoiseMale) #Significant effect of all except length, treatment, and FPKM x treatment
 ```
 
 ```{r}
 transNoiseMale2 <- lm(data = maleMethExpCV,
-                    log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + log2(avg_exp + 1) + as.factor(treatment) + as.factor(treatment)*avg_meth)
+                      log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + log2(avg_exp + 1) + as.factor(treatment) + as.factor(treatment)*avg_meth)
 summary(transNoiseMale2) #Reran model without length and FPKM x treatment (kept treatment). All but treatment significant
 ```
+
+```{r}
+transNoiseMale3 <- lm(data = maleMethExpCV,
+                      log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + log2(avg_exp + 1))
+summary(transNoiseMale3) #Reran model without treatment or meth*treatment term
+```
+
+```{r}
+AIC(transNoiseMale, transNoiseMale2, transNoiseMale3) #Model with treatment and meth*treatment term has lowest AIC, will use that model as the final one
+```
+
+```{r}
+hist(residuals(transNoiseMale2)) #Residuals normally distributed
+
+plot(fitted(transNoiseMale2), residuals(transNoiseMale2)) #Variance of residuals roughly consistent for all observations
+abline(h = 0, lty = 2, col = "grey")
+```
+
+#### Plot model findings
 
 ```{r}
 maleMethExpCV %>%
@@ -993,19 +1175,19 @@ maleMethExpCV %>%
   geom_smooth(data = (. %>% filter(treatment == "exposed")), aes(x = log2(avg_exp + 1), y = log10(CoV_FPKM)), method = lm, colour = "firebrick4", size = 2, na.rm = TRUE) +
   geom_smooth(aes(x = log2(avg_exp + 1), y = log10(CoV_FPKM)), method = lm, colour = "black", size = 2, na.rm = TRUE) +
   theme_classic()
-ggsave("male-TN-FPKM.pdf", height = 8.5, width = 11)
+ggsave("transcriptional-noise/figures/male-TN-FPKM.pdf", height = 8.5, width = 11)
 ```
 
 ```{r}
 maleMethExpCV %>%
   ggplot(.) + geom_point(aes(x = avg_meth, y = log10(CoV_FPKM), colour = treatment, alpha = 0.5)) +    
   scale_colour_manual(values = c("dodgerblue2", "firebrick2")) +
-  labs(x = "FPKM", y = "Transcriptional Noise") +
+  labs(x = "Methylation (%)", y = "Transcriptional Noise") +
   geom_smooth(data = (. %>% filter(treatment == "control")), aes(x = avg_meth, y = log10(CoV_FPKM)), method = lm, colour = "dodgerblue4", size = 2, na.rm = TRUE) +
   geom_smooth(data = (. %>% filter(treatment == "exposed")), aes(x = avg_meth, y = log10(CoV_FPKM)), method = lm, colour = "firebrick4", size = 2, na.rm = TRUE) +
   geom_smooth(aes(x = avg_meth, y = log10(CoV_FPKM)), method = lm, colour = "black", size = 2, na.rm = TRUE) +
   theme_classic()
-ggsave("male-TN-meth.pdf", height = 8.5, width = 11)
+ggsave("transcriptional-noise/figures/male-TN-meth.pdf", height = 8.5, width = 11)
 ```
 
 ```{r}
@@ -1015,7 +1197,7 @@ maleMethExpCV %>%
   geom_boxplot(aes(x = treatment, y = log10(CoV_FPKM)), width = 0.1, colour = "grey20", alpha = 0.2) +
   labs(x = "Treatment", y = "Transcriptional Noise") +
   theme_classic()
-ggsave("male-TN-treatment.pdf", height = 8.5, width = 11)
+ggsave("transcriptional-noise/figures/male-TN-treatment.pdf", height = 8.5, width = 11)
 ```
 
 ```{r}
@@ -1025,14 +1207,17 @@ maleMethExpCV %>%
   geom_boxplot(aes(x = as.factor(change), y = log10(CoV_FPKM)), width = 0.1, colour = "grey20", alpha = 0.2) +
   labs(x = "Predominant Isoform Shift", y = "Transcriptional Noise") +
   theme_classic()
-ggsave("male-TN-predIso.pdf", height = 8.5, width = 11)
+ggsave("transcriptional-noise/figures/male-TN-predIso.pdf", height = 8.5, width = 11)
 ```
 
 ```{r}
 maleMethExpCV %>%
-  ggplot(.) + geom_violin(aes(x = as.factor(bins), y = log10(CoV_FPKM), fill = as.factor(bins)), width = 1) +  
+  ggplot(.) + geom_violin(aes(x = as.factor(bins), y = log10(CoV_FPKM)), fill = "grey80", width = 1) +  
   geom_boxplot(aes(x = as.factor(bins), y = log10(CoV_FPKM)), width = 0.1, colour = "grey20", alpha = 0.2) +
-  labs(x = "Gene Methylation", y = "Transcriptional Noise") +
-  theme_classic()
-ggsave("male-TN-geneMeth.pdf", height = 8.5, width = 11)
+  labs(x = "Methylation (%)", y = "Transcriptional Noise") +
+  stat_summary(aes(x = as.factor(bins), y = log10(CoV_FPKM), group = 1), fun = median, geom = "line", col = "black", lty = 2) +
+  theme_classic() + theme(legend.position = "none",
+                          strip.text.x = element_text(size = 10, face = "bold"),
+                          strip.background = element_rect(linewidth = 0))
+ggsave("transcriptional-noise/figures/male-TN-geneMeth.pdf", height = 8.5, width = 11)
 ```
