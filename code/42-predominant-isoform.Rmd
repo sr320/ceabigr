@@ -706,7 +706,7 @@ plot(fitted(transNoiseFem), residuals(transNoiseFem)) #Variance of residuals rou
 abline(h = 0, lty = 2, col = "grey")
 ```
 
-##### Calculate partial R2
+##### Calculate partial R<sup>2</sup>
 
 Partial R<sup>2</sup>, or the coefficient of partial determination, can tell us how much of the variation in the response variable is explained by the explanatory variable. This can tell us how "important" one variable is in the model.
 
@@ -722,8 +722,6 @@ transNoiseFemVP <- data.frame("variable" = rownames(anova(transNoiseFem)),
 for (i in 1:nrow(transNoiseFemVP)) {
   transNoiseFemVP$partialR2[i] <- transNoiseFemVP$SumSq[i] / sum(transNoiseFemVP$SumSq)
 } #Calculate partial r2 by dividing sum of squares for each variable by total sum of squares (including residuals)
-
-sum(transNoiseFemVP$partialR2)
 transNoiseFemVP #Confirm dataframe creation
 ```
 
