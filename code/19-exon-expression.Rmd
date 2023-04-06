@@ -1,0 +1,84 @@
+---
+title: "Example exon expression table"
+author: "Sam White"
+date: "2023-04-04"
+output: html_document
+---
+# R Markdown file to generate an example exon expression (read count) table per [this GitHub Issue](https://github.com/RobertsLab/resources/issues/1609).
+
+The expected output file:
+
+> row is genes, and columns are exon count data..(eg exon01, exon02, econ03 ....)
+
+
+## Load libraries
+```{r load-libraries}
+library("tidyverse")
+```
+
+
+
+# Reformat Ballgown exon expression table to match BED formatting
+
+## View Ballgown exon table
+```{r view-ballgown-exon-table}
+system("head '../data/ballgown/S12M/e_data.ctab'")
+
+```
+## Create BED format
+
+Moves `e_id` column to represent `name` column, and moves `rcount` to `score` column.
+Also removes header.
+```{bash view-ballgown-exon-table}
+awk '{print $2"\t"$4"\t"$5"\t"$1"\t"$6"\t"$3}' ../data/ballgown/S12M/e_data.ctab | tail -n +2 \
+> ../output/19-exon-expression/S12M-e_data.bed
+
+head ../output/19-exon-expression/S12M-e_data.bed
+
+```
+
+## Perform exon/gene intersection using bedtools
+```{bash exon-gene-intersetion-bedtools}
+# Use bedtools to intersect the exons BED file with the genes BED file
+/home/shared/bedtools2/bin/bedtools intersect \
+-b ../output/19-exon-expression/S12M-e_data.bed \
+-a ../data/C_virginica-3.0_Gnomon_genes.bed -wo \
+> ../output/19-exon-expression/S12M-exon_gene_intersect.txt
+
+head ../output/19-exon-expression/S12M-exon_gene_intersect.txt
+```
+
+## Reorient data to be organized by gene
+```{r}
+# Read in the combined BED file as a data frame
+# Set column names
+combined_df <- read.table("../output/19-exon-expression/S12M-exon_gene_intersect.txt", header = FALSE, col.names = c("chrom", "start", "end", "gene_name", "gene_score", "gene_strand","exon_chrom", "exon_start", "exon_end", "exon_name", "exon_score", "exon_strand", "overlap_length"))
+
+# Reorder the columns
+combined_df <- combined_df[, c("chrom", "start", "end", "gene_name", "gene_score", "gene_strand", "exon_score")]
+
+# Group by gene name
+grouped_df <- combined_df %>%
+  group_by(gene_name)
+
+# Add a new column with exon numbering for each gene
+grouped_df <- grouped_df %>%
+  mutate(exon_num = row_number())
+
+# Pivot the table to have exon numbers as column headers
+pivoted_df <- grouped_df %>%
+  pivot_wider(names_from = exon_num, values_from = exon_score, names_prefix = "exon_")
+
+# Remove unneeded columns
+final_table <- pivoted_df %>%
+  select(-chrom, -start, -end, -gene_score, -gene_strand)
+
+str(final_table)
+
+```
+
+## Write to file
+```{r write-to-file}
+write.table(final_table, file = "../output/19-exon-expression/S12M-exon_expression.tab", sep = "\t", quote = FALSE, row.names = FALSE)
+```
+

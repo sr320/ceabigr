@@ -156,6 +156,12 @@ whole_tx_table <-  texpr(bg, 'all')
 whole_tx_table <- whole_tx_table %>% mutate(gene_name = ifelse(gene_name == ".", t_name, gene_name))
 
 head(whole_tx_table)
+
+# Expression data
+# Row number matches transcript ID
+whole_tx_FPKM <-  texpr(bg, 'FPKM')
+
+head (whole_tx_FPKM)
 ```
 
 ## Load all gene expression data
