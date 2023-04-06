@@ -7,9 +7,8 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = "../output/gene-methylation-expression-mixomics/") #Set root directory
+knitr::opts_knit$set(root.dir = normalizePath("../output/gene-methylation-expression-mixomics/")) #Set root directory
 ```
-
 #Install packages
 
 ```{r}
@@ -413,7 +412,7 @@ plotLoadings(geneResult.splsFem, comp = 1,
              size.name = rel(0.7),
              xlim = matrix(c(-0.45, 0.1, -0.35, 0.45), nrow = 2, byrow = TRUE),
              subtitle = c("Methylation", "Expression"), size.subtitle = 2) #Loadings for first component
-ggsave("../output/gene-methylation-expression-mixomics/comp1Loadings-fem.pdf", width = 11, height = 8.5)
+ggsave("comp1Loadings-fem.pdf", width = 11, height = 8.5)
 ```
 
 ```{r}
