@@ -408,11 +408,12 @@ range(femSelectedVariables1$Y$value) #Selected genes from expression data
 ```
 
 ```{r}
+#pdf("comp1Loadings-fem.pdf", width = 11, height = 8.5)
 plotLoadings(geneResult.splsFem, comp = 1, 
              size.name = rel(0.7),
              xlim = matrix(c(-0.45, 0.1, -0.35, 0.45), nrow = 2, byrow = TRUE),
              subtitle = c("Methylation", "Expression"), size.subtitle = 2) #Loadings for first component
-ggsave("comp1Loadings-fem.pdf", width = 11, height = 8.5)
+#dev.off()
 ```
 
 ```{r}
@@ -507,11 +508,12 @@ rbind(as.data.frame(femSelectedVariables2$X$value),
 ```
 
 ```{r}
+#pdf("comp2Loadings-fem.pdf", width = 11, height = 8.5)
 plotLoadings(geneResult.splsFem, comp = 2, 
              size.name = rel(0.7),
              xlim = matrix(c(0, 0.6, 0, 0.4), nrow = 2, byrow = TRUE),
              subtitle = c("Methylation", "Expression"), size.subtitle = 2) #Loadings for first component
-ggsave("../output/gene-methylation-expression-mixomics/comp2Loadings-fem.pdf", width = 11, height = 8.5)
+#dev.off()
 ```
 
 #### Annotate genes
@@ -705,11 +707,12 @@ rbind(as.data.frame(MaleSelectedVariables1$X$value),
 ```
 
 ```{r}
+#pdf("comp1Loadings-male.pdf", width = 11, height = 8.5)
 plotLoadings(geneResult.splsMale, comp = 1, 
              size.name = rel(0.7),
              xlim = matrix(c(-0.2, 0.35, 0, 0.45), nrow = 2, byrow = TRUE),
              subtitle = c("Methylation", "Expression"), size.subtitle = 2) #Loadings for first component
-ggsave("../output/gene-methylation-expression-mixomics/comp1Loadings-male.pdf", width = 11, height = 8.5)
+#dev.off()
 ```
 
 #### Component 2
@@ -743,11 +746,12 @@ rbind(as.data.frame(MaleSelectedVariables2$X$value),
 ```
 
 ```{r}
+#pdf("comp2Loadings-male.pdf", width = 11, height = 8.5)
 plotLoadings(geneResult.splsMale, comp = 2, 
              size.name = rel(0.7),
              xlim = matrix(c(0, 0.45, 0, 0.4), nrow = 2, byrow = TRUE),
              subtitle = c("Methylation", "Expression"), size.subtitle = 2) #Loadings for first component
-ggsave("../output/gene-methylation-expression-mixomics/comp2Loadings-male.pdf", width = 11, height = 8.5)
+#dev.off()
 ```
 
 #### Annotate genes
