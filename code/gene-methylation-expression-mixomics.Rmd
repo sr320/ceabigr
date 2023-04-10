@@ -9,6 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = normalizePath("../output/gene-methylation-expression-mixomics/")) #Set root directory
 ```
+
+```{r}
+getwd()
+```
+
 #Install packages
 
 ```{r}
@@ -61,7 +66,7 @@ geneExpressionHist <- geneExpressionMod %>%
   drop_na(.) %>%
   rowwise() %>%
   summarise(range = max(c_across(where(is.numeric))) - min(c_across(where(is.numeric)))) #Calculate the range of gene expression values across each sample
-  
+
 plot_ly(x = geneExpressionHist$range, type = "histogram") #Interactive plot of gene expression value ranges
 ```
 
@@ -73,7 +78,7 @@ geneExpressionHist <- geneExpressionMod %>%
   mutate(var = matrixStats::rowVars(as.matrix(.))) #Calculate the variance of gene expression values across each sample
 
 range(geneExpressionHist$var)
-  
+
 plot_ly(x = geneExpressionHist$var, type = "histogram") #Interactive plot of gene expression value ranges
 ```
 
@@ -199,9 +204,9 @@ plot(geneArrow)
 
 ```{r}
 metadataFem <- metadata %>%
-    filter(., Sex == "F") #Select female metadata
+  filter(., Sex == "F") #Select female metadata
 metadataMale <- metadata %>%
-    filter(., Sex == "M") #Select male metadata
+  filter(., Sex == "M") #Select male metadata
 ```
 
 ### Gene expression
@@ -284,7 +289,7 @@ geneResult.plsFem <- pls(geneMethylationFem, geneExpressionFem, ncomp = 4) #Run 
 
 ```{r}
 genePerf.plsFem <- perf(geneResult.plsFem, validation = "Mfold", folds = 2,
-                     progressBar = FALSE, nrepeat = 10) #Use perf for repeated k-fold cross-validation to determine the number of components that should be included
+                        progressBar = FALSE, nrepeat = 10) #Use perf for repeated k-fold cross-validation to determine the number of components that should be included
 ```
 
 ```{r}
@@ -299,10 +304,10 @@ abline(h = 0.0975) #Only include components with value is ≤ 0.0975
 ```{r}
 list.keepX <- c(2:10, 15, 20, 25, 30) #Number of drivers to pull
 tune.spls.RSS.FemX <- tune.spls(geneMethylationFem, geneExpressionFem, ncomp = FIX,
-  test.keepX = list.keepX,
-  validation = "Mfold", folds = 2,
-  nrepeat = 10, progressBar = TRUE,
-  measure = "RSS") #Tune parameters based on Mean Absolute Value with 5 folds and 1000 repeats
+                                test.keepX = list.keepX,
+                                validation = "Mfold", folds = 2,
+                                nrepeat = 10, progressBar = TRUE,
+                                measure = "RSS") #Tune parameters based on Mean Absolute Value with 5 folds and 1000 repeats
 ```
 
 ```{r}
@@ -316,10 +321,10 @@ plot(tune.spls.MAE.FemX, legend.position = "topright") #Plot tuning results
 ```{r}
 list.keepY <- c(2:10, 15, 20, 25, 30) #Number of drivers to pull
 tune.spls.MAE.FemY <- tune.spls(geneMethylationFem, geneExpressionFem, ncomp = FIX,
-  test.keepY = list.keepY,
-  validation = "Mfold", folds = 10,
-  nrepeat = 1000, progressBar = FALSE,
-  measure = "MAE") #Tune parameters based on Mean Absolute Value with 5 folds and 1000 repeats
+                                test.keepY = list.keepY,
+                                validation = "Mfold", folds = 10,
+                                nrepeat = 1000, progressBar = FALSE,
+                                measure = "MAE") #Tune parameters based on Mean Absolute Value with 5 folds and 1000 repeats
 ```
 
 ```{r}
@@ -332,7 +337,7 @@ plot(tune.spls.MAE.FemY, legend.position = "topright") #Plot tuning results
 
 ```{r}
 geneResult.splsFem <- spls(X = geneMethylationFem, Y = geneExpressionFem,
-                        keepX = c(25, 25), keepY = c(25,25)) #Run SPLS for female samples
+                           keepX = c(25, 25), keepY = c(25,25)) #Run SPLS for female samples
 ```
 
 #### Visualize results
@@ -374,10 +379,10 @@ cim(margins = c(10,10), geneResult.splsFem,
 
 ```{r}
 femNetwork <- network(geneResult.splsFem, cutoff = 0.8,
-                row.names = FALSE, col.names = FALSE, 
-                color.node = c("grey50", "grey50"), shape.node = c("circle", "rectangle"), size.node = 0.2,
-                color.edge = rev(brewer.pal(10, "RdBu")),
-                save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/network-fem") #Create and save network plot. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff. The network plot is split based on components
+                      row.names = FALSE, col.names = FALSE, 
+                      color.node = c("grey50", "grey50"), shape.node = c("circle", "rectangle"), size.node = 0.2,
+                      color.edge = rev(brewer.pal(10, "RdBu")),
+                      save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/network-fem") #Create and save network plot. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff. The network plot is split based on components
 ```
 
 ```{r}
@@ -390,10 +395,10 @@ write.graph(femNetwork$gR, "../output/gene-methylation-expression-mixomics/femNe
 
 ```{r}
 femNetworkComp1 <- network(geneResult.splsFem, cutoff = 0.8, comp = 1,
-                row.names = FALSE, col.names = FALSE, 
-                color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
-                color.edge = rev(brewer.pal(10, "RdBu")),
-                save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/comp1Network-fem") #Create and save network plot for component 1. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff.
+                           row.names = FALSE, col.names = FALSE, 
+                           color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
+                           color.edge = rev(brewer.pal(10, "RdBu")),
+                           save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/comp1Network-fem") #Create and save network plot for component 1. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff.
 ```
 
 ```{r}
@@ -403,8 +408,8 @@ femSelectedVariables1$Y$name #Selected genes from expression data
 ```
 
 ```{r}
-range(femSelectedVariables1$X$value) #Selected genes from methylation data
-range(femSelectedVariables1$Y$value) #Selected genes from expression data
+range(femSelectedVariables1$X$value) #Selected genes from methylation data: -0.42825345  0.04797473
+range(femSelectedVariables1$Y$value) #Selected genes from expression data: -0.3044497  0.4415122
 ```
 
 ```{r}
@@ -424,6 +429,8 @@ rbind(as.data.frame(femSelectedVariables1$X$value),
   rownames_to_column(., var = "gene") %>%
   write.csv(., "../output/gene-methylation-expression-mixomics/comp1SelectedVariables-Fem.csv", quote = FALSE, row.names = FALSE)
 ```
+
+##### Annotate genes
 
 ```{r}
 mRNATrack <- read.delim("../genome-features/C_virginica-3.0-mRNA.gff", header = FALSE) %>%
@@ -466,6 +473,16 @@ annotfemSelectedVariables1X <- femSelectedVariables1$X %>%
 head(annotfemSelectedVariables1X) #Confirm annotation
 ```
 
+
+```{r}
+annotfemSelectedVariables1X %>%
+  select(., c(gene, value.var, product)) %>%
+  separate(., product, into = c("product", "transcriptVar"), sep = "%2C ") %>%
+  select(., -transcriptVar) %>%
+  distinct(.)
+```
+
+
 ```{r}
 annotfemSelectedVariables1XP <- annotfemSelectedVariables1X %>%
   dplyr::filter(., process == "P")
@@ -478,14 +495,44 @@ annotfemSelectedVariables1XF <- annotfemSelectedVariables1X %>%
 as.data.frame(table(annotfemSelectedVariables1XF$GOslim))
 ```
 
+```{r}
+annotfemSelectedVariables1Y <- femSelectedVariables1$Y %>%
+  as.data.frame(.) %>%
+  rename(., gene = name) %>%
+  left_join(., mRNATrack, by = "gene") %>% 
+  left_join(., GOterms, by = "transcript") %>% 
+  left_join(., GOslim, by = "GO") #Annotate genes
+head(annotfemSelectedVariables1Y) #Confirm annotation
+```
+
+```{r}
+annotfemSelectedVariables1Y %>%
+  select(., c(gene, value.var, product)) %>%
+  separate(., product, into = c("product", "transcriptVar"), sep = "%2C ") %>%
+  select(., -transcriptVar) %>%
+  distinct(.)
+```
+
+```{r}
+annotfemSelectedVariables1YP <- annotfemSelectedVariables1Y %>%
+  dplyr::filter(., process == "P")
+as.data.frame(table(annotfemSelectedVariables1YP$GOslim))
+```
+
+```{r}
+annotfemSelectedVariables1YF <- annotfemSelectedVariables1Y %>%
+  dplyr::filter(., process == "F")
+as.data.frame(table(annotfemSelectedVariables1YF$GOslim))
+```
+
 #### Component 2
 
 ```{r}
 femNetworkComp2 <- network(geneResult.splsFem, cutoff = 0.8, comp = 2,
-                row.names = FALSE, col.names = FALSE, 
-                color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
-                color.edge = rev(brewer.pal(10, "RdBu")),
-                save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/comp2Network-fem") #Create and save network plot for component 1. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff.
+                           row.names = FALSE, col.names = FALSE, 
+                           color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
+                           color.edge = rev(brewer.pal(10, "RdBu")),
+                           save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/comp2Network-fem") #Create and save network plot for component 1. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff.
 ```
 
 ```{r}
@@ -516,50 +563,125 @@ plotLoadings(geneResult.splsFem, comp = 2,
 #dev.off()
 ```
 
-#### Annotate genes
+##### Annotate genes
 
 ```{r}
-annotfemSelectedVariables1X <- femSelectedVariables1$X %>%
+annotfemSelectedVariables2X <- femSelectedVariables2$X %>%
   as.data.frame(.) %>%
   rename(., gene = name) %>%
   left_join(., mRNATrack, by = "gene") %>% 
   left_join(., GOterms, by = "transcript") %>% 
   left_join(., GOslim, by = "GO") #Annotate genes
-head(annotfemSelectedVariables1X) #Confirm annotation
+head(annotfemSelectedVariables2X) #Confirm annotation
 ```
 
 ```{r}
-annotfemSelectedVariables1XP <- annotfemSelectedVariables1X %>%
+annotfemSelectedVariables2X %>%
+  select(., c(gene, value.var, product)) %>%
+  separate(., product, into = c("product", "transcriptVar"), sep = "%2C ") %>%
+  select(., -transcriptVar) %>%
+  distinct(.)
+```
+
+```{r}
+annotfemSelectedVariables2XP <- annotfemSelectedVariables2X %>%
   dplyr::filter(., process == "P")
-as.data.frame(table(annotfemSelectedVariables1XP$GOslim))
+as.data.frame(table(annotfemSelectedVariables2XP$GOslim))
 ```
 
 ```{r}
-annotfemSelectedVariables1XF <- annotfemSelectedVariables1X %>%
+annotfemSelectedVariables2XF <- annotfemSelectedVariables2X %>%
   dplyr::filter(., process == "F")
-as.data.frame(table(annotfemSelectedVariables1XF$GOslim))
+as.data.frame(table(annotfemSelectedVariables2XF$GOslim))
 ```
 
 ```{r}
-annotfemSelectedVariables1Y <- femSelectedVariables1$Y %>%
+annotfemSelectedVariables2Y <- femSelectedVariables2$Y %>%
   as.data.frame(.) %>%
   rename(., gene = name) %>%
   left_join(., mRNATrack, by = "gene") %>% 
   left_join(., GOterms, by = "transcript") %>% 
   left_join(., GOslim, by = "GO") #Annotate genes
-head(annotfemSelectedVariables1Y) #Confirm annotation
+head(annotfemSelectedVariables2Y) #Confirm annotation
 ```
 
 ```{r}
-annotfemSelectedVariables1YP <- annotfemSelectedVariables1Y %>%
+annotfemSelectedVariables2Y %>%
+  select(., c(gene, value.var, product)) %>%
+  separate(., product, into = c("product", "transcriptVar"), sep = "%2C ") %>%
+  select(., -transcriptVar) %>%
+  distinct(.)
+```
+
+```{r}
+annotfemSelectedVariables2YP <- annotfemSelectedVariables2Y %>%
   dplyr::filter(., process == "P")
-as.data.frame(table(annotfemSelectedVariables1YP$GOslim))
+as.data.frame(table(annotfemSelectedVariables2YP$GOslim))
 ```
 
 ```{r}
-annotfemSelectedVariables1YF <- annotfemSelectedVariables1Y %>%
+annotfemSelectedVariables2YF <- annotfemSelectedVariables2Y %>%
   dplyr::filter(., process == "F")
-as.data.frame(table(annotfemSelectedVariables1YF$GOslim))
+as.data.frame(table(annotfemSelectedVariables2YF$GOslim))
+```
+#### Create table with loading values and annotations
+
+```{r}
+rbind(as.data.frame(femSelectedVariables1$X$value),
+      as.data.frame(femSelectedVariables1$Y$value),
+      as.data.frame(femSelectedVariables2$X$value),
+      as.data.frame(femSelectedVariables2$Y$value)) %>% 
+  mutate(., block = c(rep("X", times = 25),
+                      rep("Y", times = 25),
+                      rep("X", times = 25),
+                      rep("Y", times = 25))) %>%
+  mutate(., component = c(rep("1", times = 50),
+                          rep("2", times = 50))) %>%
+  rownames_to_column(., var = "gene") %>%
+  left_join(., mRNATrack, by = "gene") %>% 
+  left_join(., GOterms, by = "transcript") %>% 
+  left_join(., GOslim, by = "GO") %>%
+  arrange(., component, block, gene, process, transcript, GO) %>%
+  distinct(.) %>%
+  dplyr::group_by(gene, value.var, block) %>%
+  mutate(transcript = paste(transcript, collapse = ";")) %>%
+  mutate(product = paste(product, collapse = ";")) %>%
+  mutate(GO = paste(GO, collapse = ";")) %>%
+  mutate(GOterm = paste(GOterm, collapse = ";")) %>%
+  mutate(GOslim = paste(GOslim, collapse = ";")) %>%
+  mutate(process = paste(process, collapse = ";")) %>%
+  ungroup(.) %>%
+  distinct(.) %>%
+  mutate(transcript = lapply(strsplit(transcript, split = ";"), unique)) %>%
+  mutate(transcript = sapply(transcript, toString)) %>%
+  mutate(transcript = gsub(transcript, pattern = ", ", replacement = ";")) %>%
+  mutate(transcript = na_if(x = transcript, y = "NA")) %>%
+  mutate(product = lapply(strsplit(product, split = ";"), unique)) %>%
+  mutate(product = sapply(product, toString)) %>%
+  mutate(product = gsub(product, pattern = ", ", replacement = ";")) %>%
+  mutate(product = na_if(x = product, y = "NA")) %>%
+  mutate(GO = lapply(strsplit(GO, split = ";"), unique)) %>%
+  mutate(GO = sapply(GO, toString)) %>%
+  mutate(GO = gsub(GO, pattern = ", ", replacement = ";")) %>%
+  mutate(GO = na_if(x = GO, y = "NA")) %>%
+  mutate(GOterm = lapply(strsplit(GOterm, split = ";"), unique)) %>%
+  mutate(GOterm = sapply(GOterm, toString)) %>%
+  mutate(GOterm = gsub(GOterm, pattern = ", ", replacement = ";")) %>%
+  mutate(GOterm = na_if(x = GOterm, y = "NA")) %>%
+  mutate(GOslim = lapply(strsplit(GOslim, split = ";"), unique)) %>%
+  mutate(GOslim = sapply(GOslim, toString)) %>%
+  mutate(GOslim = gsub(GOslim, pattern = ", ", replacement = ";")) %>%
+  mutate(GOslim = na_if(x = GOslim, y = "NA")) %>%
+  mutate(process = lapply(strsplit(process, split = ";"), unique)) %>%
+  mutate(process = sapply(process, toString)) %>%
+  mutate(process = gsub(process, pattern = ", ", replacement = ";")) %>%
+  mutate(process = na_if(x = process, y = "NA")) %>%
+  distinct(.) %>%
+  write.table("selectedVariables-Annot-Fem.txt", quote = FALSE, sep = "\t", row.names = FALSE) #Combine driver gene information for both X and Y datasets for the first component. Add block (X or Y) and component (1 or 2) information for gene methylation or expression datasets. Join with mRNA, GO term, and GO Slim information for annotations. Arrange by component, block, gene, process, transcript, and GO, then retain only distinct entries. Group by gene, loading values, and block to collapse rows across all descriptive columns such that there is only one row per driver gene. Ungroup and retain only distinct rows. Use a series of apply commands to split strings in each column by ; then remove any duplicate values. Replace commas with semicolon delimiters and make sure NAs are identified. Retain distinct rows. Save as a txt file
+```
+
+```{bash}
+head selectedVariables-Annot-Fem.txt
 ```
 
 ## Male SPLS
@@ -574,7 +696,7 @@ geneResult.plsMale <- pls(geneMethylationMale, geneExpressionMale, ncomp = 4) #R
 
 ```{r}
 genePerf.plsMale <- perf(geneResult.plsMale, validation = "Mfold", folds = 2,
-                     progressBar = FALSE, nrepeat = 10) #Use perf for repeated k-fold cross-validation to determine the number of components that should be included
+                         progressBar = FALSE, nrepeat = 10) #Use perf for repeated k-fold cross-validation to determine the number of components that should be included
 ```
 
 ```{r}
@@ -589,10 +711,10 @@ abline(h = 0.0975) #Only include components with value is ≤ 0.0975
 ```{r}
 list.keepX <- c(2:10, 15, 20, 25, 30) #Number of drivers to pull
 tune.spls.RSS.MaleX <- tune.spls(geneMethylationMale, geneExpressionMale, ncomp = FIX,
-  test.keepX = list.keepX,
-  validation = "Mfold", folds = 2,
-  nrepeat = 10, progressBar = TRUE,
-  measure = "RSS") #Tune parameters based on Mean Absolute Value with 5 folds and 1000 repeats
+                                 test.keepX = list.keepX,
+                                 validation = "Mfold", folds = 2,
+                                 nrepeat = 10, progressBar = TRUE,
+                                 measure = "RSS") #Tune parameters based on Mean Absolute Value with 5 folds and 1000 repeats
 ```
 
 ```{r}
@@ -606,10 +728,10 @@ plot(tune.spls.MAE.MaleX, legend.position = "topright") #Plot tuning results
 ```{r}
 list.keepY <- c(2:10, 15, 20, 25, 30) #Number of drivers to pull
 tune.spls.MAE.MaleY <- tune.spls(geneMethylationMale, geneExpressionMale, ncomp = FIX,
-  test.keepY = list.keepY,
-  validation = "Mfold", folds = 10,
-  nrepeat = 1000, progressBar = FALSE,
-  measure = "MAE") #Tune parameters based on Mean Absolute Value with 5 folds and 1000 repeats
+                                 test.keepY = list.keepY,
+                                 validation = "Mfold", folds = 10,
+                                 nrepeat = 1000, progressBar = FALSE,
+                                 measure = "MAE") #Tune parameters based on Mean Absolute Value with 5 folds and 1000 repeats
 ```
 
 ```{r}
@@ -622,7 +744,7 @@ plot(tune.spls.MAE.MaleY, legend.position = "topright") #Plot tuning results
 
 ```{r}
 geneResult.splsMale <- spls(X = geneMethylationMale, Y = geneExpressionMale,
-                        keepX = c(25, 25), keepY = c(25,25)) #Run SPLS for Maleale samples
+                            keepX = c(25, 25), keepY = c(25,25)) #Run SPLS for Maleale samples
 ```
 
 #### Visualize results
@@ -638,7 +760,7 @@ ggsave("../output/gene-methylation-expression-mixomics/geneSPLS-Male.pdf", width
 
 ```{r}
 geneArrowMale <- plotArrow(geneResult.splsMale, group = metadataMale$Treatment, ind.names = FALSE,
-                          legend = TRUE, legend.title = "Treatment") + 
+                           legend = TRUE, legend.title = "Treatment") + 
   labs(x = "PLS Comp 1", y = "PLS Comp 2") #Group by treatment. Short arrows indicate good agreement found by the PLS between both data sets
 geneArrowMale$data
 plot(geneArrowMale)
@@ -665,10 +787,10 @@ cim(margins = c(10,10), geneResult.splsMale,
 
 ```{r}
 MaleNetwork <- network(geneResult.splsMale, cutoff = 0.8,
-                row.names = FALSE, col.names = FALSE, 
-                color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
-                color.edge = rev(brewer.pal(10, "RdBu")),
-                save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/network-Male") #Create and save network plot. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff. The network plot is split based on components
+                       row.names = FALSE, col.names = FALSE, 
+                       color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
+                       color.edge = rev(brewer.pal(10, "RdBu")),
+                       save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/network-Male") #Create and save network plot. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff. The network plot is split based on components
 ```
 
 ```{r}
@@ -681,10 +803,10 @@ write.graph(MaleNetwork$gR, "../output/gene-methylation-expression-mixomics/Male
 
 ```{r}
 MaleNetworkComp1 <- network(geneResult.splsMale, cutoff = 0.8, comp = 1,
-                row.names = FALSE, col.names = FALSE, 
-                color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
-                color.edge = rev(brewer.pal(10, "RdBu")),
-                save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/comp1Network-Male") #Create and save network plot for component 1. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff.
+                            row.names = FALSE, col.names = FALSE, 
+                            color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
+                            color.edge = rev(brewer.pal(10, "RdBu")),
+                            save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/comp1Network-Male") #Create and save network plot for component 1. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff.
 ```
 
 ```{r}
@@ -715,14 +837,76 @@ plotLoadings(geneResult.splsMale, comp = 1,
 #dev.off()
 ```
 
+##### Annotate genes
+
+```{r}
+annotmaleSelectedVariables1X <- MaleSelectedVariables1$X %>%
+  as.data.frame(.) %>%
+  rename(., gene = name) %>%
+  left_join(., mRNATrack, by = "gene") %>% 
+  left_join(., GOterms, by = "transcript") %>% 
+  left_join(., GOslim, by = "GO") #Annotate genes
+head(annotmaleSelectedVariables1X) #Confirm annotation
+```
+
+```{r}
+annotmaleSelectedVariables1X %>%
+  select(., c(gene, value.var, product)) %>%
+  separate(., product, into = c("product", "transcriptVar"), sep = "%2C ") %>%
+  select(., -transcriptVar) %>%
+  distinct(.)
+```
+
+```{r}
+annotmaleSelectedVariables1XP <- annotmaleSelectedVariables1X %>%
+  dplyr::filter(., process == "P")
+as.data.frame(table(annotmaleSelectedVariables1XP$GOslim))
+```
+
+```{r}
+annotmaleSelectedVariables1XF <- annotmaleSelectedVariables1X %>%
+  dplyr::filter(., process == "F")
+as.data.frame(table(annotmaleSelectedVariables1XF$GOslim))
+```
+
+```{r}
+annotmaleSelectedVariables1Y <- MaleSelectedVariables1$Y %>%
+  as.data.frame(.) %>%
+  rename(., gene = name) %>%
+  left_join(., mRNATrack, by = "gene") %>% 
+  left_join(., GOterms, by = "transcript") %>% 
+  left_join(., GOslim, by = "GO") #Annotate genes
+head(annotmaleSelectedVariables1Y) #Confirm annotation
+```
+
+```{r}
+annotmaleSelectedVariables1Y %>%
+  select(., c(gene, value.var, product)) %>%
+  separate(., product, into = c("product", "transcriptVar"), sep = "%2C ") %>%
+  select(., -transcriptVar) %>%
+  distinct(.)
+```
+
+```{r}
+annotmaleSelectedVariables1YP <- annotmaleSelectedVariables1Y %>%
+  dplyr::filter(., process == "P")
+as.data.frame(table(annotmaleSelectedVariables1YP$GOslim))
+```
+
+```{r}
+annotmaleSelectedVariables1YF <- annotmaleSelectedVariables1Y %>%
+  dplyr::filter(., process == "F")
+as.data.frame(table(annotmaleSelectedVariables1YF$GOslim))
+```
+
 #### Component 2
 
 ```{r}
 MaleNetworkComp2 <- network(geneResult.splsMale, cutoff = 0.8, comp = 2,
-                row.names = FALSE, col.names = FALSE, 
-                color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
-                color.edge = rev(brewer.pal(10, "RdBu")),
-                save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/comp2Network-Male") #Create and save network plot for component 1. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff.
+                            row.names = FALSE, col.names = FALSE, 
+                            color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
+                            color.edge = rev(brewer.pal(10, "RdBu")),
+                            save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/comp2Network-Male") #Create and save network plot for component 1. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff.
 ```
 
 ```{r}
@@ -754,50 +938,126 @@ plotLoadings(geneResult.splsMale, comp = 2,
 #dev.off()
 ```
 
-#### Annotate genes
+##### Annotate genes
 
 ```{r}
-annotmaleSelectedVariables1X <- MaleSelectedVariables1$X %>%
+annotmaleSelectedVariables2X <- MaleSelectedVariables2$X %>%
   as.data.frame(.) %>%
   rename(., gene = name) %>%
   left_join(., mRNATrack, by = "gene") %>% 
   left_join(., GOterms, by = "transcript") %>% 
   left_join(., GOslim, by = "GO") #Annotate genes
-head(annotmaleSelectedVariables1X) #Confirm annotation
+head(annotmaleSelectedVariables2X) #Confirm annotation
 ```
 
 ```{r}
-annotmaleSelectedVariables1XP <- annotmaleSelectedVariables1X %>%
+annotmaleSelectedVariables2X %>%
+  select(., c(gene, value.var, product)) %>%
+  separate(., product, into = c("product", "transcriptVar"), sep = "%2C ") %>%
+  select(., -transcriptVar) %>%
+  distinct(.)
+```
+
+```{r}
+annotmaleSelectedVariables2XP <- annotmaleSelectedVariables2X %>%
   dplyr::filter(., process == "P")
-as.data.frame(table(annotmaleSelectedVariables1XP$GOslim))
+as.data.frame(table(annotmaleSelectedVariables2XP$GOslim))
 ```
 
 ```{r}
-annotmaleSelectedVariables1XF <- annotmaleSelectedVariables1X %>%
+annotmaleSelectedVariables2XF <- annotmaleSelectedVariables2X %>%
   dplyr::filter(., process == "F")
-as.data.frame(table(annotmaleSelectedVariables1XF$GOslim))
+as.data.frame(table(annotmaleSelectedVariables2XF$GOslim))
 ```
 
 ```{r}
-annotmaleSelectedVariables1Y <- MaleSelectedVariables1$Y %>%
+annotmaleSelectedVariables2Y <- MaleSelectedVariables2$Y %>%
   as.data.frame(.) %>%
   rename(., gene = name) %>%
   left_join(., mRNATrack, by = "gene") %>% 
   left_join(., GOterms, by = "transcript") %>% 
   left_join(., GOslim, by = "GO") #Annotate genes
-head(annotmaleSelectedVariables1Y) #Confirm annotation
+head(annotmaleSelectedVariables2Y) #Confirm annotation
 ```
 
 ```{r}
-annotmaleSelectedVariables1YP <- annotmaleSelectedVariables1Y %>%
+annotmaleSelectedVariables2Y %>%
+  select(., c(gene, value.var, product)) %>%
+  separate(., product, into = c("product", "transcriptVar"), sep = "%2C ") %>%
+  select(., -transcriptVar) %>%
+  distinct(.)
+```
+
+```{r}
+annotmaleSelectedVariables2YP <- annotmaleSelectedVariables2Y %>%
   dplyr::filter(., process == "P")
-as.data.frame(table(annotmaleSelectedVariables1YP$GOslim))
+as.data.frame(table(annotmaleSelectedVariables2YP$GOslim))
 ```
 
 ```{r}
-annotmaleSelectedVariables1YF <- annotmaleSelectedVariables1Y %>%
+annotmaleSelectedVariables2YF <- annotmaleSelectedVariables2Y %>%
   dplyr::filter(., process == "F")
-as.data.frame(table(annotmaleSelectedVariables1YF$GOslim))
+as.data.frame(table(annotmaleSelectedVariables2YF$GOslim))
+```
+
+#### Create table with loading values and annotations
+
+```{r}
+rbind(as.data.frame(MaleSelectedVariables1$X$value),
+      as.data.frame(MaleSelectedVariables1$Y$value),
+      as.data.frame(MaleSelectedVariables2$X$value),
+      as.data.frame(MaleSelectedVariables2$Y$value)) %>% 
+  mutate(., block = c(rep("X", times = 25),
+                      rep("Y", times = 25),
+                      rep("X", times = 25),
+                      rep("Y", times = 25))) %>%
+  mutate(., component = c(rep("1", times = 50),
+                          rep("2", times = 50))) %>%
+  rownames_to_column(., var = "gene") %>%
+  left_join(., mRNATrack, by = "gene") %>% 
+  left_join(., GOterms, by = "transcript") %>% 
+  left_join(., GOslim, by = "GO") %>%
+  arrange(., component, block, gene, process, transcript, GO) %>%
+  distinct(.) %>%
+  dplyr::group_by(gene, value.var, block) %>%
+  mutate(transcript = paste(transcript, collapse = ";")) %>%
+  mutate(product = paste(product, collapse = ";")) %>%
+  mutate(GO = paste(GO, collapse = ";")) %>%
+  mutate(GOterm = paste(GOterm, collapse = ";")) %>%
+  mutate(GOslim = paste(GOslim, collapse = ";")) %>%
+  mutate(process = paste(process, collapse = ";")) %>%
+  ungroup(.) %>%
+  distinct(.) %>%
+  mutate(transcript = lapply(strsplit(transcript, split = ";"), unique)) %>%
+  mutate(transcript = sapply(transcript, toString)) %>%
+  mutate(transcript = gsub(transcript, pattern = ", ", replacement = ";")) %>%
+  mutate(transcript = na_if(x = transcript, y = "NA")) %>%
+  mutate(product = lapply(strsplit(product, split = ";"), unique)) %>%
+  mutate(product = sapply(product, toString)) %>%
+  mutate(product = gsub(product, pattern = ", ", replacement = ";")) %>%
+  mutate(product = na_if(x = product, y = "NA")) %>%
+  mutate(GO = lapply(strsplit(GO, split = ";"), unique)) %>%
+  mutate(GO = sapply(GO, toString)) %>%
+  mutate(GO = gsub(GO, pattern = ", ", replacement = ";")) %>%
+  mutate(GO = na_if(x = GO, y = "NA")) %>%
+  mutate(GOterm = lapply(strsplit(GOterm, split = ";"), unique)) %>%
+  mutate(GOterm = sapply(GOterm, toString)) %>%
+  mutate(GOterm = gsub(GOterm, pattern = ", ", replacement = ";")) %>%
+  mutate(GOterm = na_if(x = GOterm, y = "NA")) %>%
+  mutate(GOslim = lapply(strsplit(GOslim, split = ";"), unique)) %>%
+  mutate(GOslim = sapply(GOslim, toString)) %>%
+  mutate(GOslim = gsub(GOslim, pattern = ", ", replacement = ";")) %>%
+  mutate(GOslim = na_if(x = GOslim, y = "NA")) %>%
+  mutate(process = lapply(strsplit(process, split = ";"), unique)) %>%
+  mutate(process = sapply(process, toString)) %>%
+  mutate(process = gsub(process, pattern = ", ", replacement = ";")) %>%
+  mutate(process = na_if(x = process, y = "NA")) %>%
+  distinct(.) %>%
+  write.table("selectedVariables-Annot-Male.txt", quote = FALSE, sep = "\t", row.names = FALSE) #Combine driver gene information for both X and Y datasets for the first component. Add block (X or Y) and component (1 or 2) information for gene methylation or expression datasets. Join with mRNA, GO term, and GO Slim information for annotations. Arrange by component, block, gene, process, transcript, and GO, then retain only distinct entries. Group by gene, loading values, and block to collapse rows across all descriptive columns such that there is only one row per driver gene. Ungroup and retain only distinct rows. Use a series of apply commands to split strings in each column by ; then remove any duplicate values. Replace commas with semicolon delimiters and make sure NAs are identified. Retain distinct rows. Save as a txt file
+```
+
+```{bash}
+head selectedVariables-Annot-Male.txt
 ```
 
 
