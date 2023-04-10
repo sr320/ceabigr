@@ -23,8 +23,8 @@ getwd()
 # install.packages("plotly")
 # install.packages("RColorBrewer")
 require(devtools)
-install_github("mixOmicsTeam/mixOmics", ref = github_pull("197"), force = TRUE) #Install dev version: https://github.com/mixOmicsTeam/mixOmics/issues/196 (used for running SPLS)
-#install_github("mixOmicsTeam/mixOmics", ref = github_pull("234"), force = TRUE) #Install dev version: https://github.com/mixOmicsTeam/mixOmics/issues/233 (used for network plot customization)
+#install_github("mixOmicsTeam/mixOmics", ref = github_pull("197"), force = TRUE) #Install dev version: https://github.com/mixOmicsTeam/mixOmics/issues/196 (used for running SPLS)
+install_github("mixOmicsTeam/mixOmics", ref = github_pull("234"), force = TRUE) #Install dev version: https://github.com/mixOmicsTeam/mixOmics/issues/233 (used for network plot customization)
 require(mixOmics)
 require(tidyverse)
 require(plotly)
@@ -788,8 +788,8 @@ cim(margins = c(10,10), geneResult.splsMale,
 ```{r}
 MaleNetwork <- network(geneResult.splsMale, cutoff = 0.8,
                        row.names = FALSE, col.names = FALSE, 
-                       color.node = c("lightblue", "orange"), shape.node = c("circle", "rectangle"), size.node = 0.2,
-                       color.edge = rev(brewer.pal(10, "RdBu")),
+                      color.node = c("grey50", "grey50"), shape.node = c("circle", "rectangle"), size.node = 0.2,
+                      color.edge = rev(brewer.pal(10, "RdBu")),
                        save = "pdf", name.save = "../output/gene-methylation-expression-mixomics/network-Male") #Create and save network plot. Methylation = blue circles, expression = orange rectangles. Blue lines = neg corr, red lines = pos corr. Only use correlations > 0.8 cutoff. The network plot is split based on components
 ```
 
