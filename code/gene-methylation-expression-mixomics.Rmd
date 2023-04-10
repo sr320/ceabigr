@@ -641,7 +641,7 @@ rbind(as.data.frame(femSelectedVariables1$X$value),
   left_join(., mRNATrack, by = "gene") %>% 
   left_join(., GOterms, by = "transcript") %>% 
   left_join(., GOslim, by = "GO") %>%
-  arrange(., component, block, gene, process, transcript, GO) %>%
+  arrange(., component, block, value.var, process, transcript, GO) %>%
   distinct(.) %>%
   dplyr::group_by(gene, value.var, block) %>%
   mutate(transcript = paste(transcript, collapse = ";")) %>%
@@ -677,7 +677,7 @@ rbind(as.data.frame(femSelectedVariables1$X$value),
   mutate(process = gsub(process, pattern = ", ", replacement = ";")) %>%
   mutate(process = na_if(x = process, y = "NA")) %>%
   distinct(.) %>%
-  write.table("selectedVariables-Annot-Fem.txt", quote = FALSE, sep = "\t", row.names = FALSE) #Combine driver gene information for both X and Y datasets for the first component. Add block (X or Y) and component (1 or 2) information for gene methylation or expression datasets. Join with mRNA, GO term, and GO Slim information for annotations. Arrange by component, block, gene, process, transcript, and GO, then retain only distinct entries. Group by gene, loading values, and block to collapse rows across all descriptive columns such that there is only one row per driver gene. Ungroup and retain only distinct rows. Use a series of apply commands to split strings in each column by ; then remove any duplicate values. Replace commas with semicolon delimiters and make sure NAs are identified. Retain distinct rows. Save as a txt file
+  write.table("selectedVariables-Annot-Fem.txt", quote = FALSE, sep = "\t", row.names = FALSE) #Combine driver gene information for both X and Y datasets for the first component. Add block (X or Y) and component (1 or 2) information for gene methylation or expression datasets. Join with mRNA, GO term, and GO Slim information for annotations. Arrange by component, block, loading value, process, transcript, and GO, then retain only distinct entries. Group by gene, loading values, and block to collapse rows across all descriptive columns such that there is only one row per driver gene. Ungroup and retain only distinct rows. Use a series of apply commands to split strings in each column by ; then remove any duplicate values. Replace commas with semicolon delimiters and make sure NAs are identified. Retain distinct rows. Save as a txt file
 ```
 
 ```{bash}
@@ -1017,7 +1017,7 @@ rbind(as.data.frame(MaleSelectedVariables1$X$value),
   left_join(., mRNATrack, by = "gene") %>% 
   left_join(., GOterms, by = "transcript") %>% 
   left_join(., GOslim, by = "GO") %>%
-  arrange(., component, block, gene, process, transcript, GO) %>%
+  arrange(., component, block, value.var, process, transcript, GO) %>%
   distinct(.) %>%
   dplyr::group_by(gene, value.var, block) %>%
   mutate(transcript = paste(transcript, collapse = ";")) %>%
@@ -1053,7 +1053,7 @@ rbind(as.data.frame(MaleSelectedVariables1$X$value),
   mutate(process = gsub(process, pattern = ", ", replacement = ";")) %>%
   mutate(process = na_if(x = process, y = "NA")) %>%
   distinct(.) %>%
-  write.table("selectedVariables-Annot-Male.txt", quote = FALSE, sep = "\t", row.names = FALSE) #Combine driver gene information for both X and Y datasets for the first component. Add block (X or Y) and component (1 or 2) information for gene methylation or expression datasets. Join with mRNA, GO term, and GO Slim information for annotations. Arrange by component, block, gene, process, transcript, and GO, then retain only distinct entries. Group by gene, loading values, and block to collapse rows across all descriptive columns such that there is only one row per driver gene. Ungroup and retain only distinct rows. Use a series of apply commands to split strings in each column by ; then remove any duplicate values. Replace commas with semicolon delimiters and make sure NAs are identified. Retain distinct rows. Save as a txt file
+  write.table("selectedVariables-Annot-Male.txt", quote = FALSE, sep = "\t", row.names = FALSE) #Combine driver gene information for both X and Y datasets for the first component. Add block (X or Y) and component (1 or 2) information for gene methylation or expression datasets. Join with mRNA, GO term, and GO Slim information for annotations. Arrange by component, block, loading value, process, transcript, and GO, then retain only distinct entries. Group by gene, loading values, and block to collapse rows across all descriptive columns such that there is only one row per driver gene. Ungroup and retain only distinct rows. Use a series of apply commands to split strings in each column by ; then remove any duplicate values. Replace commas with semicolon delimiters and make sure NAs are identified. Retain distinct rows. Save as a txt file
 ```
 
 ```{bash}
