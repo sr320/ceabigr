@@ -695,24 +695,34 @@ log10(transcriptional noise) ~ gene body methylation + log2(gene expression) + l
 
 ```{r}
 transNoiseFem <- lm(data = femMethExpCV,
-                    log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + log2(avg_exp + 1) + log10(length) + as.factor(treatment) + as.factor(treatment)*avg_meth + as.factor(treatment)*log2(avg_exp + 1))
-summary(transNoiseFem) #Length and meth*treatment not significant.
+                    log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + poly(log2(avg_exp + 1), 2) + log10(length) + as.factor(treatment) + as.factor(treatment)*avg_meth + as.factor(treatment)*poly(log2(avg_exp + 1), 2)) #Model with quadratic relationship between expression and transcriptional noise
+summary(transNoiseFem) #All significant
 ```
 
 ```{r}
 transNoiseFem2 <- lm(data = femMethExpCV,
-                    log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + log2(avg_exp + 1) + as.factor(treatment) + as.factor(treatment)*log2(avg_exp + 1))
-summary(transNoiseFem2) #All remaining parameters significant
+                    log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + log2(avg_exp + 1) + log10(length) + as.factor(treatment) + as.factor(treatment)*avg_meth + as.factor(treatment)*log2(avg_exp + 1)) #Try model without polynomial relationship between expression and transcriptional noise
+summary(transNoiseFem2) #Length and meth*treatment not significant.
 ```
 
 ```{r}
-write.csv(as.data.frame(summary(transNoiseFem2)[4]), "transcriptional-noise/fem-model-output.csv", quote = FALSE) #Save model output
+transNoiseFem3 <- lm(data = femMethExpCV,
+                    log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + log2(avg_exp + 1) + as.factor(treatment) + as.factor(treatment)*log2(avg_exp + 1)) #Remove insignificant terms from transNoiseFem2
+summary(transNoiseFem3) #All terms significant
 ```
 
 ```{r}
-hist(residuals(transNoiseFem2)) #Residuals normally distributed
+AIC(transNoiseFem, transNoiseFem2, transNoiseFem3) #Compare AIC between models. The first model with the polynomial relationship between expression and transcriptional noise has the lowest AIC, so it will be used as the final model.
+```
 
-plot(fitted(transNoiseFem2), residuals(transNoiseFem2)) #Variance of residuals roughly consistent for all observations. Borderline heteroscedasticity but probably okay...?
+```{r}
+write.csv(broom::tidy(transNoiseFem), "transcriptional-noise/fem-model-output.csv", quote = FALSE) #Save model output
+```
+
+```{r}
+hist(residuals(transNoiseFem)) #Residuals normally distributed
+
+plot(fitted(transNoiseFem), residuals(transNoiseFem)) #Variance of residuals roughly consistent for all observations. Borderline heteroscedasticity but probably okay...?
 abline(h = 0, lty = 2, col = "grey")
 ```
 
@@ -721,12 +731,12 @@ abline(h = 0, lty = 2, col = "grey")
 Partial R<sup>2</sup>, or the coefficient of partial determination, can tell us how much of the variation in the response variable is explained by the explanatory variable. This can tell us how "important" one variable is in the model.
 
 ```{r}
-anova(transNoiseFem2)
+anova(transNoiseFem)
 ```
 
 ```{r}
-transNoiseFemVP <- data.frame("variable" = rownames(anova(transNoiseFem2)),
-                              "SumSq" = anova(transNoiseFem2)[[2]],
+transNoiseFemVP <- data.frame("variable" = rownames(anova(transNoiseFem)),
+                              "SumSq" = anova(transNoiseFem)[[2]],
                               "partialR2" = NA) #Create dataframe with variable names and sum of squares information from ANOVA output
 
 for (i in 1:nrow(transNoiseFemVP)) {
@@ -790,8 +800,8 @@ femMethExpCV %>%
   ggplot(aes(x = log2(avg_exp + 1), y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
   scale_colour_manual(values = c(plotColors[5], plotColors[8])) +
   labs(x = "FPKM", y = "Transcriptional Noise") +
-  geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], size = 1.5, na.rm = TRUE) +
-  geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], size = 1.5, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], linewidth = 1.5, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], linewidth = 1.5, na.rm = TRUE) +
   facet_wrap(. ~ GOslim, ncol = 3) +
   theme_classic() + theme(legend.position = "none",
                           strip.background = element_rect(linewidth = 0))
@@ -981,7 +991,7 @@ femTreatmentPlot <- femMethExpCV %>%
                     guide = "none") +
   scale_alpha_continuous(guide = "none") +
   geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
-  labs(x = "Treatment", y = "Transcriptional Noise", title = expression(paste("A.   ", beta, " = -0.03, t = -75.05, p < ", 10^-15))) +
+  labs(x = "Treatment", y = "Transcriptional Noise", title = expression(paste("A.   ", beta, " = -0.10, t = -43.75, p = 0"))) +
   stat_summary(aes(group = 1), fun = median, geom = "line", col = "black", lty = 2) +
   theme_classic(base_size = 15)
 
@@ -992,7 +1002,7 @@ femFPKMPlot <- femMethExpCV %>%
   scale_colour_manual(values = c(plotColors[4], plotColors[8]),
                       guide = "none") +
   scale_alpha_continuous(guide = "none") +
-  labs(x = "FPKM", y = "", title = expression(paste("B.   ", beta, " = -0.04, t = -47.82, p < ", 10^-15))) +
+  labs(x = "FPKM", y = "", title = expression(paste("B.   ", beta, " = -19.26, t = -51.29, p = 0"))) +
   geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], linewidth = 2, na.rm = TRUE) +
   geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], linewidth = 2, na.rm = TRUE) +
   theme_classic(base_size = 15)
@@ -1004,7 +1014,7 @@ femMethPlot <- femMethExpCV %>%
   scale_colour_manual(values = c(plotColors[4], plotColors[8]),
                       guide = "none") +
   scale_alpha_continuous(guide = "none") +
-  labs(x = "Methylation (%)", y = "Transcriptional Noise", title = expression(paste("C.   ", beta, " = -0.004, t = -78.35, p < ", 10^-15))) +
+  labs(x = "Methylation (%)", y = "Transcriptional Noise", title = expression(paste("C.   ", beta, " = -0.004, t = -56.32, p = 0"))) +
   geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], linewidth = 2, na.rm = TRUE) +
   geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], linewidth = 2, na.rm = TRUE) +
   theme_classic(base_size = 15)
@@ -1016,7 +1026,7 @@ femCVMethPlot <- femMethExpCV %>%
   scale_colour_manual(values = c(plotColors[4], plotColors[8]),
                       guide = "none") +
   scale_alpha_continuous(guide = "none") +
-  labs(x = "CV Methylation", y = "", title = expression(paste("D.   ", beta, " = 0.11, t = 38.26, p < ", 10^-15))) +
+  labs(x = "CV Methylation", y = "", title = expression(paste("D.   ", beta, " = 0.10, t = 35.44, p < 1.87 x", 10^-272))) +
   geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], linewidth = 2, na.rm = TRUE) +
   geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], linewidth = 2, na.rm = TRUE) +
   theme_classic(base_size = 15)
@@ -1280,7 +1290,7 @@ ggsave("male-meth-CVMeth-xy.pdf", height = 8.5, width = 11)
 
 ```{r}
 transNoiseMale <- lm(data = maleMethExpCV,
-                     log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + log2(avg_exp + 1) + log10(length) + as.factor(treatment) + as.factor(treatment)*avg_meth + as.factor(treatment)*log2(avg_exp + 1))
+                     log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + poly(log2(avg_exp + 1), 2) + log10(length) + as.factor(treatment) + as.factor(treatment)*avg_meth + as.factor(treatment)*poly(log2(avg_exp + 1), 2))
 summary(transNoiseMale) #Significant effect of all except length, treatment, and FPKM x treatment
 ```
 
@@ -1321,8 +1331,8 @@ anova(transNoiseMale2)
 
 ```{r}
 transNoiseMale2VP <- data.frame("variable" = rownames(anova(transNoiseMale2)),
-                              "SumSq" = anova(transNoiseMale2)[[2]],
-                              "partialR2" = NA) #Create dataframe with variable names and sum of squares information from ANOVA output
+                                "SumSq" = anova(transNoiseMale2)[[2]],
+                                "partialR2" = NA) #Create dataframe with variable names and sum of squares information from ANOVA output
 
 for (i in 1:nrow(transNoiseMale2VP)) {
   transNoiseMale2VP$partialR2[i] <- transNoiseMale2VP$SumSq[i] / sum(transNoiseMale2VP$SumSq)
