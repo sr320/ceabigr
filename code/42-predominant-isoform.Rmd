@@ -1304,7 +1304,7 @@ ggsave("male-meth-CVMeth-xy.pdf", height = 8.5, width = 11)
 
 ```{r}
 transNoiseMale <- lm(data = maleMethExpCV,
-                     log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + I((log2(avg_exp + 1)^2)) + log2(avg_exp + 1) + log10(length) + as.factor(treatment) + as.factor(treatment)*avg_meth + as.factor(treatment)*I((log2(avg_exp + 1)^2)) + as.factor(treatment)* log2(avg_exp + 1)) #Model with polynomial relationship bewteen expression and transcriptional noise
+                     log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + I((log2(avg_exp + 1)^2)) + log2(avg_exp + 1) + log10(length) + as.factor(treatment) + as.factor(treatment)*avg_meth + as.factor(treatment)*I((log2(avg_exp + 1)^2)) + as.factor(treatment)* log2(avg_exp + 1)) #Model with polynomial relationship between expression and transcriptional noise
 summary(transNoiseMale) #All terms significant
 ```
 
