@@ -695,7 +695,7 @@ log10(transcriptional noise) ~ gene body methylation + log2(gene expression) + l
 
 ```{r}
 transNoiseFem <- lm(data = femMethExpCV,
-                    log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + poly(log2(avg_exp + 1), 2) + log10(length) + as.factor(treatment) + as.factor(treatment)*avg_meth + as.factor(treatment)*poly(log2(avg_exp + 1), 2)) #Model with quadratic relationship between expression and transcriptional noise
+                    log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + I((log2(avg_exp + 1)^2)) + log2(avg_exp + 1) + log10(length) + as.factor(treatment) + as.factor(treatment)*avg_meth + as.factor(treatment)*I((log2(avg_exp + 1)^2)) + as.factor(treatment)* log2(avg_exp + 1)) #Model with quadratic relationship between expression and transcriptional noise
 summary(transNoiseFem) #All significant
 ```
 
@@ -809,7 +809,7 @@ ggsave("transcriptional-noise/figures/fem-TN-FPKM-GOslim.pdf", height = 8.5, wid
 ```
 
 ```{r}
-maleMethExpCV %>%
+femMethExpCV %>%
   ggplot(aes(x = log2(avg_exp + 1), y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
   scale_colour_manual(values = c(plotColors[5], plotColors[8]),
                       name = "Treatment",
@@ -819,7 +819,7 @@ maleMethExpCV %>%
   geom_smooth(data = (. %>% filter(treatment == "control")), formula = y ~ poly(x,2), colour = plotColors[7], linewidth = 2, na.rm = TRUE) +
   geom_smooth(data = (. %>% filter(treatment == "exposed")), formula = y ~ poly(x,2), colour = plotColors[9], linewidth = 2, na.rm = TRUE) +
   theme_classic()
-ggsave("transcriptional-noise/figures/male-TN-FPKM-squared.pdf", height = 8.5, width = 11)
+ggsave("transcriptional-noise/figures/fem-TN-FPKM-squared.pdf", height = 8.5, width = 11)
 ```
 
 ```{r}
@@ -1304,7 +1304,7 @@ ggsave("male-meth-CVMeth-xy.pdf", height = 8.5, width = 11)
 
 ```{r}
 transNoiseMale <- lm(data = maleMethExpCV,
-                     log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + poly(log2(avg_exp + 1), 2) + log10(length) + as.factor(treatment) + as.factor(treatment)*avg_meth + as.factor(treatment)*poly(log2(avg_exp + 1), 2)) #Model with polynomial relationship bewteen expression and transcriptional noise
+                     log10(CoV_FPKM) ~ avg_meth + log10(CoV_Meth) + I((log2(avg_exp + 1)^2)) + log2(avg_exp + 1) + log10(length) + as.factor(treatment) + as.factor(treatment)*avg_meth + as.factor(treatment)*I((log2(avg_exp + 1)^2)) + as.factor(treatment)* log2(avg_exp + 1)) #Model with polynomial relationship bewteen expression and transcriptional noise
 summary(transNoiseMale) #All terms significant
 ```
 
