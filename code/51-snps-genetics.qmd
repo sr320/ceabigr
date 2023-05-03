@@ -1,0 +1,56 @@
+---
+title: "Where are the SNPs"
+author: Steven Roberts
+date: "`r format(Sys.time(), '%d %B, %Y')`"  
+output: 
+  html_document:
+    theme: readable
+    highlight: zenburn
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    code_download: true
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(tidyverse)
+library(kableExtra)
+library(DESeq2)
+library(pheatmap)
+library(RColorBrewer)
+library(data.table)
+library(DT)
+library(Biostrings)
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = FALSE,         # Evaluate code chunks
+  warning = FALSE,     # Hide warnings
+  message = FALSE,     # Hide messages
+  fig.width = 6,       # Set plot width in inches
+  fig.height = 4,      # Set plot height in inches
+  fig.align = "center" # Align plots to the center
+)
+```
+
+# Background
+
+https://github.com/sr320/ceabigr/issues/78
+
+At minimum, identifying C->T SNPs on both strands so we have a list of SNPs from the EpiDiverse output.
+
+Other tasks that build upon that:
+
+- Compare Bs-snper and EpiDiverse SNP lists. Determine which source our final C->T SNP list should come from
+- Remove SNPs from methylKit analysis
+- Remove SNPs and recalculate average gene methylation and CV of gene methylation for modeling analyses
+
+---
+
+
+
+
+
+
+
