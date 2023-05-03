@@ -19,3 +19,29 @@ head(comp)
 ```{r}
 str(comp)
 ```
+
+```{r}
+meta <- read_csv("../data/adult-meta.csv")
+```
+
+```{r}
+oyster_row <- inner_join(meta, comp, by = c('OldSample.ID' = 'sample'))
+```
+
+
+```{r}
+head(oyster_row)
+```
+
+```{r}
+write.table(oyster_row, file = "../output/45-oyster-table/oyster-wide.tab",quote = F, row.names = F, sep = "\t")
+```
+
+```{r}
+write.table(oyster_row, file = "../output/45-oyster-table/oyster-wide.csv",quote = F, row.names = F, sep = ",")
+```
+
+```{bash}
+head -n +3 ../output/45-oyster-table/oyster-wide.tab
+```
+
