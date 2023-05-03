@@ -1,0 +1,89 @@
+---
+title: "44-mofa"
+output: html_document
+---
+
+
+Walking throught tutorial
+https://raw.githack.com/bioFAM/MOFA2_tutorials/master/R_tutorials/getting_started_R.html
+
+
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("MOFA2")
+```
+
+```{r}
+library(data.table)
+library(MOFA2)
+```
+
+
+```{r}
+data <- make_example_data(
+  n_views = 2, 
+  n_samples = 200, 
+  n_features = 1000, 
+  n_factors = 10
+)[[1]]
+
+lapply(data,dim)
+```
+
+```{r}
+MOFAobject <- create_mofa(data)
+
+```
+
+
+
+
+```{r}
+plot_data_overview(MOFAobject)
+```
+
+
+```{r}
+data_opts <- get_default_data_options(MOFAobject)
+head(data_opts)
+```
+
+```{r}
+model_opts <- get_default_model_options(MOFAobject)
+head(model_opts)
+```
+
+```{r}
+train_opts <- get_default_training_options(MOFAobject)
+head(train_opts)
+```
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+MOFAobject <- prepare_mofa(
+  object = MOFAobject,
+  data_options = data_opts,
+  model_options = model_opts,
+  training_options = train_opts
+)
+```
+
+
+```{r}
+outfile = file.path("output/model.hdf5")
+MOFAobject.trained <- run_mofa(MOFAobject, outfile)
+```
+
+
