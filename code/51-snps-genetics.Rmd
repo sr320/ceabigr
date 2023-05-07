@@ -1,0 +1,194 @@
+---
+title: "Where are the SNPs?"
+author: Steven Roberts
+date: "`r format(Sys.time(), '%d %B, %Y')`" 
+output: 
+  github_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    html_preview: true
+  html_document:
+    theme: readable
+    highlight: zenburn
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    code_download: true
+---   
+
+
+
+
+```{r setup, include=FALSE}
+library(knitr)
+library(tidyverse)
+library(kableExtra)
+library(DESeq2)
+library(pheatmap)
+library(RColorBrewer)
+library(data.table)
+library(DT)
+library(Biostrings)
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = FALSE,         # Evaluate code chunks
+  warning = FALSE,     # Hide warnings
+  message = FALSE,     # Hide messages
+  fig.width = 6,       # Set plot width in inches
+  fig.height = 4,      # Set plot height in inches
+  fig.align = "center" # Align plots to the center
+)
+```
+
+# Background
+
+<https://github.com/sr320/ceabigr/issues/78>
+
+At minimum, identifying C-\>T SNPs on both strands so we have a list of SNPs from the EpiDiverse output.
+
+Other tasks that build upon that:
+
+-   Compare Bs-snper and EpiDiverse SNP lists. Determine which source our final C-\>T SNP list should come from
+-   Remove SNPs from methylKit analysis
+-   Remove SNPs and recalculate average gene methylation and CV of gene methylation for modeling analyses
+
+------------------------------------------------------------------------
+
+There are two ways we have used to get genetic information from DNA methylation data. - EPIDiverse - BS-SNPer
+
+# Epidiverse
+
+Sam ran Epidiverse
+
+<https://github.com/sr320/ceabigr/issues/69#issuecomment-1258238481>
+
+-   [Notebook](https://robertslab.github.io/sams-notebook/2022/09/21/BSseq-SNP-Analysis-Nextflow-EpiDiverse-SNP-Pipeline-for-C.virginica-CEABIGR-BSseq-data.html)
+-   VCF Directory - <https://gannet.fish.washington.edu/Atumefaciens/20220921-cvir-ceabigr-nextflow-epidiverse-snp/snps/vcf/>
+-   results dir - <https://gannet.fish.washington.edu/Atumefaciens/20220921-cvir-ceabigr-nextflow-epidiverse-snp/snps/stats/>
+
+![](http://gannet.fish.washington.edu/seashell/snaps/Monosnap_Compiling_genetic_data__Issue_69__sr320ceabigr_2023-05-03_10-08-58.png)
+
+Next step for capturing SNP info in Epidiverse Workflow is merging.
+
+# BS-SNPer
+
+## draft paper
+
+![](<http://gannet.fish.washington.edu/seashell/snaps/Monosnap_C._virginica_Methylation_and_Gene_Expression_-_Google_Docs_2023-05-03_10-38-20.png>)
+
+## Wiki
+
+10x coverage files (SNP corrected)
+
+at <https://gannet.fish.washington.edu/seashell/ceabigr/output/methylation-landscape/>
+
+[sampleID]\_R1_val_1\_10x.SNPcorr.bedgraph
+
+## issue (backtracking)
+
+see <https://github.com/sr320/ceabigr/issues/10>
+
+![](http://gannet.fish.washington.edu/seashell/snaps/Monosnap_Index_of_seashellbu-moxscrubbed_2023-05-03_10-33-53.png)
+
+``` bash
+# Directories and programs
+bismark_dir="/gscratch/srlab/programs/Bismark-0.22.3/"
+bowtie2_dir="/gscratch/srlab/programs/bowtie2-2.3.4.1-linux-x86_64/"
+samtools="/gscratch/srlab/programs/samtools-1.9/samtools/"
+reads_dir="/gscratch/srlab/sr320/data/cvirg/"
+fastqc="/gscratch/srlab/programs/fastqc_v0.11.9/fastqc"
+genome_folder="/gscratch/srlab/sr320/data/Cvirg-genome/"
+bcftools_dir="/gscratch/srlab/programs/bcftools-1.9/"
+htlslib_dir="/gscratch/srlab/programs/htslib-1.9/"
+
+source /gscratch/srlab/programs/scripts/paths.sh
+
+# 
+# Ah sorry, I always forget about this with bcftools.
+# 
+#Loop through files and compress like this:
+# 
+# bcftools view -Oz -o compressed.vcf.gz plain.vcf
+# htsfile compressed.vcf.gz
+# bcftools index compressed.vcf.gz
+
+
+
+
+# FILES=$(ls *vcf)
+# 
+# for file in ${FILES}
+# do
+#     NAME=$(echo ${file} | awk -F "." '{print $1}')
+#     echo ${NAME}
+#   
+#     /gscratch/srlab/programs/bcftools-1.9/bcftools view  -O z -o ${NAME}.compressed.vcf.gz \
+#     ${NAME}.SNP-results.vcf 
+#     /gscratch/srlab/programs/htslib-1.9/htsfile ${NAME}.compressed.vcf.gz
+#     /gscratch/srlab/programs/bcftools-1.9/bcftools index ${NAME}.compressed.vcf.gz
+# done
+
+
+
+
+
+# 
+# 
+# /gscratch/srlab/programs/bcftools-1.9/bcftools  merge \
+# 12M_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 44F_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 13M_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 48M_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 16F_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 50F_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 19F_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 52F_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 22F_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 53F_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 23M_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 54F_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 29F_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 59M_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 31M_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 64M_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 35F_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 6M_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 36F_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 76F_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 39F_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 77F_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 3F_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 7M_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 41F_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# 9M_R1_val_1_bismark_bt2_pe.compressed.vcf.gz \
+# --merge all \
+# --threads 20 \
+# -O v \
+# -o Cv_10x_merged.vcf
+
+
+
+/gscratch/srlab/programs/vcftools-0.1.16/bin/vcftools \
+--vcf Cv_10x_merged.vcf \
+--recode --recode-INFO-all \
+--min-alleles 2 --max-alleles 2 \
+--max-missing 0.5 \
+--mac 2 \
+--out Cv_10x_merged.filtered
+```
+
+Merged VCF - 16G <https://gannet.fish.washington.edu/seashell/bu-mox/scrubbed/021722-vcfmerge/Cv_10x_merged.vcf>
+
+filtered file.. <https://github.com/sr320/ceabigr/blob/main/data/Cv_10x_fxmerge_05.recode.vcf>
+
+```{r, engine='bash', eval=TRUE}
+head ../data/Cv_10x_fxmerge_05.recode.vcf
+
+```
+
+```{r, engine='bash', eval=TRUE}
+tail -2 ../data/Cv_10x_fxmerge_05.recode.vcf
+
+```
