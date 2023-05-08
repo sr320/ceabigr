@@ -1,10 +1,12 @@
 Where are the SNPs?
 ================
 Steven Roberts
-05 May, 2023
+07 May, 2023
 
 - <a href="#1-background" id="toc-1-background">1 Background</a>
 - <a href="#2-epidiverse" id="toc-2-epidiverse">2 Epidiverse</a>
+  - <a href="#21-merging-epidiverse-vcfs"
+    id="toc-21-merging-epidiverse-vcfs">2.1 Merging Epidiverse VCFs</a>
 - <a href="#3-bs-snper" id="toc-3-bs-snper">3 BS-SNPer</a>
   - <a href="#31-draft-paper" id="toc-31-draft-paper">3.1 draft paper</a>
   - <a href="#32-wiki" id="toc-32-wiki">3.2 Wiki</a>
@@ -45,7 +47,57 @@ Sam ran Epidiverse
 
 ![](http://gannet.fish.washington.edu/seashell/snaps/Monosnap_Compiling_genetic_data__Issue_69__sr320ceabigr_2023-05-03_10-08-58.png)
 
+## 2.1 Merging Epidiverse VCFs
+
 Next step for capturing SNP info in Epidiverse Workflow is merging.
+
+``` bash
+cd ../data/big
+wget -r \
+--no-directories --no-parent \
+-P . \
+-A "*vcf.g*" https://gannet.fish.washington.edu/Atumefaciens/20220921-cvir-ceabigr-nextflow-epidiverse-snp/snps/vcf/
+```
+
+``` bash
+
+
+/home/shared/bcftools-1.14/bcftools  merge \
+--force-samples \
+../data/big/*.vcf.gz \
+--merge all \
+--threads 40 \
+-O v \
+-o ../output/51-SNPs/EpiDiv_merged.vcf
+```
+
+``` bash
+head ../output/51-SNPs/EpiDiv_merged.vcf
+tail -2 ../output/51-SNPs/EpiDiv_merged.vcf
+```
+
+    ## ##fileformat=VCFv4.2
+    ## ##FILTER=<ID=PASS,Description="All filters passed">
+    ## ##fileDate=20220924
+    ## ##source=freeBayes v1.3.2-dirty
+    ## ##reference=GCF_002022765.2_C_virginica-3.0_genomic.fa
+    ## ##contig=<ID=NC_035780.1,length=65668440>
+    ## ##contig=<ID=NC_035781.1,length=61752955>
+    ## ##contig=<ID=NC_035782.1,length=77061148>
+    ## ##contig=<ID=NC_035783.1,length=59691872>
+    ## ##contig=<ID=NC_035784.1,length=98698416>
+    ## NC_007175.2  17243   .   G   T   24.3275 .   DPB=2;EPPR=0;GTI=0;MQMR=0;NS=1;NUMALT=1;ODDS=4.55889;PAIREDR=0;PQR=0;PRO=0;QR=0;RO=0;RPPR=0;SRF=0;SRP=0;SRR=0;DP=4;AB=0;ABP=0;AF=1;AO=2;CIGAR=1X;DPRA=0;EPP=3.0103;LEN=1;MEANALT=1;MQM=21.5;PAIRED=1;PAO=0;PQA=0;QA=72;RPL=2;RPP=7.35324;RPR=0;RUN=1;SAF=1;SAP=3.0103;SAR=1;TYPE=snp;AN=4;AC=4  GT:GQ:DP:AD:RO:QR:AO:QA:GL  ./.:.:.:.:.:.:.:.:. 1/1:18:2:0,2:0:0:2:48:-3.78608,-0.60206,0   ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. 1/1:20:2:0,2:0:0:2:72:-3.63228,-0.60206,0   ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:.
+    ## NC_007175.2  17244   .   C   A,T 99.609  .   DPB=18;EPPR=16.5402;GTI=0;MQMR=32.6923;NS=1;NUMALT=2;ODDS=10.1722;PAIREDR=1;PQR=0;PRO=0;QR=443;RO=13;RPPR=31.2394;SRF=11;SRP=16.5402;SRR=2;DP=636;AB=0.264706,0.22;ABP=19.3602,37.059;AF=0.5,0.5;AO=9,11;CIGAR=1X,1X;DPRA=0,0;EPP=5.18177,12.6832;LEN=1,1;MEANALT=3,2;MQM=22.5556,27.5455;PAIRED=1,1;PAO=0,0;PQA=0,0;QA=218,338;RPL=9,11;RPP=22.5536,26.8965;RPR=0,0;RUN=1,1;SAF=6,9;SAP=5.18177,12.6832;SAR=3,2;TYPE=snp,snp;AN=32;AC=9,7  GT:GQ:DP:AD:RO:QR:AO:QA:GL  ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. 0/1:0:18:13,3,2:13:443:3,2:65,62:-0.3642,0,-28.1339,-0.68853,-25.4702,-29.1527  0/1:14:58:34,16,.:34:1198:16,.:373,.:-11.3765,0,-73.9751,.,.,.  0/2:27:33:15,.,10:15:543:.,10:.,289:-10.3803,.,.,0,.,-28.2326   ./.:.:.:.:.:.:.:.:. 0/1:0:14:8,3,3:8:296:3,3:56,86:-0.173115,0,-15.8277,-0.939605,-15.1184,-16.7429 ./.:.:.:.:.:.:.:.:. 0/2:94:61:31,.,19:31:1147:.,19:.,580:-19.9187,.,.,0,.,-66.5717  0/1:68:46:22,16,.:22:802:16,.:413,.:-16.0383,0,-45.3192,.,.,.   0/1:95:78:38,27,.:38:1282:27,.:642,.:-22.4786,0,-68.4162,.,.,.  0/1:64:45:18,18,.:18:654:18,.:461,.:-18.0316,0,-33.1576,.,.,.   0/1:0:20:12,5,3:12:406:5,3:117,91:-3.86175,0,-23.2009,-1.54201,-18.7955,-25.3809    0/2:0:35:23,4,7:23:801:4,7:74,209:-4.79192,-7.31508,-52.6892,0,-42.2138,-44.5142    ./.:.:.:.:.:.:.:.:. 0/2:3:27:14,.,5:14:518:.,5:.,148:-6.30832,.,.,0,.,-28.3683  0/1:0:11:7,3,.:7:259:3,.:72,.:-2.47552,0,-13.1431,.,.,. 0/2:4:52:26,.,10:26:926:.,10:.,294:-13.4825,.,.,0,.,-47.589 0/1:0:34:21,9,3:21:725:9,3:218,93:-4.45192,0,-37.6367,-3.99214,-33.5854,-43.5048    ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. 0/2:92:54:29,.,14:29:1035:.,14:.,422:-18.2443,.,.,0,.,-56.7053  0/2:29:50:25,.,11:25:865:.,11:.,338:-12.416,.,.,0,.,-52.8617    ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:.
+
+``` bash
+/home/shared/vcftools-0.1.16/bin/vcftools \
+--vcf ../output/51-SNPs/EpiDiv_merged.vcf \
+--recode --recode-INFO-all \
+--min-alleles 2 --max-alleles 2 \
+--max-missing 0.5 \
+--mac 2 \
+--out ../output/51-SNPs/EpiDiv_merged.filtered.vcf
+```
 
 # 3 BS-SNPer
 

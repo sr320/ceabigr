@@ -16,10 +16,7 @@ output:
     number_sections: true
     code_folding: show
     code_download: true
----   
-
-
-
+---
 
 ```{r setup, include=FALSE}
 library(knitr)
@@ -70,13 +67,54 @@ Sam ran Epidiverse
 
 ![](http://gannet.fish.washington.edu/seashell/snaps/Monosnap_Compiling_genetic_data__Issue_69__sr320ceabigr_2023-05-03_10-08-58.png)
 
+## Merging Epidiverse VCFs
+
 Next step for capturing SNP info in Epidiverse Workflow is merging.
+
+```{r, engine='bash'}
+cd ../data/big
+wget -r \
+--no-directories --no-parent \
+-P . \
+-A "*vcf.g*" https://gannet.fish.washington.edu/Atumefaciens/20220921-cvir-ceabigr-nextflow-epidiverse-snp/snps/vcf/
+
+```
+
+```{r, engine='bash'}
+
+
+/home/shared/bcftools-1.14/bcftools  merge \
+--force-samples \
+../data/big/*.vcf.gz \
+--merge all \
+--threads 40 \
+-O v \
+-o ../output/51-SNPs/EpiDiv_merged.vcf
+```
+
+```{r, engine='bash', eval=TRUE}
+head ../output/51-SNPs/EpiDiv_merged.vcf
+tail -2 ../output/51-SNPs/EpiDiv_merged.vcf
+```
+
+```{r, engine='bash'}
+/home/shared/vcftools-0.1.16/bin/vcftools \
+--vcf ../output/51-SNPs/EpiDiv_merged.vcf \
+--recode --recode-INFO-all \
+--min-alleles 2 --max-alleles 2 \
+--max-missing 0.5 \
+--mac 2 \
+--out ../output/51-SNPs/EpiDiv_merged.filtered.vcf
+
+```
+
+
 
 # BS-SNPer
 
 ## draft paper
 
-![](<http://gannet.fish.washington.edu/seashell/snaps/Monosnap_C._virginica_Methylation_and_Gene_Expression_-_Google_Docs_2023-05-03_10-38-20.png>)
+![](http://gannet.fish.washington.edu/seashell/snaps/Monosnap_C._virginica_Methylation_and_Gene_Expression_-_Google_Docs_2023-05-03_10-38-20.png)
 
 ## Wiki
 
