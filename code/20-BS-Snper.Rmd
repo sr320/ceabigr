@@ -26,3 +26,9 @@ cd ../data
     --methchh ../output/20-BS-Snper/CHH-meth-info.tab \
     > ../output/20-BS-Snper/SNP.out 2> ../output/20-BS-Snper/ERR.log
 ```
+
+```{bash}
+tail ../output/20-BS-Snper/SNP.out
+```
+
+

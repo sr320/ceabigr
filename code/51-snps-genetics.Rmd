@@ -16,10 +16,7 @@ output:
     number_sections: true
     code_folding: show
     code_download: true
----   
-
-
-
+---
 
 ```{r setup, include=FALSE}
 library(knitr)
@@ -70,13 +67,177 @@ Sam ran Epidiverse
 
 ![](http://gannet.fish.washington.edu/seashell/snaps/Monosnap_Compiling_genetic_data__Issue_69__sr320ceabigr_2023-05-03_10-08-58.png)
 
+## Merging Epidiverse VCFs
+
 Next step for capturing SNP info in Epidiverse Workflow is merging.
+
+```{r, engine='bash'}
+cd ../data/big
+wget -r \
+--no-directories --no-parent \
+-P . \
+-A "*vcf.g*" https://gannet.fish.washington.edu/Atumefaciens/20220921-cvir-ceabigr-nextflow-epidiverse-snp/snps/vcf/
+
+```
+
+```{r, engine='bash'}
+
+
+/home/shared/bcftools-1.14/bcftools  merge \
+--force-samples \
+../data/big/*.vcf.gz \
+--merge all \
+--threads 40 \
+-O v \
+-o ../output/51-SNPs/EpiDiv_merged.vcf
+```
+
+```{r, engine='bash', eval=TRUE}
+head ../output/51-SNPs/EpiDiv_merged.vcf
+tail -2 ../output/51-SNPs/EpiDiv_merged.vcf
+```
+
+```{r, engine='bash'}
+/home/shared/vcftools-0.1.16/bin/vcftools \
+--vcf ../output/51-SNPs/EpiDiv_merged.vcf \
+--recode --recode-INFO-all \
+--min-alleles 2 --max-alleles 2 \
+--max-missing 0.5 \
+--mac 2 \
+--out ../output/51-SNPs/EpiDiv_merged.f
+
+```
+After filtering, kept 26 out of 26 Individuals
+Outputting VCF file...
+After filtering, kept 2343637 out of a possible 144873997 Sites
+Run Time = 897.00 seconds
+
+
+```{r, engine='bash', eval=TRUE}
+head ../output/51-SNPs/EpiDiv_merged.f.recode.vcf
+tail -2 ../output/51-SNPs/EpiDiv_merged.f.recode.vcf
+```
+
+ngsDist can also be used to compute genetic distance matrices from next-generation sequencing (NGS) data. ngsDist is a part of the ngsTools suite (https://github.com/fgvieira/ngsTools) that provides various tools for analyzing NGS data.
+
+Convert the VCF file to genotype likelihoods file (GLF) or binary alignment/map (BAM) format: ngsDist requires input data in GLF or BAM format. If you have a BAM file, you can use the 'angsd' tool from ngsTools to compute genotype likelihoods. If you have a VCF file, you can use 'bcftools' to convert it to GLF format. Here's an example of how to convert a VCF file to GLF format using bcftools:
+
+```
+bcftools query -e 'GT="mis" || GT="hom"' -f '[\%SAMPLE\t%CHROM\t%POS\t%REF\t%ALT\t%GL\n]' input.vcf > input.glf
+```
+
+```{r, engine='bash'}
+/home/shared/bcftools-1.14/bcftools query \
+-e 'GT="mis" || GT="hom"' -f '[%SAMPLE\t%CHROM\t%POS\t%REF\t%ALT\t%GL\n]' ../output/51-SNPs/EpiDiv_merged.f.recode.vcf > ../output/51-SNPs/EpiDiv_merged.f.recode_mishom.glf
+```
+
+
+```{bash}
+head -2 ../output/51-SNPs/EpiDiv_merged.f.recode_mishom.glf
+tail -2 ../output/51-SNPs/EpiDiv_merged.f.recode_mishom.glf
+
+```
+
+
+
+
+```{r, engine='bash'}
+/home/shared/bcftools-1.14/bcftools query \
+-f'[%CHROM\t%POS\t%REF\t%ALT\t%GL\n]' ../output/51-SNPs/EpiDiv_merged.f.recode.vcf > ../output/51-SNPs/likliehood.txt
+```
+
+```{r, engine='bash'}
+tail ../output/51-SNPs/likliehood.txt
+```
+
+
+
+```{python}
+input_file = "../output/51-SNPs/likliehood.txt"
+output_file = "../output/51-SNPs/EpiDiv_merged.f.recode.glf"
+
+with open(input_file, "r") as infile, open(output_file, "w") as outfile:
+    for line in infile:
+        fields = line.strip().split("\t")
+        chrom, pos, ref, alt, gl = fields
+        gl_values = gl.split(",")
+        outfile.write(f"{chrom}\t{pos}\t{ref}\t{alt}\t{' '.join(gl_values)}\n")
+
+```
+
+```{r, engine='bash'}
+tail ../output/51-SNPs/EpiDiv_merged.f.recode.glf
+```
+
+
+
+
+
+
+```{r, engine='bash'}
+#/home/shared/ngsTools/angsd/angsd \
+#-doGlF 2 -doMajorMinor 1 -GL 2 \
+#-out ../output/51-SNPs/EpiDiv_merged.f.recode.glf \
+#-vcf-pl ../output/51-SNPs/EpiDiv_merged.f.recode.vcf
+
+```
+
+
+
+
+```{r, engine='bash', eval = TRUE}
+head -3 ../output/51-SNPs/EpiDiv_merged.f.recode.glf
+tail -3 ../output/51-SNPs/EpiDiv_merged.f.recode.glf
+```
+
+
+
+
+
+
+
+
+ Create a sites file: ngsDist requires a sites file, which is a tab-separated file containing information about the sites to be analyzed. You can create this file from the filtered VCF file:
+
+```
+awk '{print $1"\t"$2}' filtered.recode.vcf > sites.txt
+```
+
+
+```{r, engine='bash'}
+awk '{print $1"\t"$2}' ../output/51-SNPs/EpiDiv_merged.f.recode.vcf \
+> ../output/51-SNPs/sites.txt
+```
+
+```{r, engine='bash'}
+#tail -1 ../output/51-SNPs/EpiDiv_merged.f.recode.vcf
+head -10 ../output/51-SNPs/sites.txt
+```
+
+```{r, engine='bash'}
+wc -l ../output/51-SNPs/sites.txt
+```
+
+
+
+4. Run ngsDist: Now, you can run ngsDist using the GLF or BAM file, and the sites file you created:
+
+```{r,engine='bash'}
+/home/shared/ngsTools/ngsDist/ngsDist --geno ../output/51-SNPs/EpiDiv_merged.f.recode.glf \ --probs --n_ind 26 \
+--n_sites 2343713 --out ../output/51-SNPs/genotype.txt
+```
+
+
+
+
+
+
 
 # BS-SNPer
 
 ## draft paper
 
-![](<http://gannet.fish.washington.edu/seashell/snaps/Monosnap_C._virginica_Methylation_and_Gene_Expression_-_Google_Docs_2023-05-03_10-38-20.png>)
+![](http://gannet.fish.washington.edu/seashell/snaps/Monosnap_C._virginica_Methylation_and_Gene_Expression_-_Google_Docs_2023-05-03_10-38-20.png)
 
 ## Wiki
 

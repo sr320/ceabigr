@@ -1,10 +1,12 @@
 Where are the SNPs?
 ================
 Steven Roberts
-05 May, 2023
+22 May, 2023
 
 - <a href="#1-background" id="toc-1-background">1 Background</a>
 - <a href="#2-epidiverse" id="toc-2-epidiverse">2 Epidiverse</a>
+  - <a href="#21-merging-epidiverse-vcfs"
+    id="toc-21-merging-epidiverse-vcfs">2.1 Merging Epidiverse VCFs</a>
 - <a href="#3-bs-snper" id="toc-3-bs-snper">3 BS-SNPer</a>
   - <a href="#31-draft-paper" id="toc-31-draft-paper">3.1 draft paper</a>
   - <a href="#32-wiki" id="toc-32-wiki">3.2 Wiki</a>
@@ -45,7 +47,175 @@ Sam ran Epidiverse
 
 ![](http://gannet.fish.washington.edu/seashell/snaps/Monosnap_Compiling_genetic_data__Issue_69__sr320ceabigr_2023-05-03_10-08-58.png)
 
+## 2.1 Merging Epidiverse VCFs
+
 Next step for capturing SNP info in Epidiverse Workflow is merging.
+
+``` bash
+cd ../data/big
+wget -r \
+--no-directories --no-parent \
+-P . \
+-A "*vcf.g*" https://gannet.fish.washington.edu/Atumefaciens/20220921-cvir-ceabigr-nextflow-epidiverse-snp/snps/vcf/
+```
+
+``` bash
+
+
+/home/shared/bcftools-1.14/bcftools  merge \
+--force-samples \
+../data/big/*.vcf.gz \
+--merge all \
+--threads 40 \
+-O v \
+-o ../output/51-SNPs/EpiDiv_merged.vcf
+```
+
+``` bash
+head ../output/51-SNPs/EpiDiv_merged.vcf
+tail -2 ../output/51-SNPs/EpiDiv_merged.vcf
+```
+
+    ## ##fileformat=VCFv4.2
+    ## ##FILTER=<ID=PASS,Description="All filters passed">
+    ## ##fileDate=20220924
+    ## ##source=freeBayes v1.3.2-dirty
+    ## ##reference=GCF_002022765.2_C_virginica-3.0_genomic.fa
+    ## ##contig=<ID=NC_035780.1,length=65668440>
+    ## ##contig=<ID=NC_035781.1,length=61752955>
+    ## ##contig=<ID=NC_035782.1,length=77061148>
+    ## ##contig=<ID=NC_035783.1,length=59691872>
+    ## ##contig=<ID=NC_035784.1,length=98698416>
+    ## NC_007175.2  17243   .   G   T   24.3275 .   DPB=2;EPPR=0;GTI=0;MQMR=0;NS=1;NUMALT=1;ODDS=4.55889;PAIREDR=0;PQR=0;PRO=0;QR=0;RO=0;RPPR=0;SRF=0;SRP=0;SRR=0;DP=4;AB=0;ABP=0;AF=1;AO=2;CIGAR=1X;DPRA=0;EPP=3.0103;LEN=1;MEANALT=1;MQM=21.5;PAIRED=1;PAO=0;PQA=0;QA=72;RPL=2;RPP=7.35324;RPR=0;RUN=1;SAF=1;SAP=3.0103;SAR=1;TYPE=snp;AN=4;AC=4  GT:GQ:DP:AD:RO:QR:AO:QA:GL  ./.:.:.:.:.:.:.:.:. 1/1:18:2:0,2:0:0:2:48:-3.78608,-0.60206,0   ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. 1/1:20:2:0,2:0:0:2:72:-3.63228,-0.60206,0   ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:.
+    ## NC_007175.2  17244   .   C   A,T 99.609  .   DPB=18;EPPR=16.5402;GTI=0;MQMR=32.6923;NS=1;NUMALT=2;ODDS=10.1722;PAIREDR=1;PQR=0;PRO=0;QR=443;RO=13;RPPR=31.2394;SRF=11;SRP=16.5402;SRR=2;DP=636;AB=0.264706,0.22;ABP=19.3602,37.059;AF=0.5,0.5;AO=9,11;CIGAR=1X,1X;DPRA=0,0;EPP=5.18177,12.6832;LEN=1,1;MEANALT=3,2;MQM=22.5556,27.5455;PAIRED=1,1;PAO=0,0;PQA=0,0;QA=218,338;RPL=9,11;RPP=22.5536,26.8965;RPR=0,0;RUN=1,1;SAF=6,9;SAP=5.18177,12.6832;SAR=3,2;TYPE=snp,snp;AN=32;AC=9,7  GT:GQ:DP:AD:RO:QR:AO:QA:GL  ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. 0/1:0:18:13,3,2:13:443:3,2:65,62:-0.3642,0,-28.1339,-0.68853,-25.4702,-29.1527  0/1:14:58:34,16,.:34:1198:16,.:373,.:-11.3765,0,-73.9751,.,.,.  0/2:27:33:15,.,10:15:543:.,10:.,289:-10.3803,.,.,0,.,-28.2326   ./.:.:.:.:.:.:.:.:. 0/1:0:14:8,3,3:8:296:3,3:56,86:-0.173115,0,-15.8277,-0.939605,-15.1184,-16.7429 ./.:.:.:.:.:.:.:.:. 0/2:94:61:31,.,19:31:1147:.,19:.,580:-19.9187,.,.,0,.,-66.5717  0/1:68:46:22,16,.:22:802:16,.:413,.:-16.0383,0,-45.3192,.,.,.   0/1:95:78:38,27,.:38:1282:27,.:642,.:-22.4786,0,-68.4162,.,.,.  0/1:64:45:18,18,.:18:654:18,.:461,.:-18.0316,0,-33.1576,.,.,.   0/1:0:20:12,5,3:12:406:5,3:117,91:-3.86175,0,-23.2009,-1.54201,-18.7955,-25.3809    0/2:0:35:23,4,7:23:801:4,7:74,209:-4.79192,-7.31508,-52.6892,0,-42.2138,-44.5142    ./.:.:.:.:.:.:.:.:. 0/2:3:27:14,.,5:14:518:.,5:.,148:-6.30832,.,.,0,.,-28.3683  0/1:0:11:7,3,.:7:259:3,.:72,.:-2.47552,0,-13.1431,.,.,. 0/2:4:52:26,.,10:26:926:.,10:.,294:-13.4825,.,.,0,.,-47.589 0/1:0:34:21,9,3:21:725:9,3:218,93:-4.45192,0,-37.6367,-3.99214,-33.5854,-43.5048    ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. 0/2:92:54:29,.,14:29:1035:.,14:.,422:-18.2443,.,.,0,.,-56.7053  0/2:29:50:25,.,11:25:865:.,11:.,338:-12.416,.,.,0,.,-52.8617    ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:.
+
+``` bash
+/home/shared/vcftools-0.1.16/bin/vcftools \
+--vcf ../output/51-SNPs/EpiDiv_merged.vcf \
+--recode --recode-INFO-all \
+--min-alleles 2 --max-alleles 2 \
+--max-missing 0.5 \
+--mac 2 \
+--out ../output/51-SNPs/EpiDiv_merged.f
+```
+
+After filtering, kept 26 out of 26 Individuals Outputting VCF file…
+After filtering, kept 2343637 out of a possible 144873997 Sites Run Time
+= 897.00 seconds
+
+``` bash
+head ../output/51-SNPs/EpiDiv_merged.f.recode.vcf
+tail -2 ../output/51-SNPs/EpiDiv_merged.f.recode.vcf
+```
+
+    ## ##fileformat=VCFv4.2
+    ## ##FILTER=<ID=PASS,Description="All filters passed">
+    ## ##fileDate=20220924
+    ## ##source=freeBayes v1.3.2-dirty
+    ## ##reference=GCF_002022765.2_C_virginica-3.0_genomic.fa
+    ## ##contig=<ID=NC_035780.1,length=65668440>
+    ## ##contig=<ID=NC_035781.1,length=61752955>
+    ## ##contig=<ID=NC_035782.1,length=77061148>
+    ## ##contig=<ID=NC_035783.1,length=59691872>
+    ## ##contig=<ID=NC_035784.1,length=98698416>
+    ## NC_007175.2  6500    .   T   A   0.198458    .   DPB=199;EPPR=10.6176;GTI=0;MQMR=38.3377;NS=1;NUMALT=1;ODDS=22.6887;PAIREDR=1;PQR=0;PRO=0;QR=4953;RO=151;RPPR=79.6446;SRF=63;SRP=11.9982;SRR=88;DP=8738;AB=0;ABP=0;AF=0;AO=61;CIGAR=1X;DPRA=0;EPP=75.0961;LEN=1;MEANALT=3;MQM=27.6557;PAIRED=1;PAO=0;PQA=0;QA=1307;RPL=41;RPP=18.709;RPR=20;RUN=1;SAF=37;SAP=9.02635;SAR=24;TYPE=snp;AN=42;AC=4  GT:GQ:DP:AD:RO:QR:AO:QA:GL  ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. 0/1:0:199:151,40:151:4953:40:908:-16.9953,0,-351.675    0/0:99:985:842,128:842:28502:128:3004:0,-47.9328,-2006.41   0/0:99:512:418,74:418:13832:74:1502:0,-23.3187,-984.518 ./.:.:.:.:.:.:.:.:. 0/0:99:232:193,30:193:6401:30:711:0,-9.69112,-454.514   0/1:0:17:13,4:13:469:4:89:-2.12488,0,-34.6904   0/0:99:874:748,93:748:24700:93:2174:0,-77.1869,-1751.28 0/0:99:712:614,80:614:20430:80:1646:0,-67.1339,-1509.98 0/0:99:816:730,66:730:24806:66:1439:0,-125.684,-1822.58 0/0:99:538:443,82:443:15043:82:1781:0,-9.93394,-1016.46 0/0:99:188:160,24:160:5330:24:389:0,-22.6474,-382.217   0/0:99:563:501,50:501:16369:50:1168:0,-73.0384,-1190.91 0/1:0:45:38,7:38:1318:7:161:-0.919608,0,-93.4117    0/0:99:398:333,57:333:10803:57:1068:0,-35.271,-785.276  0/0:99:218:184,23:184:6088:23:513:0,-24.0412,-440.405   0/0:99:728:660,54:660:22018:54:1111:0,-121.784,-1699.24 0/0:99:355:302,43:302:10302:43:826:0,-31.9642,-720.162  0/1:0:8:5,3:5:161:3:48:-2.00574,0,-11.6892  0/0:99:59:49,8:49:1699:8:175:0,-3.87806,-129.594    0/0:72:35:27,6:27:961:6:123:0,-0.202619,-66.9905    0/0:99:641:543,86:543:18095:86:1899:0,-28.1316,-1274.13 0/0:99:615:539,61:539:17857:61:1307:0,-78.2955,-1339.84 ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:.
+    ## NC_007175.2  10968   .   T   G   0.000292088 .   DPB=30;EPPR=4.45795;GTI=0;MQMR=39.5833;NS=1;NUMALT=1;ODDS=25.755;PAIREDR=1;PQR=0;PRO=0;QR=826;RO=24;RPPR=12.0581;SRF=11;SRP=3.37221;SRR=13;DP=10330;AB=0.25;ABP=9.52472;AF=0.5;AO=3;CIGAR=1X;DPRA=0;EPP=9.52472;LEN=1;MEANALT=1;MQM=41.3333;PAIRED=1;PAO=0;PQA=0;QA=47;RPL=0;RPP=9.52472;RPR=3;RUN=1;SAF=0;SAP=9.52472;SAR=3;TYPE=snp;AN=32;AC=2    GT:GQ:DP:AD:RO:QR:AO:QA:GL  0/0:99:30:24,4:24:826:4:53:0,-3.70077,-63.4378  0/0:99:60:51,7:51:1749:7:133:0,-6.40372,-135.949    ./.:.:.:.:.:.:.:.:. 0/0:99:1723:1610,90:1610:56108:90:1320:0,-398.369,-4702.41  0/0:99:1454:1324,114:1324:45488:114:1617:0,-297.358,-3778.2 0/0:99:50:41,8:41:1417:8:102:0,-5.73793,-114.628    0/0:99:568:521,40:521:17979:40:575:0,-117.94,-1496.11   0/0:99:47:39,6:39:1353:6:127:0,-2.30327,-104.561    0/0:99:1933:1783,132:1783:60625:132:2013:0,-411.397,-5054.5 ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. 0/0:99:91:71,20:71:2465:20:257:0,-4.50985,-189.426  ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. 0/0:99:1112:1031,66:1031:35637:66:876:0,-252.949,-2984.74   ./.:.:.:.:.:.:.:.:. 0/0:99:46:41,4:41:1467:4:56:0,-8.6219,-123.072  0/0:99:68:55,12:55:1927:12:212:0,-1.8433,-148.457   0/0:99:1382:1292,72:1292:45198:72:1041:0,-326.041,-3783.22  0/0:99:1701:1571,107:1571:54235:107:1501:0,-375.694,-4546.25    0/1:0:53:41,12:41:1431:12:225:-4.14708,0,-109.171   0/1:0:12:9,3:9:307:3:47:-0.765558,0,-23.4888
+
+ngsDist can also be used to compute genetic distance matrices from
+next-generation sequencing (NGS) data. ngsDist is a part of the ngsTools
+suite (<https://github.com/fgvieira/ngsTools>) that provides various
+tools for analyzing NGS data.
+
+Convert the VCF file to genotype likelihoods file (GLF) or binary
+alignment/map (BAM) format: ngsDist requires input data in GLF or BAM
+format. If you have a BAM file, you can use the ‘angsd’ tool from
+ngsTools to compute genotype likelihoods. If you have a VCF file, you
+can use ‘bcftools’ to convert it to GLF format. Here’s an example of how
+to convert a VCF file to GLF format using bcftools:
+
+    bcftools query -e 'GT="mis" || GT="hom"' -f '[\%SAMPLE\t%CHROM\t%POS\t%REF\t%ALT\t%GL\n]' input.vcf > input.glf
+
+``` bash
+/home/shared/bcftools-1.14/bcftools query \
+-e 'GT="mis" || GT="hom"' -f '[%SAMPLE\t%CHROM\t%POS\t%REF\t%ALT\t%GL\n]' ../output/51-SNPs/EpiDiv_merged.f.recode.vcf > ../output/51-SNPs/EpiDiv_merged.f.recode_mishom.glf
+```
+
+``` bash
+head -2 ../output/51-SNPs/EpiDiv_merged.f.recode_mishom.glf
+tail -2 ../output/51-SNPs/EpiDiv_merged.f.recode_mishom.glf
+```
+
+``` bash
+/home/shared/bcftools-1.14/bcftools query \
+-f'[%CHROM\t%POS\t%REF\t%ALT\t%GL\n]' ../output/51-SNPs/EpiDiv_merged.f.recode.vcf > ../output/51-SNPs/likliehood.txt
+```
+
+``` bash
+tail ../output/51-SNPs/likliehood.txt
+```
+
+``` python
+input_file = "../output/51-SNPs/likliehood.txt"
+output_file = "../output/51-SNPs/EpiDiv_merged.f.recode.glf"
+
+with open(input_file, "r") as infile, open(output_file, "w") as outfile:
+    for line in infile:
+        fields = line.strip().split("\t")
+        chrom, pos, ref, alt, gl = fields
+        gl_values = gl.split(",")
+        outfile.write(f"{chrom}\t{pos}\t{ref}\t{alt}\t{' '.join(gl_values)}\n")
+```
+
+``` bash
+tail ../output/51-SNPs/EpiDiv_merged.f.recode.glf
+```
+
+``` bash
+#/home/shared/ngsTools/angsd/angsd \
+#-doGlF 2 -doMajorMinor 1 -GL 2 \
+#-out ../output/51-SNPs/EpiDiv_merged.f.recode.glf \
+#-vcf-pl ../output/51-SNPs/EpiDiv_merged.f.recode.vcf
+```
+
+``` bash
+head -3 ../output/51-SNPs/EpiDiv_merged.f.recode.glf
+tail -3 ../output/51-SNPs/EpiDiv_merged.f.recode.glf
+```
+
+    ## NC_035780.1  123 C   T   -560.96 0 -28.9657
+    ## NC_035780.1  123 C   T   -639.833 0 -51.7318
+    ## NC_035780.1  123 C   T   -334.948 0 -72.3497
+    ## NC_007175.2  10968   T   G   0 -375.694 -4546.25
+    ## NC_007175.2  10968   T   G   -4.14708 0 -109.171
+    ## NC_007175.2  10968   T   G   -0.765558 0 -23.4888
+
+Create a sites file: ngsDist requires a sites file, which is a
+tab-separated file containing information about the sites to be
+analyzed. You can create this file from the filtered VCF file:
+
+    awk '{print $1"\t"$2}' filtered.recode.vcf > sites.txt
+
+``` bash
+awk '{print $1"\t"$2}' ../output/51-SNPs/EpiDiv_merged.f.recode.vcf \
+> ../output/51-SNPs/sites.txt
+```
+
+``` bash
+#tail -1 ../output/51-SNPs/EpiDiv_merged.f.recode.vcf
+head -10 ../output/51-SNPs/sites.txt
+```
+
+``` bash
+wc -l ../output/51-SNPs/sites.txt
+```
+
+4.  Run ngsDist: Now, you can run ngsDist using the GLF or BAM file, and
+    the sites file you created:
+
+``` bash
+/home/shared/ngsTools/ngsDist/ngsDist --geno ../output/51-SNPs/EpiDiv_merged.f.recode.glf \ --probs --n_ind 26 \
+--n_sites 2343713 --out ../output/51-SNPs/genotype.txt
+```
 
 # 3 BS-SNPer
 
