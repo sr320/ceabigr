@@ -105,7 +105,6 @@ tail -2 ../output/51-SNPs/EpiDiv_merged.vcf
 --max-missing 0.5 \
 --mac 2 \
 --out ../output/51-SNPs/EpiDiv_merged.f
-
 ```
 After filtering, kept 26 out of 26 Individuals
 Outputting VCF file...
@@ -226,6 +225,7 @@ wc -l ../output/51-SNPs/sites.txt
 /home/shared/ngsTools/ngsDist/ngsDist --geno ../output/51-SNPs/EpiDiv_merged.f.recode.glf \ --probs --n_ind 26 \
 --n_sites 2343713 --out ../output/51-SNPs/genotype.txt
 ```
+
 
 
 
