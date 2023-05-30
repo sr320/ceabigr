@@ -432,12 +432,14 @@ sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(0, 5))
 lapply(
   mean.gene.methylation.CoV.list,
   function(df) {
-    names <- names(df)
-    df %>% ggplot(aes_string(x=names[1], y=names[2], colour=names[3])) +
+    if (ncol(df) > 2) {
+      names <- names(df)
+      df %>% ggplot(aes_string(x=names[1], y=names[2], colour=names[3])) +
       geom_point(alpha = 0.6, size = 3) +
       geom_smooth(method = "lm") +
       geom_abline(size=1.0,colour="red") +
       sc
+    }
   }
 )
 ```
@@ -467,12 +469,14 @@ sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(0, 5))
 lapply(
   mean.gene.methylation.CoV.list,
   function(df) {
-    names <- names(df)
-    df %>% ggplot(aes_string(x=names[1], y=names[2], colour=names[4])) +
+      if (ncol(df) > 2) {
+      names <- names(df)
+      df %>% ggplot(aes_string(x=names[1], y=names[2], colour=names[4])) +
       geom_point(alpha = 0.6, size = 3) +
       geom_smooth(method = "lm") +
       geom_abline(size=1.0,colour="red") +
       sc
+    }
   }
 )
 ```
