@@ -360,9 +360,12 @@ mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list, as.data
 
 # Calculate absolute value of difference between treatment CoV
 # Since each data frame is the same two-column format, can reference by column numbers 1 and 2
+# if{} statement skips the `all` comparison
 mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list,
                                           function(df) {
+                                              if (ncol(df) >= 2) { 
                                             df$abs.delta.CoV <- abs(df[,1] - df[,2])
+                                              }
                                             return(df)
                                             }
                                           )
