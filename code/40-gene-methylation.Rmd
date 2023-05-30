@@ -434,7 +434,7 @@ lapply(
   function(df) {
     if (ncol(df) > 2) {
       names <- names(df)
-      df %>% ggplot(aes_string(x=names[1], y=names[2], colour=names[3])) +
+      df %>% ggplot(aes_string(x=names[2], y=names[3], colour=names[4])) +
       geom_point(alpha = 0.6, size = 3) +
       geom_smooth(method = "lm") +
       geom_abline(size=1.0,colour="red") +
@@ -463,7 +463,7 @@ myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
 
 # Set scale colors for absolute values of the delta between comparisons
 # Not entirely sure how this works, as I took it from some plotting Steven was doing.
-sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(0, 5))
+sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(0, 4))
 
 # 
 lapply(
@@ -471,7 +471,7 @@ lapply(
   function(df) {
       if (ncol(df) > 2) {
       names <- names(df)
-      df %>% ggplot(aes_string(x=names[1], y=names[2], colour=names[4])) +
+      df %>% ggplot(aes_string(x=names[2], y=names[3], colour=names[5])) +
       geom_point(alpha = 0.6, size = 3) +
       geom_smooth(method = "lm") +
       geom_abline(size=1.0,colour="red") +
