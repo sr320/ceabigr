@@ -370,6 +370,18 @@ mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list,
                                             }
                                           )
 
+# Calculate mean methylation of each gene in each comparison
+# Since each data frame is the same two-column format, can reference by column numbers 1 and 2
+# if{} statement skips the `all` comparison
+mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list,
+                                          function(df) {
+                                              if (ncol(df) >= 2) { 
+                                            df$mean.methylation <- rowMeans(df[,c(1,2)], na.rm = TRUE)
+                                              }
+                                            return(df)
+                                            }
+                                          )
+
 ```
 
 ## Save mean.gene.methylation.CoV.list as R Object
