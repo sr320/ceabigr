@@ -311,23 +311,32 @@ for (comparison in comparisons) {
     tail,1
     )
   
-  # Set first treatment column name
-  first_treatment_col <- paste(first_comparison,
+  # Set first CoV treatment column name
+  first_treatment_col_CoV <- paste(first_comparison,
                          "mean.methylation.CoV",
                          sep = ".")
   
-  # Set second treatment column name
-  second_treatment_col <- paste(second_comparison,
+  # Set second CoV treatment column name
+  second_treatment_col_CoV <- paste(second_comparison,
                          "mean.methylation.CoV",
+                         sep = ".")
+  
+  # Set first mean methylation treatment column name
+  first_treatment_col_mean_methylation <- paste(first_comparison,
+                         "mean.methylation",
+                         sep = ".")
+  
+  # Set second mean methylation treatment column name
+  second_treatment_col_mean_methylation <- paste(second_comparison,
+                         "mean.methylation",
                          sep = ".")
   
   # Calculate coefficients of variation
   if (comparison != "all") {
     
     # Calculate coefficients of variation using rowcvs(), convert to data frame and add to list
-    # Requires list() to add data frame to list and keep data frame class
     # Uses get() to convert string to name of the vector stored in "first_comparison"
-    mean.gene.methylation.CoV.list[[comparison]][first_treatment_col] <-
+    mean.gene.methylation.CoV.list[[comparison]][first_treatment_col_CoV] <-
       as.data.frame(
         methylation.transposed.matrix %>%
           subset(., TRUE, get(first_comparison)) %>% 
@@ -335,52 +344,59 @@ for (comparison in comparisons) {
         )
     
     # Calculate coefficients of variation using rowcvs(), convert to data frame and add to list
-    # Requires list() to add data frame to list and keep data frame class
     # Uses get() to convert string to name of the vector stored in "second_comparison"
-    mean.gene.methylation.CoV.list[[comparison]][second_treatment_col] <-
+    mean.gene.methylation.CoV.list[[comparison]][second_treatment_col_CoV] <-
       as.data.frame(
         methylation.transposed.matrix %>%
           subset(., TRUE, get(second_comparison)) %>%
         rowcvs(., unbiased = TRUE)
       )
-
-  } else { mean.gene.methylation.CoV.list[[comparison]] <-
+    
+    # Calculate mean gene methylation using rowMeans(), convert to data frame and add to list.
+    # Uses get() to convert string to name of the vector stored in "first_comparison"
+    mean.gene.methylation.CoV.list[[comparison]][first_treatment_col_mean_methylation] <-
       as.data.frame(
         methylation.transposed.matrix %>%
-        rowcvs(., unbiased = TRUE)
-        ) %>% 
-    rename("CoV" = 1)
+          subset(., TRUE, get(first_comparison)) %>% 
+        rowMeans(.,)
+        )
+    
+    # Calculate mean gene methylation using rowMeans(), convert to data frame and add to list.
+    # Uses get() to convert string to name of the vector stored in "second_comparison"  
+    mean.gene.methylation.CoV.list[[comparison]][second_treatment_col_mean_methylation] <-
+      as.data.frame(
+        methylation.transposed.matrix %>%
+          subset(., TRUE, get(second_comparison)) %>% 
+        rowMeans(.,)
+        )
+    
+    # Calculate mean gene methylation of the comparison using rowMeans(), convert to matrix and add to list.   
+    mean.gene.methylation.CoV.list[[comparison]]$mean.methylation <- 
+  rowMeans(as.matrix(mean.gene.methylation.CoV.list[[comparison]][c(first_treatment_col_mean_methylation, second_treatment_col_mean_methylation)]))
+    
+    
+    # Calculate absolute value of difference in methylation between the first and second components
+    # of the comparison and add to list.
+    mean.gene.methylation.CoV.list[[comparison]]$abs.delta.Cov <- 
+      abs(mean.gene.methylation.CoV.list[[comparison]][,first_treatment_col_CoV] - mean.gene.methylation.CoV.list[[comparison]][,second_treatment_col_CoV])
+
+  } else { mean.gene.methylation.CoV.list[[comparison]] <-
+  as.data.frame(methylation.transposed.matrix %>%
+    rowcvs(., unbiased = TRUE)) %>%
+  rename("CoV" = 1)
+  
+  # Calculate mean gene methylation of the comparison using rowMeans(), convert to data frame and add to list.
+  # Since the operation creates a data frame as output, the data frame only has one column.
+  # Thus, using the rowMeans(.,))[, 1] operates on the first (and only) column
+  mean.gene.methylation.CoV.list[[comparison]]$mean.methylation <-
+    as.data.frame(methylation.transposed.matrix %>%
+                    rowMeans(.,))[, 1]
+
     
   }
 }
 
-# Convert to data frames
-# Commands above create lists of lists
-mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list, as.data.frame)
 
-# Calculate absolute value of difference between treatment CoV
-# Since each data frame is the same two-column format, can reference by column numbers 1 and 2
-# if{} statement skips the `all` comparison
-mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list,
-                                          function(df) {
-                                              if (ncol(df) >= 2) { 
-                                            df$abs.delta.CoV <- abs(df[,1] - df[,2])
-                                              }
-                                            return(df)
-                                            }
-                                          )
-
-# Calculate mean methylation of each gene in each comparison
-# Since each data frame is the same two-column format, can reference by column numbers 1 and 2
-# if{} statement skips the `all` comparison
-mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list,
-                                          function(df) {
-                                              if (ncol(df) >= 2) { 
-                                            df$mean.methylation <- rowMeans(df[,c(1,2)], na.rm = TRUE)
-                                              }
-                                            return(df)
-                                            }
-                                          )
 
 ```
 
