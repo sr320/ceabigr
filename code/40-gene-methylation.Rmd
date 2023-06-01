@@ -347,9 +347,9 @@ for (comparison in comparisons) {
   } else { mean.gene.methylation.CoV.list[[comparison]] <-
       as.data.frame(
         methylation.transposed.matrix %>%
-          subset(., TRUE, get(first_comparison)) %>% 
         rowcvs(., unbiased = TRUE)
-        )
+        ) %>% 
+    rename("CoV" = 1)
     
   }
 }
