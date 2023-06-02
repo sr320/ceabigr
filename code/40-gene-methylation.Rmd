@@ -370,6 +370,10 @@ for (comparison in comparisons) {
         rowMeans(.,)
         )
     
+    # Convert to data frames
+    # Commands above create lists of lists
+    mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list, as.data.frame)
+    
     # Calculate mean gene methylation of the comparison using rowMeans(), convert to matrix and add to list.   
     mean.gene.methylation.CoV.list[[comparison]]$mean.methylation <- 
   rowMeans(as.matrix(mean.gene.methylation.CoV.list[[comparison]][c(first_treatment_col_mean_methylation, second_treatment_col_mean_methylation)]))
