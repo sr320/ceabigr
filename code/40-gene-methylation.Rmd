@@ -381,7 +381,7 @@ for (comparison in comparisons) {
     
     # Calculate absolute value of difference in methylation between the first and second components
     # of the comparison and add to list.
-    mean.gene.methylation.CoV.list[[comparison]]$abs.delta.Cov <- 
+    mean.gene.methylation.CoV.list[[comparison]]$abs.delta.CoV <- 
       abs(mean.gene.methylation.CoV.list[[comparison]][,first_treatment_col_CoV] - mean.gene.methylation.CoV.list[[comparison]][,second_treatment_col_CoV])
 
   } else { mean.gene.methylation.CoV.list[[comparison]] <-
@@ -414,7 +414,7 @@ save(mean.gene.methylation.CoV.list, file = "../output/40-gene-methylation/mean.
 ```
 
 ## Add gene names to rows for CoV data frames
-```{r gene-names-to-Cov-dataframes}
+```{r gene-names-to-CoV-dataframes}
 # Apply gene names to column
 mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list,
                                          function(x){ rownames(x) <- gene.names; x }
@@ -431,8 +431,7 @@ mean.gene.methylation.CoV.list <- lapply(mean.gene.methylation.CoV.list,
 
 ### Colored by absolute delta CoV
 
-Since all data frames are formatted the same (comp1, comp2, abs.delta, mean.methylation)
-we can refer to them by column numbers.
+Since all data frames are formatted the same (gene.id, comp1.CoV, comp2.CoV, comp1.mean.methylation, comp2.mean.methylation, mean.methylation, abs.delta.CoV) we can refer to them by column numbers.
 
 HOWEVER, to do that, we need to extract the name of each data frame, using the `names()` function.
 
@@ -440,21 +439,34 @@ IMPORTANT: These plots do _not_ plot rows containing `NA` or `NaN`!!! As such, t
 a lot of missing data.
 ```{r scatter-plot-all-mean-gene-methylation-CoV-by-abs.delta}
 
+# Find the maximum value across all data frames
+max_abs.delta.CoV <- max(sapply(mean.gene.methylation.CoV.list, function(df) max(df$abs.delta.CoV, na.rm = TRUE)), na.rm = TRUE)
+
+
+
 # Set color palette
 # Not entirely sure how this works, as I took it from some plotting Steven was doing.
 myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
 
 # Set scale colors for absolute values of the delta between comparisons
 # Not entirely sure how this works, as I took it from some plotting Steven was doing.
-sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(0, 5))
+sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(0, max_abs.delta.CoV))
 
-# 
+# Generate scatterplots
+# Uses the following columns:
+
+# 2 - comp1.CoV
+# 3 - comp2.CoV
+# 7 - abs.delta.CoV (for coloration)
+
+# Skips any data frame with less than 4 columns (i.e. the `all` data frame)
+
 lapply(
   mean.gene.methylation.CoV.list,
   function(df) {
-    if (ncol(df) > 2) {
+    if (ncol(df) > 3) {
       names <- names(df)
-      df %>% ggplot(aes_string(x=names[2], y=names[3], colour=names[4])) +
+      df %>% ggplot(aes_string(x=names[2], y=names[3], colour=names[7])) +
       geom_point(alpha = 0.6, size = 3) +
       geom_smooth(method = "lm") +
       geom_abline(size=1.0,colour="red") +
@@ -467,8 +479,7 @@ lapply(
 
 ### Colored by mean methylation
 
-Since all data frames are formatted the same (comp1, comp2, abs.delta, mean.methylation)
-we can refer to them by column numbers.
+Since all data frames are formatted the same (gene.id, comp1.CoV, comp2.CoV, comp1.mean.methylation, comp2.mean.methylation, mean.methylation, abs.delta.CoV) we can refer to them by column numbers.
 
 HOWEVER, to do that, we need to extract the name of each data frame, using the `names()` function.
 
@@ -477,21 +488,31 @@ a lot of missing data.
 
 ```{r scatter-plot-all-mean-gene-methylation-CoV-by-mean-methylation}
 
+# Find the maximum value across all data frames
+max_mean.methylation <- max(sapply(mean.gene.methylation.CoV.list, function(df) max(df$mean.methylation, na.rm = TRUE)), na.rm = TRUE)
+
 # Set color palette
 # Not entirely sure how this works, as I took it from some plotting Steven was doing.
 myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
 
 # Set scale colors for absolute values of the delta between comparisons
 # Not entirely sure how this works, as I took it from some plotting Steven was doing.
-sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(0, 4))
+sc <- scale_colour_gradientn(colours = myPalette(100), limits=c(0, max_mean.methylation))
 
-# 
+# Generate scatterplots
+# Uses the following columns:
+
+# 2 - comp1.CoV
+# 3 - comp2.CoV
+# 6 - mean.methylation (for coloration)
+
+# Skips any data frame with less than 4 columns (i.e. the `all` data frame)
 lapply(
   mean.gene.methylation.CoV.list,
   function(df) {
-      if (ncol(df) > 2) {
+      if (ncol(df) > 3) {
       names <- names(df)
-      df %>% ggplot(aes_string(x=names[2], y=names[3], colour=names[5])) +
+      df %>% ggplot(aes_string(x=names[2], y=names[3], colour=names[6])) +
       geom_point(alpha = 0.6, size = 3) +
       geom_smooth(method = "lm") +
       geom_abline(size=1.0,colour="red") +
@@ -503,7 +524,7 @@ lapply(
 
 ## Write CoV data frames to CSVs
 ```{r write-CoVs-to-CSVs}
-# Write data frames to CSVs in ../output/34-transcript-counts/ dir
+# Write data frames to CSVs in ../output/40-gene-methylation/ dir
 # Uses names of data frames as names of output files.
 sapply(names(mean.gene.methylation.CoV.list),
        function(x) write.csv(mean.gene.methylation.CoV.list[[x]],
