@@ -234,7 +234,7 @@ head -2 ../output/53-revisit-epi-SNPs/vcf.relatedness
 ```
 
     ## a    b   ida idb nSites  J9  J8  J7  J6  J5  J4  J3  J2  J1  rab Fa  Fb  theta   inbred_relatedness_1_2  inbred_relatedness_2_1  fraternity  identity    zygosity    2of3_IDB    F_diff_a_b  loglh   nIter   bestoptimll coverage    2dsfs   R0  R1  KING    2dsfs_loglike   2dsfsf_niter
-    ## 0    1   12M 13M 1038400 0.799789    0.000000    0.051837    0.000002    0.000004    0.000000    0.000000    0.148367    0.000002    0.051841    0.148369    0.148374    0.025922    0.000002    0.000003    0.200204    0.000002    0.200205    0.200210    -0.000001   -1663336.925221 58  -1  0.493654    6.306127e-02,2.031383e-02,6.122145e-02,2.076443e-02,1.558777e-01,1.402793e-01,5.729257e-02,1.300012e-01,3.511883e-01    0.760301    0.362614    -0.130234   -1948248.937254 10
+    ## 0    1   12M 13M 1038400 0.799793    0.000003    0.051831    0.000002    0.000000    0.000000    0.000000    0.148370    0.000000    0.051833    0.148370    0.148372    0.025916    0.000000    0.000000    0.200201    0.000000    0.200201    0.200204    -0.000001   -1663336.404155 134 -1  0.493654    6.306127e-02,2.031383e-02,6.122145e-02,2.076443e-02,1.558777e-01,1.402793e-01,5.729257e-02,1.300012e-01,3.511883e-01    0.760301    0.362614    -0.130234   -1948248.937260 10
 
 ## 1.1 Output format
 
@@ -336,6 +336,8 @@ write.table(distrab,file="../output/53-revisit-epi-SNPs/epiMATRIX_mbd_rab.txt", 
 heatmap(distrab, Rowv = NA, Colv = NA, col = cm.colors(256), scale = "none")
 ```
 
+<img src="53-revisit-epi-SNPs_files/figure-gfm/unnamed-chunk-12-1.png" style="display: block; margin: auto;" />
+
 ``` r
 # Perform hierarchical clustering
 hc <- hclust(dist(distrab))
@@ -347,3 +349,5 @@ plot(hc, hang = -1, main = "Cladogram")
 labels <- rownames(distrab)
 rect.hclust(hc, k = 6, border = "gray")
 ```
+
+<img src="53-revisit-epi-SNPs_files/figure-gfm/unnamed-chunk-13-1.png" style="display: block; margin: auto;" />
