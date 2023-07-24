@@ -5,7 +5,7 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   github_document:
     toc: true
-    toc_depth: 2
+    toc_depth: 3
     number_sections: true
     html_preview: true
   html_document:
@@ -117,6 +117,8 @@ head ../output/51-SNPs/EpiDiv_merged.f.recode.vcf
 tail -2 ../output/51-SNPs/EpiDiv_merged.f.recode.vcf
 ```
 
+### Trying to get Genetic Relatedness Matrix
+
 ngsDist can also be used to compute genetic distance matrices from next-generation sequencing (NGS) data. ngsDist is a part of the ngsTools suite (https://github.com/fgvieira/ngsTools) that provides various tools for analyzing NGS data.
 
 Convert the VCF file to genotype likelihoods file (GLF) or binary alignment/map (BAM) format: ngsDist requires input data in GLF or BAM format. If you have a BAM file, you can use the 'angsd' tool from ngsTools to compute genotype likelihoods. If you have a VCF file, you can use 'bcftools' to convert it to GLF format. Here's an example of how to convert a VCF file to GLF format using bcftools:
@@ -131,7 +133,7 @@ bcftools query -e 'GT="mis" || GT="hom"' -f '[\%SAMPLE\t%CHROM\t%POS\t%REF\t%ALT
 ```
 
 
-```{bash}
+```{r, engine='bash', eval=TRUE}
 head -2 ../output/51-SNPs/EpiDiv_merged.f.recode_mishom.glf
 tail -2 ../output/51-SNPs/EpiDiv_merged.f.recode_mishom.glf
 
@@ -145,7 +147,7 @@ tail -2 ../output/51-SNPs/EpiDiv_merged.f.recode_mishom.glf
 -f'[%CHROM\t%POS\t%REF\t%ALT\t%GL\n]' ../output/51-SNPs/EpiDiv_merged.f.recode.vcf > ../output/51-SNPs/likliehood.txt
 ```
 
-```{r, engine='bash'}
+```{r, engine='bash', eval=TRUE}
 tail ../output/51-SNPs/likliehood.txt
 ```
 
@@ -164,7 +166,7 @@ with open(input_file, "r") as infile, open(output_file, "w") as outfile:
 
 ```
 
-```{r, engine='bash'}
+```{r, engine='bash', eval=TRUE}
 tail ../output/51-SNPs/EpiDiv_merged.f.recode.glf
 ```
 
@@ -208,12 +210,12 @@ awk '{print $1"\t"$2}' ../output/51-SNPs/EpiDiv_merged.f.recode.vcf \
 > ../output/51-SNPs/sites.txt
 ```
 
-```{r, engine='bash'}
+```{r, engine='bash', eval=TRUE}
 #tail -1 ../output/51-SNPs/EpiDiv_merged.f.recode.vcf
 head -10 ../output/51-SNPs/sites.txt
 ```
 
-```{r, engine='bash'}
+```{r, engine='bash', eval=TRUE}
 wc -l ../output/51-SNPs/sites.txt
 ```
 

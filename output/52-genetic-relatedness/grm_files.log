@@ -1,0 +1,23 @@
+*******************************************************************
+* Genome-wide Complex Trait Analysis (GCTA)
+* version v1.94.1 Linux
+* Built at Aug  3 2022 14:15:22, by GCC 12.1
+* (C) 2010-present, Yang Lab, Westlake University
+* Please report bugs to Jian Yang <jian.yang@westlake.edu.cn>
+*******************************************************************
+Analysis started at 15:01:22 PDT on Mon Jul 17 2023.
+Hostname: raven
+
+Options: 
+ 
+--bfile ../output/52-genetic-relatedness/plink_files 
+--make-grm 
+--out ../output/52-genetic-relatedness/grm_files 
+
+Note: GRM is computed using the SNPs on the autosomes.
+Reading PLINK FAM file from [../output/52-genetic-relatedness/plink_files.fam]...
+26 individuals to be included from FAM file.
+26 individuals to be included. 0 males, 0 females, 26 unknown.
+Reading PLINK BIM file from [../output/52-genetic-relatedness/plink_files.bim]...
+Error: Line 1 of [../output/52-genetic-relatedness/plink_files.bim] contains illegal chr number, please check
+An error occurs, please check the options or data

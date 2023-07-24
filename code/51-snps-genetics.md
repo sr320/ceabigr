@@ -1,12 +1,15 @@
 Where are the SNPs?
 ================
 Steven Roberts
-22 May, 2023
+17 July, 2023
 
 - <a href="#1-background" id="toc-1-background">1 Background</a>
 - <a href="#2-epidiverse" id="toc-2-epidiverse">2 Epidiverse</a>
   - <a href="#21-merging-epidiverse-vcfs"
     id="toc-21-merging-epidiverse-vcfs">2.1 Merging Epidiverse VCFs</a>
+    - <a href="#211-trying-to-get-genetic-relatedness-matrix"
+      id="toc-211-trying-to-get-genetic-relatedness-matrix">2.1.1 Trying to
+      get Genetic Relatedness Matrix</a>
 - <a href="#3-bs-snper" id="toc-3-bs-snper">3 BS-SNPer</a>
   - <a href="#31-draft-paper" id="toc-31-draft-paper">3.1 draft paper</a>
   - <a href="#32-wiki" id="toc-32-wiki">3.2 Wiki</a>
@@ -121,6 +124,8 @@ tail -2 ../output/51-SNPs/EpiDiv_merged.f.recode.vcf
     ## NC_007175.2  6500    .   T   A   0.198458    .   DPB=199;EPPR=10.6176;GTI=0;MQMR=38.3377;NS=1;NUMALT=1;ODDS=22.6887;PAIREDR=1;PQR=0;PRO=0;QR=4953;RO=151;RPPR=79.6446;SRF=63;SRP=11.9982;SRR=88;DP=8738;AB=0;ABP=0;AF=0;AO=61;CIGAR=1X;DPRA=0;EPP=75.0961;LEN=1;MEANALT=3;MQM=27.6557;PAIRED=1;PAO=0;PQA=0;QA=1307;RPL=41;RPP=18.709;RPR=20;RUN=1;SAF=37;SAP=9.02635;SAR=24;TYPE=snp;AN=42;AC=4  GT:GQ:DP:AD:RO:QR:AO:QA:GL  ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. 0/1:0:199:151,40:151:4953:40:908:-16.9953,0,-351.675    0/0:99:985:842,128:842:28502:128:3004:0,-47.9328,-2006.41   0/0:99:512:418,74:418:13832:74:1502:0,-23.3187,-984.518 ./.:.:.:.:.:.:.:.:. 0/0:99:232:193,30:193:6401:30:711:0,-9.69112,-454.514   0/1:0:17:13,4:13:469:4:89:-2.12488,0,-34.6904   0/0:99:874:748,93:748:24700:93:2174:0,-77.1869,-1751.28 0/0:99:712:614,80:614:20430:80:1646:0,-67.1339,-1509.98 0/0:99:816:730,66:730:24806:66:1439:0,-125.684,-1822.58 0/0:99:538:443,82:443:15043:82:1781:0,-9.93394,-1016.46 0/0:99:188:160,24:160:5330:24:389:0,-22.6474,-382.217   0/0:99:563:501,50:501:16369:50:1168:0,-73.0384,-1190.91 0/1:0:45:38,7:38:1318:7:161:-0.919608,0,-93.4117    0/0:99:398:333,57:333:10803:57:1068:0,-35.271,-785.276  0/0:99:218:184,23:184:6088:23:513:0,-24.0412,-440.405   0/0:99:728:660,54:660:22018:54:1111:0,-121.784,-1699.24 0/0:99:355:302,43:302:10302:43:826:0,-31.9642,-720.162  0/1:0:8:5,3:5:161:3:48:-2.00574,0,-11.6892  0/0:99:59:49,8:49:1699:8:175:0,-3.87806,-129.594    0/0:72:35:27,6:27:961:6:123:0,-0.202619,-66.9905    0/0:99:641:543,86:543:18095:86:1899:0,-28.1316,-1274.13 0/0:99:615:539,61:539:17857:61:1307:0,-78.2955,-1339.84 ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:.
     ## NC_007175.2  10968   .   T   G   0.000292088 .   DPB=30;EPPR=4.45795;GTI=0;MQMR=39.5833;NS=1;NUMALT=1;ODDS=25.755;PAIREDR=1;PQR=0;PRO=0;QR=826;RO=24;RPPR=12.0581;SRF=11;SRP=3.37221;SRR=13;DP=10330;AB=0.25;ABP=9.52472;AF=0.5;AO=3;CIGAR=1X;DPRA=0;EPP=9.52472;LEN=1;MEANALT=1;MQM=41.3333;PAIRED=1;PAO=0;PQA=0;QA=47;RPL=0;RPP=9.52472;RPR=3;RUN=1;SAF=0;SAP=9.52472;SAR=3;TYPE=snp;AN=32;AC=2    GT:GQ:DP:AD:RO:QR:AO:QA:GL  0/0:99:30:24,4:24:826:4:53:0,-3.70077,-63.4378  0/0:99:60:51,7:51:1749:7:133:0,-6.40372,-135.949    ./.:.:.:.:.:.:.:.:. 0/0:99:1723:1610,90:1610:56108:90:1320:0,-398.369,-4702.41  0/0:99:1454:1324,114:1324:45488:114:1617:0,-297.358,-3778.2 0/0:99:50:41,8:41:1417:8:102:0,-5.73793,-114.628    0/0:99:568:521,40:521:17979:40:575:0,-117.94,-1496.11   0/0:99:47:39,6:39:1353:6:127:0,-2.30327,-104.561    0/0:99:1933:1783,132:1783:60625:132:2013:0,-411.397,-5054.5 ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. 0/0:99:91:71,20:71:2465:20:257:0,-4.50985,-189.426  ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. ./.:.:.:.:.:.:.:.:. 0/0:99:1112:1031,66:1031:35637:66:876:0,-252.949,-2984.74   ./.:.:.:.:.:.:.:.:. 0/0:99:46:41,4:41:1467:4:56:0,-8.6219,-123.072  0/0:99:68:55,12:55:1927:12:212:0,-1.8433,-148.457   0/0:99:1382:1292,72:1292:45198:72:1041:0,-326.041,-3783.22  0/0:99:1701:1571,107:1571:54235:107:1501:0,-375.694,-4546.25    0/1:0:53:41,12:41:1431:12:225:-4.14708,0,-109.171   0/1:0:12:9,3:9:307:3:47:-0.765558,0,-23.4888
 
+### 2.1.1 Trying to get Genetic Relatedness Matrix
+
 ngsDist can also be used to compute genetic distance matrices from
 next-generation sequencing (NGS) data. ngsDist is a part of the ngsTools
 suite (<https://github.com/fgvieira/ngsTools>) that provides various
@@ -145,6 +150,11 @@ head -2 ../output/51-SNPs/EpiDiv_merged.f.recode_mishom.glf
 tail -2 ../output/51-SNPs/EpiDiv_merged.f.recode_mishom.glf
 ```
 
+    ## unknown  NC_035780.1 451118  A   G   -110.038,0,-42.8388
+    ## 2:unknown    NC_035780.1 451118  A   G   -122.503,0,-29.1941
+    ## 25:unknown   NC_035789.1 19809024    A   G   -184.391,0,-76.653
+    ## 26:unknown   NC_035789.1 19809024    A   G   -63.4859,0,-117.109
+
 ``` bash
 /home/shared/bcftools-1.14/bcftools query \
 -f'[%CHROM\t%POS\t%REF\t%ALT\t%GL\n]' ../output/51-SNPs/EpiDiv_merged.f.recode.vcf > ../output/51-SNPs/likliehood.txt
@@ -153,6 +163,17 @@ tail -2 ../output/51-SNPs/EpiDiv_merged.f.recode_mishom.glf
 ``` bash
 tail ../output/51-SNPs/likliehood.txt
 ```
+
+    ## NC_007175.2  10968   T   G   .
+    ## NC_007175.2  10968   T   G   .
+    ## NC_007175.2  10968   T   G   0,-252.949,-2984.74
+    ## NC_007175.2  10968   T   G   .
+    ## NC_007175.2  10968   T   G   0,-8.6219,-123.072
+    ## NC_007175.2  10968   T   G   0,-1.8433,-148.457
+    ## NC_007175.2  10968   T   G   0,-326.041,-3783.22
+    ## NC_007175.2  10968   T   G   0,-375.694,-4546.25
+    ## NC_007175.2  10968   T   G   -4.14708,0,-109.171
+    ## NC_007175.2  10968   T   G   -0.765558,0,-23.4888
 
 ``` python
 input_file = "../output/51-SNPs/likliehood.txt"
@@ -169,6 +190,17 @@ with open(input_file, "r") as infile, open(output_file, "w") as outfile:
 ``` bash
 tail ../output/51-SNPs/EpiDiv_merged.f.recode.glf
 ```
+
+    ## NC_007175.2  10968   T   G   .
+    ## NC_007175.2  10968   T   G   .
+    ## NC_007175.2  10968   T   G   0 -252.949 -2984.74
+    ## NC_007175.2  10968   T   G   .
+    ## NC_007175.2  10968   T   G   0 -8.6219 -123.072
+    ## NC_007175.2  10968   T   G   0 -1.8433 -148.457
+    ## NC_007175.2  10968   T   G   0 -326.041 -3783.22
+    ## NC_007175.2  10968   T   G   0 -375.694 -4546.25
+    ## NC_007175.2  10968   T   G   -4.14708 0 -109.171
+    ## NC_007175.2  10968   T   G   -0.765558 0 -23.4888
 
 ``` bash
 #/home/shared/ngsTools/angsd/angsd \
@@ -205,9 +237,22 @@ awk '{print $1"\t"$2}' ../output/51-SNPs/EpiDiv_merged.f.recode.vcf \
 head -10 ../output/51-SNPs/sites.txt
 ```
 
+    ## ##fileformat=VCFv4.2 
+    ## ##FILTER=<ID=PASS,Description="All   filters
+    ## ##fileDate=20220924  
+    ## ##source=freeBayes   v1.3.2-dirty
+    ## ##reference=GCF_002022765.2_C_virginica-3.0_genomic.fa   
+    ## ##contig=<ID=NC_035780.1,length=65668440>    
+    ## ##contig=<ID=NC_035781.1,length=61752955>    
+    ## ##contig=<ID=NC_035782.1,length=77061148>    
+    ## ##contig=<ID=NC_035783.1,length=59691872>    
+    ## ##contig=<ID=NC_035784.1,length=98698416>    
+
 ``` bash
 wc -l ../output/51-SNPs/sites.txt
 ```
+
+    ## 2343713 ../output/51-SNPs/sites.txt
 
 4.  Run ngsDist: Now, you can run ngsDist using the GLF or BAM file, and
     the sites file you created:

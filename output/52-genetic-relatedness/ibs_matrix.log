@@ -1,0 +1,27 @@
+PLINK v1.90b7 64-bit (16 Jan 2023)
+Options in effect:
+  --allow-extra-chr
+  --bfile ../output/52-genetic-relatedness/plink_files
+  --genome
+  --out ../output/52-genetic-relatedness/ibs_matrix
+
+Hostname: raven
+Working directory: /home/shared/8TB_HDD_01/sr320/github/ceabigr/code
+Start time: Mon Jul 17 13:13:50 2023
+
+Random number seed: 1689624830
+253367 MB RAM detected; reserving 126683 MB for main workspace.
+2343637 variants loaded from .bim file.
+26 people (0 males, 0 females, 26 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to ../output/52-genetic-relatedness/ibs_matrix.nosex
+.
+Using up to 47 threads (change this with --threads).
+Before main variant filters, 26 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is 0.688682.
+2343637 variants and 26 people pass filters and QC.
+Note: No phenotypes present.
+IBD calculations complete.
+Finished writing ../output/52-genetic-relatedness/ibs_matrix.genome .
+
+End time: Mon Jul 17 13:13:50 2023

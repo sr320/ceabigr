@@ -1,0 +1,280 @@
+---
+title: "Genetic Relatedness Matrix"
+author: Steven Roberts
+date: "`r format(Sys.time(), '%d %B, %Y')`" 
+output: 
+  github_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    html_preview: true
+  html_document:
+    theme: readable
+    highlight: zenburn
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    code_download: true
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(tidyverse)
+library(kableExtra)
+library(DESeq2)
+library(pheatmap)
+library(RColorBrewer)
+library(data.table)
+library(DT)
+library(Biostrings)
+library(spaa)
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = FALSE,         # Evaluate code chunks
+  warning = TRUE,     # Hide warnings
+  message = TRUE,     # Hide messages
+  fig.width = 6,       # Set plot width in inches
+  fig.height = 4,      # Set plot height in inches
+  fig.align = "center" # Align plots to the center
+)
+```
+
+We have a couple of merged VCFs (epidiverse, bs-snper)
+
+```{r, engine='bash', eval=TRUE}
+echo "epidiverse"
+tail -2 ../output/51-SNPs/EpiDiv_merged.f.recode.vcf
+
+echo "BS"
+tail -2 ../data/Cv_10x_fxmerge_05.recode.vcf
+```
+
+# plink
+
+PLINK is a widely used open-source whole-genome association analysis toolset, which can handle large datasets and perform a variety of analyses including population stratification.
+
+Here's a general outline of the steps you'd take:
+
+1.  **Conversion of VCF to PLINK format**: PLINK operates on a different file format than VCF. You need to convert your VCF to PLINK format, which generally comprises three separate files: `.bed` (binary pedigree), `.bim` (extended MAP file), and `.fam` (family file). You can do this using PLINK's `--vcf` option:
+
+    ```         
+    plink --vcf your_merged.vcf --make-bed --out plink_files
+    ```
+
+    This will create `plink_files.bed`, `plink_files.bim`, and `plink_files.fam`.
+
+2.  **Calculate Identity-by-State (IBS) matrix**: You can calculate the IBS matrix using the `--genome` option in PLINK. This gives a measure of the genetic similarity between all pairs of individuals in your dataset:
+
+    ```         
+    plink --bfile plink_files --genome --out ibs_matrix
+    ```
+
+    This will produce a file `ibs_matrix.genome` which contains the pairwise IBS matrix.
+
+3.  **Create the Genetic Relatedness Matrix (GRM)**: You can use this IBS matrix to create a GRM. The GRM is a square symmetric matrix that quantifies the degree of genetic variance that can be explained by the genetic markers between each pair of individuals in your samples.
+
+    GCTA (Genome-wide Complex Trait Analysis) is a tool that can help to create a GRM from your IBS matrix:
+
+    ```         
+    gcta64 --bfile plink_files --make-grm --out grm_files
+    ```
+
+    This will produce two files (`grm_files.grm.bin` and `grm_files.grm.N.bin`) representing the GRM.
+
+```{r, engine='bash'}
+/home/shared/plink_linux_x86_64_20230116/plink \
+--vcf ../data/Cv_10x_fxmerge_05.recode.vcf \
+--make-bed \
+--allow-extra-chr \
+--out  ../output/52-genetic-relatedness/plink_files
+```
+
+```{bash}
+/home/shared/plink_linux_x86_64_20230116/plink -help
+
+```
+
+```         
+
+ --vcf-half-call <m>  : Specify how '0/.' and similar VCF GT values should be
+                         handled.  The following four modes are supported:
+                         * 'error'/'e' (default) errors out and reports line #.
+                         * 'haploid'/'h' treats them as haploid calls.
+                         * 'missing'/'m' treats them as missing.
+                         * 'reference'/'r' treats the missing value as 0.
+                         
+```
+
+```{r, engine='bash', eval=TRUE}
+/home/shared/plink_linux_x86_64_20230116/plink \
+--vcf ../output/51-SNPs/EpiDiv_merged.f.recode.vcf \
+--make-bed \
+--allow-extra-chr \
+--vcf-half-call m \
+--out  ../output/52-genetic-relatedness/plink_files
+```
+
+```{r, engine='bash'}
+/home/shared/plink_linux_x86_64_20230116/plink \
+--bfile ../output/52-genetic-relatedness/plink_files \
+--allow-extra-chr \
+--genome \
+--out ../output/52-genetic-relatedness/ibs_matrix
+```
+
+```{r, engine='bash'}
+/home/shared/gcta-1.94.1-linux-x86_64-static \
+--bfile ../output/52-genetic-relatedness/plink_files \
+--make-grm \
+--out ../output/52-genetic-relatedness/grm_files
+```
+
+# ANGSD
+
+Yes, absolutely. The program ANGSD (Analysis of Next Generation Sequencing Data) is a versatile tool for analyzing low depth Next Generation Sequencing data. This is particularly helpful when working with non-model organisms, ancient DNA, or other datasets where high quality reference genomes might not be available.
+
+ANGSD can calculate the genetic relatedness matrix among individuals based on the genotype likelihoods instead of called genotypes, making it a good choice for low depth sequencing data.
+
+Here are the steps you might follow:
+
+1.  **Filtering**: It's generally a good idea to filter your VCF files first, based on your research needs. This might include filtering for minor allele frequency, quality scores, or read depth.
+
+2.  **Calculate Relatedness**: Use the `-doIBS` option in ANGSD to calculate the relatedness between individuals. You would use something like:
+
+    ``` bash
+    angsd -vcf-gl your_merged.vcf -doIBS 1 -out output
+    ```
+
+3.  **Create genetic relatedness matrix**: The previous step will output a file with the pairwise relatedness values. You can then convert this file to a matrix format for easier analysis.
+
+Please note, as with any analysis, you should carefully consider the assumptions and requirements of the method you're using. Some of these commands might need to be adjusted depending on the specifics of your data and research question.
+
+Finally, remember to adhere to ethical guidelines and regulations when handling genetic data.
+
+```{r, engine='bash', eval=TRUE}
+/home/shared/ngsTools/angsd/angsd \
+-vcf-gl ../output/51-SNPs/EpiDiv_merged.f.recode.vcf \
+-doIBS 1 \
+-out ../output/52-genetic-relatedness/angsd-output
+```
+
+# NgsRelate
+
+a la
+
+<https://github.com/RobertsLab/resources/issues/1681#issuecomment-1642557685>
+
+chatGPT
+
+First, let's understand what these tools are.
+
+1.  **ngsRelate**: This is a software package used for inferring pairwise relatedness from next-generation sequencing (NGS) data. It can calculate different coefficients of relatedness as well as inbreeding coefficients.
+
+2.  **spaa**: This is an R package that can calculate the genomic relationship matrix (GRM) and genomic kinship matrix (GKM) using SNP array and NGS data.
+
+As of version 2, NgsRelate can parse BCF/VCF files using htslib with the following command:
+
+```         
+./ngsrelate  -h my.VCF.gz -O vcf.res
+By default, NgsRelate will estimate the allele frequencies using the individuals provided in the VCF files. Allele frequencies from the INFO field can used be used instead using -A TAG. The TAG usually take the form of AF or AF1 but can be set to anything. By default the PL data (Phred-scaled likelihoods for genotypes) is parsed, however, the called genotypes can also be used instead with the -T GT option. If called genotypes are being used, the software requires an additional argument (-c 1). If using -c 2, ngsRelate calls genotypes assuming hardy-weinberg.
+```
+
+```{r, engine='bash', eval=FALSE}
+/home/shared/ngsRelate/ngsRelate/ngsRelate \
+-h ../output/51-SNPs/EpiDiv_merged.f.recode.vcf \
+-T GT \
+-c 1 \
+-O ../output/52-genetic-relatedness/vcf.relatedness
+```
+
+```{r, engine='bash', eval=FALSE}
+/home/shared/ngsRelate/ngsRelate/ngsRelate \
+-h ../data/Cv_10x_fxmerge_05.recode.vcf \
+-T GT \
+-c 1 \
+-O ../output/52-genetic-relatedness/vcf.bs.relatedness
+```
+
+```{r, engine='bash', eval=TRUE}
+head -2 ../output/52-genetic-relatedness/vcf.relatedness
+```
+
+```{r, engine='bash', eval=TRUE}
+head -2 ../output/52-genetic-relatedness/vcf.bs.relatedness
+```
+
+## Output format
+
+```         
+a  b  nSites  J9        J8        J7        J6        J5        J4        J3        J2        J1        rab       Fa        Fb        theta     inbred_relatedness_1_2  inbred_relatedness_2_1  fraternity  identity  zygosity  2of3IDB   FDiff      loglh           nIter  coverage  2dsfs                                                                             R0        R1        KING       2dsfs_loglike   2dsfsf_niter
+0  1  99927   0.384487  0.360978  0.001416  0.178610  0.071681  0.000617  0.002172  0.000034  0.000005  0.237300  0.002828  0.250330  0.127884  0.001091                0.035846                0.001451    0.000005  0.001456  0.345411  -0.088997  -341223.335664  103    0.999270  0.154920,0.087526,0.038724,0.143087,0.155155,0.139345,0.038473,0.087632,0.155138  0.497548  0.290124  0.000991   -356967.175857  7
+```
+
+The first two columns contain indices of the two individuals used for the analysis. The third column is the number of genomic sites considered. The following nine columns are the maximum likelihood (ML) estimates of the nine jacquard coefficients, where K0==J9; K1==J8; K2==J7 in absence of inbreeding. Based on these Jacquard coefficients, NgsRelate calculates 11 summary statistics:
+
+13. rab is the pairwise relatedness `(J1+J7+0.75*(J3+J5)+.5*J8)` [Hedrick et al](https://academic.oup.com/jhered/article/106/1/20/2961876)
+
+14. Fa is the inbreeding coefficient of individual a `J1+J2+J3+J4` [Jacquard](https://www.springer.com/gp/book/9783642884177)
+
+15. Fb is the inbreeding coefficient of individual b `J1+J2+J5+J6` [Jacquard](https://www.springer.com/gp/book/9783642884177)
+
+16. theta is the coefficient of kinship `J1 + 0.5*(J3+J5+J7) + 0.25*J8)` [Jacquard](https://www.springer.com/gp/book/9783642884177)
+
+17. inbred_relatedness_1\_2 `J1+0.5*J3` [Ackerman et al](http://www.genetics.org/content/206/1/105)
+
+18. inbred_relatedness_2\_1 `J1+0.5*J5` [Ackerman et al](http://www.genetics.org/content/206/1/105)
+
+19. fraternity `J2+J7` [Ackerman et al](http://www.genetics.org/content/206/1/105)
+
+20. identity `J1` [Ackerman et al](http://www.genetics.org/content/206/1/105)
+
+21. zygosity `J1+J2+J7` [Ackerman et al](http://www.genetics.org/content/206/1/105)
+
+22. Two-out-of-three IBD `J1+J2+J3+J5+J7+0.5*(J4+J6+J8)` [Miklos csuros](https://www.sciencedirect.com/science/article/pii/S0040580913001123)
+
+23. Inbreeding difference `0.5*(J4-J6)` [Miklos csuros](https://www.sciencedirect.com/science/article/pii/S0040580913001123)
+
+24. the log-likelihood of the ML estimate.
+
+25. number of EM iterations. If a `-1` is displayed. A boundary estimate had a higher likelihood.
+
+26. If differs from `-1`, a boundary estimate had a higher likelihood. Reported loglikelihood should be highly similar to the corresponding value reported in `loglh`
+
+27. fraction of sites used for the ML estimate
+
+The remaining columns relate to statistics based on a 2D-SFS.
+
+28. 2dsfs estimates using the same methodology as implemented in realSFS, see [ANGSD](https://github.com/ANGSD/angsd)
+
+29. R0 [Waples et al](https://www.biorxiv.org/content/early/2018/08/31/260497)
+
+30. R1 [Waples et al](https://www.biorxiv.org/content/early/2018/08/31/260497)
+
+31. KING [Waples et al](https://www.biorxiv.org/content/early/2018/08/31/260497)
+
+32. the log-likelihood of the 2dsfs estimate.
+
+33. number of iterations for 2dsfs estimate
+
+You can also input a file with the IDs of the individuals (on ID per line), using the `-z` option, in the same order as in the file `filelist` used to make the genotype likelihoods or the VCF file. If you do the output will also contain these IDs as column 3 and 4.
+
+Note that in some cases nIter is -1. This indicates that values on the boundary of the parameter space had a higher likelihood than the values achieved using the EM-algorithm (ML methods sometimes have trouble finding the ML estimate when it is on the boundary of the parameter space, and we therefore test the boundary values explicitly and output these if these have the highest likelihood)
+
+```{r,eval=FALSE}
+
+df = read.table("../output/52-genetic-relatedness/vcf.relatedness",header = T)
+dfrab <- df[,c("a","b","rab")]
+distrab <- as.matrix(list2dist(dfrab))
+
+write.table(distrab,file="../output/52-genetic-relatedness/epiMATRIX_mbd_rab.txt", col.names = F, row.names = F, sep = "\t")
+```
+
+```{r,eval=FALSE}
+
+dfbs = read.table("../output/52-genetic-relatedness/vcf.bs.relatedness",header = T)
+dfrabbs <- dfbs[,c("a","b","rab")]
+distrabbs <- as.matrix(list2dist(dfrabbs))
+
+write.table(distrabbs,file="../output/52-genetic-relatedness/bsMATRIX_mbd_rab.txt", col.names = F, row.names = F, sep = "\t")
+```
