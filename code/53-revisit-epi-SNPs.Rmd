@@ -1,0 +1,124 @@
+---
+title: "Revisiting EpiDiverse SNPs"
+author: Steven Roberts
+date: "`r format(Sys.time(), '%d %B, %Y')`" 
+output: 
+  github_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    html_preview: true
+  html_document:
+    theme: readable
+    highlight: zenburn
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    code_download: true
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(tidyverse)
+library(kableExtra)
+library(DESeq2)
+library(pheatmap)
+library(RColorBrewer)
+library(data.table)
+library(DT)
+library(Biostrings)
+library(spaa)
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = FALSE,         # Evaluate code chunks
+  warning = TRUE,     # Hide warnings
+  message = TRUE,     # Hide messages
+  fig.width = 6,       # Set plot width in inches
+  fig.height = 4,      # Set plot height in inches
+  fig.align = "center" # Align plots to the center
+)
+```
+
+Sam ran Epidiverse
+
+<https://github.com/sr320/ceabigr/issues/69#issuecomment-1258238481>
+
+-   [Notebook](https://robertslab.github.io/sams-notebook/2022/09/21/BSseq-SNP-Analysis-Nextflow-EpiDiverse-SNP-Pipeline-for-C.virginica-CEABIGR-BSseq-data.html)
+-   VCF Directory - <https://gannet.fish.washington.edu/Atumefaciens/20220921-cvir-ceabigr-nextflow-epidiverse-snp/snps/vcf/>
+-   results dir - <https://gannet.fish.washington.edu/Atumefaciens/20220921-cvir-ceabigr-nextflow-epidiverse-snp/snps/stats/>
+
+![](http://gannet.fish.washington.edu/seashell/snaps/Monosnap_Compiling_genetic_data__Issue_69__sr320ceabigr_2023-05-03_10-08-58.png)
+
+## Merging Epidiverse VCFs
+
+Next step for capturing SNP info in Epidiverse Workflow is merging.
+
+```{r, engine='bash'}
+cd ../data/big
+wget -r \
+--no-directories --no-parent \
+-P . \
+-A "*vcf.g*" https://gannet.fish.washington.edu/Atumefaciens/20220921-cvir-ceabigr-nextflow-epidiverse-snp/snps/vcf/
+
+```
+
+```{r, engine='bash'}
+
+
+/home/shared/bcftools-1.14/bcftools  merge \
+--force-samples \
+../data/big/*.vcf.gz \
+--merge all \
+--threads 40 \
+-O v \
+-o ../output/51-SNPs/EpiDiv_merged.vcf
+```
+
+```{r, engine='bash', eval=TRUE}
+head -20 ../output/51-SNPs/EpiDiv_merged.vcf
+
+```
+
+The eventual GRM does not have sample names so wanted to check order of merged files (assuming this is related to how GRM file is created)
+
+```{r, engine='bash'}
+fgrep "R1_val_1" ../output/51-SNPs/EpiDiv_merged.vcf
+```
+
+Here is the filtering steps
+
+Let's break down the command:
+
+-   **`/home/shared/vcftools-0.1.16/bin/vcftools`**: This is the path to the VCFtools program. You're executing the program from its location.
+
+-   **`--vcf ../output/51-SNPs/EpiDiv_merged.vcf`**: This specifies the input VCF file that you're going to work with.
+
+-   **`--recode --recode-INFO-all`**: The **`--recode`** option tells VCFtools to generate a new VCF file as output after performing all of the filtering operations. The **`--recode-INFO-all`** tells VCFtools to keep all INFO fields from the input VCF in the new output file.
+
+-   **`--min-alleles 2 --max-alleles 2`**: This filters the data to include only bi-allelic sites, meaning sites that have exactly two alleles (one could be the reference allele, and the other is the variant allele).
+
+-   **`--max-missing 0.5`**: This is a filter that sets a maximum allowable proportion of individuals with missing data at each site. In this case, it discards any variants where more than 50% of the data is missing.
+
+-   **`--mac 2`**: This option tells the program to only include sites with a Minor Allele Count of at least 2. This means that the less common variant must appear at least twice in your sample.
+
+-   **`--out ../output/51-SNPs/EpiDiv_merged.f`**: This is the location and prefix of the output files. Several files might be generated depending on the options you used, and they'll all start with this prefix.
+
+So, in summary, this command is running a filtering process on a VCF file, and then saving a new VCF file that only includes bi-allelic sites (those with exactly 2 alleles) where less than 50% of the data is missing and the less common variant appears at least twice. The new file will keep all the INFO fields from the original VCF.
+
+```{r, engine='bash'}
+/home/shared/vcftools-0.1.16/bin/vcftools \
+--vcf ../output/51-SNPs/EpiDiv_merged.vcf \
+--recode --recode-INFO-all \
+--min-alleles 2 --max-alleles 2 \
+--max-missing 0.5 \
+--mac 2 \
+--out ../output/51-SNPs/EpiDiv_merged.f
+```
+
+After filtering, kept 26 out of 26 Individuals Outputting VCF file... After filtering, kept 2343637 out of a possible 144873997 Sites Run Time = 897.00 seconds
+
+```{r, engine='bash', eval=TRUE}
+head ../output/51-SNPs/EpiDiv_merged.f.recode.vcf
+tail -2 ../output/51-SNPs/EpiDiv_merged.f.recode.vcf
+```
