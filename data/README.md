@@ -40,7 +40,7 @@
 
         - `<integer>` indicates a two digit integer.
 
-- [`GCF_002022765.2_C_virginica-3.0-genes.blastx.outfmt6`](): DIAMOND BLASTx of genes only (`C_virginica-3.0_Gnomon_genes.bed`) against SwissProt database (downloaded 20230727). Top hit only for each query only.
+- [`GCF_002022765.2_C_virginica-3.0-genes.blastx.outfmt6`](https://github.com/sr320/ceabigr/blob/main/data/GCF_002022765.2_C_virginica-3.0-genes.blastx.outfmt6): DIAMOND BLASTx of genes only (`[C_virginica-3.0_Gnomon_genes.bed]`(https://github.com/sr320/ceabigr/blob/main/data/C_virginica-3.0_Gnomon_genes.bed)) against SwissProt database (downloaded 20230727). Top hit only for each query only.
 
 - [`GCF_002022765.2_C_virginica-3.0_lncRNA.bed`](https://github.com/sr320/ceabigr/blob/632a54509603edd1157d43fae5e4e67212c7f034/data/GCF_002022765.2_C_virginica-3.0_lncRNA.bed): BED file with long, non-coding RNA (lncRNA) coordinates in the NCBI _C.virginica_ genome. Jupyter notebook (nbviewer):
 
