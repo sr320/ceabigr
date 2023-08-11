@@ -1,7 +1,7 @@
 Genetic Relatedness Matrix
 ================
 Steven Roberts
-19 July, 2023
+11 August, 2023
 
 - <a href="#1-plink" id="toc-1-plink">1 plink</a>
 - <a href="#2-angsd" id="toc-2-angsd">2 ANGSD</a>
@@ -341,8 +341,16 @@ these if these have the highest likelihood)
 
 ``` r
 df = read.table("../output/52-genetic-relatedness/vcf.relatedness",header = T)
-dfrab <- df[,c("ida","idb","rab")]
+dfrab <- df[,c("a","b","rab")]
 distrab <- as.matrix(list2dist(dfrab))
 
 write.table(distrab,file="../output/52-genetic-relatedness/epiMATRIX_mbd_rab.txt", col.names = F, row.names = F, sep = "\t")
+```
+
+``` r
+dfbs = read.table("../output/52-genetic-relatedness/vcf.bs.relatedness",header = T)
+dfrabbs <- dfbs[,c("a","b","rab")]
+distrabbs <- as.matrix(list2dist(dfrabbs))
+
+write.table(distrabbs,file="../output/52-genetic-relatedness/bsMATRIX_mbd_rab.txt", col.names = F, row.names = F, sep = "\t")
 ```

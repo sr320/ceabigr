@@ -1,0 +1,71 @@
+---
+title: "Methylkit"
+author: Steven Roberts
+date: "`r format(Sys.time(), '%d %B, %Y')`" 
+output: 
+  github_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    html_preview: true
+  html_document:
+    theme: readable
+    highlight: zenburn
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    code_download: true
+---
+
+```{r setup, include=FALSE, }
+library(knitr)
+library(tidyverse)
+library(kableExtra)
+library(DESeq2)
+library(pheatmap)
+library(RColorBrewer)
+library(data.table)
+library(DT)
+library(Biostrings)
+library(methylKit)
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = FALSE,         # Evaluate code chunks
+  warning = FALSE,     # Hide warnings
+  message = FALSE,     # Hide messages
+  fig.width = 6,       # Set plot width in inches
+  fig.height = 4,      # Set plot height in inches
+  fig.align = "center" # Align plots to the center
+)
+```
+
+```{r, engine='bash'}
+rsync -avz gannet.fish.washington.edu:/volume2/web/seashell/bu-github/2018_L18-adult-methylation/analyses/myobj_all /home/shared/8TB_HDD_02/sr320/scratch/ceabigr/
+```
+
+
+```{r, eval=TRUE, cache=TRUE}
+load("/home/shared/8TB_HDD_02/sr320/scratch/ceabigr/myobj_all")
+```
+
+
+```{r, eval=TRUE, cache=TRUE}
+filtered.myobj=filterByCoverage(myobj_all,lo.count=10,lo.perc=NULL,
+                                      hi.count=NULL,hi.perc=98)
+
+meth_filter=unite(filtered.myobj, min.per.group=NULL, destrand=TRUE)
+```
+
+```{r, eval=TRUE}
+clusterSamples(meth_filter, dist="correlation", method="ward", plot=TRUE)
+
+
+PCASamples(meth_filter)
+
+```
+
+
+cluster
+
+![](http://gannet.fish.washington.edu/seashell/snaps/Monosnap_RStudio_Server_2023-07-24_16-34-06.png)

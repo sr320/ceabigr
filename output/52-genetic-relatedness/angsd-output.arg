@@ -1,7 +1,7 @@
 	-> Command: 
 /home/shared/ngsTools/angsd/angsd -vcf-gl ../output/51-SNPs/EpiDiv_merged.f.recode.vcf -doIBS 1 -out ../output/52-genetic-relatedness/angsd-output 
 	-> angsd version: 0.929-19-gb2b41b5 (htslib: 1.9-139-gce7daf7) build(May  8 2023 08:12:53)
-	-> Wed Jul 19 14:22:03 2023
+	-> Fri Aug 11 14:03:04 2023
 ----------------
 multiReader.cpp:
 	-nLines	50	(Number of lines to read)
