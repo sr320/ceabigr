@@ -1,6 +1,8 @@
 ---
 title: "gene-methylation-expression-mixomics"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 # Set up R Markdown document
@@ -38,7 +40,7 @@ sessionInfo()
 # Import and reformat data
 
 ```{r}
-metadata <- read.csv("../data/adult-meta.csv", header = TRUE) #Import metadata
+metadata <- read.csv("data/adult-meta.csv", header = TRUE) #Import metadata
 metadata <- metadata %>%
   dplyr::select(., Sample.ID, Treatment, Sex, TreatmentN) %>%
   rename(., sample_id = Sample.ID) %>% 
@@ -52,7 +54,7 @@ head(metadata) #Confirm formatting
 ## Gene expression data
 
 ```{r}
-geneExpression <- read.csv("../data/gene_fpkm.csv", header = TRUE, row.names = metadata$sample_id)
+geneExpression <- read.csv("data/gene_fpkm.csv", header = TRUE, row.names = metadata$sample_id)
 geneExpressionMod <- geneExpression %>%
   dplyr::select(., -c(1:6)) #Remove extra information to have just FPKM for each gene
 head(geneExpressionMod) #Confirm formatting
@@ -111,14 +113,14 @@ plotIndiv(exp.pca, ind.names = FALSE,
           cex = 10, size.axis = 8, size.legend = 8,
           legend = TRUE, title = 'Gene Expression',
           legend.title = 'Treatment', legend.title.pch = 'Sex')
-ggsave("../output/gene-methylation-expression-mixomics/all-exp-pca.pdf", height = 8.5, width = 11)
+ggsave("output/gene-methylation-expression-mixomics/all-exp-pca.pdf", height = 8.5, width = 11)
 ```
 
 
 ## Gene methylation data
 
 ```{r}
-geneMethylation <- read.csv("../output/40-gene-methylaiton.csv", header = TRUE, row.names = 2)
+geneMethylation <- read.csv("output/40-gene-methylaiton.csv", header = TRUE, row.names = 2)
 geneMethylationMod <- geneMethylation %>%
   select(., -1) #Remove extra column
 head(geneMethylationMod) #Confirm formatting
@@ -153,7 +155,7 @@ plotIndiv(meth.pca, ind.names = FALSE,
           cex = 10, size.axis = 8, size.legend = 8,
           legend = TRUE, title = 'Gene Methylation',
           legend.title = 'Treatment', legend.title.pch = 'Sex')
-ggsave("../output/gene-methylation-expression-mixomics/all-meth-pca.pdf", height = 8.5, width = 11)
+ggsave("output/gene-methylation-expression-mixomics/all-meth-pca.pdf", height = 8.5, width = 11)
 ```
 
 
@@ -163,11 +165,11 @@ Followed [`mixOmics` manual](https://mixomicsteam.github.io/Bookdown/pls.html#in
 
 ## Run SPLS with all samples
 
-I'm going to run an SPLS with default settings for all parameters to confirm there are large sex differences that should be accounted for in follow-up analyses.
+I'm going to run an SPLS with default settings for all parameters to confirm there are large sex differences that should be accounted for in follow-up analyses. Keep top 100 loadings from each dataset. 
 
 ```{r}
 geneResult.spls <- spls(X = geneMethylationFilt, Y = geneExpressionFilt, 
-                        keepX = c(25, 25), keepY = c(25,25)) #Run SPLS
+                        keepX = c(100, 100), keepY = c(100,100)) #Run SPLS
 ```
 
 ```{r}
@@ -287,10 +289,23 @@ ncol(geneMethylationMale) #Count genes with data for all samples
 geneResult.plsFem <- pls(geneMethylationFem, geneExpressionFem, ncomp = 4) #Run a PLS with a sufficient number of components
 ```
 
+AH had an error at this point as of 15 Aug 2023: Error in Ypred[omit, , h] <- Y.hat[, , 1] : 
+  number of items to replace is not a multiple of replacement length. This error continues in code below as well. 
+  
+Tried changing validation to "loo" instead of "Mfold". Didn't work. 
+
+AH left off here. 
+
+
+
+
+
+  
 ```{r}
 genePerf.plsFem <- perf(geneResult.plsFem, validation = "Mfold", folds = 2,
                         progressBar = FALSE, nrepeat = 10) #Use perf for repeated k-fold cross-validation to determine the number of components that should be included
 ```
+
 
 ```{r}
 #pdf(“../output/gene-methylation-expression-mixomics/yrv-geneSPLS-Fem-CompTune.pdf”, width = 11, height = 8.5)
@@ -303,7 +318,7 @@ abline(h = 0.0975) #Only include components with value is ≤ 0.0975
 
 ```{r}
 list.keepX <- c(2:10, 15, 20, 25, 30) #Number of drivers to pull
-tune.spls.RSS.FemX <- tune.spls(geneMethylationFem, geneExpressionFem, ncomp = FIX,
+tune.spls.RSS.FemX <- tune.spls(geneMethylationFem, geneExpressionFem, ncomp = 4,
                                 test.keepX = list.keepX,
                                 validation = "Mfold", folds = 2,
                                 nrepeat = 10, progressBar = TRUE,
