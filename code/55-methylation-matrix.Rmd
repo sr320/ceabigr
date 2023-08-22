@@ -1,0 +1,323 @@
+---
+title: '55'
+output: html_document
+date: "2023-08-15"
+---
+
+
+```{r}
+library(tidyverse)
+library(methylKit)
+
+```
+
+
+
+
+## sample metadata
+
+
+
+|Sample.ID|OldSample.ID|Treatment|Sex|TreatmentN|Parent.ID|
+|---------|------------|---------|---|----------|---------|
+|12M      |S12M        |Exposed  |M  |3         |EM05     |
+|13M      |S13M        |Control  |M  |1         |CM04     |
+|16F      |S16F        |Control  |F  |2         |CF05     |
+|19F      |S19F        |Control  |F  |2         |CF08     |
+|22F      |S22F        |Exposed  |F  |4         |EF02     |
+|23M      |S23M        |Exposed  |M  |3         |EM04     |
+|29F      |S29F        |Exposed  |F  |4         |EF07     |
+|31M      |S31M        |Exposed  |M  |3         |EM06     |
+|35F      |S35F        |Exposed  |F  |4         |EF08     |
+|36F      |S36F        |Exposed  |F  |4         |EF05     |
+|39F      |S39F        |Control  |F  |2         |CF06     |
+|3F       |S3F         |Exposed  |F  |4         |EF06     |
+|41F      |S41F        |Exposed  |F  |4         |EF03     |
+|44F      |S44F        |Control  |F  |2         |CF03     |
+|48M      |S48M        |Exposed  |M  |3         |EM03     |
+|50F      |S50F        |Exposed  |F  |4         |EF01     |
+|52F      |S52F        |Control  |F  |2         |CF07     |
+|53F      |S53F        |Control  |F  |2         |CF02     |
+|54F      |S54F        |Control  |F  |2         |CF01     |
+|59M      |S59M        |Exposed  |M  |3         |EM01     |
+|64M      |S64M        |Control  |M  |1         |CM05     |
+|6M       |S6M         |Control  |M  |1         |CM02     |
+|76F      |S76F        |Control  |F  |2         |CF04     |
+|77F      |S77F        |Exposed  |F  |4         |EF04     |
+|7M       |S7M         |Control  |M  |1         |CM01     |
+|9M       |S9M         |Exposed  |M  |3         |EM02     |
+
+
+
+
+```{r eval=FALSE, include=FALSE}
+myobj_m = processBismarkAln(location = file.list_male,
+  sample.id = list("12M","13M","23M","31M","48M","59M","64M","6M","7M","9M"),
+  assembly = "cv",
+  read.context="CpG",
+  mincov=2,
+  treatment =  c(1,0,1,1,1,1,0,0,0,1))
+```
+
+```{r eval=FALSE, include=FALSE}
+myobj_f = processBismarkAln(location = file.list_female,
+  sample.id = list("16F","19F","22F","29F","35F","36F","39F","3F","41F","44F","50F","52F","53F","54F","76F", "77F"),
+  assembly = "cv",
+  read.context="CpG",
+  mincov=2,
+  treatment =  c(0,0,1,1,1,1,0,1,1,0,1,0,0,0,0,1))
+```
+
+
+
+
+```{r include=FALSE}
+save(myobj_m, file = "../analyses/myobj_m")
+
+```
+
+```{r include=FALSE}
+save(myobj_f, file = "../analyses/myobj_f")
+
+```
+
+```{bash}
+cd ../output/55-methylation-matrix
+
+curl -O https://gannet.fish.washington.edu/seashell/bu-github/2018_L18-adult-methylation/analyses/myobj_m
+```
+
+```{bash}
+cd ../output/55-methylation-matrix
+
+curl -O https://gannet.fish.washington.edu/seashell/bu-github/2018_L18-adult-methylation/analyses/myobj_f
+```
+
+
+
+```{r include=FALSE}
+load("../output/55-methylation-matrix/myobj_m")
+```
+
+
+
+```{r include=FALSE}
+load("../output/55-methylation-matrix/myobj_f")
+```
+
+
+
+## Male first
+
+```{r message=FALSE, warning=FALSE}
+filtered.myobj=filterByCoverage(myobj_m,lo.count=10,lo.perc=NULL,
+                                      hi.count=NULL,hi.perc=98)
+
+meth_filter=methylKit::unite(filtered.myobj, min.per.group=NULL, destrand=TRUE)
+
+clusterSamples(meth_filter, dist="correlation", method="ward", plot=TRUE)
+
+
+PCASamples(meth_filter)
+
+```
+
+
+Laura's code
+
+```{r}
+perc.meth=percMethylation(meth_filter, rowids=T)
+```
+
+```{r}
+# Save % methylation df to object and .tab file 
+save(perc.meth, file = "../analyses/male-perc.meth") #save object to file 
+#load(file = "../analyses/methylation/R-objects/perc.meth") #load object if needed
+```
+
+
+```{r}
+#write.table((as.data.frame(perc.meth) %>% tibble::rownames_to_column("contig")), file = "../analyses/male-percent-meth.tab", sep = '\t', na = "NA", row.names = FALSE, col.names = TRUE)
+```
+
+
+```{r}
+perc.meth_T <- t(perc.meth)
+
+```
+
+
+```{r}
+correlationMatrix <- cor(perc.meth_T)
+
+```
+
+```{r}
+
+distanceMatrix <- dist(perc.meth_T)
+```
+
+```{r}
+# Convert distance matrix to a regular matrix
+matrixForm <- as.matrix(distanceMatrix)
+
+# Display the matrix
+print(matrixForm)
+```
+
+
+```{r}
+heatmap(matrixForm, Rowv = NA, Colv = NA, col = cm.colors(256), scale = "none")
+
+```
+
+
+
+```{r}
+dataFrameForm <- as.data.frame(matrixForm)
+print(dataFrameForm)
+
+```
+
+
+
+----
+
+
+```{r include=FALSE}
+myDiff=calculateDiffMeth(meth_filter,mc.cores=48)
+
+```
+
+
+```{r include=FALSE}
+save(myDiff, file = "../analyses/myDiff_m")
+
+```
+
+
+
+```{r}
+write.table(myDiff, file = "../analyses/myDiff_m.tab", sep = "\t")
+```
+
+
+```{r}
+# get hyper methylated bases
+myDiff_m50p.hyper=getMethylDiff(myDiff,difference=50,qvalue=0.01,type="hyper")
+#
+# get hypo methylated bases
+myDiff_m50p.hypo=getMethylDiff(myDiff,difference=50,qvalue=0.01,type="hypo")
+#
+#
+# get all differentially methylated bases
+myDiff_m50p=getMethylDiff(myDiff,difference=50,qvalue=0.01)
+```
+
+
+
+
+```{r}
+write.table(myDiff_m50p, file = "../analyses/myDiff_m50p.tab", sep = "\t")
+```
+
+
+
+```{r}
+myDiff_m50p.tab <- read.csv(file = "../analyses/myDiff_m50p.tab", sep = "\t")
+```
+
+
+
+
+```{r}
+m_dml <- dplyr::select(myDiff_m50p.tab, chr, start, end, meth.diff) %>% 
+  mutate(start = start -1) %>% 
+  mutate(end = end +1) %>%
+  mutate_if(is.numeric, as.integer) %>% 
+  mutate(TYPE ="oao_DML") %>% 
+  select(chr, start, end, TYPE, meth.diff) 
+
+write.table(m_dml, file = "../analyses/male_dml.bed", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+```
+
+
+
+
+# Female 
+
+```{r message=FALSE, warning=FALSE}
+filtered.myobj=filterByCoverage(myobj_f,lo.count=10,lo.perc=NULL,
+                                      hi.count=NULL,hi.perc=98)
+
+meth_filter=unite(filtered.myobj, min.per.group=NULL, destrand=TRUE)
+
+clusterSamples(meth_filter, dist="correlation", method="ward", plot=TRUE)
+
+
+PCASamples(meth_filter)
+
+```
+
+
+```{r include=FALSE}
+myDiff=calculateDiffMeth(meth_filter,mc.cores=48)
+
+```
+
+
+```{r include=FALSE}
+save(myDiff, file = "../analyses/myDiff_m")
+
+```
+
+
+
+```{r}
+write.table(myDiff, file = "../analyses/myDiff_m.tab", sep = "\t")
+```
+
+
+```{r}
+# get hyper methylated bases
+myDiff_m50p.hyper=getMethylDiff(myDiff,difference=50,qvalue=0.01,type="hyper")
+#
+# get hypo methylated bases
+myDiff_m50p.hypo=getMethylDiff(myDiff,difference=50,qvalue=0.01,type="hypo")
+#
+#
+# get all differentially methylated bases
+myDiff_m50p=getMethylDiff(myDiff,difference=50,qvalue=0.01)
+```
+
+
+
+
+```{r}
+write.table(myDiff_m50p, file = "../analyses/myDiff_m50p.tab", sep = "\t")
+```
+
+
+
+```{r}
+myDiff_m50p.tab <- read.csv(file = "../analyses/myDiff_m50p.tab", sep = "\t")
+```
+
+
+
+
+```{r}
+m_dml <- dplyr::select(myDiff_m50p.tab, chr, start, end, meth.diff) %>% 
+  mutate(start = start -1) %>% 
+  mutate(end = end +1) %>%
+  mutate_if(is.numeric, as.integer) %>% 
+  mutate(TYPE ="oao_DML") %>% 
+  select(chr, start, end, TYPE, meth.diff) 
+
+write.table(m_dml, file = "../analyses/male_dml.bed", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+```
+
+
+
+
+
