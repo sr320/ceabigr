@@ -178,7 +178,7 @@ anti_join(fpre, mpre, by = "t_name")
 
 # Separate by sex and treatment
 
-**NOTE: SAM DID THIS IN A JUPYTER NOTEBOOK: <https://nbviewer.org/github/sr320/ceabigr/blob/main/code/20220920-cvir-ceabigr-predominant_isoform-female_male.ipynb>**
+**NOTE: SAM DID THIS IN A JUPYTER NOTEBOOK: <https://nbviewer.org/github/sr320/ceabigr/blob/main/code/42-predominant_isoform-female_male.ipynb>**
 
 ## Males
 
@@ -253,7 +253,7 @@ full_join(mco, mex, by = "gene_name") %>%
 
 # Analyse data
 
-Based on the files from [Sam's Jupyter notebook](https://nbviewer.org/github/sr320/ceabigr/blob/main/code/20220920-cvir-ceabigr-predominant_isoform-female_male.ipynb), I will address the following questions:
+Based on the files from [Sam's Jupyter notebook](https://nbviewer.org/github/sr320/ceabigr/blob/main/code/42-predominant_isoform-female_male.ipynb), I will address the following questions:
 
 -   How often does the predominant isoform change under OA conditions? Is this more than expected by random chance?
 -   Is there a connection between predominant isoform changes, gene expression, and gene methylation?
