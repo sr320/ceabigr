@@ -156,9 +156,12 @@ str(geneSampleDistMatrix)
 
 ## Write distance matrix to file
 ```{r write-gene-distance-matrix-to-file}
-write.csv(geneSampleDistMatrix,
+write.table(geneSampleDistMatrix,
           file = "../output/52.1-rnaseq-relatedness/gene-distance-matrix.csv",
-          quote = FALSE)
+          quote = FALSE,
+          row.names = TRUE,
+          col.names = TRUE,
+          sep = ",")
 ```
 
 ## Plot gene distance matrix
@@ -273,9 +276,12 @@ str(transcriptSampleDistMatrix)
 
 ## Write distance matrix to file
 ```{r write-transcript-distance-matrix-to-file}
-write.csv(transcriptSampleDistMatrix,
+write.table(transcriptSampleDistMatrix,
           file = "../output/52.1-rnaseq-relatedness/transcript-distance-matrix.csv",
-          quote = FALSE)
+          quote = FALSE,
+          col.names = TRUE,
+          row.names = TRUE,
+          sep = ",")
 ```
 
 ## Plot transcript distance matrix
