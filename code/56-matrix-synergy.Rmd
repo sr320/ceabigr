@@ -151,10 +151,12 @@ Laura's code
 perc.meth=percMethylation(meth_filter, rowids=T)
 ```
 
+
+
 ```{r}
 #Save % methylation df to object and .tab file 
-save(perc.meth, file = "../output/55-methylation-matrix/male-perc.meth") #save object to file 
-#load(file = "../output/55-methylation-matrix/male-perc.meth") #load object if needed
+save(perc.meth, file = "../output/56-matrix-synergy/all-perc.meth") #save object to file 
+#load(file = "../output/56-matrix-synergy/all-perc.meth") #load object if needed
 ```
 
 
@@ -204,4 +206,6 @@ print(dataFrameForm)
 
 
 
-
+```{r}
+write.table((as.data.frame(matrixForm) %>% tibble::rownames_to_column("sample")), file = "../output/56-matrix-synergy/all.meth-distance.tab", sep = '\t', na = "NA", row.names = FALSE, col.names = TRUE)
+```

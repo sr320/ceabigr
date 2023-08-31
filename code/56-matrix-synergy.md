@@ -3,6 +3,12 @@
 Steven Roberts
 31 August, 2023
 
+- <a href="#1-will-redo-methylation-to-get-all-samples"
+  id="toc-1-will-redo-methylation-to-get-all-samples">1 Will Redo
+  methylation to get all samples..</a>
+  - <a href="#11-sample-metadata" id="toc-11-sample-metadata">1.1 sample
+    metadata</a>
+
 We have a few matrices comparing samples but the are not directly
 comparable.
 
@@ -17,3 +23,103 @@ Gene expression data like this..
 Methylation like ..
 
 ![meth](http://gannet.fish.washington.edu/seashell/snaps/Monosnap_ceabigr__RStudio_Server_2023-08-31_11-09-03.png)
+
+# 1 Will Redo methylation to get all samples..
+
+## 1.1 sample metadata
+
+| Sample.ID | OldSample.ID | Treatment | Sex | TreatmentN | Parent.ID |
+|:----------|:-------------|:----------|:----|:-----------|:----------|
+| 12M       | S12M         | Exposed   | M   | 3          | EM05      |
+| 13M       | S13M         | Control   | M   | 1          | CM04      |
+| 16F       | S16F         | Control   | F   | 2          | CF05      |
+| 19F       | S19F         | Control   | F   | 2          | CF08      |
+| 22F       | S22F         | Exposed   | F   | 4          | EF02      |
+| 23M       | S23M         | Exposed   | M   | 3          | EM04      |
+| 29F       | S29F         | Exposed   | F   | 4          | EF07      |
+| 31M       | S31M         | Exposed   | M   | 3          | EM06      |
+| 35F       | S35F         | Exposed   | F   | 4          | EF08      |
+| 36F       | S36F         | Exposed   | F   | 4          | EF05      |
+| 39F       | S39F         | Control   | F   | 2          | CF06      |
+| 3F        | S3F          | Exposed   | F   | 4          | EF06      |
+| 41F       | S41F         | Exposed   | F   | 4          | EF03      |
+| 44F       | S44F         | Control   | F   | 2          | CF03      |
+| 48M       | S48M         | Exposed   | M   | 3          | EM03      |
+| 50F       | S50F         | Exposed   | F   | 4          | EF01      |
+| 52F       | S52F         | Control   | F   | 2          | CF07      |
+| 53F       | S53F         | Control   | F   | 2          | CF02      |
+| 54F       | S54F         | Control   | F   | 2          | CF01      |
+| 59M       | S59M         | Exposed   | M   | 3          | EM01      |
+| 64M       | S64M         | Control   | M   | 1          | CM05      |
+| 6M        | S6M          | Control   | M   | 1          | CM02      |
+| 76F       | S76F         | Control   | F   | 2          | CF04      |
+| 77F       | S77F         | Exposed   | F   | 4          | EF04      |
+| 7M        | S7M          | Control   | M   | 1          | CM01      |
+| 9M        | S9M          | Exposed   | M   | 3          | EM02      |
+
+``` bash
+cd ../data/big
+
+curl -O https://gannet.fish.washington.edu/seashell/bu-github/2018_L18-adult-methylation/analyses/myobj_oa
+```
+
+``` r
+filtered.myobj=filterByCoverage(myobj_oa,lo.count=10,lo.perc=NULL,
+                                      hi.count=NULL,hi.perc=98)
+
+meth_filter=unite(filtered.myobj, min.per.group=NULL, destrand=TRUE)
+
+clusterSamples(meth_filter, dist="correlation", method="ward", plot=TRUE)
+
+
+PCASamples(meth_filter)
+```
+
+Laura’s code
+
+``` r
+perc.meth=percMethylation(meth_filter, rowids=T)
+```
+
+``` r
+#Save % methylation df to object and .tab file 
+save(perc.meth, file = "../output/56-matrix-synergy/all-perc.meth") #save object to file 
+#load(file = "../output/56-matrix-synergy/all-perc.meth") #load object if needed
+```
+
+``` r
+#write.table((as.data.frame(perc.meth) %>% tibble::rownames_to_column("contig")), file = "../output/55-methylation-matrix/male-perc.meth.tab", sep = '\t', na = "NA", row.names = FALSE, col.names = TRUE)
+```
+
+``` r
+perc.meth_T <- t(perc.meth)
+```
+
+``` r
+correlationMatrix <- cor(perc.meth_T)
+```
+
+``` r
+distanceMatrix <- dist(perc.meth_T)
+```
+
+``` r
+# Convert distance matrix to a regular matrix
+matrixForm <- as.matrix(distanceMatrix)
+
+# Display the matrix
+print(matrixForm)
+```
+
+``` r
+heatmap(matrixForm, Rowv = NA, Colv = NA, col = cm.colors(256), scale = "none")
+```
+
+``` r
+dataFrameForm <- as.data.frame(matrixForm)
+print(dataFrameForm)
+```
+
+``` r
+write.table((as.data.frame(matrixForm) %>% tibble::rownames_to_column("sample")), file = "../output/56-matrix-synergy/all.meth-distance.tab", sep = '\t', na = "NA", row.names = FALSE, col.names = TRUE)
+```
