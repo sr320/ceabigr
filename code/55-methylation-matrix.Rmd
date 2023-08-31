@@ -130,14 +130,14 @@ perc.meth=percMethylation(meth_filter, rowids=T)
 ```
 
 ```{r}
-# Save % methylation df to object and .tab file 
-save(perc.meth, file = "../analyses/male-perc.meth") #save object to file 
-#load(file = "../analyses/methylation/R-objects/perc.meth") #load object if needed
+#Save % methylation df to object and .tab file 
+save(perc.meth, file = "../output/55-methylation-matrix/male-perc.meth") #save object to file 
+#load(file = "../output/55-methylation-matrix/male-perc.meth") #load object if needed
 ```
 
 
 ```{r}
-#write.table((as.data.frame(perc.meth) %>% tibble::rownames_to_column("contig")), file = "../analyses/male-percent-meth.tab", sep = '\t', na = "NA", row.names = FALSE, col.names = TRUE)
+#write.table((as.data.frame(perc.meth) %>% tibble::rownames_to_column("contig")), file = "../output/55-methylation-matrix/male-perc.meth.tab", sep = '\t', na = "NA", row.names = FALSE, col.names = TRUE)
 ```
 
 
@@ -179,143 +179,6 @@ print(dataFrameForm)
 
 ```
 
-
-
-----
-
-
-```{r include=FALSE}
-myDiff=calculateDiffMeth(meth_filter,mc.cores=48)
-
-```
-
-
-```{r include=FALSE}
-save(myDiff, file = "../analyses/myDiff_m")
-
-```
-
-
-
-```{r}
-write.table(myDiff, file = "../analyses/myDiff_m.tab", sep = "\t")
-```
-
-
-```{r}
-# get hyper methylated bases
-myDiff_m50p.hyper=getMethylDiff(myDiff,difference=50,qvalue=0.01,type="hyper")
-#
-# get hypo methylated bases
-myDiff_m50p.hypo=getMethylDiff(myDiff,difference=50,qvalue=0.01,type="hypo")
-#
-#
-# get all differentially methylated bases
-myDiff_m50p=getMethylDiff(myDiff,difference=50,qvalue=0.01)
-```
-
-
-
-
-```{r}
-write.table(myDiff_m50p, file = "../analyses/myDiff_m50p.tab", sep = "\t")
-```
-
-
-
-```{r}
-myDiff_m50p.tab <- read.csv(file = "../analyses/myDiff_m50p.tab", sep = "\t")
-```
-
-
-
-
-```{r}
-m_dml <- dplyr::select(myDiff_m50p.tab, chr, start, end, meth.diff) %>% 
-  mutate(start = start -1) %>% 
-  mutate(end = end +1) %>%
-  mutate_if(is.numeric, as.integer) %>% 
-  mutate(TYPE ="oao_DML") %>% 
-  select(chr, start, end, TYPE, meth.diff) 
-
-write.table(m_dml, file = "../analyses/male_dml.bed", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
-```
-
-
-
-
-# Female 
-
-```{r message=FALSE, warning=FALSE}
-filtered.myobj=filterByCoverage(myobj_f,lo.count=10,lo.perc=NULL,
-                                      hi.count=NULL,hi.perc=98)
-
-meth_filter=unite(filtered.myobj, min.per.group=NULL, destrand=TRUE)
-
-clusterSamples(meth_filter, dist="correlation", method="ward", plot=TRUE)
-
-
-PCASamples(meth_filter)
-
-```
-
-
-```{r include=FALSE}
-myDiff=calculateDiffMeth(meth_filter,mc.cores=48)
-
-```
-
-
-```{r include=FALSE}
-save(myDiff, file = "../analyses/myDiff_m")
-
-```
-
-
-
-```{r}
-write.table(myDiff, file = "../analyses/myDiff_m.tab", sep = "\t")
-```
-
-
-```{r}
-# get hyper methylated bases
-myDiff_m50p.hyper=getMethylDiff(myDiff,difference=50,qvalue=0.01,type="hyper")
-#
-# get hypo methylated bases
-myDiff_m50p.hypo=getMethylDiff(myDiff,difference=50,qvalue=0.01,type="hypo")
-#
-#
-# get all differentially methylated bases
-myDiff_m50p=getMethylDiff(myDiff,difference=50,qvalue=0.01)
-```
-
-
-
-
-```{r}
-write.table(myDiff_m50p, file = "../analyses/myDiff_m50p.tab", sep = "\t")
-```
-
-
-
-```{r}
-myDiff_m50p.tab <- read.csv(file = "../analyses/myDiff_m50p.tab", sep = "\t")
-```
-
-
-
-
-```{r}
-m_dml <- dplyr::select(myDiff_m50p.tab, chr, start, end, meth.diff) %>% 
-  mutate(start = start -1) %>% 
-  mutate(end = end +1) %>%
-  mutate_if(is.numeric, as.integer) %>% 
-  mutate(TYPE ="oao_DML") %>% 
-  select(chr, start, end, TYPE, meth.diff) 
-
-write.table(m_dml, file = "../analyses/male_dml.bed", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
-```
 
 
 
