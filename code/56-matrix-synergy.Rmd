@@ -1,17 +1,46 @@
 ---
-title: '56'
-output: html_document
-date: "2023-08-30"
+title: "56 - Matrix Synergy"
+author: Steven Roberts
+date: "`r format(Sys.time(), '%d %B, %Y')`" 
+output: 
+  github_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    html_preview: true
+  html_document:
+    theme: readable
+    highlight: zenburn
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    code_download: true
 ---
 
+```{r setup, include=FALSE}
+library(tidyverse)
+library(kableExtra)
+library(DESeq2)
+library(pheatmap)
+library(RColorBrewer)
+library(data.table)
+library(DT)
+library(Biostrings)
+library(methylKit)
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = FALSE,         # Evaluate code chunks
+  warning = TRUE,     # Hide warnings
+  message = TRUE,     # Hide messages
+  fig.width = 6,       # Set plot width in inches
+  fig.height = 4,      # Set plot height in inches
+  fig.align = "center" # Align plots to the center
+)
+```
 We have a few matrices comparing samples but the are not directly comparable.
 
 
-```{r}
-library(tidyverse)
-library(methylKit)
-
-```
 
 Currently we have SNP data like this..
 
@@ -23,4 +52,156 @@ https://github.com/sr320/ceabigr/blob/main/output/53-revisit-epi-SNPs/epiMATRIX_
 Gene expression data like this..
 
 ![gene](http://gannet.fish.washington.edu/seashell/snaps/Monosnap_Run_a_correlation_between_genetic_distance_and_gene_expression__methylation_distance_matrices__Issue_84__sr320ceabigr_2023-08-31_11-07-51.png)
+Methylation like ..
+
+![meth](http://gannet.fish.washington.edu/seashell/snaps/Monosnap_ceabigr__RStudio_Server_2023-08-31_11-09-03.png)
+
+
+
+# Will Redo methylation to get all samples..
+
+
+## sample metadata
+
+
+
+|Sample.ID|OldSample.ID|Treatment|Sex|TreatmentN|Parent.ID|
+|---------|------------|---------|---|----------|---------|
+|12M      |S12M        |Exposed  |M  |3         |EM05     |
+|13M      |S13M        |Control  |M  |1         |CM04     |
+|16F      |S16F        |Control  |F  |2         |CF05     |
+|19F      |S19F        |Control  |F  |2         |CF08     |
+|22F      |S22F        |Exposed  |F  |4         |EF02     |
+|23M      |S23M        |Exposed  |M  |3         |EM04     |
+|29F      |S29F        |Exposed  |F  |4         |EF07     |
+|31M      |S31M        |Exposed  |M  |3         |EM06     |
+|35F      |S35F        |Exposed  |F  |4         |EF08     |
+|36F      |S36F        |Exposed  |F  |4         |EF05     |
+|39F      |S39F        |Control  |F  |2         |CF06     |
+|3F       |S3F         |Exposed  |F  |4         |EF06     |
+|41F      |S41F        |Exposed  |F  |4         |EF03     |
+|44F      |S44F        |Control  |F  |2         |CF03     |
+|48M      |S48M        |Exposed  |M  |3         |EM03     |
+|50F      |S50F        |Exposed  |F  |4         |EF01     |
+|52F      |S52F        |Control  |F  |2         |CF07     |
+|53F      |S53F        |Control  |F  |2         |CF02     |
+|54F      |S54F        |Control  |F  |2         |CF01     |
+|59M      |S59M        |Exposed  |M  |3         |EM01     |
+|64M      |S64M        |Control  |M  |1         |CM05     |
+|6M       |S6M         |Control  |M  |1         |CM02     |
+|76F      |S76F        |Control  |F  |2         |CF04     |
+|77F      |S77F        |Exposed  |F  |4         |EF04     |
+|7M       |S7M         |Control  |M  |1         |CM01     |
+|9M       |S9M         |Exposed  |M  |3         |EM02     |
+
+
+
+```{r eval=FALSE, include=FALSE}
+myobj_oa = processBismarkAln(location = file.list_all,
+  sample.id = list("12M","13M","16F","19F","22F","23M","29F","31M", "35F","36F","39F","3F","41F","44F","48M","50F","52F","53F","54F","59M","64M","6M","76F", "77F","7M","9M"),
+  assembly = "cv",
+  read.context="CpG",
+  mincov=2,
+  treatment =  c(1,0,0,0,1,1,1,1,1,1,0,1,1,0,1,1,0,0,0,1,0,0,0,1,0,1))
+```
+
+```{r include=FALSE}
+save(myobj_oa, file = "../analyses/myobj_oa")
+
+```
+
+
+```{bash}
+cd ../data/big
+
+curl -O https://gannet.fish.washington.edu/seashell/bu-github/2018_L18-adult-methylation/analyses/myobj_oa
+```
+
+
+
+
+```{r include=FALSE}
+load("../data/big/myobj_oa")
+```
+
+
+```{r message=FALSE, warning=FALSE}
+filtered.myobj=filterByCoverage(myobj_oa,lo.count=10,lo.perc=NULL,
+                                      hi.count=NULL,hi.perc=98)
+
+meth_filter=unite(filtered.myobj, min.per.group=NULL, destrand=TRUE)
+
+clusterSamples(meth_filter, dist="correlation", method="ward", plot=TRUE)
+
+
+PCASamples(meth_filter)
+
+```
+
+
+
+
+
+
+
+
+Laura's code
+
+```{r}
+perc.meth=percMethylation(meth_filter, rowids=T)
+```
+
+```{r}
+#Save % methylation df to object and .tab file 
+save(perc.meth, file = "../output/55-methylation-matrix/male-perc.meth") #save object to file 
+#load(file = "../output/55-methylation-matrix/male-perc.meth") #load object if needed
+```
+
+
+```{r}
+#write.table((as.data.frame(perc.meth) %>% tibble::rownames_to_column("contig")), file = "../output/55-methylation-matrix/male-perc.meth.tab", sep = '\t', na = "NA", row.names = FALSE, col.names = TRUE)
+```
+
+
+```{r}
+perc.meth_T <- t(perc.meth)
+
+```
+
+
+```{r}
+correlationMatrix <- cor(perc.meth_T)
+
+```
+
+```{r}
+
+distanceMatrix <- dist(perc.meth_T)
+```
+
+```{r}
+# Convert distance matrix to a regular matrix
+matrixForm <- as.matrix(distanceMatrix)
+
+# Display the matrix
+print(matrixForm)
+```
+
+
+```{r}
+heatmap(matrixForm, Rowv = NA, Colv = NA, col = cm.colors(256), scale = "none")
+
+```
+
+
+
+```{r}
+dataFrameForm <- as.data.frame(matrixForm)
+print(dataFrameForm)
+
+```
+
+
+
+
 
