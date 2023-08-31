@@ -1,0 +1,316 @@
+---
+title: "RNAseq Relatedness"
+author: "Sam White"
+date: "2023-08-29"
+output: html_document
+---
+
+This notebook uses gene counts formatted for import into DESeq2 generated from Stringtie.
+
+Notebook:
+
+- [Transcript-Identification-and-Alignments-C.virginica-RNAseq-with-NCBI-Genome-GCF_002022765.2-Using-Hisat2-and-Stringtie-on-Mox-Again](https://robertslab.github.io/sams-notebook/2023/08/21/Transcript-Identification-and-Alignments-C.virginica-RNAseq-with-NCBI-Genome-GCF_002022765.2-Using-Hisat2-and-Stringtie-on-Mox-Again.html)
+
+# Load libraries
+```{r load-libraries}
+library(DESeq2)
+library(tidyverse)
+library(RColorBrewer)
+library(pheatmap)
+```
+
+# Set variables
+```{r set-variables}
+# Vectors for subsetting samples by different groups
+controls <- c("S13M", "S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S64M", "S6M", "S76F", "S7M")
+exposed <- c("S12M", "S22F", "S23M", "S29F", "S31M", "S35F", "S36F", "S3F", "S41F", "S48M", "S50F", "S59M", "S77F", "S9M")
+controls_males <- c("S13M", "S64M", "S6M", "S7M")
+exposed_males <- c("S12M", "S23M", "S31M", "S48M", "S59M", "S9M")
+controls_females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F")
+exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
+```
+
+
+# Gene counts analysis
+
+## Import gene counts matrix
+
+Also, perform some formatting.
+```{r import-and-format-gene-counts-matrix}
+gene_counts_matrix <- as.matrix(read.csv("../data/gene_count_matrix.csv"))
+
+# Check structure of imported data
+print("gene_counts_matrix")
+cat("\n")
+str(gene_counts_matrix)
+
+cat("\n")
+cat("\n")
+
+
+# Extracting the string after "|"
+gene_counts_matrix <- sub(".*\\|", "", gene_counts_matrix)
+
+# Remove ".gtf" from column headers
+colnames(gene_counts_matrix) <- sub("\\.gtf$", "", colnames(gene_counts_matrix))
+
+# Extract the gene IDs and remove the "gene_id" header from the gene_counts_matrix
+gene_ids <- gene_counts_matrix[,"gene_id"]
+gene_counts_matrix <- gene_counts_matrix[, -which(colnames(gene_counts_matrix) == "gene_id")]
+rownames(gene_counts_matrix) <- gene_ids
+
+# Convert character values to numeric
+numeric_gene_counts_matrix <- matrix(as.numeric(gene_counts_matrix), nrow = nrow(gene_counts_matrix))
+
+# Restore row and column names
+rownames(numeric_gene_counts_matrix) <- rownames(gene_counts_matrix)
+colnames(numeric_gene_counts_matrix) <- colnames(gene_counts_matrix)
+
+# Check structure of formatted data
+print("gene_counts_matrix after substitutions")
+cat("\n")
+str(numeric_gene_counts_matrix)
+
+```
+
+
+## Create column data dataframe for import into DESeq2
+
+```{r deseq2-column-dataframe}
+# Initialize lists to store condition and sex information
+condition_list <- vector("character", length(colnames(numeric_gene_counts_matrix)))
+sex_list <- vector("character", length(colnames(numeric_gene_counts_matrix)))
+
+# Iterate through the column names
+# Identify controls/exposed male/female base on column names
+for (i in seq_along(colnames(numeric_gene_counts_matrix))) {
+  col_name <- colnames(numeric_gene_counts_matrix)[i]
+  
+  if (col_name %in% controls) {
+    condition <- "control"
+  } else if (col_name %in% exposed) {
+    condition <- "exposed"
+  } else {
+    condition <- NA
+  }
+  
+  if (endsWith(col_name, "M")) {
+    sex <- "male"
+  } else if (endsWith(col_name, "F")) {
+    sex <- "female"
+  } else {
+    sex <- NA
+  }
+  
+  condition_list[i] <- condition
+  sex_list[i] <- sex
+}
+
+# Create the resulting data frame
+coldata_df <- data.frame(condition = condition_list, sex = sex_list, row.names = colnames(numeric_gene_counts_matrix))
+
+str(coldata_df)
+
+```
+
+## Confirm column names and rownames are in correct order for DESeq2
+```{r check-order-columnnames-rownames-for-deseq2}
+all(rownames(coldata_df) == colnames(numeric_gene_counts_matrix))
+```
+
+## Import gene counts into DESeq2 object
+```{r import-gene-counts-deseq2}
+dds <- DESeqDataSetFromMatrix(countData = numeric_gene_counts_matrix,
+                              colData = coldata_df,
+                              design = ~ condition)
+
+dds
+```
+
+## Regularized log transformation (RLD)
+
+Recommended in most protocols - not sure if this or variance stabilizing transformation (VST) is better...
+```{r regularized-log-transformation}
+rld <- rlog(dds, blind = FALSE)
+```
+
+## Heatmap of count matrix
+```{r heatmap-count-matrix}
+select <- order(rowMeans(counts(dds,normalized=FALSE)),
+                decreasing=TRUE)[1:20]
+count_matrix_df <- as.data.frame(colData(dds)[,c("condition","sex")])
+pheatmap(assay(rld)[select,], cluster_rows=FALSE, show_rownames=FALSE,
+         cluster_cols=FALSE, annotation_col=count_matrix_df)
+```
+
+## Calculate distance matrix
+```{r distance-matrix}
+# Transpose count matrix and calculate distances using dist()
+geneSampleDists <- assay(rld) %>% t() %>% dist()
+
+# Convert distance dataframe to matrix
+geneSampleDistMatrix <- as.matrix(geneSampleDists)
+
+str(geneSampleDistMatrix)
+```
+
+## Write distance matrix to file
+```{r write-gene-distance-matrix-to-file}
+write.csv(geneSampleDistMatrix,
+          file = "../output/52.1-rnaseq-relatedness/gene-distance-matrix.csv",
+          quote = FALSE)
+```
+
+## Plot gene distance matrix
+```{r plot-gene-distance-matrix}
+# Choose continuous palette from RColorBrewer
+colors <- colorRampPalette(rev(brewer.pal(9, "Blues")))(255)
+
+# Plot sample distance heatmap with pheatmap
+rownames(geneSampleDistMatrix) <- paste(rld$condition, rld$sex, sep="-")
+colnames(geneSampleDistMatrix) <- NULL
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+
+# Create heatmap
+gene_distance_matrix_heatmap <- pheatmap(geneSampleDistMatrix,
+         clustering_distance_rows=geneSampleDists,
+         clustering_distance_cols=geneSampleDists,
+         col=colors)
+
+# View heatmap
+gene_distance_matrix_heatmap
+```
+
+## Save gene distance matrix heatmap
+```{r save-gene-distance-matrix-heatmap}
+# Save as PDF
+pdf(file = "../output/52.1-rnaseq-relatedness/figures/gene-distance-matrix-heatmap.pdf",
+       width = 8,
+       height = 5
+    )
+
+# Call plot
+gene_distance_matrix_heatmap
+
+# Turn off plotting and write to file specified above.
+dev.off()
+
+```
+
+# Transcript count analysis
+
+I don't expect much (any?) real difference between the results of this and the gene counts analysis, but figured I'd run it anyway since I have the counts and the code. :)
+
+## Import transcript counts matrix
+
+```{r}
+transcript_counts_matrix <- as.matrix(read.csv("../data/transcript_count_matrix.csv"))
+
+# Check structure of imported data
+print("transcript_counts_matrix")
+cat("\n")
+str(transcript_counts_matrix)
+
+cat("\n")
+cat("\n")
+
+# Remove ".gtf" from column headers
+colnames(transcript_counts_matrix) <- sub("\\.gtf$", "", colnames(transcript_counts_matrix))
+
+# Extract the transcript IDs and remove the "transcript_id" header from the transcript_counts_matrix
+transcript_ids <- transcript_counts_matrix[,"transcript_id"]
+transcript_counts_matrix <- transcript_counts_matrix[, -which(colnames(transcript_counts_matrix) == "transcript_id")]
+rownames(transcript_counts_matrix) <- transcript_ids
+
+# Convert character values to numeric
+numeric_transcript_counts_matrix <- matrix(as.numeric(transcript_counts_matrix), nrow = nrow(transcript_counts_matrix))
+
+# Restore row and column names
+rownames(numeric_transcript_counts_matrix) <- rownames(transcript_counts_matrix)
+colnames(numeric_transcript_counts_matrix) <- colnames(transcript_counts_matrix)
+
+# Check structure of formatted data
+print("transcript_counts_matrix after substitutions")
+cat("\n")
+str(numeric_transcript_counts_matrix)
+```
+
+## Import trnascript counts into DESeq2 object
+```{r import-gene-counts-deseq2}
+transcript_dds <- DESeqDataSetFromMatrix(countData = numeric_gene_counts_matrix,
+                              colData = coldata_df,
+                              design = ~ condition)
+
+transcript_dds
+```
+
+## Regularized log transformation (RLD)
+
+Recommended in most protocols - not sure if this or variance stabilizing transformation (VST) is better...
+```{r regularized-log-transformation}
+transcript_rld <- rlog(transcript_dds, blind = FALSE)
+```
+
+## Heatmap of count matrix
+```{r heatmap-count-matrix}
+select <- order(rowMeans(counts(transcript_dds,normalized=FALSE)),
+                decreasing=TRUE)[1:20]
+transcript_count_matrix_df <- as.data.frame(colData(transcript_dds)[,c("condition","sex")])
+pheatmap(assay(transcript_rld)[select,], cluster_rows=FALSE, show_rownames=FALSE,
+         cluster_cols=FALSE, annotation_col=transcript_count_matrix_df)
+```
+
+## Calculate distance matrix
+```{r distance-matrix}
+# Transpose count matrix and calculate distances using dist()
+transcriptSampleDists <- assay(transcript_rld) %>% t() %>% dist()
+
+# Convert distance dataframe to matrix
+transcriptSampleDistMatrix <- as.matrix(transcriptSampleDists)
+
+str(transcriptSampleDistMatrix)
+```
+
+## Write distance matrix to file
+```{r write-transcript-distance-matrix-to-file}
+write.csv(transcriptSampleDistMatrix,
+          file = "../output/52.1-rnaseq-relatedness/transcript-distance-matrix.csv",
+          quote = FALSE)
+```
+
+## Plot transcript distance matrix
+```{r plot-transcript-distance-matrix}
+# Choose continuous palette from RColorBrewer
+colors <- colorRampPalette(rev(brewer.pal(9, "Blues")))(255)
+
+# Plot sample distance heatmap with pheatmap
+rownames(transcriptSampleDistMatrix) <- paste(transcript_rld$condition, transcript_rld$sex, sep="-")
+colnames(transcriptSampleDistMatrix) <- NULL
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+
+# Create heatmap
+transcript_distance_matrix_heatmap <- pheatmap(transcriptSampleDistMatrix,
+         clustering_distance_rows=transcriptSampleDists,
+         clustering_distance_cols=transcriptSampleDists,
+         col=colors)
+
+# View heatmap
+transcript_distance_matrix_heatmap
+```
+
+## Save transcript distance matrix heatmap
+```{r save-transcript-distance-matrix-heatmap}
+# Save as PDF
+pdf(file = "../output/52.1-rnaseq-relatedness/figures/transcript-distance-matrix-heatmap.pdf",
+       width = 8,
+       height = 5
+    )
+
+# Call plot
+transcript_distance_matrix_heatmap
+
+# Turn off plotting and write to file specified above.
+dev.off()
+
+```
+
