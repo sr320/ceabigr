@@ -209,3 +209,9 @@ print(dataFrameForm)
 ```{r}
 write.table((as.data.frame(matrixForm) %>% tibble::rownames_to_column("sample")), file = "../output/56-matrix-synergy/all.meth-distance.tab", sep = '\t', na = "NA", row.names = FALSE, col.names = TRUE)
 ```
+
+
+
+
+
+
