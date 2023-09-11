@@ -264,9 +264,18 @@ Note that in some cases nIter is -1. This indicates that values on the boundary 
 df = read.table("../output/53-revisit-epi-SNPs/vcf.relatedness",header = T)
 dfrab <- df[,c("ida","idb","rab")]
 distrab <- as.matrix(list2dist(dfrab))
-
-write.table(distrab,file="../output/53-revisit-epi-SNPs/epiMATRIX_mbd_rab.txt", col.names = T, row.names = T, sep = "\t")
 ```
+
+
+```{r, eval=TRUE}
+write.table((as.data.frame(distrab) %>% tibble::rownames_to_column("sample")), file = "../output/53-revisit-epi-SNPs/epiMATRIX_mbd_rab.txt", sep = '\t', na = "NA", row.names = FALSE, col.names = TRUE)
+```
+
+```{r, eval=TRUE}
+#write.table(distrab,file="../output/53-revisit-epi-SNPs/epiMATRIX_mbd_rab.txt", #col.names = T, row.names = T, sep = "\t")
+```
+
+
 
 
 ```{r, eval=TRUE}

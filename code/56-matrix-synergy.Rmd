@@ -156,7 +156,12 @@ perc.meth=percMethylation(meth_filter, rowids=T)
 ```{r}
 #Save % methylation df to object and .tab file 
 save(perc.meth, file = "../output/56-matrix-synergy/all-perc.meth") #save object to file 
-#load(file = "../output/56-matrix-synergy/all-perc.meth") #load object if needed
+
+```
+
+```{r, eval=TRUE}
+
+load(file = "../output/56-matrix-synergy/all-perc.meth") #load object if needed
 ```
 
 
@@ -165,7 +170,7 @@ save(perc.meth, file = "../output/56-matrix-synergy/all-perc.meth") #save object
 ```
 
 
-```{r}
+```{r, eval=TRUE}
 perc.meth_T <- t(perc.meth)
 
 ```
@@ -176,12 +181,12 @@ correlationMatrix <- cor(perc.meth_T)
 
 ```
 
-```{r}
+```{r, eval=TRUE}
 
 distanceMatrix <- dist(perc.meth_T)
 ```
 
-```{r}
+```{r, eval=TRUE}
 # Convert distance matrix to a regular matrix
 matrixForm <- as.matrix(distanceMatrix)
 
@@ -211,7 +216,62 @@ write.table((as.data.frame(matrixForm) %>% tibble::rownames_to_column("sample"))
 ```
 
 
+# checking for consistency
+text file..
+
+```{r, engine='bash', eval=TRUE}
+head -2 ../output/56-matrix-synergy/all.meth-distance.tab
+```
+
+```{r, engine='bash', eval=TRUE}
+head -2 ../output/53-revisit-epi-SNPs/epiMATRIX_mbd_rab.txt
+```
 
 
+# checking for consistency
+matrices..
+
+```{r, eval=TRUE}
+
+load(file = "../output/53-revisit-epi-SNPs/distrab") #load object if needed
+```
+
+```{r, eval=TRUE}
+str(matrixForm)
+```
+
+
+```{r, eval=TRUE}
+str(distrab)
+```
+
+
+
+# correlation
+
+```{r, eval=TRUE}
+cor_matrix <- cor(matrixForm,distrab)
+```
+
+```{r, eval=TRUE}
+heatmap(cor_matrix)
+```
+
+
+
+```{r, eval=TRUE}
+
+# Create a data frame from the correlation matrix
+cor_melted <- as.data.frame(as.table(cor_matrix))
+
+# Create the heatmap
+ggplot(data=cor_melted, aes(x=Var1, y=Var2)) +
+  geom_tile(aes(fill=Freq), color='white') +
+  scale_fill_gradient2(low="blue", high="red", mid="white", midpoint=0) +
+ # geom_text(aes(label=sprintf("%.2f", Freq)), vjust=1) +
+  theme_minimal() +
+  labs(fill="Correlation")
+
+```
 
 
