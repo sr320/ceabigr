@@ -267,6 +267,12 @@ distrab <- as.matrix(list2dist(dfrab))
 ```
 
 
+```{r}
+#Save % to object and .tab file 
+save(distrab, file = "../output/53-revisit-epi-SNPs/distrab") #save object to file 
+
+```
+
 ```{r, eval=TRUE}
 write.table((as.data.frame(distrab) %>% tibble::rownames_to_column("sample")), file = "../output/53-revisit-epi-SNPs/epiMATRIX_mbd_rab.txt", sep = '\t', na = "NA", row.names = FALSE, col.names = TRUE)
 ```
