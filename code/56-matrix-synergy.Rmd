@@ -215,6 +215,14 @@ print(dataFrameForm)
 write.table((as.data.frame(matrixForm) %>% tibble::rownames_to_column("sample")), file = "../output/56-matrix-synergy/all.meth-distance.tab", sep = '\t', na = "NA", row.names = FALSE, col.names = TRUE)
 ```
 
+```{r}
+#rewrite here to fix format of column names 
+file<-as.matrix(matrixForm)
+
+write.csv(file,
+          file = "../output/52.1-rnaseq-relatedness/gene-distance-matrix.csv")
+```
+
 
 # checking for consistency
 text file..
