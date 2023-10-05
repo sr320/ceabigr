@@ -3,22 +3,34 @@ title: "17-Swiss-Prot-Annotation"
 output: html_document
 ---
 
+
+# Load libraries
+
+```{r load-libraries}
+library("tidyverse")
+```
+
+## Protein annotations
+
+### Download and unzip Uniprot-SwissProt FastA
 https://www.uniprot.org/downloads
-```{bash}
-cd ../blastdb
+
+In this following chunk where the fasta file is downloaded the [release](https://www.uniprot.org/help/release-statistics)is noted and the file name is modified accordingly.
+
+```{bash download-uniprot-sp-fasta}
+mkdir --parents ../data/blastdb
+
+cd ../data/blastdb
+
 curl -O https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz
-mv uniprot_sprot.fasta.gz uniprot_sprot_r2022_02.fasta.gz
-gunzip -k uniprot_sprot_r2022_02.fasta.gz
-```
-```{bash}
-/home/shared/ncbi-blast-2.11.0+/bin/makeblastdb \
--in ../blastdb/uniprot_sprot_r2022_02.fasta \
--dbtype prot \
--out ../blastdb/uniprot_sprot_r2022_02
+
+mv uniprot_sprot.fasta.gz uniprot_sprot_r2023_04.fasta.gz
+
+gunzip -k uniprot_sprot_r2023_04.fasta.gz
 ```
 
-
-```{bash}
+### Download NCBI protein FastA
+```{bash download-ncbi-protein-fasta}
 cd ../genome-features 
 
 curl -O https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/022/765/GCF_002022765.2_C_virginica-3.0/GCF_002022765.2_C_virginica-3.0_protein.faa.gz
@@ -26,44 +38,68 @@ curl -O https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/022/765/GCF_002022765.2
 gunzip -k GCF_002022765.2_C_virginica-3.0_protein.faa.gz
 ```
 
+### Check NCBI protein FastA
+```{bash check-ncbi-protein-fasta}
+head -n 2 ../genome-features/GCF_002022765.2_C_virginica-3.0_protein.faa
 
+echo ""
 
+echo "Number of sequences:"
 
+grep --count "^>" ../genome-features/GCF_002022765.2_C_virginica-3.0_protein.faa
+```
 
-```{bash}
+### Create BLAST database
+```{bash create-BLAST-db}
+/home/shared/ncbi-blast-2.11.0+/bin/makeblastdb \
+-in ../data/blastdb/ uniprot_sprot_r2023_04.fasta \
+-dbtype prot \
+-out ../data/blastdb/ uniprot_sprot_r2023_04
+```
+
+### Run BLASTp
+
+Keep only 1 match per query (`-max_target_seqs 1` _and_ `-max_hsps 1`)
+```{bash BLASTp}
 /home/shared/ncbi-blast-2.11.0+/bin/blastp \
 -query ../genome-features/GCF_002022765.2_C_virginica-3.0_protein.faa \
--db ../blastdb/uniprot_sprot_r2022_02 \
+-db ../data/blastdb/uniprot_sprot_r2023_04 \
 -out ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp.tab \
 -evalue 1E-20 \
 -num_threads 40 \
 -max_target_seqs 1 \
+-max_hsps 1 \
 -outfmt 6
 ```
 
 
-
-```{bash}
-wc -l  ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp.tab
-
-```
-
+### Check BLASTp output file
 
 ```{bash}
 head  ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp.tab
+```
 
+#### Line count of BLASTp output
+```{bash blastp-output-line-count}
+wc -l  ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp.tab
+```
+
+#### Count uniques in BLASTp output file
+Confirms that only one result for each query
+Sorts solely on first column (`-k1,1`)
+```{bash blastp-output-unique-line-count}
+sort --unique -k1,1 ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp.tab | wc -l
 ```
 
 
-!tr '|' '\t' < $blastout
+### Convert pipes (`|`) to tabs.
+Makes downstream manipulation easier
 
-```{bash}
-tr '|' '\t' < ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp.tab | head
-```
-
-```{bash}
+```{bash convert-pipes-to-tabs}
 tr '|' '\t' < ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp.tab \
 > ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp_sep.tab
+
+head ../output/17-Swiss-Prot-Annotation/Cvir_protein-uniprot_blastp_sep.tab
 ```
 
 
@@ -73,7 +109,136 @@ Connect GENE IDS to PROTEIN IDs
 Protein example = XP_022286068.1
 Gene example = LOC111110166
 
+## Coding Sequence Annotations
+
+### Download NCBI coding sequence (CDS) FastA
+```{bash download-ncbi-cds-fasta}
+cd ../genome-features 
+
+curl -O https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/022/765/GCF_002022765.2_C_virginica-3.0/GCF_002022765.2_C_virginica-3.0_translated_cds.faa.gz
+
+gunzip -k GCF_002022765.2_C_virginica-3.0_translated_cds.faa.gz
+```
+
+### Check NCBI CDS FastA
+```{bash check-ncbi-cds-fasta}
+head -n 2 ../genome-features/GCF_002022765.2_C_virginica-3.0_translated_cds.faa
+
+echo ""
+
+echo "Number of sequences:"
+
+grep --count "^>" ../genome-features/GCF_002022765.2_C_virginica-3.0_translated_cds.faa
+```
+
+### Run BLASTp
+
+Keep only 1 match per query (`-max_target_seqs 1` _and_ `-max_hsps 1`)
+```{bash BLASTp}
+/home/shared/ncbi-blast-2.11.0+/bin/blastp \
+-query ../genome-features/GCF_002022765.2_C_virginica-3.0_translated_cds.faa \
+-db ../data/blastdb/uniprot_sprot_r2023_04 \
+-out ../output/17-Swiss-Prot-Annotation/Cvir_cds-uniprot_blastp.tab \
+-evalue 1E-20 \
+-num_threads 40 \
+-max_target_seqs 1 \
+-max_hsps 1 \
+-outfmt 6
+```
+
+#### Line count of BLASTp output
+```{bash blastp-output-line-count}
+wc -l  ../output/17-Swiss-Prot-Annotation/Cvir_cds-uniprot_blastp.tab
+```
+
+#### Count uniques in BLASTp output file
+Confirms that only one result for each query
+Sorts solely on first column (`-k1,1`)
+```{bash blastp-output-unique-line-count}
+sort --unique -k1,1 ../output/17-Swiss-Prot-Annotation/Cvir_cds-uniprot_blastp.tab | wc -l
+```
+#### Check CDS BLASTp output
+```{bash check-cds-blastp-output}
+head -n 2 ../output/17-Swiss-Prot-Annotation/Cvir_cds-uniprot_blastp.tab
+```
 
 
+### Match CDS gene IDs with protein IDs
 
+#### Convert FastA to tab-delimited
+Uses crazy `perl` command
+```{bash convert-FastA-to-tab}
+perl -e '$count=0; $len=0; while(<>) {s/\r?\n//; s/\t/ /g; if (s/^>//) { if ($. != 1) {print "\n"} s/ |$/\t/; $count++; $_ .= "\t";} else {s/ //g; $len += length($_)} print $_;} print "\n"; warn "\nConverted $count FASTA records in $. lines to tabular format\nTotal sequence length: $len\n\n";' \
+../genome-features/GCF_002022765.2_C_virginica-3.0_translated_cds.faa \
+> ../output/17-Swiss-Prot-Annotation/GCF_002022765.2_C_virginica-3.0_translated_cds.faa.tab
+```
 
+#### Check FastA conversion
+```{bash check-FastA-conversion}
+head -n 1 ../output/17-Swiss-Prot-Annotation/GCF_002022765.2_C_virginica-3.0_translated_cds.faa.tab
+```
+#### Load FastA tab and BLASTp output into dataframes
+```{r load-fasta-blastp-into-dataframes}
+blastp.cds.df <- read.csv("../output/17-Swiss-Prot-Annotation/Cvir_cds-uniprot_blastp.tab",
+                          sep = '\t',
+                          header = FALSE)
+
+cds.fasta_tab.df <- read.csv("../output/17-Swiss-Prot-Annotation/GCF_002022765.2_C_virginica-3.0_translated_cds.faa.tab",
+                             sep = '\t',
+                             header = FALSE,
+                             row.names=NULL
+                             )
+```
+
+#### Check data frames
+```{r check-blastp-cds-df}
+str(blastp.cds.df)
+```
+
+```{r check-cds-fasta-tab-df}
+str(cds.fasta_tab.df)
+```
+
+#### Join data frames
+
+Now we can take the two data frames: A) blast output of taking protein fasta and comparing to uniprot_swiss-prot and B) a tabular version of same fasta file that has ID numbers.
+
+```{r join-data-frames}
+g.spid <- left_join(blastp.cds.df, cds.fasta_tab.df, by = "V1") %>%
+  mutate(gene = str_extract(V2.y, "(?<=\\[gene=)\\w+")) %>%
+  select(gene, V11, V2.x) %>%
+  mutate(SPID = str_extract(V2.x, "(?<=\\|)[^\\|]*(?=\\|)")) %>%
+  distinct(gene, SPID, .keep_all = TRUE)
+```
+
+Let’s break it down step by step:
+
+1. `g.spid <- left_join(blast, cdsftab, by = "V1")` - This line is using the left_join() function from dplyr to merge the blast and cdsftab datasets by the column “V1”. A left join retains all the rows in the blast data frame and appends the matching rows in the cdsftab data frame. If there is no match, the result is NA. The result of this operation is assigned to the g.spid object.
+
+2. `mutate(gene = str_extract(V2.y, "(?<=\\[gene=)\\w+"))` - This line is using the `mutate()` function from dplyr to add a new column called “gene” to the data frame. The new column is created by extracting substrings from the “V2.y” column based on the given regular expression pattern "`(?<=\\[gene=)\\w+`". This regular expression matches and extracts any word (sequence of word characters, i.e., alphanumeric and underscore) that comes after “[gene=”.
+
+3. `select(gene, V11, V2.x`) - This line is using the `select()` function from dplyr to keep only the specified columns (“gene”, “V11”, and “`V2.x`”) in the data frame.
+
+4. `mutate(SPID = str_extract(V2.x, "(?<=\\|)[^\\|]*(?=\\|)"))` - Again, the `mutate()` function is used to add another new column named “SPID”. This column is created by extracting substrings from the `“V2.x`” column. The regular expression "`(?<=\\|)[^\\|]*(?=\\|)`" is designed to extract any character(s) that is/are surrounded by “`|`” (pipe symbol). This is a common format for delimited strings.
+
+5. `distinct(gene, SPID, .keep_all = TRUE)` - This line is using the `distinct()` function from dplyr to remove duplicate rows based on the “gene” and “SPID” columns. The .keep_all = TRUE argument means that all other columns are also kept in the result, not just the “gene” and “SPID” columns.
+
+The resulting g.spid data frame should have unique rows with respect to the “gene” and “SPID” columns, and it should contain these two new columns, “gene” and “SPID”, extracted from the original data based on specific string patterns.
+
+#### Check joined dataframe
+```{r check-joined-df}
+str(g.spid)
+```
+
+#### Write SwissProt IDs (SPID) to file
+Gets unique (`distinct()`) SPIDs.
+```{r}
+g.spid %>% select(SPID) %>%
+  distinct() %>% 
+  write.table(file = "../output/17-Swiss-Prot-Annotation/Cvir_cds-uniprot_blastp-SPID.txt",
+              sep = "\t",
+              row.names = FALSE,
+              quote = FALSE,
+              col.names = FALSE
+              )
+```
