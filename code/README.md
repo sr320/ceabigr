@@ -12,6 +12,10 @@
 
 - [11-RNAseq-snps.Rmd](https://github.com/sr320/ceabigr/blob/main/code/11-RNAseq-snps.Rmd): finding SNPs in RNAseq data.
 
+- [`17.1-GO-and-GOslim-CDS-Annotation.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/17.1-GO-and-GOslim-CDS-Annotation.Rmd): Gene ontology (GO) and GOslim annotations of _C.virginica_ coding sequences (CDS).
+
+- [`17-Swiss-Prot-Annotation.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/17-Swiss-Prot-Annotation.Rmd): SwissProt annotation via NCBI BLASTp of _C.virginica_ protein and coding sequences (CDS).
+
 - [`18-differential-gene-expression-ballgown.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/18-differential-gene-expression-ballgown.Rmd): Differential gene and transcript expression analysis using `ballgown` R package.
 
 - [`19-exon-expression.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/19-exon-expression.Rmd): Script to create a table of exon read counts per gene. Output files are in [`outputs/19-exon-expression`](https://github.com/sr320/ceabigr/tree/main/output/19-exon-expression).
