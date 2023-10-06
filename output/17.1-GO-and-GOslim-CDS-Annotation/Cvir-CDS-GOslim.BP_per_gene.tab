@@ -1,0 +1,711 @@
+Genes	GOslim.BP	Term
+LOC111099053	GO:0002181	cytoplasmic translation
+LOC111099101	GO:0006914	autophagy
+LOC111099485	GO:0006486;GO:0071554;GO:1901135	protein glycosylation;cell wall organization or biogenesis;carbohydrate derivative metabolic process
+LOC111099578	GO:0006486;GO:0071554;GO:1901135	protein glycosylation;cell wall organization or biogenesis;carbohydrate derivative metabolic process
+LOC111099665	GO:0000910	cytokinesis
+LOC111099666	GO:0016071	mRNA metabolic process
+LOC111099716	GO:0005975	carbohydrate metabolic process
+LOC111099718	GO:0005975	carbohydrate metabolic process
+LOC111100304	GO:0000910	cytokinesis
+LOC111100329	GO:0000910	cytokinesis
+LOC111100557	GO:0042060;GO:0061024	wound healing;membrane organization
+LOC111100589	GO:0044782	cilium organization
+LOC111100667	GO:0007005	mitochondrion organization
+LOC111100739	GO:0006260	DNA replication
+LOC111100760	GO:0007005	mitochondrion organization
+LOC111100764	GO:0000910	cytokinesis
+LOC111100872	GO:0000910	cytokinesis
+LOC111100876	GO:0007018	microtubule-based movement
+LOC111100880	GO:0006260	DNA replication
+LOC111100962	GO:0000910	cytokinesis
+LOC111101029	GO:0006260	DNA replication
+LOC111101036	GO:0022414	reproductive process
+LOC111101142	GO:0030163	protein catabolic process
+LOC111101166	GO:0042060;GO:0061024	wound healing;membrane organization
+LOC111101238	GO:0000910	cytokinesis
+LOC111101260	GO:0140013	meiotic nuclear division
+LOC111101280	GO:0098542	defense response to other organism
+LOC111101340	GO:0051604	protein maturation
+LOC111101410	GO:0016071	mRNA metabolic process
+LOC111101645	GO:0000910	cytokinesis
+LOC111101793	GO:0000910	cytokinesis
+LOC111101808	GO:0044782	cilium organization
+LOC111101896	GO:0000910	cytokinesis
+LOC111101926	GO:0006260	DNA replication
+LOC111101933	GO:0000910	cytokinesis
+LOC111102086	GO:0007005	mitochondrion organization
+LOC111102096	GO:0098542	defense response to other organism
+LOC111102097	GO:0098542	defense response to other organism
+LOC111102154	GO:0000910	cytokinesis
+LOC111102202	GO:0007005	mitochondrion organization
+LOC111102204	GO:0007005	mitochondrion organization
+LOC111102251	GO:0042060;GO:0061024	wound healing;membrane organization
+LOC111102289	GO:0006260	DNA replication
+LOC111102443	GO:0098542	defense response to other organism
+LOC111102660	GO:0098542	defense response to other organism
+LOC111102662	GO:0098542	defense response to other organism
+LOC111102663	GO:0098542	defense response to other organism
+LOC111102685	GO:0007163	establishment or maintenance of cell polarity
+LOC111102818	GO:0007005	mitochondrion organization
+LOC111102950	GO:0098542	defense response to other organism
+LOC111102951	GO:0098542	defense response to other organism
+LOC111103080	GO:0006886;GO:0012501	intracellular protein transport;programmed cell death
+LOC111103124	GO:0000910	cytokinesis
+LOC111103394	GO:0007018	microtubule-based movement
+LOC111103395	GO:0044782	cilium organization
+LOC111103398	GO:0006260	DNA replication
+LOC111103517	GO:0007005	mitochondrion organization
+LOC111103552	GO:0006486	protein glycosylation
+LOC111103560	GO:0044782	cilium organization
+LOC111103567	GO:0006914	autophagy
+LOC111103594	GO:0044782	cilium organization
+LOC111103620	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111103643	GO:0098542	defense response to other organism
+LOC111103692	GO:0000910	cytokinesis
+LOC111103713	GO:0006486	protein glycosylation
+LOC111103763	GO:0098542	defense response to other organism
+LOC111103764	GO:0098542	defense response to other organism
+LOC111103795	GO:0007005	mitochondrion organization
+LOC111103796	GO:0007005	mitochondrion organization
+LOC111103820	GO:0007018;GO:0044782	microtubule-based movement;cilium organization
+LOC111103842	GO:0022600	digestive system process
+LOC111103867	GO:0006310	DNA recombination
+LOC111103926	GO:0002181	cytoplasmic translation
+LOC111103940	GO:0023052	signaling
+LOC111104021	GO:0044782	cilium organization
+LOC111104119	GO:0006486	protein glycosylation
+LOC111104160	GO:0007018	microtubule-based movement
+LOC111104183	GO:0023052	signaling
+LOC111104252	GO:0000278;GO:0007010;GO:0007059;GO:0022414;GO:0140014	mitotic cell cycle;cytoskeleton organization;chromosome segregation;reproductive process;mitotic nuclear division
+LOC111104302	GO:0006954	inflammatory response
+LOC111104381	GO:0006310	DNA recombination
+LOC111104451	GO:0022600	digestive system process
+LOC111104545	GO:0006486	protein glycosylation
+LOC111104697	GO:0098542	defense response to other organism
+LOC111104713	GO:0006310	DNA recombination
+LOC111104714	GO:0098542	defense response to other organism
+LOC111104737	GO:0098542	defense response to other organism
+LOC111104743	GO:0098542	defense response to other organism
+LOC111104750	GO:0098542	defense response to other organism
+LOC111104906	GO:0000910	cytokinesis
+LOC111105030	GO:0012501	programmed cell death
+LOC111105035	GO:0000910	cytokinesis
+LOC111105042	GO:0007005	mitochondrion organization
+LOC111105213	GO:0007005	mitochondrion organization
+LOC111105323	GO:0098542	defense response to other organism
+LOC111105325	GO:0098542	defense response to other organism
+LOC111105330	GO:0098542	defense response to other organism
+LOC111105338	GO:0098542	defense response to other organism
+LOC111105344	GO:0098542	defense response to other organism
+LOC111105357	GO:0098542	defense response to other organism
+LOC111105365	GO:0006091	generation of precursor metabolites and energy
+LOC111105459	GO:0006260	DNA replication
+LOC111105474	GO:0048856	anatomical structure development
+LOC111105594	GO:0006486	protein glycosylation
+LOC111105763	GO:0016192	vesicle-mediated transport
+LOC111105806	GO:0007018	microtubule-based movement
+LOC111105823	GO:0000910	cytokinesis
+LOC111105830	GO:0006486	protein glycosylation
+LOC111105882	GO:0006575;GO:0071941	cellular modified amino acid metabolic process;nitrogen cycle metabolic process
+LOC111105967	GO:0006914	autophagy
+LOC111106044	GO:0016192	vesicle-mediated transport
+LOC111106049	GO:0000910	cytokinesis
+LOC111106138	GO:0055085	transmembrane transport
+LOC111106221	GO:0030154	cell differentiation
+LOC111106437	GO:0007005;GO:0032200	mitochondrion organization;telomere organization
+LOC111106457	GO:0006486	protein glycosylation
+LOC111106636	GO:0098542	defense response to other organism
+LOC111106696	GO:0007031	peroxisome organization
+LOC111107238	GO:0030154	cell differentiation
+LOC111107250	GO:0007018	microtubule-based movement
+LOC111107339	GO:0007005	mitochondrion organization
+LOC111107460	GO:0098542	defense response to other organism
+LOC111107464	GO:0072659	protein localization to plasma membrane
+LOC111107485	GO:0016192	vesicle-mediated transport
+LOC111107528	GO:0007005	mitochondrion organization
+LOC111107566	GO:0030154	cell differentiation
+LOC111107574	GO:0006351;GO:0006355	DNA-templated transcription;regulation of DNA-templated transcription
+LOC111107787	GO:0051604	protein maturation
+LOC111107790	GO:0006351;GO:0006355	DNA-templated transcription;regulation of DNA-templated transcription
+LOC111107850	GO:0006629	lipid metabolic process
+LOC111107865	GO:0000910	cytokinesis
+LOC111107866	GO:0000910	cytokinesis
+LOC111108038	GO:0006486	protein glycosylation
+LOC111108043	GO:0016071	mRNA metabolic process
+LOC111108101	GO:0098542	defense response to other organism
+LOC111108103	GO:0098542	defense response to other organism
+LOC111108106	GO:0016071	mRNA metabolic process
+LOC111108144	GO:0006914	autophagy
+LOC111108344	GO:0042060;GO:0061024	wound healing;membrane organization
+LOC111108349	GO:0031047	gene silencing by RNA
+LOC111108376	GO:0006914	autophagy
+LOC111108423	GO:0006486	protein glycosylation
+LOC111108482	GO:0000910	cytokinesis
+LOC111108483	GO:0000910	cytokinesis
+LOC111108589	GO:0007018	microtubule-based movement
+LOC111108767	GO:0006260	DNA replication
+LOC111108932	GO:0007005	mitochondrion organization
+LOC111108953	GO:0098542	defense response to other organism
+LOC111109072	GO:0007005;GO:0032200	mitochondrion organization;telomere organization
+LOC111109100	GO:0006486	protein glycosylation
+LOC111109112	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111109271	GO:0006914	autophagy
+LOC111109289	GO:0030154	cell differentiation
+LOC111109337	GO:0003013	circulatory system process
+LOC111109377	GO:0000910	cytokinesis
+LOC111109382	GO:0098542	defense response to other organism
+LOC111109773	GO:0007018	microtubule-based movement
+LOC111109885	GO:0007018	microtubule-based movement
+LOC111109889	GO:0006486	protein glycosylation
+LOC111110008	GO:0007018	microtubule-based movement
+LOC111110037	GO:0000910	cytokinesis
+LOC111110098	GO:0003014	renal system process
+LOC111110121	GO:0006486	protein glycosylation
+LOC111110416	GO:0006486	protein glycosylation
+LOC111110494	GO:0016192	vesicle-mediated transport
+LOC111110509	GO:0000910	cytokinesis
+LOC111110757	GO:0000910	cytokinesis
+LOC111110930	GO:0006351;GO:0006355	DNA-templated transcription;regulation of DNA-templated transcription
+LOC111111013	GO:0006486	protein glycosylation
+LOC111111023	GO:0000910	cytokinesis
+LOC111111122	GO:0007040	lysosome organization
+LOC111111223	GO:0000910	cytokinesis
+LOC111111259	GO:0006486	protein glycosylation
+LOC111111295	GO:0006914	autophagy
+LOC111111317	GO:0098542	defense response to other organism
+LOC111111341	GO:0072659	protein localization to plasma membrane
+LOC111111412	GO:0016071	mRNA metabolic process
+LOC111111491	GO:0006486	protein glycosylation
+LOC111111492	GO:0006486	protein glycosylation
+LOC111111498	GO:0006281	DNA repair
+LOC111111566	GO:0006486	protein glycosylation
+LOC111111624	GO:0006486	protein glycosylation
+LOC111111648	GO:0042060;GO:0061024	wound healing;membrane organization
+LOC111111655	GO:0006486	protein glycosylation
+LOC111111718	GO:0016071	mRNA metabolic process
+LOC111111868	GO:0006281	DNA repair
+LOC111111914	GO:0006486	protein glycosylation
+LOC111111995	GO:0006914	autophagy
+LOC111112084	GO:0000910	cytokinesis
+LOC111112113	GO:0044782	cilium organization
+LOC111112114	GO:0044782	cilium organization
+LOC111112120	GO:0044782	cilium organization
+LOC111112121	GO:0044782	cilium organization
+LOC111112175	GO:0007040	lysosome organization
+LOC111112269	GO:0007005	mitochondrion organization
+LOC111112418	GO:0007018	microtubule-based movement
+LOC111112528	GO:0007005	mitochondrion organization
+LOC111112559	GO:0000910	cytokinesis
+LOC111112623	GO:0007018	microtubule-based movement
+LOC111112642	GO:0030154	cell differentiation
+LOC111112668	GO:0000910	cytokinesis
+LOC111112700	GO:0000910	cytokinesis
+LOC111112744	GO:0000910	cytokinesis
+LOC111112815	GO:0006486	protein glycosylation
+LOC111112943	GO:0140013	meiotic nuclear division
+LOC111112944	GO:0140013	meiotic nuclear division
+LOC111112981	GO:0000910	cytokinesis
+LOC111113059	GO:0016071	mRNA metabolic process
+LOC111113238	GO:0007163	establishment or maintenance of cell polarity
+LOC111113248	GO:0016071	mRNA metabolic process
+LOC111113415	GO:0006486	protein glycosylation
+LOC111113447	GO:0007018	microtubule-based movement
+LOC111113548	GO:0007018	microtubule-based movement
+LOC111113573	GO:0098542	defense response to other organism
+LOC111113622	GO:0006486	protein glycosylation
+LOC111113627	GO:0007005	mitochondrion organization
+LOC111113658	GO:0007005	mitochondrion organization
+LOC111113943	GO:0000910	cytokinesis
+LOC111113970	GO:0044782	cilium organization
+LOC111113990	GO:0006629	lipid metabolic process
+LOC111114046	GO:0098542	defense response to other organism
+LOC111114229	GO:0006091	generation of precursor metabolites and energy
+LOC111114232	GO:0007005	mitochondrion organization
+LOC111114238	GO:0140013	meiotic nuclear division
+LOC111114242	GO:0140013	meiotic nuclear division
+LOC111114305	GO:0098542	defense response to other organism
+LOC111114448	GO:0007040	lysosome organization
+LOC111114566	GO:0000910	cytokinesis
+LOC111114674	GO:0016071	mRNA metabolic process
+LOC111114705	GO:0006914	autophagy
+LOC111114727	GO:0007040;GO:0007163	lysosome organization;establishment or maintenance of cell polarity
+LOC111114824	GO:0006486	protein glycosylation
+LOC111114918	GO:0098542	defense response to other organism
+LOC111114984	GO:0006486	protein glycosylation
+LOC111115046	GO:0000278;GO:0000910;GO:0007010;GO:0007059;GO:0140014	mitotic cell cycle;cytokinesis;cytoskeleton organization;chromosome segregation;mitotic nuclear division
+LOC111115085	GO:0006629	lipid metabolic process
+LOC111115123	GO:0007155	cell adhesion
+LOC111115227	GO:0006486	protein glycosylation
+LOC111115350	GO:0030163	protein catabolic process
+LOC111115393	GO:0000910	cytokinesis
+LOC111115421	GO:0044782	cilium organization
+LOC111115638	GO:0000910	cytokinesis
+LOC111115682	GO:0006914	autophagy
+LOC111115720	GO:0007163	establishment or maintenance of cell polarity
+LOC111115744	GO:0006629	lipid metabolic process
+LOC111115745	GO:0006629	lipid metabolic process
+LOC111115754	GO:0006629	lipid metabolic process
+LOC111115784	GO:0022414	reproductive process
+LOC111116128	GO:0000910	cytokinesis
+LOC111116305	GO:0007005	mitochondrion organization
+LOC111116346	GO:0007005	mitochondrion organization
+LOC111116348	GO:0007005	mitochondrion organization
+LOC111116429	GO:0007005	mitochondrion organization
+LOC111116511	GO:0098542	defense response to other organism
+LOC111116647	GO:0007005	mitochondrion organization
+LOC111116933	GO:0007040	lysosome organization
+LOC111117133	GO:0007018;GO:0044782	microtubule-based movement;cilium organization
+LOC111117367	GO:0000910	cytokinesis
+LOC111117437	GO:0000910	cytokinesis
+LOC111117450	GO:0006486	protein glycosylation
+LOC111117595	GO:0030163	protein catabolic process
+LOC111117660	GO:0042060;GO:0061024	wound healing;membrane organization
+LOC111118012	GO:0000910	cytokinesis
+LOC111118027	GO:0000910	cytokinesis
+LOC111118029	GO:0016071	mRNA metabolic process
+LOC111118065	GO:0098542	defense response to other organism
+LOC111118106	GO:0000910	cytokinesis
+LOC111118145	GO:0007018	microtubule-based movement
+LOC111118154	GO:0007163	establishment or maintenance of cell polarity
+LOC111118183	GO:0016071	mRNA metabolic process
+LOC111118324	GO:0006486	protein glycosylation
+LOC111118340	GO:0002181	cytoplasmic translation
+LOC111118385	GO:0007155	cell adhesion
+LOC111118434	GO:0023052	signaling
+LOC111118453	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111118490	GO:0006260	DNA replication
+LOC111118732	GO:0022414	reproductive process
+LOC111118739	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111118825	GO:0000910	cytokinesis
+LOC111118848	GO:0016071	mRNA metabolic process
+LOC111118849	GO:0016071	mRNA metabolic process
+LOC111118904	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111118916	GO:0000910	cytokinesis
+LOC111118920	GO:0032200	telomere organization
+LOC111118945	GO:0006914	autophagy
+LOC111118957	GO:0007163	establishment or maintenance of cell polarity
+LOC111119014	GO:0005975	carbohydrate metabolic process
+LOC111119016	GO:0044782	cilium organization
+LOC111119024	GO:0023052	signaling
+LOC111119026	GO:0002181	cytoplasmic translation
+LOC111119147	GO:0006914	autophagy
+LOC111119150	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111119178	GO:0005975	carbohydrate metabolic process
+LOC111119208	GO:0000910	cytokinesis
+LOC111119258	GO:0007163	establishment or maintenance of cell polarity
+LOC111119280	GO:0007018	microtubule-based movement
+LOC111119282	GO:0006954	inflammatory response
+LOC111119408	GO:0000910	cytokinesis
+LOC111119455	GO:0007005	mitochondrion organization
+LOC111119531	GO:0000910	cytokinesis
+LOC111119564	GO:0006486	protein glycosylation
+LOC111119590	GO:0000910	cytokinesis
+LOC111119594	GO:0007163	establishment or maintenance of cell polarity
+LOC111119624	GO:0000910	cytokinesis
+LOC111119669	GO:0000910	cytokinesis
+LOC111119736	GO:0000910	cytokinesis
+LOC111119745	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111119763	GO:0006486	protein glycosylation
+LOC111119767	GO:0006914	autophagy
+LOC111119807	GO:0140013	meiotic nuclear division
+LOC111119828	GO:0006914	autophagy
+LOC111119831	GO:0140013	meiotic nuclear division
+LOC111119907	GO:0000910;GO:0007163	cytokinesis;establishment or maintenance of cell polarity
+LOC111119924	GO:0006281;GO:0006325	DNA repair;chromatin organization
+LOC111119970	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111120031	GO:0007018	microtubule-based movement
+LOC111120114	GO:0006260	DNA replication
+LOC111120126	GO:0006399	tRNA metabolic process
+LOC111120200	GO:0006486	protein glycosylation
+LOC111120276	GO:0007005	mitochondrion organization
+LOC111120292	GO:0048856	anatomical structure development
+LOC111120312	GO:0006399	tRNA metabolic process
+LOC111120384	GO:0016071	mRNA metabolic process
+LOC111120487	GO:0006260	DNA replication
+LOC111120598	GO:0044782	cilium organization
+LOC111120643	GO:0006351;GO:0006355	DNA-templated transcription;regulation of DNA-templated transcription
+LOC111120644	GO:0016071	mRNA metabolic process
+LOC111120687	GO:0030198	extracellular matrix organization
+LOC111120703	GO:0003012;GO:0003016	muscle system process;respiratory system process
+LOC111120738	GO:0030198	extracellular matrix organization
+LOC111120744	GO:0000910	cytokinesis
+LOC111120747	GO:0050877	nervous system process
+LOC111120783	GO:0042060;GO:0061024	wound healing;membrane organization
+LOC111120809	GO:0006914	autophagy
+LOC111120849	GO:0140013	meiotic nuclear division
+LOC111120860	GO:0006281	DNA repair
+LOC111120865	GO:0030163	protein catabolic process
+LOC111120886	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111120892	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111120978	GO:0006914	autophagy
+LOC111120979	GO:0140013	meiotic nuclear division
+LOC111120984	GO:0016071	mRNA metabolic process
+LOC111121011	GO:0006310	DNA recombination
+LOC111121021	GO:0016071	mRNA metabolic process
+LOC111121042	GO:0007163	establishment or maintenance of cell polarity
+LOC111121059	GO:0140013	meiotic nuclear division
+LOC111121084	GO:0000910	cytokinesis
+LOC111121253	GO:0000910	cytokinesis
+LOC111121258	GO:0006486	protein glycosylation
+LOC111121327	GO:0048856	anatomical structure development
+LOC111121400	GO:0006281	DNA repair
+LOC111121437	GO:0000910	cytokinesis
+LOC111121522	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111121613	GO:0030163	protein catabolic process
+LOC111121635	GO:0007018	microtubule-based movement
+LOC111121647	GO:0006281	DNA repair
+LOC111121659	GO:0016192	vesicle-mediated transport
+LOC111121723	GO:0006281;GO:0006325	DNA repair;chromatin organization
+LOC111121726	GO:0006310	DNA recombination
+LOC111121747	GO:0000910	cytokinesis
+LOC111121750	GO:0030163	protein catabolic process
+LOC111121751	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111121838	GO:0006629	lipid metabolic process
+LOC111121855	GO:0000910	cytokinesis
+LOC111121907	GO:0006457	protein folding
+LOC111121921	GO:0000910	cytokinesis
+LOC111121939	GO:0006457	protein folding
+LOC111121958	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111121994	GO:0006486	protein glycosylation
+LOC111122035	GO:0006486	protein glycosylation
+LOC111122069	GO:0007005;GO:0032200	mitochondrion organization;telomere organization
+LOC111122075	GO:0007163	establishment or maintenance of cell polarity
+LOC111122131	GO:0006486	protein glycosylation
+LOC111122309	GO:0006629	lipid metabolic process
+LOC111122310	GO:0007005	mitochondrion organization
+LOC111122316	GO:0000910	cytokinesis
+LOC111122318	GO:0072659	protein localization to plasma membrane
+LOC111122336	GO:0000910	cytokinesis
+LOC111122438	GO:0006486	protein glycosylation
+LOC111122539	GO:0006091	generation of precursor metabolites and energy
+LOC111122602	GO:0048856	anatomical structure development
+LOC111122642	GO:0007018	microtubule-based movement
+LOC111122645	GO:0016071	mRNA metabolic process
+LOC111122653	GO:0007005	mitochondrion organization
+LOC111122784	GO:0007018	microtubule-based movement
+LOC111122836	GO:0006486	protein glycosylation
+LOC111122897	GO:0006260	DNA replication
+LOC111122944	GO:0007018	microtubule-based movement
+LOC111122952	GO:0016073	snRNA metabolic process
+LOC111123066	GO:0006325	chromatin organization
+LOC111123110	GO:0023052	signaling
+LOC111123150	GO:0016073	snRNA metabolic process
+LOC111123176	GO:0006260	DNA replication
+LOC111123325	GO:0006914	autophagy
+LOC111123366	GO:0034330	cell junction organization
+LOC111123380	GO:0006486	protein glycosylation
+LOC111123434	GO:0007018	microtubule-based movement
+LOC111123630	GO:0016071	mRNA metabolic process
+LOC111123804	GO:0000910	cytokinesis
+LOC111123910	GO:0007018	microtubule-based movement
+LOC111124004	GO:0044782	cilium organization
+LOC111124018	GO:0007163	establishment or maintenance of cell polarity
+LOC111124026	GO:0034330	cell junction organization
+LOC111124160	GO:0007005	mitochondrion organization
+LOC111124162	GO:0006486	protein glycosylation
+LOC111124177	GO:0000910	cytokinesis
+LOC111124314	GO:0000910	cytokinesis
+LOC111124329	GO:0006399	tRNA metabolic process
+LOC111124334	GO:0006325	chromatin organization
+LOC111124365	GO:0006486	protein glycosylation
+LOC111124481	GO:0030163	protein catabolic process
+LOC111124484	GO:0044782	cilium organization
+LOC111124498	GO:0006486	protein glycosylation
+LOC111124507	GO:0006351;GO:0006355	DNA-templated transcription;regulation of DNA-templated transcription
+LOC111124588	GO:0006486	protein glycosylation
+LOC111124606	GO:0044782	cilium organization
+LOC111124607	GO:0006914	autophagy
+LOC111124608	GO:0006914	autophagy
+LOC111124610	GO:0006914	autophagy
+LOC111124662	GO:0000910	cytokinesis
+LOC111124887	GO:0007018	microtubule-based movement
+LOC111124897	GO:0007031	peroxisome organization
+LOC111124909	GO:0000910	cytokinesis
+LOC111124938	GO:0007018	microtubule-based movement
+LOC111124939	GO:0007163	establishment or maintenance of cell polarity
+LOC111124987	GO:0022414	reproductive process
+LOC111125001	GO:0044782	cilium organization
+LOC111125022	GO:0022414	reproductive process
+LOC111125104	GO:0006913	nucleocytoplasmic transport
+LOC111125124	GO:0007155	cell adhesion
+LOC111125129	GO:0140013	meiotic nuclear division
+LOC111125250	GO:0007018	microtubule-based movement
+LOC111125253	GO:0007018	microtubule-based movement
+LOC111125280	GO:0016071	mRNA metabolic process
+LOC111125283	GO:0006486	protein glycosylation
+LOC111125323	GO:0007018	microtubule-based movement
+LOC111125325	GO:0006351;GO:0006355	DNA-templated transcription;regulation of DNA-templated transcription
+LOC111125452	GO:0007163	establishment or maintenance of cell polarity
+LOC111125471	GO:0044782	cilium organization
+LOC111125472	GO:0006914	autophagy
+LOC111125483	GO:0007155	cell adhesion
+LOC111125562	GO:0006260	DNA replication
+LOC111125632	GO:0006486	protein glycosylation
+LOC111125649	GO:0007163	establishment or maintenance of cell polarity
+LOC111125671	GO:0006913	nucleocytoplasmic transport
+LOC111125690	GO:0071941	nitrogen cycle metabolic process
+LOC111125798	GO:0006914	autophagy
+LOC111125828	GO:0007018	microtubule-based movement
+LOC111125832	GO:0016071	mRNA metabolic process
+LOC111125872	GO:0044782	cilium organization
+LOC111125904	GO:0098542	defense response to other organism
+LOC111126023	GO:0000910	cytokinesis
+LOC111126062	GO:0006486	protein glycosylation
+LOC111126156	GO:0006520	cellular amino acid metabolic process
+LOC111126184	GO:0006260	DNA replication
+LOC111126284	GO:0000910	cytokinesis
+LOC111126333	GO:0002181	cytoplasmic translation
+LOC111126414	GO:0006486	protein glycosylation
+LOC111126622	GO:0071941	nitrogen cycle metabolic process
+LOC111126706	GO:0007163	establishment or maintenance of cell polarity
+LOC111126810	GO:0034330	cell junction organization
+LOC111126926	GO:0140013	meiotic nuclear division
+LOC111127005	GO:0016192	vesicle-mediated transport
+LOC111127072	GO:0007018	microtubule-based movement
+LOC111127094	GO:0000910	cytokinesis
+LOC111127165	GO:0000910	cytokinesis
+LOC111127260	GO:0032200	telomere organization
+LOC111127274	GO:0006325	chromatin organization
+LOC111127299	GO:0098542	defense response to other organism
+LOC111127309	GO:0032200	telomere organization
+LOC111127325	GO:0006914	autophagy
+LOC111127536	GO:0007018	microtubule-based movement
+LOC111127636	GO:0007018	microtubule-based movement
+LOC111127889	GO:0006914	autophagy
+LOC111127926	GO:0006914	autophagy
+LOC111127965	GO:0000910;GO:0042060;GO:0061024	cytokinesis;wound healing;membrane organization
+LOC111128006	GO:0051604	protein maturation
+LOC111128010	GO:0006260	DNA replication
+LOC111128047	GO:0006914	autophagy
+LOC111128059	GO:0006914	autophagy
+LOC111128122	GO:0042060;GO:0061024	wound healing;membrane organization
+LOC111128223	GO:0000910;GO:0042060;GO:0061024	cytokinesis;wound healing;membrane organization
+LOC111128338	GO:0044782	cilium organization
+LOC111128351	GO:0044782	cilium organization
+LOC111128360	GO:0006914	autophagy
+LOC111128425	GO:0006281	DNA repair
+LOC111128436	GO:0000910;GO:0022414	cytokinesis;reproductive process
+LOC111128451	GO:0006629	lipid metabolic process
+LOC111128516	GO:0006281	DNA repair
+LOC111128534	GO:0022414	reproductive process
+LOC111128543	GO:0007005	mitochondrion organization
+LOC111128546	GO:0007005	mitochondrion organization
+LOC111128548	GO:0007005	mitochondrion organization
+LOC111128568	GO:0007018	microtubule-based movement
+LOC111128582	GO:0007018	microtubule-based movement
+LOC111128700	GO:0055086	nucleobase-containing small molecule metabolic process
+LOC111128748	GO:0055086	nucleobase-containing small molecule metabolic process
+LOC111128756	GO:0016071	mRNA metabolic process
+LOC111128793	GO:0016071	mRNA metabolic process
+LOC111128808	GO:0016073	snRNA metabolic process
+LOC111128836	GO:0000910	cytokinesis
+LOC111128838	GO:0006954	inflammatory response
+LOC111128947	GO:0006486	protein glycosylation
+LOC111128963	GO:0140013	meiotic nuclear division
+LOC111129063	GO:0016071	mRNA metabolic process
+LOC111129114	GO:0016192	vesicle-mediated transport
+LOC111129167	GO:0007005	mitochondrion organization
+LOC111129170	GO:0044782	cilium organization
+LOC111129218	GO:0007018	microtubule-based movement
+LOC111129219	GO:0016071	mRNA metabolic process
+LOC111129239	GO:0006281	DNA repair
+LOC111129250	GO:0007018	microtubule-based movement
+LOC111129255	GO:0044782	cilium organization
+LOC111129256	GO:0006914	autophagy
+LOC111129277	GO:0000910;GO:0042060;GO:0061024	cytokinesis;wound healing;membrane organization
+LOC111129331	GO:0006629	lipid metabolic process
+LOC111129371	GO:0044782	cilium organization
+LOC111129372	GO:0044782	cilium organization
+LOC111129396	GO:0007018	microtubule-based movement
+LOC111129410	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111129474	GO:0000910	cytokinesis
+LOC111129487	GO:0007163	establishment or maintenance of cell polarity
+LOC111129512	GO:0007018	microtubule-based movement
+LOC111129524	GO:0022414	reproductive process
+LOC111129621	GO:0000910;GO:0042060;GO:0061024	cytokinesis;wound healing;membrane organization
+LOC111129679	GO:0000910;GO:0042060;GO:0061024	cytokinesis;wound healing;membrane organization
+LOC111129797	GO:0000910;GO:0042060;GO:0061024	cytokinesis;wound healing;membrane organization
+LOC111129825	GO:0006913	nucleocytoplasmic transport
+LOC111129855	GO:0007018	microtubule-based movement
+LOC111129891	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111129895	GO:0016073	snRNA metabolic process
+LOC111129901	GO:0006486;GO:0055086	protein glycosylation;nucleobase-containing small molecule metabolic process
+LOC111129908	GO:0000910	cytokinesis
+LOC111129919	GO:0016192	vesicle-mediated transport
+LOC111129936	GO:0007018	microtubule-based movement
+LOC111129995	GO:0006914	autophagy
+LOC111130011	GO:0007018	microtubule-based movement
+LOC111130047	GO:0007018	microtubule-based movement
+LOC111130065	GO:0016071	mRNA metabolic process
+LOC111130070	GO:0000910	cytokinesis
+LOC111130078	GO:0000910	cytokinesis
+LOC111130117	GO:0032200	telomere organization
+LOC111130127	GO:0006486	protein glycosylation
+LOC111130152	GO:0006260	DNA replication
+LOC111130183	GO:0000910;GO:0016192	cytokinesis;vesicle-mediated transport
+LOC111130216	GO:0030163	protein catabolic process
+LOC111130234	GO:0032200	telomere organization
+LOC111130268	GO:0006914	autophagy
+LOC111130294	GO:0000910	cytokinesis
+LOC111130343	GO:0007018	microtubule-based movement
+LOC111130353	GO:0007018	microtubule-based movement
+LOC111130368	GO:0042060;GO:0061024	wound healing;membrane organization
+LOC111130371	GO:0000910	cytokinesis
+LOC111130405	GO:0016192	vesicle-mediated transport
+LOC111130418	GO:0002376	immune system process
+LOC111130482	GO:0032200	telomere organization
+LOC111130500	GO:0055086	nucleobase-containing small molecule metabolic process
+LOC111130508	GO:0030163	protein catabolic process
+LOC111130544	GO:0000910	cytokinesis
+LOC111130568	GO:0000910	cytokinesis
+LOC111130622	GO:0032200	telomere organization
+LOC111130666	GO:0000910;GO:0042060;GO:0061024	cytokinesis;wound healing;membrane organization
+LOC111130667	GO:0071941	nitrogen cycle metabolic process
+LOC111130699	GO:0002181	cytoplasmic translation
+LOC111130718	GO:0006260	DNA replication
+LOC111130774	GO:0000910	cytokinesis
+LOC111130790	GO:0016071	mRNA metabolic process
+LOC111130875	GO:0007163	establishment or maintenance of cell polarity
+LOC111130915	GO:0016192	vesicle-mediated transport
+LOC111130932	GO:0023052	signaling
+LOC111130969	GO:0071941	nitrogen cycle metabolic process
+LOC111130979	GO:0071941	nitrogen cycle metabolic process
+LOC111131033	GO:0006629	lipid metabolic process
+LOC111131043	GO:0006260	DNA replication
+LOC111131100	GO:0048870	cell motility
+LOC111131280	GO:0140013	meiotic nuclear division
+LOC111131327	GO:0007005	mitochondrion organization
+LOC111131342	GO:0007005	mitochondrion organization
+LOC111131355	GO:0006260	DNA replication
+LOC111131610	GO:0016071	mRNA metabolic process
+LOC111131691	GO:0006914	autophagy
+LOC111131738	GO:0006914	autophagy
+LOC111131759	GO:0006629	lipid metabolic process
+LOC111132058	GO:0006914	autophagy
+LOC111132118	GO:0016071	mRNA metabolic process
+LOC111132123	GO:0000278;GO:0007010;GO:0007059;GO:0140014	mitotic cell cycle;cytoskeleton organization;chromosome segregation;mitotic nuclear division
+LOC111132159	GO:0006486	protein glycosylation
+LOC111132235	GO:0023052	signaling
+LOC111132381	GO:0006260	DNA replication
+LOC111132442	GO:0007005	mitochondrion organization
+LOC111132545	GO:0006629	lipid metabolic process
+LOC111132602	GO:0098542	defense response to other organism
+LOC111132883	GO:0022414	reproductive process
+LOC111132893	GO:0042060;GO:0061024	wound healing;membrane organization
+LOC111132903	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111132954	GO:0044782	cilium organization
+LOC111132966	GO:0007163	establishment or maintenance of cell polarity
+LOC111133030	GO:0140053	mitochondrial gene expression
+LOC111133120	GO:0006914	autophagy
+LOC111133160	GO:0000910	cytokinesis
+LOC111133204	GO:0044782	cilium organization
+LOC111133220	GO:0000910	cytokinesis
+LOC111133363	GO:0006914	autophagy
+LOC111133466	GO:0000910	cytokinesis
+LOC111133500	GO:0023052	signaling
+LOC111133538	GO:0006486	protein glycosylation
+LOC111133542	GO:0006486	protein glycosylation
+LOC111133846	GO:0098754	detoxification
+LOC111133909	GO:0006260	DNA replication
+LOC111134002	GO:0000910	cytokinesis
+LOC111134065	GO:0006790	sulfur compound metabolic process
+LOC111134073	GO:0003013	circulatory system process
+LOC111134136	GO:0006260	DNA replication
+LOC111134232	GO:0000910	cytokinesis
+LOC111134246	GO:0098542	defense response to other organism
+LOC111134286	GO:0016071	mRNA metabolic process
+LOC111134321	GO:0007018	microtubule-based movement
+LOC111134366	GO:0000910	cytokinesis
+LOC111134439	GO:0007163	establishment or maintenance of cell polarity
+LOC111134558	GO:0006486	protein glycosylation
+LOC111134654	GO:0006260	DNA replication
+LOC111134748	GO:0000910	cytokinesis
+LOC111134796	GO:0000910	cytokinesis
+LOC111134828	GO:0006486	protein glycosylation
+LOC111134843	GO:0007018	microtubule-based movement
+LOC111134873	GO:0006914	autophagy
+LOC111134894	GO:0007031	peroxisome organization
+LOC111134900	GO:0006260	DNA replication
+LOC111134914	GO:0098542	defense response to other organism
+LOC111134926	GO:0006520;GO:0007163;GO:0071941	cellular amino acid metabolic process;establishment or maintenance of cell polarity;nitrogen cycle metabolic process
+LOC111134962	GO:0006486	protein glycosylation
+LOC111135039	GO:0016071	mRNA metabolic process
+LOC111135084	GO:0000910	cytokinesis
+LOC111135130	GO:0006766	vitamin metabolic process
+LOC111135160	GO:0023052	signaling
+LOC111135198	GO:0006281	DNA repair
+LOC111135201	GO:0006629;GO:0007031	lipid metabolic process;peroxisome organization
+LOC111135204	GO:0006351;GO:0006355	DNA-templated transcription;regulation of DNA-templated transcription
+LOC111135214	GO:0006351;GO:0006355	DNA-templated transcription;regulation of DNA-templated transcription
+LOC111135242	GO:0006486	protein glycosylation
+LOC111135243	GO:0006486	protein glycosylation
+LOC111135311	GO:0000910	cytokinesis
+LOC111135354	GO:0006281	DNA repair
+LOC111135402	GO:0006260	DNA replication
+LOC111135419	GO:0006629;GO:0007031	lipid metabolic process;peroxisome organization
+LOC111135459	GO:0006914	autophagy
+LOC111135538	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111135588	GO:0000910	cytokinesis
+LOC111135601	GO:0042060;GO:0061024	wound healing;membrane organization
+LOC111135650	GO:0032200	telomere organization
+LOC111135704	GO:0048870	cell motility
+LOC111135719	GO:0000910	cytokinesis
+LOC111135747	GO:0006914	autophagy
+LOC111135773	GO:0071941	nitrogen cycle metabolic process
+LOC111135799	GO:0006260	DNA replication
+LOC111135837	GO:0000910	cytokinesis
+LOC111135858	GO:0000910	cytokinesis
+LOC111135891	GO:0006629	lipid metabolic process
+LOC111135903	GO:0007005	mitochondrion organization
+LOC111135911	GO:0042060;GO:0061024	wound healing;membrane organization
+LOC111135949	GO:0007155	cell adhesion
+LOC111135967	GO:0000910	cytokinesis
+LOC111135979	GO:0006260	DNA replication
+LOC111136087	GO:0006954	inflammatory response
+LOC111136247	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111136350	GO:0016071	mRNA metabolic process
+LOC111136414	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111136418	GO:0016071	mRNA metabolic process
+LOC111136471	GO:0023052	signaling
+LOC111136530	GO:0016071	mRNA metabolic process
+LOC111136545	GO:0023052	signaling
+LOC111136571	GO:0006486	protein glycosylation
+LOC111136704	GO:0006281	DNA repair
+LOC111136776	GO:0007018	microtubule-based movement
+LOC111136783	GO:0006486	protein glycosylation
+LOC111136814	GO:0003014;GO:0050886	renal system process;endocrine process
+LOC111136820	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111136878	GO:0042060;GO:0061024	wound healing;membrane organization
+LOC111136887	GO:0016071	mRNA metabolic process
+LOC111137006	GO:0042254;GO:0065003	ribosome biogenesis;protein-containing complex assembly
+LOC111137033	GO:0006486	protein glycosylation
+LOC111137055	GO:0016192	vesicle-mediated transport
+LOC111137076	GO:0002181	cytoplasmic translation
+LOC111137092	GO:0032200	telomere organization
+LOC111137096	GO:0007018;GO:0044782	microtubule-based movement;cilium organization
+LOC111137112	GO:0007018	microtubule-based movement
+LOC111137141	GO:0016192	vesicle-mediated transport
+LOC111137144	GO:0016192	vesicle-mediated transport
+LOC111137169	GO:0007018	microtubule-based movement
+LOC111137193	GO:0032200	telomere organization
+LOC111137235	GO:0006914	autophagy
+LOC111137307	GO:0044782	cilium organization
+LOC111137404	GO:0006790	sulfur compound metabolic process
+LOC111137412	GO:0006310	DNA recombination
+LOC111137463	GO:0051604	protein maturation
+LOC111137472	GO:0007018	microtubule-based movement
+LOC111137582	GO:0006260	DNA replication
+LOC111137682	GO:0006629	lipid metabolic process
+LOC111137687	GO:0006260	DNA replication
+LOC111137731	GO:0006486	protein glycosylation
+LOC111137936	GO:0007018	microtubule-based movement
+LOC111137946	GO:0032200	telomere organization
+LOC111137947	GO:0007018	microtubule-based movement
+LOC111138032	GO:0006486	protein glycosylation
+LOC111138063	GO:0007018	microtubule-based movement
+LOC111138197	GO:0000910	cytokinesis
+LOC111138426	GO:0006629	lipid metabolic process
+LOC111138439	GO:0098542	defense response to other organism
+LOC111138487	GO:0016071	mRNA metabolic process
+NA	GO:0015979;GO:0061007	photosynthesis;hepaticobiliary system process

@@ -5,3 +5,346 @@ date: "2023-10-05"
 output: html_document
 ---
 
+Script to annotate _C.virginica_ coding sequences (CDS) with Gene Ontology (GO) and GOslim IDs/terms.
+
+Output files can be used for future mapping of gene subsets (e.g. differentially expressed genes, predominant isoforms, etc.)
+
+Script uses SwissProt IDs (SPIDs) as input to a Python script for retrieving data via the UniProt API.
+
+Resulting GO IDs are used to create a GeneSetCollection in GSEAbase to map to GOslims.
+
+Load packages
+```{r load-packages}
+library(tidyverse)
+library(GSEABase)
+library(httr)
+```
+
+# Set variables
+```{r set-variables}
+goslims <- "goslim_generic.obo"
+goslims_url <- "http://current.geneontology.org/ontology/subsets/goslim_generic.obo"
+```
+
+# Create functions
+```{r create-functions}
+
+# Function for mapping GOIDs to GOslims
+
+mappedIds <- function(df, collection, OFFSPRING, goannotGSC) {
+  # Split semi-colon delimited strings in df$ids
+  df$ids_split <- strsplit(as.character(df$ids), ";")
+  
+  # Determine the maximum number of elements per row
+  max_elements <- max(lengths(df$ids_split))
+  
+  # Fill in shorter rows with NA values
+  df$ids_split <- lapply(df$ids_split, function(x) {
+    length(x) <- max_elements
+    x
+  })
+  
+  # Combine the split strings into a matrix
+  ids_mat <- do.call(rbind, df$ids_split)
+  
+  # Convert the matrix to a data frame
+  ids_df <- as.data.frame(ids_mat, stringsAsFactors = FALSE)
+  
+  # Rename the columns of the data frame
+  colnames(ids_df) <- paste0("ids_", 1:max_elements)
+  
+  # Combine the original data frame and the new data frame
+  df <- cbind(df, ids_df)
+  
+  # Perform the matching operation
+  mt <- match(toupper(trimws(df$ids_1)), toupper(trimws(names(goannotGSC))))
+  
+  # Add a new column to the data frame for the "Genes" result
+  df$Genes <- NA_character_
+  
+  # Fill in the "Genes" column for rows that have a match
+  df$Genes[!is.na(mt)] <- vapply(geneIds(goannotGSC)[mt[!is.na(mt)]], 
+                                  paste, collapse = ";", character(1L))
+  
+   df <- df %>% dplyr::select(Count, Percent, Term, ids, Genes)
+   
+  # Return the modified data frame
+  return(df)
+}
+```
+
+# Download `goslim_generic.obo` from Gene Ontology Consortium
+
+## Set GSEAbase location and download `goslim_generic.obo`
+```{r download-goslim-obo}
+gseabase_location <- find.package("GSEABase")
+goslim_obo_dest <- file.path(gseabase_location, "extdata", goslims, fsep = "/")
+download.file(url = goslims_url,
+              destfile = goslim_obo_dest)
+
+fl <- system.file("extdata", goslims, package="GSEABase")
+```
+
+# Retrieve GO annotations from UniProt
+
+## Inspect SPID file
+```{bash inspect-spid-file}
+head ../output/17-Swiss-Prot-Annotation/Cvir_cds-uniprot_blastp-SPID.txt
+
+echo ""
+
+wc -l ../output/17-Swiss-Prot-Annotation/Cvir_cds-uniprot_blastp-SPID.txt #10375
+
+
+echo ""
+
+echo "Confirming all entries are unique:"
+sort --unique ../output/17-Swiss-Prot-Annotation/Cvir_cds-uniprot_blastp-SPID.txt | wc -l #10375
+```
+
+## Run Python UniProt retrieval script
+```{bash uniprot-retrieval}
+python3 uniprot-retrieval.py ../output/17-Swiss-Prot-Annotation/Cvir_cds-uniprot_blastp-SPID.txt
+```
+
+## Inspect UniProt retreival
+```{bash inspect-uniprot retrival}
+zcat uniprot-retrieval.tsv.gz | head -n 2
+
+zcat uniprot-retrieval.tsv.gz | awk 'NR>1 {print $1}' | wc -l
+```
+
+## Rename and move UniProt retrieval output file
+```{bash rename-and-move-uniprot-file}
+mv uniprot-retrieval.tsv.gz ../output/17.1-GO-and-GOslim-CDS-Annotation/Cvir-CDS-uniprot-full.tsv.gz
+```
+
+## Unzip UniProt retrieval file
+```{bash gunzip-uniprot-retrieval-file}
+gunzip ../output/17.1-GO-and-GOslim-CDS-Annotation/Cvir-CDS-uniprot-full.tsv.gz
+```
+
+## Create dataframe
+```{r create-dataframe}
+uniprot_full_df <- read.delim("../output/17.1-GO-and-GOslim-CDS-Annotation/Cvir-CDS-uniprot-full.tsv")
+```
+
+## Get SPIDs and GO IDs
+```{r get-SPIDs-GOIDs}
+SPID_GO_df <- uniprot_full_df %>% 
+  dplyr::select(Entry, Gene.Ontology.IDs)
+
+str(SPID_GO_df)
+```
+
+# Join SPIDs and GO with genes
+
+## Load gene SPID mapping file
+```{r load-gene-SPID-mapping-file}
+gene_SPID_df <- read.delim("../output/17-Swiss-Prot-Annotation/Cvir_cds-geneID-SPID.tab",
+                               header = TRUE)
+
+str(gene_SPID_df)
+```
+
+
+## Join SPIDs and GO with genes
+
+```{r join-genes-with-GO}
+gene_GO_df <- left_join(gene_SPID_df, SPID_GO_df, by = c("SPID" = "Entry")) %>%
+  dplyr::select(gene,Gene.Ontology.IDs)
+
+str(gene_GO_df)
+```
+
+## Write gene GOs to file
+```{r write-gene-GOs-to-file}
+write.table(gene_GO_df,
+            file = "../output/17.1-GO-and-GOslim-CDS-Annotation/Cvir-CDS-geneID-GOID.tab",
+            col.names = FALSE,
+            row.names = FALSE,
+            quote = FALSE,
+            sep = "\t")
+```
+
+# Retrieve GOslims
+
+## Create formatted file for GSEAbase GeneSet construction
+```{bash rm-spaces-from-GOs}
+# Remove "hidden" spaces in GOs, but preserve tabs, using sed
+awk -F"\t" '{print $2, "\t", $1}' \
+../output/17.1-GO-and-GOslim-CDS-Annotation/Cvir-CDS-geneID-GOID.tab \
+| sed 's/ \+//g' \
+> ../output/17.1-GO-and-GOslim-CDS-Annotation/Cvir-CDS-GOID-geneID.tab
+
+head ../output/17.1-GO-and-GOslim-CDS-Annotation/Cvir-CDS-GOID-geneID.tab
+```
+
+## Create named list and GSEAbase GeneSet
+
+### Flatten gene list
+
+Creates one row per GO ID
+```{r flatten-gene-GO-listt}
+# Read in tab-delimited file
+my_data <- read.table("../output/17.1-GO-and-GOslim-CDS-Annotation/Cvir-CDS-GOID-geneID.tab",
+                      header = FALSE,
+                      sep = "\t"
+                      )
+
+# Remove rows with no GO ID
+my_data_cleaned <- my_data[!(my_data$V1 == ""), ]
+
+# "Flatten" file so each row is single GO ID with corresponding gene
+my_data_cleaned_separated <- separate_rows(my_data_cleaned, V1, sep = ";")
+
+str(my_data_cleaned_separated)
+```
+
+
+### Map Biological Process GOslims to GO IDs
+```{r BP-GOslims-to-GOIDs}
+# Vector of GO IDs
+go_ids <- my_data_cleaned_separated$V1
+
+# Create custom collection with our GO IDs
+myCollection <- GOCollection(go_ids)
+
+# Pull out GOslims from GOslim obo file
+slim <- getOBOCollection(fl)
+
+# Get Biological Process (BP) GOslims for our GO IDs
+slimdf <- goSlim(myCollection, slim, "BP", verbose)
+
+# Convert to list
+gomap <- as.list(GOBPOFFSPRING[rownames(slimdf)])
+
+# Map our GOIDs to GOslims
+mapped <- lapply(gomap, intersect, ids(myCollection))
+
+# sapply needed to apply paste() to create semi-colon delimited values
+slimdf$ids <- sapply(lapply(gomap, intersect, ids(myCollection)), paste, collapse=";")
+
+# Remove "charcter(0) string from "ids" column
+slimdf$ids[slimdf$ids == "character(0)"] <- ""
+
+# Add self-matching GOIDs to "ids" column, if not present
+updated_slimdf <- slimdf
+
+for (go_id in go_ids) {
+  # Check if the go_id is present in the row names
+  if (go_id %in% rownames(updated_slimdf)) {
+    # Check if the go_id is not present in the ids column
+    # Also removes white space "trimws()" and converts all to upper case to handle
+    # any weird, "invisible" formatting issues.
+    if (!go_id %in% trimws(toupper(strsplit(updated_slimdf[go_id, "ids"], ";")[[1]]))) {
+      # Append the go_id to the ids column with a semi-colon separator
+      if (length(updated_slimdf$ids) > 0 && nchar(updated_slimdf$ids[nrow(updated_slimdf)]) > 0) {
+        updated_slimdf[go_id, "ids"] <- paste0(updated_slimdf[go_id, "ids"], "; ", go_id)
+      } else {
+        updated_slimdf[go_id, "ids"] <- go_id
+      }
+    }
+  }
+}
+
+str(updated_slimdf)
+```
+
+### Create GSEAbase GeneSetCollection
+
+```{r gene-set-collection}
+
+# Group by unique GO ID
+grouped_df <- my_data_cleaned_separated %>% group_by(V1)%>% summarise(V2 = paste(V2, collapse = ","))
+
+# convert the data frame to a named list
+my_list <- as.list(grouped_df$V2)
+names(my_list) <- grouped_df$V1
+
+gsc <- GeneSetCollection(mapply(function(geneIds, GOID) {
+         GeneSet(geneIds, collectionType=GOCollection(GOID), setName=GOID)
+       }, my_list, names(my_list)))
+
+gsc
+```
+
+### Map genes to GOslims
+```{r map-genes-to-GOslims}
+mapped_df <- mappedIds(updated_slimdf, myCollection, GOBPOFFSPRING, gsc)
+
+# Provide column name for first column
+mapped_df <- cbind(GOslim.BP = rownames(mapped_df), mapped_df)
+rownames(mapped_df) <- NULL
+
+# Rename "ids" column
+mapped_df <- mapped_df %>% 
+  dplyr::rename(GO.IDs = ids)
+
+mapped_df
+
+str(mapped_df)
+```
+
+### Flatten GOslims to have one row per gene
+
+Will make future joins to other data sets easier.
+
+Done in two steps for easier readability:
+
+1. Flattened just by gene and retains all info.
+
+2. Flattened by gene with GOslims combined per gene. Drops GO IDs.
+
+
+For the second version:
+
+We use n() to count the number of rows within each group.
+
+We select the first Term value within each group using Term[1].
+
+.groups = 'drop' is used to remove the grouping information.
+
+This code should create a dataframe with one row per gene, including the corresponding GOslim.BP entries in a single, semi-colon-delimited field, the first Term value within each group, and the count of rows in each group.
+
+```{r flatten-GOslims-by-gene}
+flattened_mapped_df <- mapped_df %>%
+  dplyr::select(Genes, GOslim.BP, Term, GO.IDs) %>%
+  separate_rows(Genes, sep = ",")
+  
+
+goslims_per_gene_df <- flattened_mapped_df %>%
+  distinct(Genes, GOslim.BP, Term) %>%
+  group_by(Genes) %>%
+  summarise(GOslim.BP = paste(unique(GOslim.BP), collapse = ";"), 
+            Term = paste(unique(Term), collapse = ";"),  # Concatenate Terms with semi-colon
+            .groups = 'drop')
+  
+
+str(goslims_per_gene_df)
+```
+
+## Write mapped GOslims to file
+```{r write-mapped-GOslims-to-file}
+mapped_df %>%
+  dplyr::select(GOslim.BP, Term, GO.IDs, Genes) %>% 
+  write.table(file ="../output/17.1-GO-and-GOslim-CDS-Annotation/Cvir-CDS-GOslim.BP_term_GOIDs_genes.tab",
+          row.names = FALSE,
+          col.names = TRUE,
+          quote = FALSE,
+          sep = "\t"
+          )
+```
+
+## Write flattened genes to file
+```{r write-flattened-genes-to-file}
+goslims_per_gene_df %>%
+  write.table(file ="../output/17.1-GO-and-GOslim-CDS-Annotation/Cvir-CDS-GOslim.BP_per_gene.tab",
+              row.names = FALSE,
+              col.names = TRUE,
+              quote = FALSE,
+              sep = "\t"
+              )
+  
+```
+
