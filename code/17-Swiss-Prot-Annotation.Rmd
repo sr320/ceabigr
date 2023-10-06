@@ -230,6 +230,16 @@ The resulting g.spid data frame should have unique rows with respect to the “g
 str(g.spid)
 ```
 
+#### Write gene and SPID to file
+```{r write-gene-SPID-to-file}
+g.spid %>% 
+  dplyr::select(gene, SPID) %>% 
+  write.table(file = "../output/17-Swiss-Prot-Annotation/Cvir_cds-geneID-SPID.tab",
+              sep = "\t",
+              row.names = FALSE,
+              quote = FALSE)
+```
+
 #### Write SwissProt IDs (SPID) to file
 Gets unique (`distinct()`) SPIDs.
 ```{r}
