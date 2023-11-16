@@ -12,99 +12,57 @@ knitr::opts_chunk$set(echo = TRUE)
 head -5 ../output/19-exon-expression/S12M-exon_expression.tab > ../output/19-exon-expression/HEAD5-S12M-exon_expression.tab
 ```
 
-```{bash}
-pip install pandas numpy scipy scikit-learn
-```
 
-
-
-```{python}
-import pandas as pd
-import numpy as np
-from sklearn.linear_model import LinearRegression
-from scipy import stats
-
-# Load the data
-file_path = '../output/19-exon-expression/S12M-exon_expression.tab'
-df = pd.read_csv(file_path, sep='\t', na_values='NA')
-
-# Analysis
-model = LinearRegression()
-for column in ['slope_best_fit', 'r_squared', 'points_within_95_CI', 'percentage_within_95_CI']:
-    df[column] = np.nan
-
-for index, row in df.iterrows():
-    expression_values = row[1:].dropna()
-    if len(expression_values) < 2:
-        continue
-
-    X = np.array(range(1, len(expression_values) + 1)).reshape(-1, 1)
-    y = expression_values.values
-
-    model.fit(X, y)
-    df.at[index, 'slope_best_fit'] = model.coef_[0]
-    df.at[index, 'r_squared'] = model.score(X, y)
-
-    predictions = model.predict(X)
-    mse = np.mean((y - predictions) ** 2)
-    standard_error = np.sqrt(mse / (n - 2))
-    t_value = stats.t.ppf(0.975, df=n-2)
-    margin_of_error = t_value * standard_error
-    lower_bound = predictions - margin_of_error
-    upper_bound = predictions + margin_of_error
-    count_within_ci = np.sum((y >= lower_bound) & (y <= upper_bound))
-    df.at[index, 'points_within_95_CI'] = count_within_ci
-    df.at[index, 'percentage_within_95_CI'] = count_within_ci / len(expression_values) * 100
-
-# Additional calculations
-df['num_exons'] = df.iloc[:, 1:].apply(lambda x: x.count(), axis=1)
-df['mean_exon_expression'] = df.iloc[:, 1:].mean(axis=1, skipna=True)
-df['std_dev_exon_expression'] = df.iloc[:, 1:].std(axis=1, skipna=True)
-df['sum_exon_expression'] = df.iloc[:, 1:].sum(axis=1, skipna=True)
-
-# Saving the results
-df.to_csv('../output/64-exon-expression/exon_data.csv', index=False)
-
-```
 
 ```{r}
 library(readr)
 library(dplyr)
 library(broom)
 library(tidyr)
+library(purrr)
+
 # Load the data
 data <- read_delim("../output/19-exon-expression/S12M-exon_expression.tab", "\t", escape_double = FALSE, col_types = cols(), trim_ws = TRUE)
-# Prepare the data for analysis
+
+# Reshape data for linear regression analysis
 data_long <- pivot_longer(data, cols = -gene_name, names_to = "exon", values_to = "expression")
 data_long <- data_long %>% filter(!is.na(expression))
-# Function to perform linear regression and extract metrics
-analyze_gene <- function(df) {
-  # Linear model
+
+# Function to calculate the summary statistics for each gene
+calculate_statistics <- function(df) {
   model <- lm(expression ~ as.numeric(gsub("exon_", "", exon)), data = df)
-  # Get slope and r-squared
   slope <- coef(model)[2]
   r_squared <- summary(model)$r.squared
-  # Predictions and confidence interval
   predictions <- predict(model, interval = "confidence")
   df$within_ci <- df$expression >= predictions[, "lwr"] & df$expression <= predictions[, "upr"]
   percentage_within_ci <- mean(df$within_ci) * 100
-  return(c(slope, r_squared, percentage_within_ci))
+  
+  return(tibble(
+    slope_best_fit = slope,
+    r_squared = r_squared,
+    percentage_within_95_CI = percentage_within_ci
+  ))
 }
-# Apply the function to each gene
+
+# Apply function to each gene and calculate additional statistics
 results <- data_long %>%
   group_by(gene_name) %>%
-  do(tibble(slope = analyze_gene(.)[1], r_squared = analyze_gene(.)[2], percentage_within_ci = analyze_gene(.)[3]))
-# Merge with original data to calculate additional statistics
-final_results <- data %>%
-  left_join(results, by = "gene_name") %>%
-  rowwise() %>%
-  mutate(num_exons = sum(!is.na(c_across(starts_with("exon_")))),
-         mean_exon_expression = mean(c_across(starts_with("exon_")), na.rm = TRUE),
-         std_dev_exon_expression = sd(c_across(starts_with("exon_")), na.rm = TRUE),
-         sum_exon_expression = sum(c_across(starts_with("exon_")), na.rm = TRUE))
-# View the results
-print(final_results)
+  nest() %>%
+  mutate(
+    statistics = map(data, calculate_statistics),
+    num_exons = map_dbl(data, ~ nrow(.x)),
+    mean_exon_expression = map_dbl(data, ~ mean(.x$expression, na.rm = TRUE)),
+    std_dev_exon_expression = map_dbl(data, ~ sd(.x$expression, na.rm = TRUE)),
+    sum_exon_expression = map_dbl(data, ~ sum(.x$expression, na.rm = TRUE))
+  ) %>%
+  select(-data) %>%
+  unnest(statistics)
+
 # Save the results
-write_csv(final_results, "../output/64-exon-expression/exon-summary.tab")
+write_csv(results, "../output/64-exon-expression/exon-summary.csv")
+
+# Print the results
+print(results)
+
 ```
 
