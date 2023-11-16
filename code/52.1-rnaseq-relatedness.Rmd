@@ -162,6 +162,12 @@ write.table(geneSampleDistMatrix,
           row.names = TRUE,
           col.names = TRUE,
           sep = ",")
+
+#rewrite here to fix format of column names 
+file<-as.matrix(geneSampleDistMatrix)
+
+write.csv(file,
+          file = "../output/52.1-rnaseq-relatedness/gene-distance-matrix.csv")
 ```
 
 ## Plot gene distance matrix

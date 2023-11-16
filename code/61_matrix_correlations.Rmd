@@ -1,0 +1,227 @@
+---
+title: "Genes-SNPs-methylation correlation"
+date: "2023-09-29"
+editor_options: 
+  chunk_output_type: console
+output: github_document 
+---
+
+# Set knit
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+# Load packages 
+
+```{r}
+library(ade4)
+library(tidyverse)
+library(Hmisc)
+library(corrplot)
+library(psych)
+library(cowplot)
+```
+
+
+# Load data 
+
+Gene expression
+```{r}
+genes<-read_csv("output/52.1-rnaseq-relatedness/gene-distance-matrix.csv")
+
+genes<-as.matrix(genes)
+
+rownames(genes)<-genes[,1]
+
+genes <- genes[,-1]
+
+# Remove "S" from row names and column names
+new_row_names <- gsub("S", "", rownames(genes))
+new_col_names <- gsub("S", "", colnames(genes))
+
+# Set the updated row and column names
+rownames(genes) <- new_row_names
+colnames(genes) <- new_col_names
+
+#convert to numeric
+char_to_numeric_matrix <- function(char_matrix) {
+  numeric_matrix <- as.data.frame(char_matrix)  # Convert to data frame
+  numeric_matrix <- as.matrix(sapply(numeric_matrix, as.numeric))  # Convert to numeric
+  rownames(numeric_matrix) <- rownames(char_matrix)  # Restore row names
+  colnames(numeric_matrix) <- colnames(char_matrix)  # Restore column names
+  return(numeric_matrix)
+}
+
+genes <- char_to_numeric_matrix(genes)
+
+str(genes)
+dim(genes)
+head(genes)
+```
+
+Methylation 
+```{r}
+methyl<-read.table(file="output/56-matrix-synergy/all.meth-distance.tab")
+
+#convert to numeric
+
+#rewrite here to fix format of column names 
+methyl<-as.matrix(methyl, rownames=TRUE, colnames=TRUE)
+methyl[1,1]<-""
+rownames(methyl)<-methyl[,1]
+colnames(methyl)<-methyl[1,]
+methyl <- methyl[-1, -1]
+
+methyl <- char_to_numeric_matrix(methyl)
+
+str(methyl)
+dim(methyl)
+head(methyl)
+```
+
+SNPs
+```{r}
+snp<-read.table(file = "output/53-revisit-epi-SNPs/epiMATRIX_mbd_rab.txt")
+
+#rewrite here to fix format of column names 
+snp<-as.matrix(snp, rownames=TRUE, colnames=TRUE)
+snp[1,1]<-""
+rownames(snp)<-snp[,1]
+colnames(snp)<-snp[1,]
+snp <- snp[-1, -1]
+
+snp <- char_to_numeric_matrix(snp)
+
+str(snp)
+dim(snp)
+head(snp)
+```
+
+
+# Correlate Genes and Methylation
+
+Correlate the gene expression and methylation matrix, return a matrix of correlation values. 
+```{r}
+genes.methyl.cor<-cor(genes, methyl)
+genes.methyl.p<-rcorr(genes, methyl)
+
+genes.methyl.cor<-corr.test(genes, methyl, method="spearman")
+```
+
+Plot this correlation. 
+```{r}
+genes.methyl.plot<-corrplot(genes.methyl.cor$r, p.mat = genes.methyl.cor$p, insig = "blank", hclust.method=c("complete"), type="full", col=COL2('PRGn', 10), order="hclust", pch.col="black", tl.col="black", title="Methylation ~ Gene Expression", mar = c(1, 1, 1, 1))
+```
+This plot shows that there is a positive relationship between distance in gene expression and distance in methylation between samples WITHIN each sex. This makes sense. For samples that are closely related in methylation, they are also closely related in gene expression (i.e., males are more like males and females are more like females). For samples that are not related in methylation, they are also not related in gene expression (i.e., males and females are super different). 
+
+Note that dots present show the correlation r value by color. Squares with a dot have p values <0.05. Blank squares have p values >0.05. 
+
+Run Mantel test 
+```{r}
+genes_dist<-as.dist(genes)
+methyl_dist<-as.dist(methyl)
+
+mantel.rtest(genes_dist, methyl_dist, nrepet = 99)
+
+plot(r1 <- mantel.rtest(genes_dist,methyl_dist), main = "Mantel's test"); r1
+```
+
+```
+Monte-Carlo test
+Call: mantel.rtest(m1 = genes_dist, m2 = methyl_dist, nrepet = 99)
+
+Observation: 0.8428262 
+
+Based on 99 replicates
+Simulated p-value: 0.01 
+Alternative hypothesis: greater 
+
+     Std.Obs  Expectation     Variance 
+17.282653012 -0.002387819  0.002391732 
+
+This shows that sample distance in methylation and sample distance in gene expression are significantly and highly positively correlated (r=0.843, p=0.01). 
+```
+
+# Correlate Genes and SNP
+
+Correlate the gene and snp matrix, return a matrix of correlation values. 
+```{r}
+genes.snp.cor<-cor(genes, snp)
+genes.snp.p<-rcorr(genes, snp)
+genes.snp.cor<-corr.test(genes, snp, method="spearman")
+```
+
+Plot this correlation. 
+```{r}
+genes.snp.plot<-corrplot(genes.snp.cor$r, p.mat = genes.snp.cor$p, insig = "blank", hclust.method=c("complete"), type="full", col=COL2('PRGn', 10), order="hclust", pch.col="black", tl.col="black", title="Gene Expression ~ Genetic Distance", mar = c(1, 1, 1, 1))
+```
+
+This plot shows that there is not a relationship between distance in gene expression and genetic distance in either sex. Gene expression is not related to genetic distance. 
+
+Run Mantel test 
+```{r}
+genes_dist<-as.dist(genes)
+snp_dist<-as.dist(snp)
+
+mantel.rtest(genes_dist, snp_dist, nrepet = 99)
+
+plot(r2 <- mantel.rtest(genes_dist,snp_dist), main = "Mantel's test"); r2
+```
+
+```
+Monte-Carlo test
+Call: mantelnoneuclid(m1 = m1, m2 = m2, nrepet = nrepet)
+
+Observation: -0.0530464 
+
+Based on 99 replicates
+Simulated p-value: 0.76 
+Alternative hypothesis: greater 
+
+     Std.Obs  Expectation     Variance 
+-0.678945461 -0.010210686  0.003980542 
+```
+
+This shows that sample distance in gene expression and sample distance in snps are not related (r=-0.053, p=0.76).
+
+# Correlate SNP and Methylation
+
+Correlate the methylation and snp matrix, return a matrix of correlation values. Generate matrix of correlation p values.  
+```{r}
+methyl.snp.cor<-cor(methyl, snp)
+methyl.snp.p<-rcorr(methyl, snp)
+methyl.snp.cor<-corr.test(methyl, snp, method="spearman")
+```
+
+Plot this correlation. 
+```{r}
+methyl.snp.plot<-corrplot(methyl.snp.cor$r, p.mat = methyl.snp.cor$p, insig = "blank", hclust.method=c("complete"), type="full", col=COL2('PRGn', 10), order="hclust", pch.col="black", tl.col="black", title="Methylation ~ Genetic Distance", mar = c(1, 1, 1, 1))
+```
+
+This plot shows that there is not a relationship between distance in methylation and genetic distance in either sex. Methylation is not related to genetic distance. 
+
+Run Mantel test 
+```{r}
+methyl_dist<-as.dist(methyl)
+snp_dist<-as.dist(snp)
+
+mantel.rtest(methyl_dist, snp_dist, nrepet = 99)
+
+plot(r3 <- mantel.rtest(methyl_dist,snp_dist), main = "Mantel's test"); r3
+```
+
+```
+Monte-Carlo test
+Call: mantelnoneuclid(m1 = m1, m2 = m2, nrepet = nrepet)
+
+Observation: -0.1624565 
+
+Based on 99 replicates
+Simulated p-value: 0.99 
+Alternative hypothesis: greater 
+
+     Std.Obs  Expectation     Variance 
+-2.411299545 -0.006336771  0.004191923
+```
+
+This shows that between sample distance in methylation and between sample distance in snps are not related (r=-0.162, p=0.99). 
