@@ -67,3 +67,44 @@ df.to_csv('../output/64-exon-expression/exon_data.csv', index=False)
 
 ```
 
+```{r}
+library(readr)
+library(dplyr)
+library(broom)
+library(tidyr)
+# Load the data
+data <- read_delim("../output/19-exon-expression/S12M-exon_expression.tab", "\t", escape_double = FALSE, col_types = cols(), trim_ws = TRUE)
+# Prepare the data for analysis
+data_long <- pivot_longer(data, cols = -gene_name, names_to = "exon", values_to = "expression")
+data_long <- data_long %>% filter(!is.na(expression))
+# Function to perform linear regression and extract metrics
+analyze_gene <- function(df) {
+  # Linear model
+  model <- lm(expression ~ as.numeric(gsub("exon_", "", exon)), data = df)
+  # Get slope and r-squared
+  slope <- coef(model)[2]
+  r_squared <- summary(model)$r.squared
+  # Predictions and confidence interval
+  predictions <- predict(model, interval = "confidence")
+  df$within_ci <- df$expression >= predictions[, "lwr"] & df$expression <= predictions[, "upr"]
+  percentage_within_ci <- mean(df$within_ci) * 100
+  return(c(slope, r_squared, percentage_within_ci))
+}
+# Apply the function to each gene
+results <- data_long %>%
+  group_by(gene_name) %>%
+  do(tibble(slope = analyze_gene(.)[1], r_squared = analyze_gene(.)[2], percentage_within_ci = analyze_gene(.)[3]))
+# Merge with original data to calculate additional statistics
+final_results <- data %>%
+  left_join(results, by = "gene_name") %>%
+  rowwise() %>%
+  mutate(num_exons = sum(!is.na(c_across(starts_with("exon_")))),
+         mean_exon_expression = mean(c_across(starts_with("exon_")), na.rm = TRUE),
+         std_dev_exon_expression = sd(c_across(starts_with("exon_")), na.rm = TRUE),
+         sum_exon_expression = sum(c_across(starts_with("exon_")), na.rm = TRUE))
+# View the results
+print(final_results)
+# Save the results
+write_csv(final_results, "../output/64-exon-expression/exon-summary.tab")
+```
+
