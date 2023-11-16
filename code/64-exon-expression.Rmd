@@ -9,6 +9,61 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{bash}
-head ../output/19-exon-expression/S12M-exon_expression.tab
+head -5 ../output/19-exon-expression/S12M-exon_expression.tab > ../output/19-exon-expression/HEAD5-S12M-exon_expression.tab
+```
+
+```{bash}
+pip install pandas numpy scipy scikit-learn
+```
+
+
+
+```{python}
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from scipy import stats
+
+# Load the data
+file_path = '../output/19-exon-expression/S12M-exon_expression.tab'
+df = pd.read_csv(file_path, sep='\t', na_values='NA')
+
+# Analysis
+model = LinearRegression()
+for column in ['slope_best_fit', 'r_squared', 'points_within_95_CI', 'percentage_within_95_CI']:
+    df[column] = np.nan
+
+for index, row in df.iterrows():
+    expression_values = row[1:].dropna()
+    if len(expression_values) < 2:
+        continue
+
+    X = np.array(range(1, len(expression_values) + 1)).reshape(-1, 1)
+    y = expression_values.values
+
+    model.fit(X, y)
+    df.at[index, 'slope_best_fit'] = model.coef_[0]
+    df.at[index, 'r_squared'] = model.score(X, y)
+
+    predictions = model.predict(X)
+    mse = np.mean((y - predictions) ** 2)
+    standard_error = np.sqrt(mse / (n - 2))
+    t_value = stats.t.ppf(0.975, df=n-2)
+    margin_of_error = t_value * standard_error
+    lower_bound = predictions - margin_of_error
+    upper_bound = predictions + margin_of_error
+    count_within_ci = np.sum((y >= lower_bound) & (y <= upper_bound))
+    df.at[index, 'points_within_95_CI'] = count_within_ci
+    df.at[index, 'percentage_within_95_CI'] = count_within_ci / len(expression_values) * 100
+
+# Additional calculations
+df['num_exons'] = df.iloc[:, 1:].apply(lambda x: x.count(), axis=1)
+df['mean_exon_expression'] = df.iloc[:, 1:].mean(axis=1, skipna=True)
+df['std_dev_exon_expression'] = df.iloc[:, 1:].std(axis=1, skipna=True)
+df['sum_exon_expression'] = df.iloc[:, 1:].sum(axis=1, skipna=True)
+
+# Saving the results
+df.to_csv('../output/64-exon-expression/exon_data.csv', index=False)
+
 ```
 
