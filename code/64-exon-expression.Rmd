@@ -66,3 +66,51 @@ print(results)
 
 ```
 
+
+
+
+
+
+
+```{r}
+# Specify the file location
+file_location <- "../output/64-exon-expression/exon-summary.csv"
+
+# Read data from the specified file
+data <- read.csv(file_location, header = TRUE, sep = ",")
+
+# Check the structure of the data
+str(data)
+
+# Create histograms for numeric variables
+par(mfrow = c(2, 3))  # Arrange histograms in a 2x3 grid
+hist(data$slope_best_fit, main = "Slope Best Fit", xlab = "Value", xlim = c(-200, 200), breaks = 2000)
+hist(data$r_squared, main = "R-squared", xlab = "Value")
+hist(data$num_exons, main = "Number of Exons", xlab = "Value", breaks = 100)
+hist(data$mean_exon_expression, main = "Mean Exon Expression", xlab = "Value", breaks = 100, xlim = c(0, 1000))
+hist(data$std_dev_exon_expression, main = "Std Dev Exon Expression", xlab = "Value", breaks = 100, xlim = c(0, 1000))
+hist(data$sum_exon_expression, main = "Sum Exon Expression", xlab = "Value", breaks = 1000, xlim = c(0, 1000))
+
+# Reset the plotting layout
+par(mfrow = c(1, 1))
+
+```
+
+```{r}
+# Specify the file location
+file_location <- "../output/64-exon-expression/exon-summary.csv"
+# Read data from the specified file
+data <- read.csv(file_location, header = TRUE, sep = ",")
+
+# Create a scatter plot for slope_best_fit with custom colors
+plot(data$slope_best_fit, type = "p", pch = 16, 
+     xlab = "Index", ylab = "Slope Best Fit", 
+     main = "Scatter Plot of Slope Best Fit",
+     col = ifelse(data$slope_best_fit > 1000 | data$slope_best_fit < -1000, "red", "blue"))
+
+# Add a legend for the custom colors
+legend("topright", legend = c("<= -1000 or >= 1000", "> -1000 and < 1000"), 
+       col = c("red", "blue"), pch = 16)
+
+```
+
