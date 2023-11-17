@@ -12,6 +12,42 @@ knitr::opts_chunk$set(echo = TRUE)
 head -5 ../output/19-exon-expression/S12M-exon_expression.tab > ../output/19-exon-expression/HEAD5-S12M-exon_expression.tab
 ```
 
+```{r}
+library(readr)
+library(dplyr)
+library(tidyr)
+
+# Load the data
+data <- read_delim("../output/19-exon-expression/S12M-exon_expression.tab", "\t", escape_double = FALSE, col_types = cols(), trim_ws = TRUE)
+
+# Reshape data to a long format for easier manipulation
+data_long <- pivot_longer(data, cols = -gene_name, names_to = "exon", values_to = "expression")
+
+# Calculate the mean expression for each gene
+mean_expressions <- data_long %>%
+  group_by(gene_name) %>%
+  summarize(mean_expression = mean(expression, na.rm = TRUE))
+
+# Join the mean expressions back to the original data
+data_long <- data_long %>%
+  left_join(mean_expressions, by = "gene_name")
+
+# Normalize the expression values
+data_long <- data_long %>%
+  mutate(normalized_expression = expression / mean_expression)
+
+# Reshape data back to a wide format (optional)
+data_normalized <- data_long %>%
+  select(-expression, -mean_expression) %>%
+  pivot_wider(names_from = exon, values_from = normalized_expression)
+
+# Save the normalized data
+write_csv(data_normalized, "../output/19-exon-expression/normalized_exon_expression.tab")
+
+# (Optional) Print the first few rows of the normalized data
+print(head(data_normalized))
+
+```
 
 
 ```{r}
@@ -66,7 +102,55 @@ print(results)
 
 ```
 
+```{bash}
+head ../output/19-exon-expression/normalized_exon_expression.tab
+```
 
+```{r}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# Load the data
+data <- read_delim("../output/19-exon-expression/normalized_exon_expression.tab", ",", escape_double = FALSE, col_types = cols(), trim_ws = TRUE)
+
+# Reshape the data to a long format
+data_long <- pivot_longer(data, cols = -gene_name, names_to = "exon", values_to = "expression")
+
+# Filter out groups with all NA values
+data_long <- data_long %>% 
+  group_by(gene_name) %>% 
+  filter(sum(!is.na(expression)) > 0) %>% 
+  ungroup()
+
+# Fit linear models for each gene
+models <- data_long %>% 
+  group_by(gene_name) %>% 
+  do(model = lm(expression ~ as.numeric(gsub("exon_", "", .$exon)), data = .))
+
+# Create a function to predict values using the model
+predict_values <- function(model, data) {
+  if (is.null(model)) return(rep(NA, nrow(data)))
+  exon_numbers <- as.numeric(gsub("exon_", "", data$exon))
+  predict(model, newdata = data.frame(exon = exon_numbers))
+}
+
+# Add predictions to the original data
+data_long <- data_long %>% 
+  group_by(gene_name) %>% 
+  mutate(prediction = predict_values(first(models$model), cur_data()))
+
+# Plotting
+ggplot(data_long, aes(x = as.numeric(gsub("exon_", "", exon)), y = expression, group = gene_name)) +
+  geom_point(aes(color = gene_name)) +
+  geom_line(aes(y = prediction, color = gene_name)) +
+  theme_minimal() +
+  labs(title = "Exon Expression with Best-Fit Lines for Each Gene",
+       x = "Exon Number",
+       y = "Expression") +
+  theme(legend.position = "none") # Adjust or remove legend as needed
+```
 
 
 ```{r}
@@ -77,10 +161,10 @@ library(ggplot2)
 library(purrr)
 
 # Load the data
-data <- read_delim("../output/19-exon-expression/S12M-exon_expression.tab", "\t", escape_double = FALSE, col_types = cols(), trim_ws = TRUE)
+data <- read_delim("../output/19-exon-expression/normalized_exon_expression.tab", ",", escape_double = FALSE, col_types = cols(), trim_ws = TRUE)
 
 # Reshape data for analysis
-data_long <- pivot_longer(data, cols = -gene_name, names_to = "exon", values_to = "expression")
+data_long <- pivot_longer(data, cols = ~gene_name, names_to = "exon", values_to = "norm_expression")
 data_long <- data_long %>% 
   filter(!is.na(expression), expression < 4000, as.numeric(gsub("exon_", "", exon)) < 100)
 
