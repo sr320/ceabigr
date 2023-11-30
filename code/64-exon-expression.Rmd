@@ -153,6 +153,104 @@ ggplot(data_long, aes(x = as.numeric(gsub("exon_", "", exon)), y = expression, g
 ```
 
 
+
+```{r}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+# Load the data
+data <- read_delim("../output/19-exon-expression/normalized_exon_expression.tab", ",", escape_double = FALSE, col_types = cols(), trim_ws = TRUE)
+
+# Reshape the data to a long format
+data_long <- pivot_longer(data, cols = -gene_name, names_to = "exon", values_to = "expression")
+
+# Convert exon names to numeric and filter for the first 10 exons
+data_long <- data_long %>%
+  mutate(exon_number = as.numeric(gsub("exon_", "", exon))) %>%
+  filter(exon_number <= 10)
+
+# Filter out groups with all NA values
+data_long <- data_long %>% 
+  group_by(gene_name) %>% 
+  filter(sum(!is.na(expression)) > 0) %>% 
+  ungroup()
+
+# Fit linear models for each gene
+models <- data_long %>% 
+  group_by(gene_name) %>% 
+  do(model = lm(expression ~ exon_number, data = .))
+
+# Create a function to predict values using the model
+predict_values <- function(model, data) {
+  if (is.null(model)) return(rep(NA, nrow(data)))
+  predict(model, newdata = data.frame(exon_number = data$exon_number))
+}
+
+# Add predictions to the original data
+data_long <- data_long %>% 
+  group_by(gene_name) %>% 
+  mutate(prediction = predict_values(first(models$model), cur_data()))
+
+# Plotting with jitter
+ggplot(data_long, aes(x = exon_number, y = expression, group = gene_name)) +
+  geom_jitter(aes(color = gene_name), width = 0.2, height = 0) +  # Add jitter here
+  geom_line(aes(y = prediction, color = gene_name)) +
+  theme_minimal() +
+  labs(title = "Exon Expression with Best-Fit Lines for Each Gene (First 10 Exons)",
+       x = "Exon Number",
+       y = "Expression") +
+  theme(legend.position = "none") # Adjust or remove legend as needed
+```
+
+
+```{r}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(broom)
+
+# Load the data
+data <- read_delim("../output/19-exon-expression/normalized_exon_expression.tab", ",", escape_double = FALSE, col_types = cols(), trim_ws = TRUE)
+
+
+# Reshape the data to a long format
+data_long <- pivot_longer(data, cols = -gene_name, names_to = "exon", values_to = "expression")
+
+# Convert exon names to numeric and filter for the first 10 exons and expression range
+data_long <- data_long %>%
+  mutate(exon_number = as.numeric(gsub("exon_", "", exon))) %>%
+  filter(exon_number <= 10, expression >= 0, expression <= 10)
+
+# Filter out groups with all NA values
+data_long <- data_long %>% 
+  group_by(gene_name) %>% 
+  filter(sum(!is.na(expression)) > 0) %>% 
+  ungroup()
+
+# Calculate the slope for each gene
+slopes <- data_long %>% 
+  group_by(gene_name) %>% 
+  do(tidy(lm(expression ~ exon_number, data = .))) %>%
+  filter(term == "exon_number") %>%
+  mutate(slope_color = ifelse(estimate > 0, "blue", "red"))
+
+# Join the slope information back to the data
+data_long <- data_long %>%
+  left_join(slopes, by = "gene_name")
+
+# Plotting with colored lines based on slope
+ggplot(data_long, aes(x = exon_number, y = expression, group = gene_name)) +
+  geom_point(aes(color = gene_name), alpha = 0.02) + 
+  geom_smooth(aes(color = slope_color), method = "lm", se = FALSE, size = 0.5, linetype = "solid", alpha = 0.5) +
+  theme_minimal() +
+  labs(title = "Exon Expression with Best-Fit Lines for Each Gene (Exon 0-10, Expression 0-10)",
+       x = "Exon Number",
+       y = "Expression") +
+  theme(legend.position = "none") # Adjust or remove legend as needed
+```
+
 ```{r}
 library(readr)
 library(dplyr)
