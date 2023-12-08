@@ -1,0 +1,24 @@
+---
+title: "65-exon-coverage"
+format: html
+editor: visual
+---
+
+Following Li et al. Will take bams and get some data..
+
+Trimmed reads were mapped to the Aiptasia genome using HISAT2 v2.1.0, and mapping coverage per position was extracted using BEDTools v2.17.0. To assess spurious transcription levels, we deter- mined the coverage per exon normalized across all six replicates (assuming every replicate had a coverage of 1 million sequences in total) and then calculated the average coverage ratios of exons 2 to 6 versus exon 1 for every gene
+
+
+Individual BAMS and their corresponding index files are in each individual sample subirectory:
+
+https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/
+
+A merged BAM of all samples is here (79GB):
+
+https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/20230821_cvir_stringtie_GCF_002022765-sorted-bams-merged.bam
+
+Merged BAM index file (23MB):
+
+https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/20230821_cvir_stringtie_GCF_002022765-sorted-bams-merged.bam.bai
+
+
