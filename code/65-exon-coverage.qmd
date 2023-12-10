@@ -22,3 +22,26 @@ Merged BAM index file (23MB):
 https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/20230821_cvir_stringtie_GCF_002022765-sorted-bams-merged.bam.bai
 
 
+# Download BAMs
+
+```{r, engine='bash'}
+wget -r \
+--no-directories --no-parent \
+-P ../data/big/ \
+-A "*sorted.bam" https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/
+```
+```{r, engine='bash'}
+wget -r \
+--no-directories --no-parent \
+-P ../data/big/ \
+-A "*sorted.bam.bai" https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/
+```
+
+```{r, engine='bash'}
+for bamfile in ../data/big/*sorted.bam; do
+    # Calculate coverage using BEDTools
+    /home/shared/bedtools2/bin/bedtools coverage -a ../genome-features/GCF_02022765.2_C_virginica- -b $bamfile > ../65-exon-coverage/${bamfile%.bam}_exon_coverage.txt
+done
+```
+
+
