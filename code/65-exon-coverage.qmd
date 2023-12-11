@@ -90,6 +90,14 @@ cd ../data
 head /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/ncbi_dataset/data/GCF_002022765.2/genomic.gtf
 
 ```
+```{bash}
+cat ../data/ncbi_dataset/data/GCF_002022765.2/genomic.gtf | grep "Gnomon	exon" | head
+```
+
+```{bash}
+cat ../data/ncbi_dataset/data/GCF_002022765.2/genomic.gtf | grep "Gnomon	exon" > ../genome-features/GCF_002022765.2_exon.gtf
+
+```
 
 
 
@@ -120,7 +128,7 @@ Lets get bam that overlaps with exons
 ```{r, engine='bash'}
 /home/shared/bedtools2/bin/bedtools multicov \
 -bams ../data/big/S77F.sorted.bam \
--bed ../data/ncbi_dataset/data/GCF_002022765.2/genomic.gtf \
+-bed ../genome-features/GCF_002022765.2_exon.gtf \
 > ../output/65-exon-coverage/S77_exon_exp_counts.txt
 ```
 
@@ -141,6 +149,64 @@ head -1 ../output/65-exon-coverage/S9gtf_exon_coverage.txt
 ```
 
 loops
+
+bedtools intersect -a sorted.bam -b exons.gtf > exon_reads.bam
+
+```{r, engine='bash'}
+for bamfile in ../data/big/*sorted.bam; do
+    # Calculate coverage using BEDTools
+    echo ${bamfile%.bam}
+done
+```
+
+```{r, engine='bash'}
+for bamfile in ../data/big/*sorted.bam; do
+    # Extract the base name of the file without the path and extension
+    base_name=$(basename "$bamfile" .sorted.bam)
+
+    # Define the output file name
+    output_file="${base_name}_exon_reads.bam"
+
+    # Calculate coverage using BEDTools
+    /home/shared/bedtools2/bin/bedtools intersect -a "$bamfile" -b ../genome-features/GCF_002022765.2_exon.gtf > ../output/65-exon-coverage/$output_file
+done
+```
+
+```{bash}
+find ../data/big/ -name "*sorted.bam" | xargs -I {} -P 20 bash -c '
+    bamfile="{}"
+    base_name=$(basename "$bamfile" .sorted.bam)
+    output_file="../output/65-exon-coverage/${base_name}_exon_reads.bam"
+    /home/shared/bedtools2/bin/bedtools intersect -a "$bamfile" -b ../genome-features/GCF_002022765.2_exon.gtf > "$output_file"
+'
+
+```
+
+```{bash}
+for bamfile in ../output/65-exon-coverage/*.bam; do
+    /home/shared/samtools-1.12/samtools index -@ 40 "$bamfile"
+done
+```
+
+
+
+
+```{bash}
+find ../output/65-exon-coverage/ -name "*exon_reads.bam" | xargs -I {} -P 40 bash -c '
+    bamfile="{}"
+    base_name=$(basename "$bamfile" .exon_reads.bam)
+    output_file="../output/65-exon-coverage/${base_name}_multicov.txt"
+    /home/shared/bedtools2/bin/bedtools multicov -bams "$bamfile" -bed ../genome-features/GCF_002022765.2_exon.gtf > "$output_file"
+'
+
+```
+
+
+
+
+
+
+
 
 ```{r, engine='bash'}
 for bamfile in ../data/big/*sorted.bam; do
