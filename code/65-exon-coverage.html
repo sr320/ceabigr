@@ -155,42 +155,74 @@ NC_035780.1 Gnomon  gene    13578   14594   .   +   .   ID=gene-LOC111116054;Dbx
 </div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="at">-1</span> ../output/65-exon-coverage/S9gff_exon_coverage.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>NC_035780.1 RefSeq  region  1   65668440    .   +   .   ID=NC_035780.1:1..65668440;Dbxref=taxon:6565;Name=1;chromosome=1;collection-date=22-Mar-2015;country=USA;gbkey=Src;genome=chromosome;isolate=RU13XGHG1-28;isolation-source=Rutgers Haskin Shellfish Research Laboratory inbred lines (NJ);mol_type=genomic DNA;tissue-type=whole sample 5495110 65312905    65668440    0.9945859</code></pre>
-</div>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span>    ../genome-features</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-O</span> https://gannet.fish.washington.edu/panopea/Cg-roslin/GCF_902806645.1_cgigas_uk_roslin_v1_genomic-mito.gtf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ../data</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">/home/shared/datasets</span> download genome accession GCF_002022765.2 <span class="at">--include</span> gff3,gtf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> ../genome-features/GCF_902806645.1_cgigas_uk_roslin_v1_genomic-mito.gtf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/ncbi_dataset/data/GCF_002022765.2/genomic.gtf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>#gtf-version 2.2
-#!genome-build cgigas_uk_roslin_v1
-#!genome-build-accession NCBI_Assembly:GCF_902806645.1
-#!annotation-source NCBI Crassostrea gigas Annotation Release 102
-NC_047559.1 Gnomon  gene    9839    11386   .   +   .   gene_id "LOC117693020"; db_xref "GeneID:117693020"; gbkey "Gene"; gene "LOC117693020"; gene_biotype "lncRNA"; 
-NC_047559.1 Gnomon  exon    9839    9922    .   +   .   gene_id "LOC117693020"; transcript_id "XR_004604272.1"; db_xref "GeneID:117693020"; gbkey "ncRNA"; gene "LOC117693020"; model_evidence "Supporting evidence includes similarity to: 1 EST, and 100% coverage of the annotated genomic feature by RNAseq alignments, including 15 samples with support for all annotated introns"; product "uncharacterized LOC117693020"; exon_number "1"; 
-NC_047559.1 Gnomon  exon    10884   11386   .   +   .   gene_id "LOC117693020"; transcript_id "XR_004604272.1"; db_xref "GeneID:117693020"; gbkey "ncRNA"; gene "LOC117693020"; model_evidence "Supporting evidence includes similarity to: 1 EST, and 100% coverage of the annotated genomic feature by RNAseq alignments, including 15 samples with support for all annotated introns"; product "uncharacterized LOC117693020"; exon_number "2"; 
-NC_047559.1 Gnomon  gene    14114   15804   .   +   .   gene_id "LOC109621113"; db_xref "GeneID:109621113"; gbkey "Gene"; gene "LOC109621113"; gene_biotype "protein_coding"; 
-NC_047559.1 Gnomon  exon    14114   14545   .   +   .   gene_id "LOC109621113"; transcript_id "XM_034463183.1"; db_xref "GeneID:109621113"; gbkey "mRNA"; gene "LOC109621113"; model_evidence "Supporting evidence includes similarity to: 78% coverage of the annotated genomic feature by RNAseq alignments, including 21 samples with support for all annotated introns"; product "uncharacterized LOC109621113"; exon_number "1"; 
-NC_047559.1 Gnomon  exon    14812   14867   .   +   .   gene_id "LOC109621113"; transcript_id "XM_034463183.1"; db_xref "GeneID:109621113"; gbkey "mRNA"; gene "LOC109621113"; model_evidence "Supporting evidence includes similarity to: 78% coverage of the annotated genomic feature by RNAseq alignments, including 21 samples with support for all annotated introns"; product "uncharacterized LOC109621113"; exon_number "2"; </code></pre>
+#!genome-build C_virginica-3.0
+#!genome-build-accession NCBI_Assembly:GCF_002022765.2
+#!annotation-source NCBI Crassostrea virginica Annotation Release 100
+NC_035780.1 Gnomon  gene    13578   14594   .   +   .   gene_id "LOC111116054"; db_xref "GeneID:111116054"; gbkey "Gene"; gene "LOC111116054"; gene_biotype "lncRNA"; 
+NC_035780.1 Gnomon  exon    13578   13603   .   +   .   gene_id "LOC111116054"; transcript_id "XR_002636969.1"; db_xref "GeneID:111116054"; gbkey "ncRNA"; gene "LOC111116054"; model_evidence "Supporting evidence includes similarity to: 100% coverage of the annotated genomic feature by RNAseq alignments, including 1 sample with support for all annotated introns"; product "uncharacterized LOC111116054"; exon_number "1"; 
+NC_035780.1 Gnomon  exon    14237   14290   .   +   .   gene_id "LOC111116054"; transcript_id "XR_002636969.1"; db_xref "GeneID:111116054"; gbkey "ncRNA"; gene "LOC111116054"; model_evidence "Supporting evidence includes similarity to: 100% coverage of the annotated genomic feature by RNAseq alignments, including 1 sample with support for all annotated introns"; product "uncharacterized LOC111116054"; exon_number "2"; 
+NC_035780.1 Gnomon  exon    14557   14594   .   +   .   gene_id "LOC111116054"; transcript_id "XR_002636969.1"; db_xref "GeneID:111116054"; gbkey "ncRNA"; gene "LOC111116054"; model_evidence "Supporting evidence includes similarity to: 100% coverage of the annotated genomic feature by RNAseq alignments, including 1 sample with support for all annotated introns"; product "uncharacterized LOC111116054"; exon_number "3"; 
+NC_035780.1 Gnomon  gene    28961   33324   .   +   .   gene_id "LOC111126949"; db_xref "GeneID:111126949"; gbkey "Gene"; gene "LOC111126949"; gene_biotype "protein_coding"; 
+NC_035780.1 Gnomon  exon    28961   29073   .   +   .   gene_id "LOC111126949"; transcript_id "XM_022471938.1"; db_xref "GeneID:111126949"; gbkey "mRNA"; gene "LOC111126949"; model_evidence "Supporting evidence includes similarity to: 3 Proteins, and 100% coverage of the annotated genomic feature by RNAseq alignments, including 21 samples with support for all annotated introns"; product "UNC5C-like protein"; exon_number "1"; </code></pre>
 </div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">/home/shared/bedtools2/bin/bedtools</span> coverage <span class="dt">\</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>-a ../genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff <span class="dt">\</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>-b ../data/big/S9M.sorted.bam <span class="dt">\</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> ../output/65-exon-coverage/S9gff_exon_coverage.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span>    ../genome-features</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-O</span> https://eagle.fish.washington.edu/Cvirg_tracks/C_virginica-3.0_Gnomon_exon.bed</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> ../genome-features/C_virginica-3.0_Gnomon_exon.bed</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>NC_035780.1 13578   13603
+NC_035780.1 14237   14290
+NC_035780.1 14557   14594
+NC_035780.1 28961   29073
+NC_035780.1 30524   31557
+NC_035780.1 31736   31887
+NC_035780.1 31977   32565
+NC_035780.1 32959   33324
+NC_035780.1 66869   66897
+NC_035780.1 64123   64334</code></pre>
+</div>
+</div>
+<p>Lets get bam that overlaps with exons</p>
+<p><code>bedtools intersect -a sorted.bam -b exons.gtf &gt; exon_reads.bam</code></p>
+<p><code>bedtools multicov -bams exon_reads.bam -bed exons.gtf &gt; exon_expression_counts.txt</code></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">/home/shared/bedtools2/bin/bedtools</span> multicov <span class="dt">\</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>-bams ../data/big/S77F.sorted.bam <span class="dt">\</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>-bed ../data/ncbi_dataset/data/GCF_002022765.2/genomic.gtf <span class="dt">\</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> ../output/65-exon-coverage/S77_exon_exp_counts.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-20</span> ../output/65-exon-coverage/S77_exon_exp_counts.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">/home/shared/bedtools2/bin/bedtools</span> coverage <span class="dt">\</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>-a ../genome-features/GCF_902806645.1_cgigas_uk_roslin_v1_genomic-mito.gtf <span class="dt">\</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>-b ../data/big/S9M.sorted.bam <span class="dt">\</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> ../output/65-exon-coverage/S9gtf_exon_coverage.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="at">-1</span> ../output/65-exon-coverage/S9gtf_exon_coverage.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>NC_047559.1 Gnomon  gene    9839    11386   .   +   .   gene_id "LOC117693020"; db_xref "GeneID:117693020"; gbkey "Gene"; gene "LOC117693020"; gene_biotype "lncRNA";   0   0   1548    0.0000000</code></pre>
+</div>
 </div>
 <p>loops</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> bamfile <span class="kw">in</span> ../data/big/<span class="pp">*</span>sorted.bam<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate coverage using BEDTools</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">/home/shared/bedtools2/bin/bedtools</span> coverage <span class="at">-a</span> ../genome-features/GCF_02022765.2_C_virginica- <span class="at">-b</span> <span class="va">$bamfile</span> <span class="op">&gt;</span> ../65-exon-coverage/<span class="va">${bamfile</span><span class="op">%</span>.bam<span class="va">}</span>_exon_coverage.txt</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> bamfile <span class="kw">in</span> ../data/big/<span class="pp">*</span>sorted.bam<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate coverage using BEDTools</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">/home/shared/bedtools2/bin/bedtools</span> coverage <span class="at">-a</span> ../genome-features/GCF_02022765.2_C_virginica- <span class="at">-b</span> <span class="va">$bamfile</span> <span class="op">&gt;</span> ../65-exon-coverage/<span class="va">${bamfile</span><span class="op">%</span>.bam<span class="va">}</span>_exon_coverage.txt</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 
