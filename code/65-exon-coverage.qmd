@@ -1,13 +1,39 @@
 ---
-title: "65-exon-coverage"
-format: html
-editor: visual
+title: "65 - Exon Coverage"
+author: Steven Roberts
+date: "`r format(Sys.time(), '%d %B, %Y')`" 
+output: 
+  github_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    html_preview: true
 ---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(kableExtra)
+library(DESeq2)
+library(pheatmap)
+library(RColorBrewer)
+library(data.table)
+library(DT)
+library(Biostrings)
+library(methylKit)
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = FALSE,         # Evaluate code chunks
+  warning = TRUE,     # Hide warnings
+  message = TRUE,     # Hide messages
+  fig.width = 6,       # Set plot width in inches
+  fig.height = 4,      # Set plot height in inches
+  fig.align = "center" # Align plots to the center
+)
+```
 
 Following Li et al. Will take bams and get some data..
 
 Trimmed reads were mapped to the Aiptasia genome using HISAT2 v2.1.0, and mapping coverage per position was extracted using BEDTools v2.17.0. To assess spurious transcription levels, we deter- mined the coverage per exon normalized across all six replicates (assuming every replicate had a coverage of 1 million sequences in total) and then calculated the average coverage ratios of exons 2 to 6 versus exon 1 for every gene
-
 
 Individual BAMS and their corresponding index files are in each individual sample subirectory:
 
@@ -21,7 +47,6 @@ Merged BAM index file (23MB):
 
 https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/20230821_cvir_stringtie_GCF_002022765-sorted-bams-merged.bam.bai
 
-
 # Download BAMs
 
 ```{r, engine='bash'}
@@ -30,6 +55,7 @@ wget -r \
 -P ../data/big/ \
 -A "*sorted.bam" https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/
 ```
+
 ```{r, engine='bash'}
 wget -r \
 --no-directories --no-parent \
@@ -37,11 +63,88 @@ wget -r \
 -A "*sorted.bam.bai" https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/
 ```
 
+
+# bedtools coverage
+
+```{r, engine='bash'}
+/home/shared/bedtools2/bin/bedtools coverage \
+-a ../genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff \
+-b ../data/big/S9M.sorted.bam \
+> ../output/65-exon-coverage/S9gff_exon_coverage.txt
+```
+
+```{r, engine='bash', eval=TRUE}
+head ../genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff
+```
+
+```{bash}
+cd ../data
+
+/home/shared/datasets download genome accession GCF_002022765.2 --include gff3,gtf
+```
+
+
+
+
+```{r, engine='bash', eval=TRUE}
+head /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/ncbi_dataset/data/GCF_002022765.2/genomic.gtf
+
+```
+
+
+
+```{r, engine='bash'}
+cd    ../genome-features
+curl -O https://eagle.fish.washington.edu/Cvirg_tracks/C_virginica-3.0_Gnomon_exon.bed
+```
+
+
+```{r, engine='bash', eval=TRUE}
+head ../genome-features/C_virginica-3.0_Gnomon_exon.bed
+```
+
+
+
+
+
+Lets get bam that overlaps with exons
+
+`bedtools intersect -a sorted.bam -b exons.gtf > exon_reads.bam`
+
+
+
+
+
+`bedtools multicov -bams exon_reads.bam -bed exons.gtf > exon_expression_counts.txt`
+
+```{r, engine='bash'}
+/home/shared/bedtools2/bin/bedtools multicov \
+-bams ../data/big/S77F.sorted.bam \
+-bed ../data/ncbi_dataset/data/GCF_002022765.2/genomic.gtf \
+> ../output/65-exon-coverage/S77_exon_exp_counts.txt
+```
+
+```{r, engine='bash'}
+tail -20 ../output/65-exon-coverage/S77_exon_exp_counts.txt
+```
+
+
+```{r, engine='bash'}
+/home/shared/bedtools2/bin/bedtools coverage \
+-a ../genome-features/GCF_902806645.1_cgigas_uk_roslin_v1_genomic-mito.gtf \
+-b ../data/big/S9M.sorted.bam \
+> ../output/65-exon-coverage/S9gtf_exon_coverage.txt
+```
+
+```{r, engine='bash', eval=TRUE}
+head -1 ../output/65-exon-coverage/S9gtf_exon_coverage.txt
+```
+
+loops
+
 ```{r, engine='bash'}
 for bamfile in ../data/big/*sorted.bam; do
     # Calculate coverage using BEDTools
     /home/shared/bedtools2/bin/bedtools coverage -a ../genome-features/GCF_02022765.2_C_virginica- -b $bamfile > ../65-exon-coverage/${bamfile%.bam}_exon_coverage.txt
 done
 ```
-
-
