@@ -208,9 +208,69 @@ find ../output/65-exon-coverage/ -name "*exon_reads.bam" | xargs -I {} -P 40 bas
 
 
 
+
+
 ```{r, engine='bash'}
-for bamfile in ../data/big/*sorted.bam; do
-    # Calculate coverage using BEDTools
-    /home/shared/bedtools2/bin/bedtools coverage -a ../genome-features/GCF_02022765.2_C_virginica- -b $bamfile > ../65-exon-coverage/${bamfile%.bam}_exon_coverage.txt
-done
+head ../output/65-exon-coverage/*extracted_data.txt | head -25
+
 ```
+
+```{r}
+
+S9data <- read.table("../output/65-exon-coverage/S9M_exon_reads.extracted_data.txt", header = TRUE)
+```
+
+```{r}
+
+S9data <- read.table("../output/65-exon-coverage/S9M_exon_reads.extracted_data.txt", header = TRUE)
+
+summarized_data <- S9data %>%
+  group_by(GeneID, ExonNumber) %>%
+  summarize(CoverageValue = mean(CoverageValue))
+
+# Reshape the data using pivot_wider
+reshaped_data <- summarized_data %>%
+  pivot_wider(names_from = ExonNumber, values_from = CoverageValue, names_prefix = "Exon")
+
+```
+
+```{r}
+library(tidyverse)
+
+# Set the directory where your files are located
+directory_path <- "../output/65-exon-coverage"
+
+# List all files ending with 'extracted_data.txt'
+files <- list.files(directory_path, pattern = "extracted_data\\.txt$", full.names = TRUE)
+
+# Function to read, process, and write a single file
+process_and_write_file <- function(file_path) {
+  data <- read.table(file_path, header = TRUE)
+  
+  summarized_data <- data %>%
+    group_by(GeneID, ExonNumber) %>%
+    summarize(CoverageValue = mean(CoverageValue), .groups = 'drop')
+
+  reshaped_data <- summarized_data %>%
+    pivot_wider(names_from = ExonNumber, values_from = CoverageValue, names_prefix = "Exon")
+
+  # Generate a new file name based on the original file name
+  output_file_name <- gsub("extracted_data\\.txt$", "processed_data.csv", basename(file_path))
+  output_file_path <- file.path(directory_path, output_file_name)
+
+  # Write the reshaped data to a new file
+  write_csv(reshaped_data, output_file_path)
+}
+
+# Apply the function to each file
+lapply(files, process_and_write_file)
+
+```
+
+
+
+```{r, engine='bash'}
+head ../output/65-exon-coverage/S31M*process*
+```
+
+
