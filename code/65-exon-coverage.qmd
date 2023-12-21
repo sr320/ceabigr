@@ -274,3 +274,22 @@ head ../output/65-exon-coverage/S31M*process*
 ```
 
 
+```{r}
+S9Mdata <- read.csv("../output/65-exon-coverage/S9M_exon_reads.processed_data.csv")
+```
+
+
+```{r}
+test <- S9Mdata %>%
+  dplyr::select(GeneID,Exon1,Exon2,Exon3,Exon4,Exon5,Exon6) %>%
+  mutate(fold2 = log(Exon2 / Exon1)) %>%
+  mutate(fold3 = log(Exon3 / Exon1)) %>%
+  mutate(fold4 = log(Exon4 / Exon1)) %>%
+  mutate(fold5 = log(Exon5 / Exon1)) %>%
+  mutate(fold6 = log(Exon6 / Exon1))
+```
+
+```{r}
+ggplot(data = test, aes())
+```
+
