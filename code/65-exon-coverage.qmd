@@ -272,6 +272,10 @@ lapply(files, process_and_write_file)
 ```{r, engine='bash'}
 head ../output/65-exon-coverage/S31M*process*
 ```
+```{bash}
+head ../output/65-exon-coverage/S9M_exon_reads.processed_data.csv
+
+```
 
 
 ```{r}
@@ -290,6 +294,46 @@ test <- S9Mdata %>%
 ```
 
 ```{r}
-ggplot(data = test, aes())
+head(test)
 ```
+```{r}
+data_long <- test %>%
+  pivot_longer(cols = starts_with("fold"), names_to = "fold", values_to = "Value") %>%
+  mutate(fold = as.factor(fold))  # Convert column to a factor 
+
+```
+
+```{r}
+data_long$Value[data_long$Value == "-Inf" | data_long$Value == "Inf"] <- NA
+
+```
+
+
+```{r}
+summary_data <- data_long %>%
+  group_by(fold) %>%
+  summarise(
+    Mean = mean(Value, na.rm = TRUE),
+    SE = sd(Value, na.rm = TRUE) / sqrt(sum(!is.na(Value)))
+  )
+```
+
+```{r}
+class(summary_data$Mean)
+```
+
+
+```{r}
+ggplot(summary_data, aes(x = fold, y = Mean)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE), width = 0.2) +
+  labs(
+    x = "Exon",
+    y = "Mean Value",
+    title = "Mean Values with Standard Error by fold"
+  ) +
+  theme_minimal()
+
+```
+
 
