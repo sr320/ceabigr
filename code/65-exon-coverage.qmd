@@ -365,4 +365,65 @@ ggplot(summary_data, aes(x = fold, y = Mean)) +
 
 ```
 
+# Calculate fold change for all groups
+```{r}
+# Create a list to store results for each group
+results_list <- list()
 
+# Loop through each group
+for (group_name in c("all", "controls", "exposed", "controls_males", "exposed_males", "controls_females", "exposed_females", "females", "males")) {
+  # Get the corresponding vector
+  current_vector <- eval(parse(text = group_name))
+  
+  # Create an empty list to store results for each file in the group
+  group_results <- list()
+  
+  # Loop through each file in the group
+  for (file_id in current_vector) {
+    # Read the data frame
+    current_data <- read.csv(paste0("../output/65-exon-coverage/", file_id, "_exon_reads.processed_data.csv"))
+    
+    # Calculate log fold change
+    current_result <- calculate_log_fold_change(current_data)
+    
+    # Replace infinite values within the data frame
+    current_result <- as.data.frame(lapply(current_result, function(x) ifelse(is.infinite(x), NA, x)))
+
+    # Store the result
+    group_results[[file_id]] <- current_result
+  }
+  
+  # Bind the data frames together
+  mean_fold_change <- do.call(rbind, group_results)
+  
+  # Convert the data frame to a tibble to support summarise
+  mean_fold_change <- as_tibble(mean_fold_change)
+  
+  # Reshape the data to long format
+  data_long <- mean_fold_change %>%
+    pivot_longer(cols = starts_with("fold"), names_to = "fold", values_to = "Value") %>%
+    mutate(fold = as.factor(fold))  # Convert column to a factor
+  
+  # Calculate summary statistics
+  summary_data <- data_long %>%
+    group_by(fold) %>%
+    summarise(
+      Mean = mean(Value, na.rm = TRUE),
+      SE = sd(Value, na.rm = TRUE) / sqrt(sum(!is.na(Value)))
+    )
+  
+  # Store the summary data in the main results list
+  results_list[[group_name]] <- summary_data
+}
+
+
+
+
+
+
+```
+
+# Access results for a specific group (e.g., "all")
+```{r}
+all_group_result <- results_list[["all"]]
+```
