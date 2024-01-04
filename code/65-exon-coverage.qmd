@@ -365,6 +365,14 @@ ggplot(summary_data, aes(x = fold, y = Mean)) +
 
 ```
 
+::: {.callout-warning}
+Be sure to load the [vector groups chunk](#vectors-for-subsetting-samples-by-different-groups)
+
+and
+
+the [functions chunk](function-to-calculate-log-fold-change) before running!
+:::
+
 # Calculate fold change for all groups
 ```{r}
 # Create a list to store results for each group
