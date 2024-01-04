@@ -448,10 +448,10 @@ combined_results$fold <- factor(combined_results$fold, levels = c("fold2", "fold
 library(ggplot2)
 
 ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) +
-  geom_point(position = position_dodge(width = 0.7), size = 1) +
-  geom_line(position = position_dodge(width = 0.7), size = 0.5) +
+  geom_point(position = position_dodge(width = 0.0), size = 1) +
+  geom_line(position = position_dodge(width = 0.0), size = 0.5) +
   geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE),
-                position = position_dodge(width = 0.7),
+                position = position_dodge(width = 0.0),
                 width = 0.25, color = "black") +
   labs(
        x = "Exon",
@@ -480,10 +480,10 @@ combined_results$fold <- factor(combined_results$fold, levels = c("fold2", "fold
 library(ggplot2)
 
 ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) +
-  geom_point(position = position_dodge(width = 0.7), size = 1) +
-  geom_line(position = position_dodge(width = 0.7), size = 0.5) +
+  geom_point(position = position_dodge(width = 0.0), size = 1) +
+  geom_line(position = position_dodge(width = 0.0), size = 0.5) +
   geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE),
-                position = position_dodge(width = 0.7),
+                position = position_dodge(width = 0.0),
                 width = 0.25, color = "black") +
   labs(
        x = "Exon",
@@ -512,10 +512,10 @@ combined_results$fold <- factor(combined_results$fold, levels = c("fold2", "fold
 library(ggplot2)
 
 ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) +
-  geom_point(position = position_dodge(width = 0.7), size = 1) +
-  geom_line(position = position_dodge(width = 0.7), size = 0.5) +
+  geom_point(position = position_dodge(width = 0.0), size = 1) +
+  geom_line(position = position_dodge(width = 0.0), size = 0.5) +
   geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE),
-                position = position_dodge(width = 0.7),
+                position = position_dodge(width = 0.0),
                 width = 0.25, color = "black") +
   labs(
        x = "Exon",
@@ -544,10 +544,10 @@ combined_results$fold <- factor(combined_results$fold, levels = c("fold2", "fold
 library(ggplot2)
 
 ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) +
-  geom_point(position = position_dodge(width = 0.7), size = 1) +
-  geom_line(position = position_dodge(width = 0.7), size = 0.5) +
+  geom_point(position = position_dodge(width = 0.0), size = 1) +
+  geom_line(position = position_dodge(width = 0.0), size = 0.5) +
   geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE),
-                position = position_dodge(width = 0.7),
+                position = position_dodge(width = 0.0),
                 width = 0.25, color = "black") +
   labs(
        x = "Exon",
@@ -576,10 +576,10 @@ combined_results$fold <- factor(combined_results$fold, levels = c("fold2", "fold
 library(ggplot2)
 
 ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) +
-  geom_point(position = position_dodge(width = 0.7), size = 1) +
-  geom_line(position = position_dodge(width = 0.7), size = 0.5) +
+  geom_point(position = position_dodge(width = 0.0), size = 1) +
+  geom_line(position = position_dodge(width = 0.0), size = 0.5) +
   geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE),
-                position = position_dodge(width = 0.7),
+                position = position_dodge(width = 0.0),
                 width = 0.25, color = "black") +
   labs(
        x = "Exon",
@@ -608,10 +608,10 @@ combined_results$fold <- factor(combined_results$fold, levels = c("fold2", "fold
 library(ggplot2)
 
 ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) +
-  geom_point(position = position_dodge(width = 0.7), size = 1) +
-  geom_line(position = position_dodge(width = 0.7), size = 0.5) +
+  geom_point(position = position_dodge(width = 0.0), size = 1) +
+  geom_line(position = position_dodge(width = 0.0), size = 0.5) +
   geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE),
-                position = position_dodge(width = 0.7),
+                position = position_dodge(width = 0.0),
                 width = 0.25, color = "black") +
   labs(
        x = "Exon",
