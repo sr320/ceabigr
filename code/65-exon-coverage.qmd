@@ -416,14 +416,173 @@ for (group_name in c("all", "controls", "exposed", "controls_males", "exposed_ma
   results_list[[group_name]] <- summary_data
 }
 
-
-
-
-
-
 ```
 
 # Access results for a specific group (e.g., "all")
 ```{r}
 all_group_result <- results_list[["all"]]
+```
+
+# Plotting
+
+## Controls vs. Exposed
+```{r}
+# Recreate combined_results
+combined_results <- bind_rows(
+  mutate(results_list$controls, group = "controls"),
+  mutate(results_list$exposed, group = "exposed")
+)
+
+# Convert 'fold' to a factor
+combined_results$fold <- factor(combined_results$fold, levels = c("fold2", "fold3", "fold4", "fold5", "fold6"))
+
+# Plotting code
+library(ggplot2)
+
+ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) +
+  geom_point(position = position_dodge(width = 0.7), size = 1) +
+  geom_line(position = position_dodge(width = 0.7), size = 0.5) +
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE),
+                position = position_dodge(width = 0.7),
+                width = 0.25, color = "black") +
+  labs(
+       x = "Exon",
+       y = "Mean ln(FC vs. Exon 1)") +
+  theme_minimal() +
+  scale_x_discrete(labels = c("fold2" = "Exon 2", "fold3" = "Exon 3", "fold4" = "Exon 4", "fold5" = "Exon 5", "fold6" = "Exon 6"))
+```
+
+## Females vs. Males
+```{r}
+# Recreate combined_results
+combined_results <- bind_rows(
+  mutate(results_list$females, group = "females"),
+  mutate(results_list$males, group = "males")
+)
+
+# Convert 'fold' to a factor
+combined_results$fold <- factor(combined_results$fold, levels = c("fold2", "fold3", "fold4", "fold5", "fold6"))
+
+# Plotting code
+library(ggplot2)
+
+ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) +
+  geom_point(position = position_dodge(width = 0.7), size = 1) +
+  geom_line(position = position_dodge(width = 0.7), size = 0.5) +
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE),
+                position = position_dodge(width = 0.7),
+                width = 0.25, color = "black") +
+  labs(
+       x = "Exon",
+       y = "Mean ln(FC vs. Exon 1)") +
+  theme_minimal() +
+  scale_x_discrete(labels = c("fold2" = "Exon 2", "fold3" = "Exon 3", "fold4" = "Exon 4", "fold5" = "Exon 5", "fold6" = "Exon 6"))
+```
+
+## Control Females vs. Control Males
+```{r}
+# Recreate combined_results
+combined_results <- bind_rows(
+  mutate(results_list$controls_females, group = "control females"),
+  mutate(results_list$controls_males, group = "control males")
+)
+
+# Convert 'fold' to a factor
+combined_results$fold <- factor(combined_results$fold, levels = c("fold2", "fold3", "fold4", "fold5", "fold6"))
+
+# Plotting code
+library(ggplot2)
+
+ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) +
+  geom_point(position = position_dodge(width = 0.7), size = 1) +
+  geom_line(position = position_dodge(width = 0.7), size = 0.5) +
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE),
+                position = position_dodge(width = 0.7),
+                width = 0.25, color = "black") +
+  labs(
+       x = "Exon",
+       y = "Mean ln(FC vs. Exon 1)") +
+  theme_minimal() +
+  scale_x_discrete(labels = c("fold2" = "Exon 2", "fold3" = "Exon 3", "fold4" = "Exon 4", "fold5" = "Exon 5", "fold6" = "Exon 6"))
+```
+
+## Exposed Females vs. Exposed Males
+```{r}
+# Recreate combined_results
+combined_results <- bind_rows(
+  mutate(results_list$exposed_females, group = "exposed females"),
+  mutate(results_list$exposed_males, group = "exposed males")
+)
+
+# Convert 'fold' to a factor
+combined_results$fold <- factor(combined_results$fold, levels = c("fold2", "fold3", "fold4", "fold5", "fold6"))
+
+# Plotting code
+library(ggplot2)
+
+ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) +
+  geom_point(position = position_dodge(width = 0.7), size = 1) +
+  geom_line(position = position_dodge(width = 0.7), size = 0.5) +
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE),
+                position = position_dodge(width = 0.7),
+                width = 0.25, color = "black") +
+  labs(
+       x = "Exon",
+       y = "Mean ln(FC vs. Exon 1)") +
+  theme_minimal() +
+  scale_x_discrete(labels = c("fold2" = "Exon 2", "fold3" = "Exon 3", "fold4" = "Exon 4", "fold5" = "Exon 5", "fold6" = "Exon 6"))
+```
+
+## Control Females vs. Exposed Females
+```{r}
+# Recreate combined_results
+combined_results <- bind_rows(
+  mutate(results_list$controls_females, group = "control females"),
+  mutate(results_list$exposed_females, group = "exposed females")
+)
+
+# Convert 'fold' to a factor
+combined_results$fold <- factor(combined_results$fold, levels = c("fold2", "fold3", "fold4", "fold5", "fold6"))
+
+# Plotting code
+library(ggplot2)
+
+ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) +
+  geom_point(position = position_dodge(width = 0.7), size = 1) +
+  geom_line(position = position_dodge(width = 0.7), size = 0.5) +
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE),
+                position = position_dodge(width = 0.7),
+                width = 0.25, color = "black") +
+  labs(
+       x = "Exon",
+       y = "Mean ln(FC vs. Exon 1)") +
+  theme_minimal() +
+  scale_x_discrete(labels = c("fold2" = "Exon 2", "fold3" = "Exon 3", "fold4" = "Exon 4", "fold5" = "Exon 5", "fold6" = "Exon 6"))
+```
+
+## Control Males vs. Exposed Males
+```{r}
+# Recreate combined_results
+combined_results <- bind_rows(
+  mutate(results_list$controls_males, group = "control males"),
+  mutate(results_list$exposed_males, group = "exposed males")
+)
+
+# Convert 'fold' to a factor
+combined_results$fold <- factor(combined_results$fold, levels = c("fold2", "fold3", "fold4", "fold5", "fold6"))
+
+# Plotting code
+library(ggplot2)
+
+ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) +
+  geom_point(position = position_dodge(width = 0.7), size = 1) +
+  geom_line(position = position_dodge(width = 0.7), size = 0.5) +
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE),
+                position = position_dodge(width = 0.7),
+                width = 0.25, color = "black") +
+  labs(
+       x = "Exon",
+       y = "Mean ln(FC vs. Exon 1)") +
+  theme_minimal() +
+  scale_x_discrete(labels = c("fold2" = "Exon 2", "fold3" = "Exon 3", "fold4" = "Exon 4", "fold5" = "Exon 5", "fold6" = "Exon 6"))
 ```
