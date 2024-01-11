@@ -462,7 +462,7 @@ ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) 
 ```
 ### Save plot
 ```{r}
-ggsave("../output/65-exon-coverage/figures/controls.v.exposed-line_plot.png", plot = last_plot(), dpi = 300)
+ggsave("../output/65-exon-coverage/figures/controls.v.exposed-line_plot.png", plot = last_plot(), dpi = 300, bg = "white")
 ```
 
 ## Females vs. Males
@@ -494,7 +494,7 @@ ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) 
 
 ### Save plot
 ```{r}
-ggsave("../output/65-exon-coverage/figures/females.v.males-line_plot.png", plot = last_plot(), dpi = 300)
+ggsave("../output/65-exon-coverage/figures/females.v.males-line_plot.png", plot = last_plot(), dpi = 300, bg = "white")
 ```
 
 ## Control Females vs. Control Males
@@ -526,7 +526,7 @@ ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) 
 
 ### Save plot
 ```{r}
-ggsave("../output/65-exon-coverage/figures/control-females.v.control-males-line_plot.png", plot = last_plot(), dpi = 300)
+ggsave("../output/65-exon-coverage/figures/control-females.v.control-males-line_plot.png", plot = last_plot(), dpi = 300, bg = "white")
 ```
 
 ## Exposed Females vs. Exposed Males
@@ -558,7 +558,7 @@ ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) 
 
 ### Save plot
 ```{r}
-ggsave("../output/65-exon-coverage/figures/exposed-females.v.exposed-males-line_plot.png", plot = last_plot(), dpi = 300)
+ggsave("../output/65-exon-coverage/figures/exposed-females.v.exposed-males-line_plot.png", plot = last_plot(), dpi = 300, bg = "white")
 ```
 
 ## Control Females vs. Exposed Females
@@ -590,7 +590,7 @@ ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) 
 
 ### Save plot
 ```{r}
-ggsave("../output/65-exon-coverage/figures/control-females.v.exposed-females-line_plot.png", plot = last_plot(), dpi = 300)
+ggsave("../output/65-exon-coverage/figures/control-females.v.exposed-females-line_plot.png", plot = last_plot(), dpi = 300, bg = "white")
 ```
 
 ## Control Males vs. Exposed Males
@@ -622,5 +622,5 @@ ggplot(combined_results, aes(x = fold, y = Mean, group = group, color = group)) 
 
 ### Save plot
 ```{r}
-ggsave("../output/65-exon-coverage/figures/control-males.v.exposed-males-line_plot.png", plot = last_plot(), dpi = 300)
+ggsave("../output/65-exon-coverage/figures/control-males.v.exposed-males-line_plot.png", plot = last_plot(), dpi = 300, bg = "white")
 ```
