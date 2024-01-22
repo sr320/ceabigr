@@ -77,6 +77,29 @@ calculate_log_fold_change <- function(data) {
 }
 ```
 
+## Function to calculate exon coverage sum
+```{r function-exon-coverage-sum}
+calculate_exon_coverage_sum <- function(input_df) {
+  # Select relevant columns
+  selected_cols <- dplyr::select(input_df, GeneID, Exon1, Exon2, Exon3, Exon4, Exon5, Exon6)
+  
+  # Calculate the sum column
+  selected_cols$Sum <- rowSums(selected_cols[, -1], na.rm = TRUE)
+  
+  # Return the modified data frame
+  return(selected_cols)
+}
+
+```
+
+# Set exon coverage sum threshold
+
+Used for sum of reads over Exons 1 - 6 per gene.
+
+```{r exon-sum-threshold}
+exon_sum_threshold <- 100
+```
+
 # Download BAMs
 
 ```{r, engine='bash'}
@@ -369,7 +392,9 @@ str(test_sum)
 ```{r test-check-gene-counts-exon-sums}
 
 # Count the occurrences of values in test_sum$Sum
-sum_counts <- table(ifelse(test_sum$Sum <= 1000, "<= 1000", "> 1000"))
+sum_counts <- table(ifelse(test_sum$Sum <= exon_sum_threshold,
+                           paste0("<= ", exon_sum_threshold),
+                           paste0("> ", exon_sum_threshold)))
 
 # Display the counts
 print(sum_counts)
