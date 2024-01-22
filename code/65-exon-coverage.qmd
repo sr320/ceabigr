@@ -245,6 +245,7 @@ head ../output/65-exon-coverage/*extracted_data.txt | head -25
 
 ```
 
+
 ```{r}
 
 S9data <- read.table("../output/65-exon-coverage/S9M_exon_reads.extracted_data.txt", header = TRUE)
@@ -307,12 +308,12 @@ head ../output/65-exon-coverage/S9M_exon_reads.processed_data.csv
 
 ```
 
-
+# Begin test data
 ```{r}
 S9Mdata <- read.csv("../output/65-exon-coverage/S9M_exon_reads.processed_data.csv")
 ```
 
-
+## Natural log fold change calculations
 ```{r}
 test <- S9Mdata %>%
   dplyr::select(GeneID,Exon1,Exon2,Exon3,Exon4,Exon5,Exon6) %>%
@@ -330,6 +331,8 @@ head(test)
 data_long <- test %>%
   pivot_longer(cols = starts_with("fold"), names_to = "fold", values_to = "Value") %>%
   mutate(fold = as.factor(fold))  # Convert column to a factor
+
+head(data_long)
 ```
 
 ```{r}
@@ -337,7 +340,7 @@ data_long$Value[data_long$Value == "-Inf" | data_long$Value == "Inf"] <- NA
 
 ```
 
-
+## Calculate mean, SD, SE
 ```{r}
 summary_data <- data_long %>%
   group_by(fold) %>%
@@ -351,6 +354,26 @@ summary_data <- data_long %>%
 class(summary_data$Mean)
 ```
 
+## Test exon sum threshold
+
+### Sums of Exons 1 - 6
+```{r test-exon-sums}
+test_sum <- S9Mdata %>%
+  dplyr::select(GeneID,Exon1,Exon2,Exon3,Exon4,Exon5,Exon6)
+
+test_sum$Sum <- rowSums(test_sum[, -1], na.rm = TRUE)
+
+str(test_sum)
+```
+### Gene counts with exon coverage threshold
+```{r test-check-gene-counts-exon-sums}
+
+# Count the occurrences of values in test_sum$Sum
+sum_counts <- table(ifelse(test_sum$Sum <= 1000, "<= 1000", "> 1000"))
+
+# Display the counts
+print(sum_counts)
+```
 
 ```{r}
 ggplot(summary_data, aes(x = fold, y = Mean)) +
