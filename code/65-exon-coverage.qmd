@@ -47,7 +47,9 @@ Merged BAM index file (23MB):
 
 https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/20230821_cvir_stringtie_GCF_002022765-sorted-bams-merged.bam.bai
 
-# Vectors for subsetting samples by different groups
+# Define vectors
+
+## Vectors for subsetting samples by different groups
 ```{r assign-variables}
 all <- c("S13M", "S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S64M", "S6M", "S76F", "S7M", "S12M", "S22F", "S23M", "S29F", "S31M", "S35F", "S36F", "S3F", "S41F", "S48M", "S50F", "S59M", "S77F", "S9M")
 controls <- c("S13M", "S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S64M", "S6M", "S76F", "S7M")
@@ -58,6 +60,14 @@ controls_males <- c("S13M", "S64M", "S6M", "S7M")
 exposed_males <- c("S12M", "S23M", "S31M", "S48M", "S59M", "S9M")
 controls_females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F")
 exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
+```
+
+## Set exon coverage sum threshold
+
+Used for sum of reads over Exons 1 - 6 per gene.
+
+```{r exon-sum-threshold}
+exon_sum_threshold <- 100
 ```
 
 # Define functions
@@ -79,26 +89,27 @@ calculate_log_fold_change <- function(data) {
 
 ## Function to calculate exon coverage sum
 ```{r function-exon-coverage-sum}
-calculate_exon_coverage_sum <- function(input_df) {
+# Function to process a data frame with threshold filtering
+process_data_with_threshold <- function(df, threshold) {
   # Select relevant columns
-  selected_cols <- dplyr::select(input_df, GeneID, Exon1, Exon2, Exon3, Exon4, Exon5, Exon6)
+  selected_cols <- df %>%
+    dplyr::select(GeneID, Exon1, Exon2, Exon3, Exon4, Exon5, Exon6)
   
-  # Calculate the sum column
+  # Calculate the sum of Exons 1 - 6
   selected_cols$Sum <- rowSums(selected_cols[, -1], na.rm = TRUE)
   
-  # Return the modified data frame
+  # Filter rows based on the threshold
+  selected_cols <- selected_cols[selected_cols$Sum >= threshold, ]
+  
+  # Your existing analysis code here
+  
+  # Return the result
   return(selected_cols)
 }
 
 ```
 
-# Set exon coverage sum threshold
 
-Used for sum of reads over Exons 1 - 6 per gene.
-
-```{r exon-sum-threshold}
-exon_sum_threshold <- 100
-```
 
 # Download BAMs
 
@@ -420,6 +431,43 @@ and
 
 the [functions chunk](function-to-calculate-log-fold-change) before running!
 :::
+
+# Filter genes with exon threshold
+```{r}
+# List to store results
+results_list <- list()
+
+# List to store GeneID vectors where threshold is met in ALL files
+threshold_met_geneids <- NULL
+
+# Loop through each file
+for (file_name in all) {
+  # Construct the file path
+  file_path <- paste0("../output/65-exon-coverage/", file_name, "_exon_reads.processed_data.csv")
+  
+  # Read the data frame
+  current_data <- read.csv(file_path)
+  
+  # Apply the processing function with threshold
+  result <- process_data_with_threshold(current_data, exon_sum_threshold)
+  
+  # Store the result in the list
+  results_list[[file_name]] <- result
+  
+  # Extract GeneID where threshold is met
+  current_geneids <- result$GeneID
+  if (is.null(threshold_met_geneids)) {
+    threshold_met_geneids <- current_geneids
+  } else {
+    threshold_met_geneids <- intersect(threshold_met_geneids, current_geneids)
+  }
+}
+
+# Convert the list of GeneID vectors to a single vector
+final_geneids <- unlist(threshold_met_geneids)
+
+str(final_geneids)
+```
 
 # Calculate fold change for all groups
 ```{r}
