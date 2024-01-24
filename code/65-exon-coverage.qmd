@@ -344,7 +344,7 @@ head ../output/65-exon-coverage/S9M_exon_reads.processed_data.csv
 
 ```
 
-# Begin test data
+# TESTING
 ```{r}
 S9Mdata <- read.csv("../output/65-exon-coverage/S9M_exon_reads.processed_data.csv")
 ```
@@ -455,7 +455,7 @@ for (file in all) {
   geneid_count <- sum_result %>%
     dplyr::filter(Sum >= exon_sum_threshold) %>%
     nrow()
-  cat("Count of GeneIDs meeting the threshold in", file, ":", geneid_count, "\n")
+  cat("\nCount of GeneIDs meeting the threshold (", exon_sum_threshold, "summed reads ):\n")
 
   # Append the result and count to the lists
   sums_list[[file]] <- sum_result
@@ -474,13 +474,13 @@ renamed_sums_list <- lapply(seq_along(sums_list), function(i) {
 # Join data frames in renamed_sums_list on GeneID
 all_geneids_df <- Reduce(function(x, y) dplyr::full_join(x, y, by = "GeneID"), renamed_sums_list)
 
-# Filter rows where all values are >= 100
+# Filter rows where all values are >= the set threshold
 final_geneids <- all_geneids_df %>%
   dplyr::filter(if_all(ends_with("_Sum"), ~. >= exon_sum_threshold)) %>%
   dplyr::select(GeneID)
 
 # Print count of unique GeneIDs meeting the threshold across all files
-cat("Final count of unique GeneIDs meeting the threshold across all files:", nrow(final_geneids), "\n")
+cat("Final count of unique GeneIDs meeting the threshold (", exon_sum_threshold, "summed reads ) across all files:", nrow(final_geneids), "\n")
 
 # Print the structure of the final data frame
 str(final_geneids)
