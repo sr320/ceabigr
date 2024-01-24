@@ -101,11 +101,13 @@ process_data_with_threshold <- function(df, threshold) {
   # Filter rows based on the threshold
   selected_cols <- selected_cols[selected_cols$Sum >= threshold, ]
   
-  # Your existing analysis code here
+  # Print count of GeneIDs meeting the threshold with the file name
+  cat("Count of GeneIDs meeting the threshold in", file_name, ":", nrow(selected_cols), "\n")
   
-  # Return the result
-  return(selected_cols)
+  # Return GeneID and Sum
+  return(selected_cols[, c("GeneID", "Sum"), drop = FALSE])
 }
+
 
 ```
 
@@ -433,40 +435,58 @@ the [functions chunk](function-to-calculate-log-fold-change) before running!
 :::
 
 # Filter genes with exon threshold
+
+## Sum of Exons 1-6 for each file.
 ```{r}
-# List to store results
-results_list <- list()
+# Initialize an empty list to store results for each file
+sums_list <- list()
 
-# List to store GeneID vectors where threshold is met in ALL files
-threshold_met_geneids <- NULL
+# Loop through each file in the list
+for (file in all) {
+  # Read in the data file
+  data <- read.csv(paste0("../output/65-exon-coverage/", file, "_exon_reads.processed_data.csv"))
 
-# Loop through each file
-for (file_name in all) {
-  # Construct the file path
-  file_path <- paste0("../output/65-exon-coverage/", file_name, "_exon_reads.processed_data.csv")
-  
-  # Read the data frame
-  current_data <- read.csv(file_path)
-  
-  # Apply the processing function with threshold
-  result <- process_data_with_threshold(current_data, exon_sum_threshold)
-  
-  # Store the result in the list
-  results_list[[file_name]] <- result
-  
-  # Extract GeneID where threshold is met
-  current_geneids <- result$GeneID
-  if (is.null(threshold_met_geneids)) {
-    threshold_met_geneids <- current_geneids
-  } else {
-    threshold_met_geneids <- intersect(threshold_met_geneids, current_geneids)
-  }
+  # Calculate the sum of Exons 1-6
+  sum_result <- data %>%
+    dplyr::select(GeneID, Exon1, Exon2, Exon3, Exon4, Exon5, Exon6) %>%
+    mutate(Sum = rowSums(.[, -1], na.rm = TRUE))
+
+  # Count GeneIDs meeting the threshold for the current file
+  geneid_count <- sum_result %>%
+    dplyr::filter(Sum >= exon_sum_threshold) %>%
+    nrow()
+  cat("Count of GeneIDs meeting the threshold in", file, ":", geneid_count, "\n")
+
+  # Append the result and count to the lists
+  sums_list[[file]] <- sum_result
 }
+```
+## Filter across all samples
+```{r}
+# Rename the Sum column in each data frame in sums_list
+renamed_sums_list <- lapply(seq_along(sums_list), function(i) {
+  colname <- paste0(all[i], "_Sum")
+  col_index <- grep("Sum", colnames(sums_list[[i]]))
+  colnames(sums_list[[i]])[col_index] <- colname
+  dplyr::select(sums_list[[i]], GeneID, colname)
+})
 
-# Convert the list of GeneID vectors to a single vector
-final_geneids <- unlist(threshold_met_geneids)
+# Join data frames in renamed_sums_list on GeneID
+all_geneids_df <- Reduce(function(x, y) dplyr::full_join(x, y, by = "GeneID"), renamed_sums_list)
 
+# Filter rows where all values are >= 100
+final_geneids <- all_geneids_df %>%
+  dplyr::filter(if_all(ends_with("_Sum"), ~. >= exon_sum_threshold)) %>%
+  dplyr::select(GeneID)
+
+# Print count of unique GeneIDs meeting the threshold across all files
+cat("Final count of unique GeneIDs meeting the threshold across all files:", nrow(final_geneids), "\n")
+
+# Print the structure of the final data frame
 str(final_geneids)
+
+
+
 ```
 
 # Calculate fold change for all groups
