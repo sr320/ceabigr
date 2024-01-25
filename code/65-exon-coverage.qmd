@@ -493,6 +493,12 @@ cat("Final count of unique GeneIDs meeting the threshold (", exon_sum_threshold,
 str(exon_threshold_geneids)
 ```
 
+### Write filtered GeneIDs to file
+```{r}
+exon_threshold_out_file <- paste0("../output/65-exon-coverage/geneids-exon_threshold-", exon_sum_threshold, ".csv", collapse = "")
+write.csv(all_geneids_df, file = exon_threshold_out_file)
+```
+
 # Calculate fold change for all groups
 
 Uses `GeneIDs` passing threshold determined above.
