@@ -494,6 +494,8 @@ str(exon_threshold_geneids)
 ```
 
 # Calculate fold change for all groups
+
+Uses `GeneIDs` passing threshold determined above.
 ```{r}
 # Create a list to store results for each group
 results_list <- list()
@@ -511,16 +513,28 @@ for (group_name in c("all", "controls", "exposed", "controls_males", "exposed_ma
     # Read the data frame
     current_data <- read.csv(paste0("../output/65-exon-coverage/", file_id, "_exon_reads.processed_data.csv"))
     
-    # Calculate log fold change
-    current_result <- calculate_log_fold_change(current_data)
+    # Filter current_data based on exon_threshold_geneids
+    current_data <- subset(current_data, GeneID %in% exon_threshold_geneids$GeneID)
     
-    # Replace infinite values within the data frame
-    current_result <- as.data.frame(lapply(current_result, function(x) ifelse(is.infinite(x), NA, x)))
-
-    # Store the result
-    group_results[[file_id]] <- current_result
+    # Check if any rows are left after filtering
+    if (nrow(current_data) > 0) {
+      # Calculate log fold change
+      current_result <- calculate_log_fold_change(current_data)
+      
+      # Replace infinite values within the data frame
+      current_result <- as.data.frame(lapply(current_result, function(x) ifelse(is.infinite(x), NA, x)))
+      
+      # Ensure unique column names
+      colnames(current_result) <- make.unique(as.character(colnames(current_result)), sep = "_")
+      
+      # Store the result
+      group_results[[file_id]] <- current_result
+    } else {
+      # If no rows are left after filtering, you might want to handle this case accordingly
+      print(paste("No matching GeneIDs found in file:", file_id))
+    }
   }
-  
+
   # Bind the data frames together
   mean_fold_change <- do.call(rbind, group_results)
   
@@ -546,7 +560,7 @@ for (group_name in c("all", "controls", "exposed", "controls_males", "exposed_ma
 
 ```
 
-# Access results for a specific group (e.g., "all")
+## Access results for a specific group (e.g., "all")
 ```{r}
 all_group_result <- results_list[["all"]]
 ```
