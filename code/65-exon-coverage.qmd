@@ -66,8 +66,10 @@ exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77
 
 Used for sum of reads over Exons 1 - 6 per gene.
 
+Value of [10 was decided in this GitHub Issue](https://github.com/sr320/ceabigr/issues/88#issuecomment-1908563777).
+
 ```{r exon-sum-threshold}
-exon_sum_threshold <- 100
+exon_sum_threshold <- 10
 ```
 
 # Define functions
@@ -455,15 +457,20 @@ for (file in all) {
   geneid_count <- sum_result %>%
     dplyr::filter(Sum >= exon_sum_threshold) %>%
     nrow()
-  cat("\nCount of GeneIDs meeting the threshold (", exon_sum_threshold, "summed reads ):\n")
+  cat("\nCount of GeneIDs meeting the threshold (", exon_sum_threshold, "summed reads ) in", file, ":", geneid_count, "\n")
 
   # Append the result and count to the lists
   sums_list[[file]] <- sum_result
 }
 ```
 ## Filter across all samples
+
+Join all data frames in the `sums_list` on `GeneID` and
+then filter rows for any `GeneID` with sums >= set threshold.
+
 ```{r}
 # Rename the Sum column in each data frame in sums_list
+# Assigns the original filename to the Sum column in each data frame
 renamed_sums_list <- lapply(seq_along(sums_list), function(i) {
   colname <- paste0(all[i], "_Sum")
   col_index <- grep("Sum", colnames(sums_list[[i]]))
@@ -475,18 +482,15 @@ renamed_sums_list <- lapply(seq_along(sums_list), function(i) {
 all_geneids_df <- Reduce(function(x, y) dplyr::full_join(x, y, by = "GeneID"), renamed_sums_list)
 
 # Filter rows where all values are >= the set threshold
-final_geneids <- all_geneids_df %>%
+exon_threshold_geneids <- all_geneids_df %>%
   dplyr::filter(if_all(ends_with("_Sum"), ~. >= exon_sum_threshold)) %>%
   dplyr::select(GeneID)
 
-# Print count of unique GeneIDs meeting the threshold across all files
-cat("Final count of unique GeneIDs meeting the threshold (", exon_sum_threshold, "summed reads ) across all files:", nrow(final_geneids), "\n")
+# Print count of GeneIDs meeting the threshold across all files
+cat("Final count of unique GeneIDs meeting the threshold (", exon_sum_threshold, "summed reads ) across all files:", nrow(exon_threshold_geneids), "\n")
 
 # Print the structure of the final data frame
-str(final_geneids)
-
-
-
+str(exon_threshold_geneids)
 ```
 
 # Calculate fold change for all groups
