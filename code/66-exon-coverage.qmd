@@ -1,0 +1,407 @@
+---
+title: "65 - Exon Coverage"
+author: Steven Roberts
+date: "`r format(Sys.time(), '%d %B, %Y')`" 
+output: 
+  github_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    html_preview: true
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(kableExtra)
+library(DESeq2)
+library(pheatmap)
+library(RColorBrewer)
+library(data.table)
+library(DT)
+library(Biostrings)
+library(methylKit)
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = FALSE,         # Evaluate code chunks
+  warning = TRUE,     # Hide warnings
+  message = TRUE,     # Hide messages
+  fig.width = 6,       # Set plot width in inches
+  fig.height = 4,      # Set plot height in inches
+  fig.align = "center" # Align plots to the center
+)
+```
+
+Following Li et al. Will take bams and get some data..
+
+Trimmed reads were mapped to the Aiptasia genome using HISAT2 v2.1.0, and mapping coverage per position was extracted using BEDTools v2.17.0. To assess spurious transcription levels, we deter- mined the coverage per exon normalized across all six replicates (assuming every replicate had a coverage of 1 million sequences in total) and then calculated the average coverage ratios of exons 2 to 6 versus exon 1 for every gene
+
+Individual BAMS and their corresponding index files are in each individual sample subirectory:
+
+https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/
+
+A merged BAM of all samples is here (79GB):
+
+https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/20230821_cvir_stringtie_GCF_002022765-sorted-bams-merged.bam
+
+Merged BAM index file (23MB):
+
+https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/20230821_cvir_stringtie_GCF_002022765-sorted-bams-merged.bam.bai
+
+# Download BAMs
+
+```{r, engine='bash'}
+wget -r \
+--no-directories --no-parent \
+-P ../data/big/ \
+-A "*sorted.bam" https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/
+```
+
+```{r, engine='bash'}
+wget -r \
+--no-directories --no-parent \
+-P ../data/big/ \
+-A "*sorted.bam.bai" https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/
+```
+
+
+# bedtools coverage
+
+```{r, engine='bash'}
+/home/shared/bedtools2/bin/bedtools coverage \
+-a ../genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff \
+-b ../data/big/S9M.sorted.bam \
+> ../output/65-exon-coverage/S9gff_exon_coverage.txt
+```
+
+```{r, engine='bash', eval=TRUE}
+head ../genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff
+```
+
+```{bash}
+cd ../data
+
+/home/shared/datasets download genome accession GCF_002022765.2 --include gff3,gtf
+```
+
+
+
+
+```{r, engine='bash', eval=TRUE}
+head /home/shared/8TB_HDD_01/sr320/github/ceabigr/data/ncbi_dataset/data/GCF_002022765.2/genomic.gtf
+
+```
+```{bash}
+cat ../data/ncbi_dataset/data/GCF_002022765.2/genomic.gtf | grep "Gnomon	exon" | head
+```
+
+```{bash}
+cat ../data/ncbi_dataset/data/GCF_002022765.2/genomic.gtf | grep "Gnomon	exon" > ../genome-features/GCF_002022765.2_exon.gtf
+
+```
+
+
+
+```{r, engine='bash'}
+cd    ../genome-features
+curl -O https://eagle.fish.washington.edu/Cvirg_tracks/C_virginica-3.0_Gnomon_exon.bed
+```
+
+
+```{r, engine='bash', eval=TRUE}
+head ../genome-features/C_virginica-3.0_Gnomon_exon.bed
+```
+
+
+
+
+
+Lets get bam that overlaps with exons
+
+`bedtools intersect -a sorted.bam -b exons.gtf > exon_reads.bam`
+
+
+
+
+
+`bedtools multicov -bams exon_reads.bam -bed exons.gtf > exon_expression_counts.txt`
+
+```{r, engine='bash'}
+/home/shared/bedtools2/bin/bedtools multicov \
+-bams ../data/big/S77F.sorted.bam \
+-bed ../genome-features/GCF_002022765.2_exon.gtf \
+> ../output/65-exon-coverage/S77_exon_exp_counts.txt
+```
+
+```{r, engine='bash'}
+tail -20 ../output/65-exon-coverage/S77_exon_exp_counts.txt
+```
+
+
+```{r, engine='bash'}
+/home/shared/bedtools2/bin/bedtools coverage \
+-a ../genome-features/GCF_902806645.1_cgigas_uk_roslin_v1_genomic-mito.gtf \
+-b ../data/big/S9M.sorted.bam \
+> ../output/65-exon-coverage/S9gtf_exon_coverage.txt
+```
+
+```{r, engine='bash', eval=TRUE}
+head -1 ../output/65-exon-coverage/S9gtf_exon_coverage.txt
+```
+
+loops
+
+bedtools intersect -a sorted.bam -b exons.gtf > exon_reads.bam
+
+```{r, engine='bash'}
+for bamfile in ../data/big/*sorted.bam; do
+    # Calculate coverage using BEDTools
+    echo ${bamfile%.bam}
+done
+```
+
+```{r, engine='bash'}
+for bamfile in ../data/big/*sorted.bam; do
+    # Extract the base name of the file without the path and extension
+    base_name=$(basename "$bamfile" .sorted.bam)
+
+    # Define the output file name
+    output_file="${base_name}_exon_reads.bam"
+
+    # Calculate coverage using BEDTools
+    /home/shared/bedtools2/bin/bedtools intersect -a "$bamfile" -b ../genome-features/GCF_002022765.2_exon.gtf > ../output/65-exon-coverage/$output_file
+done
+```
+
+```{bash}
+find ../data/big/ -name "*sorted.bam" | xargs -I {} -P 20 bash -c '
+    bamfile="{}"
+    base_name=$(basename "$bamfile" .sorted.bam)
+    output_file="../output/65-exon-coverage/${base_name}_exon_reads.bam"
+    /home/shared/bedtools2/bin/bedtools intersect -a "$bamfile" -b ../genome-features/GCF_002022765.2_exon.gtf > "$output_file"
+'
+
+```
+
+```{bash}
+for bamfile in ../output/65-exon-coverage/*.bam; do
+    /home/shared/samtools-1.12/samtools index -@ 40 "$bamfile"
+done
+```
+
+
+
+
+```{bash}
+find ../output/65-exon-coverage/ -name "*exon_reads.bam" | xargs -I {} -P 40 bash -c '
+    bamfile="{}"
+    base_name=$(basename "$bamfile" .exon_reads.bam)
+    output_file="../output/65-exon-coverage/${base_name}_multicov.txt"
+    /home/shared/bedtools2/bin/bedtools multicov -bams "$bamfile" -bed ../genome-features/GCF_002022765.2_exon.gtf > "$output_file"
+'
+
+```
+
+
+
+
+
+
+
+
+
+
+```{r, engine='bash'}
+head ../output/65-exon-coverage/*extracted_data.txt | head -25
+
+```
+
+```{r}
+
+S9data <- read.table("../output/65-exon-coverage/S9M_exon_reads.extracted_data.txt", header = TRUE)
+```
+
+```{r}
+
+S9data <- read.table("../output/65-exon-coverage/S9M_exon_reads.extracted_data.txt", header = TRUE)
+
+summarized_data <- S9data %>%
+  group_by(GeneID, ExonNumber) %>%
+  summarize(CoverageValue = mean(CoverageValue))
+
+# Reshape the data using pivot_wider
+reshaped_data <- summarized_data %>%
+  pivot_wider(names_from = ExonNumber, values_from = CoverageValue, names_prefix = "Exon")
+
+```
+
+```{r}
+library(tidyverse)
+
+# Set the directory where your files are located
+directory_path <- "../output/65-exon-coverage"
+
+# List all files ending with 'extracted_data.txt'
+files <- list.files(directory_path, pattern = "extracted_data\\.txt$", full.names = TRUE)
+
+# Function to read, process, and write a single file
+process_and_write_file <- function(file_path) {
+  data <- read.table(file_path, header = TRUE)
+  
+  summarized_data <- data %>%
+    group_by(GeneID, ExonNumber) %>%
+    summarize(CoverageValue = mean(CoverageValue), .groups = 'drop')
+
+  reshaped_data <- summarized_data %>%
+    pivot_wider(names_from = ExonNumber, values_from = CoverageValue, names_prefix = "Exon")
+
+  # Generate a new file name based on the original file name
+  output_file_name <- gsub("extracted_data\\.txt$", "processed_data.csv", basename(file_path))
+  output_file_path <- file.path(directory_path, output_file_name)
+
+  # Write the reshaped data to a new file
+  write_csv(reshaped_data, output_file_path)
+}
+
+# Apply the function to each file
+lapply(files, process_and_write_file)
+
+```
+
+
+
+```{r, engine='bash'}
+head ../output/65-exon-coverage/S31M*process*
+```
+```{bash}
+head ../output/65-exon-coverage/S9M_exon_reads.processed_data.csv
+
+```
+
+
+```{r}
+S9Mdata <- read.csv("../output/65-exon-coverage/S9M_exon_reads.processed_data.csv")
+```
+
+
+```{r}
+test <- S9Mdata %>%
+  dplyr::select(GeneID,Exon1,Exon2,Exon3,Exon4,Exon5,Exon6) %>%
+  mutate(fold2 = log(Exon2 / Exon1)) %>%
+  mutate(fold3 = log(Exon3 / Exon1)) %>%
+  mutate(fold4 = log(Exon4 / Exon1)) %>%
+  mutate(fold5 = log(Exon5 / Exon1)) %>%
+  mutate(fold6 = log(Exon6 / Exon1))
+```
+
+```{r}
+head(test)
+```
+```{r}
+data_long <- test %>%
+  pivot_longer(cols = starts_with("fold"), names_to = "fold", values_to = "Value") %>%
+  mutate(fold = as.factor(fold))  # Convert column to a factor 
+
+```
+
+```{r}
+data_long$Value[data_long$Value == "-Inf" | data_long$Value == "Inf"] <- NA
+
+```
+
+
+```{r}
+summary_data <- data_long %>%
+  group_by(fold) %>%
+  summarise(
+    Mean = mean(Value, na.rm = TRUE),
+    SE = sd(Value, na.rm = TRUE) / sqrt(sum(!is.na(Value)))
+  )
+```
+
+```{r}
+class(summary_data$Mean)
+```
+
+
+```{r}
+ggplot(summary_data, aes(x = fold, y = Mean)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE), width = 0.2) +
+  labs(
+    x = "Exon",
+    y = "Mean Value",
+    title = "Mean Values with Standard Error by fold"
+  ) +
+  theme_minimal()
+
+```
+
+By Exon expression 
+
+```{r}
+data_long_exon <- test %>%
+  pivot_longer(cols = starts_with("Exon"), names_to = "Exon", values_to = "Value") %>%
+  mutate(Exon = as.factor(Exon))  # Convert column to a factor 
+
+```
+
+
+
+```{r}
+summary_data_exon <- data_long_exon %>%
+  group_by(Exon) %>%
+  summarise(
+    Mean = mean(Value, na.rm = TRUE),
+    SE = sd(Value, na.rm = TRUE) / sqrt(sum(!is.na(Value)))
+  )
+```
+
+
+```{r}
+ggplot(summary_data_exon, aes(x = Exon, y = Mean)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE), width = 0.2) +
+  labs(
+    x = "Exon",
+    y = "Mean Value",
+    title = "Mean Values with Standard Error by fold"
+  ) +
+  theme_minimal()
+
+```
+```{r}
+# Example data frame preparation
+data <- data.frame(
+  LOC_ID = rep(c("LOC111099029", "LOC111099030", "LOC111099031", "LOC111099032", "LOC111099033", "LOC111099034"), each = 4),
+  Exon = rep(1:4, 6),
+  Value = c(3, 18, 34, 22, 20, 43, 22, 11, 67, 9, 6.67, 9, 28, 213, NA, NA, 23, 38, 59, 44, 16, 14, 25, 113) # example values
+)
+
+# Install and load ggplot2
+
+# Plot
+ggplot(data, aes(x = Exon, y = Value)) + 
+  geom_point() + 
+  facet_wrap(~ LOC_ID) + 
+  theme_minimal() + 
+  labs(title = "Exon Data Plot", x = "Exon Number", y = "Value")
+
+```
+
+```{r}
+# Example data frame preparation
+data <- data.frame(
+  LOC_ID = rep(c("LOC111099029", "LOC111099030", "LOC111099031", "LOC111099032", "LOC111099033", "LOC111099034"), each = 4),
+  Exon = rep(1:4, 6),
+  Value = c(3, 18, 34, 22, 20, 43, 22, 11, 67, 9, 6.67, 9, 28, 213, NA, NA, 23, 38, 59, 44, 16, 14, 25, 113) # example values
+)
+
+
+# Plot all in one graph, differentiating by color
+ggplot(data, aes(x = Exon, y = Value, color = LOC_ID)) + 
+  geom_point() + 
+  theme_minimal() + 
+  labs(title = "Exon Data Plot", x = "Exon Number", y = "Value", color = "LOC ID")
+
+```
+
