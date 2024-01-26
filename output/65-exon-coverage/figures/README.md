@@ -16,3 +16,4 @@
 
 - `females.v.males-line_plot.png`: Line plot comparing mean ln(fold change vs. Exon 1) of females/males. Sum of exon read counts for Exons 1 - 6 threshold of 10.
 
+- `raw_exon_coverage-scatter.png`: Scatter plot of of raw exon coverage, Exons 1-6.
