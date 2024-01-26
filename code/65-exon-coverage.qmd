@@ -404,34 +404,6 @@ test_sum$Sum <- rowSums(test_sum[, -1], na.rm = TRUE)
 str(test_sum)
 ```
 
-### Plot raw expression
-```{r}
-test_sum_head <- head(test_sum, 10)
-
-str(test_sum_head)
-
-library(ggplot2)
-library(tidyr)
-
-# Assuming your data frame is named test_sum
-# Replace "test_sum" with the actual name of your data frame
-
-# Remove NA values
-cleaned_data <- na.omit(test_sum[, -8])  # Excluding the Sum column
-
-# Reshape the data to long format
-long_data <- tidyr::pivot_longer(cleaned_data, cols = starts_with("Exon"), names_to = "Exon", values_to = "Values")
-
-# Plotting a dot plot (scatter plot)
-ggplot(long_data, aes(x = factor(Exon), y = Values)) +
-  geom_point(position = position_jitter(width = 0.3, height = 0), alpha = 0.15) +
-  scale_y_log10() +
-  labs(x = "Exon", y = "Values", title = "Dot Plot of Raw Exon Coverage") +
-  theme_minimal()
-
-
-```
-
 ### Gene counts with exon coverage threshold
 ```{r test-check-gene-counts-exon-sums}
 
@@ -464,6 +436,30 @@ and
 
 the [functions chunk](function-to-calculate-log-fold-change) before running!
 :::
+
+# Plot raw expression
+```{r}
+# Remove NA values and exclude the specified column
+cleaned_data <- test_sum %>%
+  dplyr::select(-Sum) %>%
+  na.omit()
+
+# Reshape the data to long format
+long_data <- tidyr::pivot_longer(cleaned_data, cols = starts_with("Exon"), names_to = "Exon", values_to = "Values")
+
+# Plotting a dot plot (scatter plot)
+ggplot(long_data, aes(x = factor(Exon), y = Values)) +
+  geom_point(position = position_jitter(width = 0.3, height = 0), alpha = 0.15) +
+  scale_y_log10() +
+  labs(x = "Exon", y = "Read Counts (log10)") +
+  theme_minimal()
+
+```
+
+## Save plot
+```{r}
+ggsave("../output/65-exon-coverage/figures/raw_exon_coverage-scatter.png", plot = last_plot(), dpi = 300, bg = "white")
+```
 
 # Filter genes with exon threshold
 
