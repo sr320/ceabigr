@@ -416,7 +416,7 @@ print(sum_counts)
 ```
 
 
-# Plot raw expression
+## Plot raw expression
 ```{r}
 # Replace NA values with a placeholder value (e.g., 0)
 cleaned_data <- test_sum %>%
@@ -499,7 +499,7 @@ str(exon_threshold_geneids)
 ### Write filtered GeneIDs to file
 ```{r}
 exon_threshold_out_file <- paste0("../output/65-exon-coverage/geneids-exon_threshold-", exon_sum_threshold, ".csv", collapse = "")
-write.csv(all_geneids_df, file = exon_threshold_out_file)
+write.csv(exon_threshold_geneids, file = exon_threshold_out_file)
 ```
 
 # Calculate fold change for all groups
