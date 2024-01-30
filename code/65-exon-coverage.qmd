@@ -89,29 +89,6 @@ calculate_log_fold_change <- function(data) {
 }
 ```
 
-## Function to calculate exon coverage sum
-```{r function-exon-coverage-sum}
-# Function to process a data frame with threshold filtering
-process_data_with_threshold <- function(df, threshold) {
-  # Select relevant columns
-  selected_cols <- df %>%
-    dplyr::select(GeneID, Exon1, Exon2, Exon3, Exon4, Exon5, Exon6)
-  
-  # Calculate the sum of Exons 1 - 6
-  selected_cols$Sum <- rowSums(selected_cols[, -1], na.rm = TRUE)
-  
-  # Filter rows based on the threshold
-  selected_cols <- selected_cols[selected_cols$Sum >= threshold, ]
-  
-  # Print count of GeneIDs meeting the threshold with the file name
-  cat("Count of GeneIDs meeting the threshold in", file_name, ":", nrow(selected_cols), "\n")
-  
-  # Return GeneID and Sum
-  return(selected_cols[, c("GeneID", "Sum"), drop = FALSE])
-}
-
-
-```
 
 
 
@@ -392,6 +369,28 @@ summary_data <- data_long %>%
 class(summary_data$Mean)
 ```
 
+```{r}
+ggplot(summary_data, aes(x = fold, y = Mean)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE), width = 0.2) +
+  labs(
+    x = "Exon",
+    y = "Mean Value",
+    title = "Mean Values with Standard Error by fold"
+  ) +
+  theme_minimal()
+
+```
+
+
+::: {.callout-warning}
+Be sure to load the [vector groups chunk](#vectors-for-subsetting-samples-by-different-groups)
+
+and
+
+the [functions chunk](function-to-calculate-log-fold-change) before running!
+:::
+
 ## Test exon sum threshold
 
 ### Sums of Exons 1 - 6
@@ -416,33 +415,12 @@ sum_counts <- table(ifelse(test_sum$Sum <= exon_sum_threshold,
 print(sum_counts)
 ```
 
-```{r}
-ggplot(summary_data, aes(x = fold, y = Mean)) +
-  geom_point() +
-  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE), width = 0.2) +
-  labs(
-    x = "Exon",
-    y = "Mean Value",
-    title = "Mean Values with Standard Error by fold"
-  ) +
-  theme_minimal()
-
-```
-
-::: {.callout-warning}
-Be sure to load the [vector groups chunk](#vectors-for-subsetting-samples-by-different-groups)
-
-and
-
-the [functions chunk](function-to-calculate-log-fold-change) before running!
-:::
 
 # Plot raw expression
 ```{r}
-# Remove NA values and exclude the specified column
+# Replace NA values with a placeholder value (e.g., 0)
 cleaned_data <- test_sum %>%
-  dplyr::select(-Sum) %>%
-  na.omit()
+  mutate(across(-Sum, ~ ifelse(is.na(.), 0, .)))
 
 # Reshape the data to long format
 long_data <- tidyr::pivot_longer(cleaned_data, cols = starts_with("Exon"), names_to = "Exon", values_to = "Values")
