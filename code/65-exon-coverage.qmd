@@ -89,7 +89,19 @@ calculate_log_fold_change <- function(data) {
 }
 ```
 
-
+```{r fold-change}
+calculate_fold_change <- function(data) {
+  result <- data %>%
+    dplyr::select(GeneID, Exon1, Exon2, Exon3, Exon4, Exon5, Exon6) %>%
+    mutate(fold2 = (Exon2 / Exon1)) %>%
+    mutate(fold3 = (Exon3 / Exon1)) %>%
+    mutate(fold4 = (Exon4 / Exon1)) %>%
+    mutate(fold5 = (Exon5 / Exon1)) %>%
+    mutate(fold6 = (Exon6 / Exon1))
+  
+  return(result)
+}
+```
 
 
 # Download BAMs
@@ -527,14 +539,25 @@ for (group_name in c("all", "controls", "exposed", "controls_males", "exposed_ma
     
     # Check if any rows are left after filtering
     if (nrow(current_data) > 0) {
-      # Calculate log fold change
-      current_result <- calculate_log_fold_change(current_data)
+      # Calculate  fold change
+      current_result <- calculate_fold_change(current_data)
       
       # Replace infinite values within the data frame
       current_result <- as.data.frame(lapply(current_result, function(x) ifelse(is.infinite(x), NA, x)))
       
       # Ensure unique column names
       colnames(current_result) <- make.unique(as.character(colnames(current_result)), sep = "_")
+      
+        # write out
+  
+  fc <- paste0("../output/65-exon-coverage/", file_id, "fold.csv")
+  write.csv(current_result, file = fc)
+  
+  
+    
+      
+      
+      
       
       # Store the result
       group_results[[file_id]] <- current_result
@@ -546,7 +569,8 @@ for (group_name in c("all", "controls", "exposed", "controls_males", "exposed_ma
 
   # Bind the data frames together
   mean_fold_change <- do.call(rbind, group_results)
-  
+
+
   # Convert the data frame to a tibble to support summarise
   mean_fold_change <- as_tibble(mean_fold_change)
   
@@ -568,6 +592,24 @@ for (group_name in c("all", "controls", "exposed", "controls_males", "exposed_ma
 }
 
 ```
+
+```{r}
+mmf <- read.csv("../output/65-exon-coverage/malesmeanfold.csv")
+```
+
+
+
+```{bash}
+head ../output/65-exon-coverage/*fold.csv
+wc -l ../output/65-exon-coverage/*fold.csv
+
+```
+
+
+
+
+
+
 
 ## Access results for a specific group (e.g., "all")
 ```{r}
