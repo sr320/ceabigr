@@ -18,20 +18,20 @@ output:
   #   html_preview: true
 ---
 
-
 ```{r setup, include=FALSE}
-library(tidyverse)
-#library(kableExtra)
+library(kableExtra)
 # library(DESeq2)
 # library(pheatmap)
 # library(RColorBrewer)
 # library(data.table)
-#library(DT)
+library(DT)
 # library(Biostrings)
 #library(methylKit)
+library(tidyverse)
+
 knitr::opts_chunk$set(
   echo = TRUE,         # Display code chunks
-  eval = FALSE,         # Evaluate code chunks
+  eval = TRUE,         # Evaluate code chunks
   warning = TRUE,     # Hide warnings
   message = TRUE,     # Hide messages
   fig.width = 6,       # Set plot width in inches
@@ -39,7 +39,6 @@ knitr::opts_chunk$set(
   fig.align = "center" # Align plots to the center
 )
 ```
-
 
 We have fold exon expression for all samples
 
@@ -51,6 +50,7 @@ ls ../output/65-exon-coverage/S*fold.csv
 
 ls ../output/65-exon-coverage/S*fold.csv | wc -l
 ```
+
 # Loading exon fold data
 
 ```{r}
@@ -103,38 +103,40 @@ for (file_path in file_paths) {
 ```
 
 ```{r}
-data_frames$S12M
+datatable(head(data_frames$S12M))
+
 ```
+
 # Metadata
 
-|Sample.ID|OldSample.ID|Treatment|Sex|TreatmentN|Parent.ID|
-|---------|------------|---------|---|----------|---------|
-|12M      |S12M        |Exposed  |M  |3         |EM05     |
-|13M      |S13M        |Control  |M  |1         |CM04     |
-|16F      |S16F        |Control  |F  |2         |CF05     |
-|19F      |S19F        |Control  |F  |2         |CF08     |
-|22F      |S22F        |Exposed  |F  |4         |EF02     |
-|23M      |S23M        |Exposed  |M  |3         |EM04     |
-|29F      |S29F        |Exposed  |F  |4         |EF07     |
-|31M      |S31M        |Exposed  |M  |3         |EM06     |
-|35F      |S35F        |Exposed  |F  |4         |EF08     |
-|36F      |S36F        |Exposed  |F  |4         |EF05     |
-|39F      |S39F        |Control  |F  |2         |CF06     |
-|3F       |S3F         |Exposed  |F  |4         |EF06     |
-|41F      |S41F        |Exposed  |F  |4         |EF03     |
-|44F      |S44F        |Control  |F  |2         |CF03     |
-|48M      |S48M        |Exposed  |M  |3         |EM03     |
-|50F      |S50F        |Exposed  |F  |4         |EF01     |
-|52F      |S52F        |Control  |F  |2         |CF07     |
-|53F      |S53F        |Control  |F  |2         |CF02     |
-|54F      |S54F        |Control  |F  |2         |CF01     |
-|59M      |S59M        |Exposed  |M  |3         |EM01     |
-|64M      |S64M        |Control  |M  |1         |CM05     |
-|6M       |S6M         |Control  |M  |1         |CM02     |
-|76F      |S76F        |Control  |F  |2         |CF04     |
-|77F      |S77F        |Exposed  |F  |4         |EF04     |
-|7M       |S7M         |Control  |M  |1         |CM01     |
-|9M       |S9M         |Exposed  |M  |3         |EM02     |
+| Sample.ID | OldSample.ID | Treatment | Sex | TreatmentN | Parent.ID |
+|-----------|--------------|-----------|-----|------------|-----------|
+| 12M       | S12M         | Exposed   | M   | 3          | EM05      |
+| 13M       | S13M         | Control   | M   | 1          | CM04      |
+| 16F       | S16F         | Control   | F   | 2          | CF05      |
+| 19F       | S19F         | Control   | F   | 2          | CF08      |
+| 22F       | S22F         | Exposed   | F   | 4          | EF02      |
+| 23M       | S23M         | Exposed   | M   | 3          | EM04      |
+| 29F       | S29F         | Exposed   | F   | 4          | EF07      |
+| 31M       | S31M         | Exposed   | M   | 3          | EM06      |
+| 35F       | S35F         | Exposed   | F   | 4          | EF08      |
+| 36F       | S36F         | Exposed   | F   | 4          | EF05      |
+| 39F       | S39F         | Control   | F   | 2          | CF06      |
+| 3F        | S3F          | Exposed   | F   | 4          | EF06      |
+| 41F       | S41F         | Exposed   | F   | 4          | EF03      |
+| 44F       | S44F         | Control   | F   | 2          | CF03      |
+| 48M       | S48M         | Exposed   | M   | 3          | EM03      |
+| 50F       | S50F         | Exposed   | F   | 4          | EF01      |
+| 52F       | S52F         | Control   | F   | 2          | CF07      |
+| 53F       | S53F         | Control   | F   | 2          | CF02      |
+| 54F       | S54F         | Control   | F   | 2          | CF01      |
+| 59M       | S59M         | Exposed   | M   | 3          | EM01      |
+| 64M       | S64M         | Control   | M   | 1          | CM05      |
+| 6M        | S6M          | Control   | M   | 1          | CM02      |
+| 76F       | S76F         | Control   | F   | 2          | CF04      |
+| 77F       | S77F         | Exposed   | F   | 4          | EF04      |
+| 7M        | S7M          | Control   | M   | 1          | CM01      |
+| 9M        | S9M          | Exposed   | M   | 3          | EM02      |
 
 ```{r assign-variables}
 all <- c("S13M", "S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S64M", "S6M", "S76F", "S7M", "S12M", "S22F", "S23M", "S29F", "S31M", "S35F", "S36F", "S3F", "S41F", "S48M", "S50F", "S59M", "S77F", "S9M")
@@ -148,8 +150,9 @@ controls_females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S
 exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
 ```
 
-# Joining female controls
-```
+# female controls
+
+```         
 controls_females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F")
 ```
 
@@ -172,7 +175,6 @@ fc <- data_frames$S16F %>%
 
   
 ```
-
 
 ```{r}
 
@@ -217,10 +219,25 @@ print(df)
 ```
 
 ```{r}
-datatable(head(fc))
+fc <- na.omit(fc)
 ```
 
-# Getting LogFold
+```{r}
+ggplot(fc, aes(x = slope)) + 
+  geom_histogram(binwidth = .002, fill = "blue", color = "black") +
+  labs(title = "Histogram of slope", x = "slope", y = "Frequency") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(fc, aes(x = r_squared)) + 
+  geom_histogram(binwidth = .02, fill = "blue", color = "black") +
+  labs(title = "Histogram of r_squared", x = "r_squared", y = "Frequency") +
+  theme_minimal()
+```
+
+# Loadding log fold
+
 Lets also get log fold change data and see if that impacts r2 and slope
 
 ```{r}
@@ -273,8 +290,10 @@ for (file_path in logfile_paths) {
 ```
 
 ```{r}
-logdata_frames$S12M
+datatable(head(logdata_frames$S12M))
 ```
+
+# log female controls
 
 ```{r}
 logfc <- logdata_frames$S16F %>%
@@ -296,6 +315,9 @@ logfc <- logdata_frames$S16F %>%
   
 ```
 
+```{r}
+datatable(head(logfc))
+```
 
 calculating slope R2
 
@@ -339,4 +361,173 @@ logfc <- logfc %>%
 
 # View the updated data frame
 print(df)
+```
+
+```{r}
+datatable(head(logfc))
+```
+
+```{r}
+logfc <- na.omit(logfc)
+```
+
+```{r}
+datatable(head(logfc))
+```
+
+```{r}
+ggplot(logfc, aes(x = slope)) + 
+  geom_histogram(binwidth = .05, fill = "blue", color = "black") +
+  labs(title = "Histogram of column_name", x = "slope", y = "Frequency") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(logfc, aes(x = r_squared)) + 
+  geom_histogram(binwidth = .02, fill = "blue", color = "black") +
+  labs(title = "Histogram of r_squared", x = "r_squared", y = "Frequency") +
+  theme_minimal()
+```
+
+```{r}
+# Assuming `df` is your dataframe with 13,000 rows and 6 or more columns
+
+# Function to fit a polynomial model to specific columns of a row and return coefficients
+fit_poly <- function(row) {
+  # Select only columns 2 through 6 from the row
+  row_selected <- row[2:6]
+  
+  # Create a simple sequence of x values for the selected columns
+  x <- 1:5
+  
+  # Fit a polynomial model to the selected part of the row
+  fit <- lm(row_selected ~ poly(x, 2, raw = TRUE))
+  
+  # Return the coefficients of the model
+  return(coef(fit))
+}
+
+# Apply this function to each row of the dataframe
+results <- t(apply(logfc, 1, fit_poly))
+
+# Convert the results to a dataframe for easier manipulation
+results_df <- as.data.frame(results)
+
+
+```
+
+```{r}
+datatable(head(results_df))
+```
+
+# log female exposed
+
+```         
+exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
+```
+
+```{r}
+logfe <- logdata_frames$S22F %>%
+  left_join(logdata_frames$S29F, by = "GeneID") %>%
+  left_join(logdata_frames$S35F, by = "GeneID") %>%
+  left_join(logdata_frames$S36F, by = "GeneID") %>%
+  left_join(logdata_frames$S3F, by = "GeneID") %>%
+  left_join(logdata_frames$S41F, by = "GeneID") %>%
+  left_join(logdata_frames$S50F, by = "GeneID") %>%
+  left_join(logdata_frames$S77F, by = "GeneID") %>%
+  dplyr::select(GeneID, starts_with("f")) %>%
+  mutate(fold2_avg = rowMeans(select(.,starts_with("fold2")), na.rm = TRUE)) %>%
+  mutate(fold3_avg = rowMeans(select(.,starts_with("fold3")), na.rm = TRUE)) %>%
+  mutate(fold4_avg = rowMeans(select(.,starts_with("fold4")), na.rm = TRUE)) %>%
+  mutate(fold5_avg = rowMeans(select(.,starts_with("fold5")), na.rm = TRUE)) %>%
+  mutate(fold6_avg = rowMeans(select(.,starts_with("fold6")), na.rm = TRUE)) %>%
+  dplyr::select(GeneID, ends_with("avg"))
+
+  
+```
+
+```{r}
+datatable(head(logfe))
+```
+
+calculating slope R2
+
+```{r}
+
+# Function to calculate slope and R^2 for a row
+calculate_slope_r2 <- function(row) {
+  # Define x-values (fold numbers)
+  x <- 2:6
+  
+  # Select y-values and remove rows with NA in them for both x and y
+  y <- as.numeric(row)
+  valid_indices <- !is.na(y)
+  x <- x[valid_indices]
+  y <- y[valid_indices]
+  
+  # Check if we have enough data points after removing NAs
+  if (length(y) < 2) {
+    return(c(NA, NA))  # Return NA if not enough data points to calculate slope and R^2
+  }
+  
+  # Perform linear regression
+  model <- lm(y ~ x)
+  
+  # Extract slope and R^2
+  slope <- coef(model)[["x"]]
+  r_squared <- summary(model)$r.squared
+  
+  # Return slope and R^2
+  c(slope = slope, r_squared = r_squared)
+}
+
+# Apply the function to each row of df and create new columns for slope and R^2
+logfe <- logfe %>%
+  rowwise() %>%
+  mutate(results = list(calculate_slope_r2(c_across(fold2_avg:fold6_avg)))) %>%
+  ungroup() %>%
+  mutate(slope = map_dbl(results, 1),
+         r_squared = map_dbl(results, 2)) %>%
+  select(-results)
+
+# View the updated data frame
+print(df)
+```
+
+```{r}
+datatable(head(logfe))
+```
+
+```{r}
+logfe <- na.omit(logfe)
+```
+
+```{r}
+datatable(head(logfe))
+```
+
+```{r}
+ggplot(logfe, aes(x = slope)) + 
+  geom_histogram(binwidth = .05, fill = "blue", color = "black") +
+  labs(title = "Histogram of column_name", x = "slope", y = "Frequency") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(logfe, aes(x = r_squared)) + 
+  geom_histogram(binwidth = .02, fill = "blue", color = "black") +
+  labs(title = "Histogram of r_squared", x = "r_squared", y = "Frequency") +
+  theme_minimal()
+```
+
+# joining female con exposed
+
+```{r}
+female <- logfe %>%
+  left_join(logfc, by = "GeneID") %>%
+  mutate(slope_diff = abs(slope.x-slope.y))
+```
+
+```{r}
+datatable(head(female))
 ```
