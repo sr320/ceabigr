@@ -550,7 +550,7 @@ for (group_name in c("all", "controls", "exposed", "controls_males", "exposed_ma
       
         # write out
   
-  fc <- paste0("../output/65-exon-coverage/", file_id, "fold.csv")
+  fc <- paste0("../output/65-exon-coverage/", file_id, "_exonsum_", exon_sum_threshold, "_fold.csv")
   write.csv(current_result, file = fc)
   
   
