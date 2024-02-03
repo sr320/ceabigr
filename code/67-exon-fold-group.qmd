@@ -1,0 +1,100 @@
+---
+title: "67 exon expression"
+author: Steven Roberts
+date: "`r format(Sys.time(), '%d %B, %Y')`" 
+output: 
+  github_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    html_preview: true
+---
+
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(kableExtra)
+library(DESeq2)
+library(pheatmap)
+library(RColorBrewer)
+library(data.table)
+library(DT)
+library(Biostrings)
+library(methylKit)
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = FALSE,         # Evaluate code chunks
+  warning = TRUE,     # Hide warnings
+  message = TRUE,     # Hide messages
+  fig.width = 6,       # Set plot width in inches
+  fig.height = 4,      # Set plot height in inches
+  fig.align = "center" # Align plots to the center
+)
+```
+
+
+We have fold exon expression for all samples
+
+```{r, engine='bash', eval=TRUE}
+
+ls ../output/65-exon-coverage/S*fold.csv
+
+
+
+ls ../output/65-exon-coverage/S*fold.csv | wc -l
+```
+
+
+```{r}
+# Define the vector of file paths
+file_paths <- c(
+  "../output/65-exon-coverage/S12M_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S13M_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S16F_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S19F_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S22F_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S23M_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S29F_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S31M_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S35F_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S36F_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S39F_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S3F_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S41F_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S44F_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S48M_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S50F_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S52F_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S53F_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S54F_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S59M_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S64M_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S6M_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S76F_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S77F_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S7M_exonsum_10_fold.csv",
+  "../output/65-exon-coverage/S9M_exonsum_10_fold.csv"
+)
+
+# Initialize an empty list to store the data frames
+data_frames <- list()
+
+# Loop through the file paths, read each file, and store it in the list with a named key
+for (file_path in file_paths) {
+  # Extract a meaningful name from the file path, e.g., S12M, S13M, etc.
+  name <- gsub(".*/|_exonsum_10_fold\\.csv$", "", file_path)
+  
+  # Read the file and assign it to the list with the name as the key
+  data_frames[[name]] <- read.csv(file_path)
+}
+
+# At this point, `data_frames` is a list of data frames.
+# You can access each data frame by its name, for example:
+# data_frames$S12M  # This will give you the data frame for S12M_exonsum_10_fold.csv
+
+```
+
+```{r}
+data_frames$S12M
+```
+
