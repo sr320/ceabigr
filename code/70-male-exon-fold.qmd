@@ -1,0 +1,457 @@
+---
+title: "70 male exon expression"
+author: Steven Roberts
+date: "`r format(Sys.time(), '%d %B, %Y')`" 
+output: 
+  html_document:
+    theme: readable
+    highlight: zenburn
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    code_download: true
+  # github_document:
+  #   toc: true
+  #   toc_depth: 3
+  #   number_sections: true
+  #   html_preview: true
+---
+
+```{r setup, include=FALSE}
+#library(kableExtra)
+# library(DESeq2)
+# library(pheatmap)
+# library(RColorBrewer)
+# library(data.table)
+#library(DT)
+# library(Biostrings)
+#library(methylKit)
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = TRUE,         # Evaluate code chunks
+  warning = TRUE,     # Hide warnings
+  message = TRUE,     # Hide messages
+  fig.width = 6,       # Set plot width in inches
+  fig.height = 4,      # Set plot height in inches
+  fig.align = "center" # Align plots to the center
+)
+```
+
+We have fold exon expression for all samples
+
+
+# Metadata
+
+| Sample.ID | OldSample.ID | Treatment | Sex | TreatmentN | Parent.ID |
+|-----------|--------------|-----------|-----|------------|-----------|
+| 12M       | S12M         | Exposed   | M   | 3          | EM05      |
+| 13M       | S13M         | Control   | M   | 1          | CM04      |
+| 16F       | S16F         | Control   | F   | 2          | CF05      |
+| 19F       | S19F         | Control   | F   | 2          | CF08      |
+| 22F       | S22F         | Exposed   | F   | 4          | EF02      |
+| 23M       | S23M         | Exposed   | M   | 3          | EM04      |
+| 29F       | S29F         | Exposed   | F   | 4          | EF07      |
+| 31M       | S31M         | Exposed   | M   | 3          | EM06      |
+| 35F       | S35F         | Exposed   | F   | 4          | EF08      |
+| 36F       | S36F         | Exposed   | F   | 4          | EF05      |
+| 39F       | S39F         | Control   | F   | 2          | CF06      |
+| 3F        | S3F          | Exposed   | F   | 4          | EF06      |
+| 41F       | S41F         | Exposed   | F   | 4          | EF03      |
+| 44F       | S44F         | Control   | F   | 2          | CF03      |
+| 48M       | S48M         | Exposed   | M   | 3          | EM03      |
+| 50F       | S50F         | Exposed   | F   | 4          | EF01      |
+| 52F       | S52F         | Control   | F   | 2          | CF07      |
+| 53F       | S53F         | Control   | F   | 2          | CF02      |
+| 54F       | S54F         | Control   | F   | 2          | CF01      |
+| 59M       | S59M         | Exposed   | M   | 3          | EM01      |
+| 64M       | S64M         | Control   | M   | 1          | CM05      |
+| 6M        | S6M          | Control   | M   | 1          | CM02      |
+| 76F       | S76F         | Control   | F   | 2          | CF04      |
+| 77F       | S77F         | Exposed   | F   | 4          | EF04      |
+| 7M        | S7M          | Control   | M   | 1          | CM01      |
+| 9M        | S9M          | Exposed   | M   | 3          | EM02      |
+
+```
+all <- c("S13M", "S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S64M", "S6M", "S76F", "S7M", "S12M", "S22F", "S23M", "S29F", "S31M", "S35F", "S36F", "S3F", "S41F", "S48M", "S50F", "S59M", "S77F", "S9M")
+controls <- c("S13M", "S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S64M", "S6M", "S76F", "S7M")
+exposed <- c("S12M", "S22F", "S23M", "S29F", "S31M", "S35F", "S36F", "S3F", "S41F", "S48M", "S50F", "S59M", "S77F", "S9M")
+females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F", "S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
+males <- c("S12M", "S23M", "S31M", "S48M", "S59M", "S9M","S13M", "S64M", "S6M", "S7M")
+controls_males <- c("S13M", "S64M", "S6M", "S7M")
+exposed_males <- c("S12M", "S23M", "S31M", "S48M", "S59M", "S9M")
+controls_females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F")
+exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
+```
+
+# Loading log fold
+
+
+```{r}
+# Define the vector of file paths
+logfile_paths <- c(
+  "../output/65-exon-coverage/S12M_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S13M_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S16F_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S19F_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S22F_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S23M_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S29F_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S31M_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S35F_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S36F_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S39F_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S3F_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S41F_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S44F_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S48M_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S50F_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S52F_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S53F_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S54F_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S59M_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S64M_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S6M_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S76F_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S77F_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S7M_exonsum_10_logfold.csv",
+  "../output/65-exon-coverage/S9M_exonsum_10_logfold.csv"
+)
+
+# Initialize an empty list to store the data frames
+logdata_frames <- list()
+
+# Loop through the file paths, read each file, and store it in the list with a named key
+for (file_path in logfile_paths) {
+  # Extract a meaningful name from the file path, e.g., S12M, S13M, etc.
+  name <- gsub(".*/|_exonsum_10_logfold\\.csv$", "", file_path)
+  
+  # Read the file and assign it to the list with the name as the key
+  logdata_frames[[name]] <- read.csv(file_path)
+}
+
+# At this point, `data_frames` is a list of data frames.
+# You can access each data frame by its name, for example:
+# data_frames$S12M  # This will give you the data frame for S12M_exonsum_10_fold.csv
+
+```
+
+```{r}
+head(logdata_frames$S12M)
+```
+
+# log male controls
+`controls_males <- c("S13M", "S64M", "S6M", "S7M")`
+
+```{r}
+
+logmc <- logdata_frames$S13M %>%
+  left_join(logdata_frames$S64M, by = "GeneID") %>%
+  left_join(logdata_frames$S6M, by = "GeneID") %>%
+  left_join(logdata_frames$S7M, by = "GeneID") %>%
+  left_join(logdata_frames$S52F, by = "GeneID") %>%
+  dplyr::select(GeneID, starts_with("f")) %>%
+  dplyr::mutate(fold1_avg = rowMeans(select(.,starts_with("fold1")), na.rm = TRUE)) %>%
+  dplyr::mutate(fold2_avg = rowMeans(select(.,starts_with("fold2")), na.rm = TRUE)) %>%
+  dplyr::mutate(fold3_avg = rowMeans(select(.,starts_with("fold3")), na.rm = TRUE)) %>%
+  dplyr::mutate(fold4_avg = rowMeans(select(.,starts_with("fold4")), na.rm = TRUE)) %>%
+  dplyr::mutate(fold5_avg = rowMeans(select(.,starts_with("fold5")), na.rm = TRUE)) %>%
+  dplyr::mutate(fold6_avg = rowMeans(select(.,starts_with("fold6")), na.rm = TRUE)) %>%
+  dplyr::select(GeneID, ends_with("avg"))
+
+  
+```
+
+
+
+
+
+
+
+```{r}
+head(logmc)
+```
+
+calculating slope R2
+
+```{r}
+
+# Function to calculate slope and R^2 for a row
+calculate_slope_r2 <- function(row) {
+  # Define x-values (fold numbers)
+  x <- 2:7
+  
+  # Select y-values and remove rows with NA in them for both x and y
+  y <- as.numeric(row)
+  valid_indices <- !is.na(y)
+  x <- x[valid_indices]
+  y <- y[valid_indices]
+  
+  # Check if we have enough data points after removing NAs
+  if (length(y) < 2) {
+    return(c(NA, NA))  # Return NA if not enough data points to calculate slope and R^2
+  }
+  
+  # Perform linear regression
+  model <- lm(y ~ x)
+  
+  # Extract slope and R^2
+  slope <- coef(model)[["x"]]
+  r_squared <- summary(model)$r.squared
+  
+  # Return slope and R^2
+  c(slope = slope, r_squared = r_squared)
+}
+
+# Apply the function to each row of df and create new columns for slope and R^2
+logmc <- logmc %>%
+  rowwise() %>%
+  mutate(results = list(calculate_slope_r2(c_across(fold1_avg:fold6_avg)))) %>%
+  ungroup() %>%
+  mutate(slope = map_dbl(results, 1),
+         r_squared = map_dbl(results, 2)) %>%
+  select(-results)
+
+
+```
+
+```{r}
+head(logmc)
+```
+
+```{r}
+logmc <- na.omit(logmc)
+```
+
+
+
+```{r}
+output_file_path <- "../output/70-male-exon-fold/logmc.txt"
+
+# Write the logfc object to a file as tab-delimited text
+write.table(logmc, file = output_file_path, sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+
+```
+
+
+
+
+```{r}
+head(logmc)
+```
+
+```{r}
+ggplot(logmc, aes(x = slope)) + 
+  geom_histogram(binwidth = .05, fill = "blue", color = "black") +
+  labs(title = "Histogram of column_name", x = "slope", y = "Frequency") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(logmc, aes(x = r_squared)) + 
+  geom_histogram(binwidth = .02, fill = "blue", color = "black") +
+  labs(title = "Histogram of r_squared", x = "r_squared", y = "Frequency") +
+  theme_minimal()
+```
+
+
+# log male exposed
+
+```         
+exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
+```
+
+```{r}
+logfe <- logdata_frames$S22F %>%
+  left_join(logdata_frames$S29F, by = "GeneID") %>%
+  left_join(logdata_frames$S35F, by = "GeneID") %>%
+  left_join(logdata_frames$S36F, by = "GeneID") %>%
+  left_join(logdata_frames$S3F, by = "GeneID") %>%
+  left_join(logdata_frames$S41F, by = "GeneID") %>%
+  left_join(logdata_frames$S50F, by = "GeneID") %>%
+  left_join(logdata_frames$S77F, by = "GeneID") %>%
+  dplyr::select(GeneID, starts_with("f")) %>%
+  mutate(fold1_avg = rowMeans(select(.,starts_with("fold1")), na.rm = TRUE)) %>%
+  mutate(fold2_avg = rowMeans(select(.,starts_with("fold2")), na.rm = TRUE)) %>%
+  mutate(fold3_avg = rowMeans(select(.,starts_with("fold3")), na.rm = TRUE)) %>%
+  mutate(fold4_avg = rowMeans(select(.,starts_with("fold4")), na.rm = TRUE)) %>%
+  mutate(fold5_avg = rowMeans(select(.,starts_with("fold5")), na.rm = TRUE)) %>%
+  mutate(fold6_avg = rowMeans(select(.,starts_with("fold6")), na.rm = TRUE)) %>%
+  dplyr::select(GeneID, ends_with("avg"))
+
+  
+```
+
+```{r}
+head(logfe)
+```
+
+calculating slope R2
+
+```{r}
+
+# Function to calculate slope and R^2 for a row
+calculate_slope_r2 <- function(row) {
+  # Define x-values (fold numbers)
+  x <- 2:6
+  
+  # Select y-values and remove rows with NA in them for both x and y
+  y <- as.numeric(row)
+  valid_indices <- !is.na(y)
+  x <- x[valid_indices]
+  y <- y[valid_indices]
+  
+  # Check if we have enough data points after removing NAs
+  if (length(y) < 2) {
+    return(c(NA, NA))  # Return NA if not enough data points to calculate slope and R^2
+  }
+  
+  # Perform linear regression
+  model <- lm(y ~ x)
+  
+  # Extract slope and R^2
+  slope <- coef(model)[["x"]]
+  r_squared <- summary(model)$r.squared
+  
+  # Return slope and R^2
+  c(slope = slope, r_squared = r_squared)
+}
+
+# Apply the function to each row of df and create new columns for slope and R^2
+logfe <- logfe %>%
+  rowwise() %>%
+  mutate(results = list(calculate_slope_r2(c_across(fold2_avg:fold6_avg)))) %>%
+  ungroup() %>%
+  mutate(slope = map_dbl(results, 1),
+         r_squared = map_dbl(results, 2)) %>%
+  select(-results)
+
+```
+
+```{r}
+head(logfe)
+```
+
+```{r}
+logfe <- na.omit(logfe)
+```
+
+```{r}
+head(logfe)
+```
+
+```{r}
+ggplot(logfe, aes(x = slope)) + 
+  geom_histogram(binwidth = .05, fill = "blue", color = "black") +
+  labs(title = "Histogram of column_name", x = "slope", y = "Frequency") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(logfe, aes(x = r_squared)) + 
+  geom_histogram(binwidth = .02, fill = "blue", color = "black") +
+  labs(title = "Histogram of r_squared", x = "r_squared", y = "Frequency") +
+  theme_minimal()
+```
+
+# joining female con exposed
+
+```{r}
+female <- logfe %>%
+  left_join(logfc, by = "GeneID") %>%
+  mutate(mean_r = (r_squared.x + r_squared.y) / 2 ) %>%
+  mutate(mean_slope = (slope.x + slope.y) / 2 ) %>%
+  mutate(slope_diff = abs(slope.x-slope.y)) %>% 
+  #filter(mean_r > .5) %>%
+  #filter(slope.y < .1 & slope.y > -.1)
+  # filter(slope.x < -.4)
+```
+
+```{r}
+female <- logfe %>%
+  left_join(logfc, by = "GeneID") %>%
+  mutate(mean_r = (r_squared.x + r_squared.y) / 2 ) %>%
+  mutate(mean_slope = (slope.x + slope.y) / 2 ) %>%
+  mutate(slope_diff = abs(slope.x-slope.y)) %>%
+    filter(
+    (fold2_avg.y > -.1 & fold2_avg.y < .1) &
+    (fold3_avg.y > -.1 & fold3_avg.y < .1) &
+    (fold4_avg.y > -.1 & fold4_avg.y < .1) &
+    (fold5_avg.y > -.1 & fold5_avg.y < .1) &
+    (fold6_avg.y > -.1 & fold6_avg.y < .1)
+  )
+```
+
+
+
+```{r}
+# Reshape the data to long format
+long_data <- tidyr::pivot_longer(female, cols = ends_with("avg.y"), names_to = "Exon", values_to = "Values")
+
+# Plotting a dot plot (scatter plot)
+ggplot(long_data, aes(x = factor(Exon), y = Values, group = GeneID)) +
+  geom_point(position = position_jitter(width = 0.3, height = 0), alpha = 0.15) +
+  labs(x = "Exon", y = "Read Counts (log10)") +
+  theme_minimal()
+```
+
+
+
+
+
+
+
+
+
+```{r}
+female <- logfe %>%
+  left_join(logfc, by = "GeneID") %>%
+  mutate(mean_r = (r_squared.x + r_squared.y) / 2 ) %>%
+  mutate(mean_slope = (slope.x + slope.y) / 2 ) %>%
+  mutate(slope_diff = abs(slope.x-slope.y)) %>% 
+  group_by(GeneID) %>% rowwise(.) %>% 
+  mutate(fc_exon_cov = sd(c(fold1_avg.y, fold2_avg.y, fold3_avg.y, fold4_avg.y, fold5_avg.y, fold6_avg.y)) / mean(c(fold1_avg.y, fold2_avg.y, fold3_avg.y, fold4_avg.y, fold5_avg.y, fold6_avg.y)))
+```
+
+```{r}
+mean_value <- female %>% select(fold1_avg.y, fold2_avg.y, fold3_avg.y, fold4_avg.y, fold5_avg.y) %>% rowMeans(na.rm = TRUE)
+sd_value <- apply(female[, c("fold1_avg.y", "fold2_avg.y", "fold3_avg.y", "fold4_avg.y", "fold5_avg.y")], 1, sd, na.rm = TRUE)
+```
+# Calculate the coefficient of variation
+cv_value <- sd_value / mean_value
+
+
+
+
+
+```{r}
+head(female)
+```
+
+```{r}
+ggplot(female) + 
+  geom_histogram(aes(x = fold2_avg.y), binwidth = .02, fill = "blue", color = "black") +
+  geom_histogram(aes(x = fold3_avg.y), binwidth = .02, fill = "red", color = "green") +
+  labs(title = "Histogram of r2", x = "r2", y = "Frequency") +
+  theme_minimal()
+```
+
+
+```{r}
+ggplot(female) + 
+  geom_histogram(aes(x = r_squared.x), binwidth = .02, fill = "blue", color = "black") +
+  geom_histogram(aes(x = r_squared.y), binwidth = .02, fill = "red", alpha = 0.5, color = "black") +
+  labs(title = "Histogram of r2", x = "r2", y = "Frequency") +
+  theme_minimal()
+```
+
+
+```{r}
+ggplot(female) + 
+  geom_histogram(aes(x = slope.x), binwidth = .02, fill = "blue", color = "black") +
+  geom_histogram(aes(x = slope.y), binwidth = .02, fill = "red", alpha = 0.5, color = "black") +
+  labs(title = "Histogram of slope", x = "slope", y = "Frequency") +
+  theme_minimal()
+```
