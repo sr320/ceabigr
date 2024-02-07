@@ -167,6 +167,12 @@ logfc <- logdata_frames$S16F %>%
   
 ```
 
+
+
+
+
+
+
 ```{r}
 head(logfc)
 ```
@@ -221,6 +227,17 @@ head(logfc)
 ```{r}
 logfc <- na.omit(logfc)
 ```
+
+```{r}
+output_file_path <- "../output/68-female-exon-fold/logfc.txt"
+
+# Write the logfc object to a file as tab-delimited text
+write.table(logfc, file = output_file_path, sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+
+```
+
+
+
 
 ```{r}
 head(logfc)
