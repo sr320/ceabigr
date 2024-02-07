@@ -260,18 +260,16 @@ ggplot(logmc, aes(x = r_squared)) +
 # log male exposed
 
 ```         
-exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
+exposed_males <- c("S12M", "S23M", "S31M", "S48M", "S59M", "S9M")
 ```
 
 ```{r}
-logfe <- logdata_frames$S22F %>%
-  left_join(logdata_frames$S29F, by = "GeneID") %>%
-  left_join(logdata_frames$S35F, by = "GeneID") %>%
-  left_join(logdata_frames$S36F, by = "GeneID") %>%
-  left_join(logdata_frames$S3F, by = "GeneID") %>%
-  left_join(logdata_frames$S41F, by = "GeneID") %>%
-  left_join(logdata_frames$S50F, by = "GeneID") %>%
-  left_join(logdata_frames$S77F, by = "GeneID") %>%
+logme <- logdata_frames$S12M %>%
+  left_join(logdata_frames$S23M, by = "GeneID") %>%
+  left_join(logdata_frames$S31M, by = "GeneID") %>%
+  left_join(logdata_frames$S48M, by = "GeneID") %>%
+  left_join(logdata_frames$S59M, by = "GeneID") %>%
+  left_join(logdata_frames$S9M, by = "GeneID") %>%
   dplyr::select(GeneID, starts_with("f")) %>%
   mutate(fold1_avg = rowMeans(select(.,starts_with("fold1")), na.rm = TRUE)) %>%
   mutate(fold2_avg = rowMeans(select(.,starts_with("fold2")), na.rm = TRUE)) %>%
@@ -285,7 +283,7 @@ logfe <- logdata_frames$S22F %>%
 ```
 
 ```{r}
-head(logfe)
+head(logme)
 ```
 
 calculating slope R2
@@ -320,7 +318,7 @@ calculate_slope_r2 <- function(row) {
 }
 
 # Apply the function to each row of df and create new columns for slope and R^2
-logfe <- logfe %>%
+logme <- logme %>%
   rowwise() %>%
   mutate(results = list(calculate_slope_r2(c_across(fold2_avg:fold6_avg)))) %>%
   ungroup() %>%
@@ -331,47 +329,47 @@ logfe <- logfe %>%
 ```
 
 ```{r}
-head(logfe)
+head(logme)
 ```
 
 ```{r}
-logfe <- na.omit(logfe)
+logme <- na.omit(logme)
 ```
 
 ```{r}
-head(logfe)
+head(logme)
 ```
 
 ```{r}
-ggplot(logfe, aes(x = slope)) + 
+ggplot(logme, aes(x = slope)) + 
   geom_histogram(binwidth = .05, fill = "blue", color = "black") +
   labs(title = "Histogram of column_name", x = "slope", y = "Frequency") +
   theme_minimal()
 ```
 
 ```{r}
-ggplot(logfe, aes(x = r_squared)) + 
+ggplot(logme, aes(x = r_squared)) + 
   geom_histogram(binwidth = .02, fill = "blue", color = "black") +
   labs(title = "Histogram of r_squared", x = "r_squared", y = "Frequency") +
   theme_minimal()
 ```
 
-# joining female con exposed
+# joining male con exposed
 
 ```{r}
-female <- logfe %>%
-  left_join(logfc, by = "GeneID") %>%
+male <- logme %>%
+  left_join(logmc, by = "GeneID") %>%
   mutate(mean_r = (r_squared.x + r_squared.y) / 2 ) %>%
   mutate(mean_slope = (slope.x + slope.y) / 2 ) %>%
-  mutate(slope_diff = abs(slope.x-slope.y)) %>% 
+  mutate(slope_diff = abs(slope.x-slope.y)) 
   #filter(mean_r > .5) %>%
   #filter(slope.y < .1 & slope.y > -.1)
   # filter(slope.x < -.4)
 ```
 
 ```{r}
-female <- logfe %>%
-  left_join(logfc, by = "GeneID") %>%
+male <- logme %>%
+  left_join(logmc, by = "GeneID") %>%
   mutate(mean_r = (r_squared.x + r_squared.y) / 2 ) %>%
   mutate(mean_slope = (slope.x + slope.y) / 2 ) %>%
   mutate(slope_diff = abs(slope.x-slope.y)) %>%
@@ -388,7 +386,7 @@ female <- logfe %>%
 
 ```{r}
 # Reshape the data to long format
-long_data <- tidyr::pivot_longer(female, cols = ends_with("avg.y"), names_to = "Exon", values_to = "Values")
+long_data <- tidyr::pivot_longer(male, cols = ends_with("avg.y"), names_to = "Exon", values_to = "Values")
 
 # Plotting a dot plot (scatter plot)
 ggplot(long_data, aes(x = factor(Exon), y = Values, group = GeneID)) +
@@ -404,19 +402,19 @@ ggplot(long_data, aes(x = factor(Exon), y = Values, group = GeneID)) +
 
 
 
-
+Coefficient of Variation
 ```{r}
-female <- logfe %>%
-  left_join(logfc, by = "GeneID") %>%
+male_con <- logme %>%
+  left_join(logmc, by = "GeneID") %>%
   mutate(mean_r = (r_squared.x + r_squared.y) / 2 ) %>%
   mutate(mean_slope = (slope.x + slope.y) / 2 ) %>%
   mutate(slope_diff = abs(slope.x-slope.y)) %>% 
   group_by(GeneID) %>% rowwise(.) %>% 
-  mutate(fc_exon_cov = sd(c(fold1_avg.y, fold2_avg.y, fold3_avg.y, fold4_avg.y, fold5_avg.y, fold6_avg.y)) / mean(c(fold1_avg.y, fold2_avg.y, fold3_avg.y, fold4_avg.y, fold5_avg.y, fold6_avg.y)))
+  mutate(mc_exon_cov = sd(c(fold1_avg.y, fold2_avg.y, fold3_avg.y, fold4_avg.y, fold5_avg.y, fold6_avg.y)) / mean(c(fold1_avg.y, fold2_avg.y, fold3_avg.y, fold4_avg.y, fold5_avg.y, fold6_avg.y)))
 ```
 
 ```{r}
-mean_value <- female %>% select(fold1_avg.y, fold2_avg.y, fold3_avg.y, fold4_avg.y, fold5_avg.y) %>% rowMeans(na.rm = TRUE)
+mean_value <- male %>% select(fold1_avg.y, fold2_avg.y, fold3_avg.y, fold4_avg.y, fold5_avg.y) %>% rowMeans(na.rm = TRUE)
 sd_value <- apply(female[, c("fold1_avg.y", "fold2_avg.y", "fold3_avg.y", "fold4_avg.y", "fold5_avg.y")], 1, sd, na.rm = TRUE)
 ```
 # Calculate the coefficient of variation
@@ -427,11 +425,11 @@ cv_value <- sd_value / mean_value
 
 
 ```{r}
-head(female)
+head(male)
 ```
 
 ```{r}
-ggplot(female) + 
+ggplot(male) + 
   geom_histogram(aes(x = fold2_avg.y), binwidth = .02, fill = "blue", color = "black") +
   geom_histogram(aes(x = fold3_avg.y), binwidth = .02, fill = "red", color = "green") +
   labs(title = "Histogram of r2", x = "r2", y = "Frequency") +
@@ -440,7 +438,7 @@ ggplot(female) +
 
 
 ```{r}
-ggplot(female) + 
+ggplot(male) + 
   geom_histogram(aes(x = r_squared.x), binwidth = .02, fill = "blue", color = "black") +
   geom_histogram(aes(x = r_squared.y), binwidth = .02, fill = "red", alpha = 0.5, color = "black") +
   labs(title = "Histogram of r2", x = "r2", y = "Frequency") +
@@ -449,7 +447,7 @@ ggplot(female) +
 
 
 ```{r}
-ggplot(female) + 
+ggplot(male) + 
   geom_histogram(aes(x = slope.x), binwidth = .02, fill = "blue", color = "black") +
   geom_histogram(aes(x = slope.y), binwidth = .02, fill = "red", alpha = 0.5, color = "black") +
   labs(title = "Histogram of slope", x = "slope", y = "Frequency") +
