@@ -50,30 +50,39 @@ knitr::opts_chunk$set(
 )
 ```
 
+# Read in data 
+
 ```{r}
-datExpr <- fread("output/68-female-exon-fold/logfc.txt")
+#datExpr <- fread("output/68-female-exon-fold/logfc.txt")
+datExpr <- fread("output/68-female-exon-fold/female_merge.txt")
 ```
 
 ```{r}
 rownames(datExpr) <- datExpr$GeneID
 names(datExpr)
 genes<-datExpr$GeneID
+
 datExpr <- datExpr[ , -1, with = FALSE]
+
+result_vector <- genes[!grepl("^L", genes, ignore.case = TRUE)]
+genes <- genes[genes != "GeneID"]
 ```
 
 Transpose to put "samples" or exon in rows and genes in columns. Put gene ID in row names. 
 ```{r}
 datExpr <- t(datExpr) 
+
 datExpr<-as.data.frame(datExpr)
+
+names(datExpr)<-genes
+
+str(datExpr)
+
+datExpr[] <- lapply(datExpr, as.numeric)
 
 names(datExpr)<-genes
 ```
 
-```{r}
-sampleTree = hclust(dist(datExpr), method = "average")
-plot(sampleTree, main = "Sample clustering to detect outliers", sub = "", xlab = "", cex.lab = 1.5, cex.axis = 1.5, cex.main = 2)
-
-```
 
 ```{r}
 powers = c(1:10)
@@ -84,92 +93,11 @@ abline(h = -log(0.9), col = "red")
 
 ```
 
-```{r}
-softPower = 4 # example value, adjust based on your plot
-adjacency = adjacency(datExpr, power = softPower)
-TOM = TOMsimilarity(adjacency)
-dissTOM = 1-TOM
-geneTree = hclust(as.dist(dissTOM), method = "average")
-
-dynamicMods = cutreeDynamic(dendro = geneTree, distM = dissTOM, deepSplit = 2, pamRespectsDendro = FALSE, minClusterSize = 100)
-
-table<-as.data.frame(table(dynamicMods)) #list modules and respective sizes
-table(dynamicMods)
-```
-
-
-```{r}
-# Assuming 'dynamicMods' is your vector of module assignments from cutreeDynamic
-moduleLabels = dynamicMods
-
-```
-
-```{r}
-#Calculate eigengenes
-MEList = moduleEigengenes(datExpr, colors = moduleLabels, softPower = 4)
-MEs = MEList$eigengenes
-
-#Calculate dissimilarity of module eigengenes
-MEDiss = 1-cor(MEs)
-
-#merge to 85% similar 
-MEDissThres= 0.1 #merge modules that are 85% similar
-
-merge= mergeCloseModules(datExpr, moduleLabels, cutHeight= MEDissThres, verbose =3)
-
-mergedColors= merge$colors
-mergedMEs= merge$newMEs
-
-moduleLabels=mergedColors
-moduleColors = mergedColors # Rename to moduleColors
-MEs = mergedMEs;
-ncol(MEs) #How many modules do we have now?
-
-table(mergedColors)
-table<-as.data.frame(table(mergedColors))
-table
-```
-
-We have 26 modules after merging to 85% similarity. The table shows number of genes in each module.
-
-Plot module expression across exon location. 
-```{r}
-head(MEs)
-names(MEs)
-Strader_MEs <- MEs
-Strader_MEs$exon <- c("2", "3", "4", "5", "6")
-head(Strader_MEs)
-```
-```{r}
-plot_MEs<-Strader_MEs%>%
-  gather(., key="Module", value="Mean", ME4:ME28)
-```
-
-
-Plot module expression across exon location. 
-```{r}
-library(ggplot2)
-library(tidyverse)
-
-expression_plot<-plot_MEs%>%
-  group_by(Module, exon) %>%
-  
-  ggplot(aes(x=exon, y=Mean)) +
-  facet_wrap(~Module)+
-  geom_point() +
-  geom_line(group=1)+
-  #ylim(-0.5,1) +
-  ylab("Mean Module Eigenegene") +
-  geom_hline(yintercept = 0, linetype="dashed", color = "grey")+
-  theme_classic(); expression_plot
-```
-
-
-# Blockwise modules approach 
+# Blockwise modules network construction 
 
 ``` {r, echo=TRUE, warning=FALSE, message=FALSE}
 
-picked_power = 4
+picked_power = 8
 temp_cor <- cor       
 cor <- WGCNA::cor                                             # Force it to use WGCNA cor function (fix a namespace conflict issue)
 netwk <- blockwiseModules(datExpr,                         # <= input here
@@ -186,7 +114,7 @@ netwk <- blockwiseModules(datExpr,                         # <= input here
                           maxBlockSize = 10000,
 
                           # == Module Adjustments ==
-                          mergeCutHeight = 0.15,
+                          mergeCutHeight = 0.05,
                           reassignThreshold = 1e-6,
                           minCoreKME = 0.5,
                           minKMEtoStay = 0.3,
@@ -205,23 +133,20 @@ cor <- temp_cor     # Return cor function to original namespace
 mergedColors = netwk$colors
 # Plot the dendrogram and the module colors underneath
 
-#pdf("output/69-wgcna/blockwise_module_colors.pdf")
-#plotDendroAndColors(
- # netwk$dendrograms[[1]],
-  #mergedColors[netwk$blockGenes[[1]]],
-  #"Module colors",
-  #dendroLabels = FALSE,
-  #hang = 0.03,
-  #addGuide = TRUE,
-  #guideHang = 0.05 )
-#dev.off()
-
 table(mergedColors)
+
+membership<-as.data.frame(mergedColors)
+
+membership$gene<-rownames(membership)
+
+names(membership)<-c("module", "gene")
 ```
+
+# Plot module eigengene level
 
 ```{r}
 #Calculate eigengenes
-MEList = moduleEigengenes(datExpr, colors = mergedColors, softPower = 4)
+MEList = moduleEigengenes(datExpr, colors = mergedColors, softPower = 8)
 MEs = MEList$eigengenes
 
 ncol(MEs) #How many modules do we have now?
@@ -231,7 +156,23 @@ table<-as.data.frame(table(mergedColors))
 table
 ```
 
-We have 31 modules after merging to 85% similarity. The table shows number of genes in each module.
+The table shows number of genes in each module.
+
+mergedColors Freq
+1             0  713
+2             1 3076
+3             2 2926
+4             3 2471
+5             4 2115
+6             5 2031
+7             6 1854
+8             7 1819
+9             8 1810
+10            9 1774
+11           10 1680
+12           11 1504
+13           12 1474
+14           13 1313
 
 Plot module expression across exon location. 
 ```{r}
@@ -244,9 +185,8 @@ head(Strader_MEs)
 
 ```{r}
 plot_MEs<-Strader_MEs%>%
-  gather(., key="Module", value="Mean", ME0:ME7)
+  gather(., key="Module", value="Mean", ME0:ME13)
 ```
-
 
 Plot module expression across exon location. 
 ```{r}
@@ -258,11 +198,156 @@ expression_plot<-plot_MEs%>%
   
   ggplot(aes(x=exon, y=Mean)) +
   facet_wrap(~Module)+
+  geom_hline(yintercept = 0, linetype="dashed", color = "grey")+
   geom_point() +
   geom_line(group=1)+
   #ylim(-0.5,1) +
   ylab("Mean Module Eigenegene") +
-  geom_hline(yintercept = 0, linetype="dashed", color = "grey")+
   theme_classic(); expression_plot
 ```
 
+Identify modules that have only  1 instance of a gene (if we see only 1 instance, that means a gene moved between modules by treatment)
+
+```{r}
+# Extract the substring before the underscore in the gene column
+membership <- membership %>%
+  mutate(gene_prefix = str_extract(gene, "^[^_]+"))
+
+# Identify duplicate gene prefixes within the same module
+unique_within_module <- membership %>%
+  group_by(module, gene_prefix) %>%
+  filter(n() == 1) %>%
+  arrange(module, gene_prefix)
+
+unique_within_module
+
+length(unique(unique_within_module$gene_prefix))
+```
+There are 12,223 genes that are in different modules by treatment. 
+
+```{r}
+# Identify duplicate gene prefixes within the same module
+same_within_module <- membership %>%
+  group_by(module, gene_prefix) %>%
+  filter(n() == 2) %>%
+  arrange(module, gene_prefix)
+
+same_within_module
+
+length(unique(same_within_module$gene_prefix))
+```
+There are 1058 genes that are in the same module by treatment. 
+
+13281 total genes
+
+Number of unique genes in module 0. 
+```{r}
+test<-membership%>%
+  filter(module==0)
+
+length(unique(test$gene_prefix))
+```
+703 unique genes 
+
+# Overlay plot of every individual gene expression level over the module mean 
+
+In the plot below, adjust "target_module", and "target_module2" to include the module number you are interested in. 
+
+Module 0 
+```{r}
+target_module<-0
+target_genes<-membership%>%filter(module==target_module)%>%select(gene)
+target_genes<-unique(target_genes$gene)
+
+# Select columns in datExpr that match any item in target_genes
+selected_data <- datExpr[, colnames(datExpr) %in% target_genes, drop = FALSE]
+selected_data$exon<-c("2", "3", "4", "5", "6")
+
+selected_data<-selected_data %>%
+               pivot_longer(cols = -exon, 
+               names_to = "gene", 
+               values_to = "value")%>%
+  
+  #add color for exposed vs control 
+  mutate(treatment = ifelse(grepl("exp", gene, ignore.case = TRUE), "exposed", "control"))
+
+#add in mean module expression value from module dataframe
+target_module2<-"ME0"
+selected_module<-plot_MEs%>%
+  filter(Module==target_module2)
+
+target_plot<-ggplot() +
+  ggtitle(paste("Module ", target_module))+
+  geom_hline(yintercept = 0, linetype="dashed", color = "grey")+
+  geom_line(data=selected_data, aes(x=exon, y=value, group=gene, color=treatment))+
+  geom_point(data=selected_data, aes(x=exon, y=value, color=treatment)) +
+  
+  geom_line(data=selected_module, aes(x=exon, y=Mean, group=1), color="black", size=2)+
+  geom_point(data=selected_module, aes(x=exon, y=Mean), color="black", size=4) +
+  
+  scale_color_manual(values=c("gray", "red"), name="Treatment")+
+  
+  #ylim(-5,5) +
+  ylab("Mean Expression Relative to Exon 1") +
+  xlab("Exon")+
+  theme_classic(); target_plot
+
+```
+
+You can add any other modules here you are interested in! 
+
+# View genes that change modules 
+
+Extract genes that are in module 0 in control and module NOT 0 when exposed. Look at the values for these genes colored by treatment. 
+```{r}
+control_module<-0
+treatment_module<-1
+
+interest_genes<-membership%>%
+  mutate(treatment = ifelse(grepl("exp", gene, ignore.case = TRUE), "exposed", "control"))%>%
+  arrange(gene_prefix)%>%
+  select(module, gene_prefix, treatment)
+
+rownames(interest_genes)<-NULL
+
+interest_genes<-interest_genes%>%
+  pivot_wider(names_from=treatment, values_from=module)%>%
+  filter(control==control_module & exposed==treatment_module)
+
+interest_genes<-interest_genes$gene_prefix
+length(interest_genes)
+```
+
+```{r}
+#select columns that contain the gene prefix 
+selected_columns <- datExpr %>%
+  select(matches(paste(interest_genes, collapse = "|")))
+
+length(selected_columns)
+#should be double the length(interest_genes) above 
+
+selected_columns$exon<-c("2", "3", "4", "5", "6")
+
+selected_columns<-selected_columns %>%
+               pivot_longer(cols = -exon, 
+               names_to = "gene", 
+               values_to = "value")%>%
+  
+  #add color for exposed vs control 
+  mutate(treatment = ifelse(grepl("exp", gene, ignore.case = TRUE), "exposed", "control"))
+
+#plot expression patterns by treatment 
+target_plot<-ggplot(data=selected_columns, aes(color=treatment, x=exon, y=value)) +
+  ggtitle(paste("Module", control_module, "to Module ", treatment_module))+
+  geom_hline(yintercept = 0, linetype="dashed", color = "grey")+
+  geom_line(aes(group=gene))+
+  geom_point() +
+  scale_color_manual(values=c("gray", "red"), name="Treatment")+
+  #ylim(-5,5) +
+  ylab("Mean Expression Relative to Exon 1") +
+  xlab("Exon")+
+  theme_classic(); target_plot
+
+```
+
+# Next read in and plot sample-level data for these genes rather than averaged data. 
