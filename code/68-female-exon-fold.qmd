@@ -342,6 +342,13 @@ logfe <- na.omit(logfe)
 ```{r}
 head(logfe)
 ```
+
+```{r}
+logfe <- logfe %>%
+  mutate(GeneID = str_c(GeneID, "_exp"))
+```
+
+
 ```{r}
 output_file_path <- "../output/68-female-exon-fold/logfe.txt"
 
@@ -351,6 +358,10 @@ write.table(logfe, file = output_file_path, sep = "\t", row.names = FALSE, col.n
 ```
 
 
+```{bash}
+cat ../output/68-female-exon-fold/logfe.txt \
+../output/68-female-exon-fold/logfc.txt > ../output/68-female-exon-fold/female_merge.txt
+```
 
 
 
