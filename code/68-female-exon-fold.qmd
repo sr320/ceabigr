@@ -274,7 +274,7 @@ logfe <- logdata_frames$S22F %>%
   left_join(logdata_frames$S50F, by = "GeneID") %>%
   left_join(logdata_frames$S77F, by = "GeneID") %>%
   dplyr::select(GeneID, starts_with("f")) %>%
-  mutate(fold1_avg = rowMeans(select(.,starts_with("fold1")), na.rm = TRUE)) %>%
+ # mutate(fold1_avg = rowMeans(select(.,starts_with("fold1")), na.rm = TRUE)) %>%
   mutate(fold2_avg = rowMeans(select(.,starts_with("fold2")), na.rm = TRUE)) %>%
   mutate(fold3_avg = rowMeans(select(.,starts_with("fold3")), na.rm = TRUE)) %>%
   mutate(fold4_avg = rowMeans(select(.,starts_with("fold4")), na.rm = TRUE)) %>%
@@ -342,6 +342,18 @@ logfe <- na.omit(logfe)
 ```{r}
 head(logfe)
 ```
+```{r}
+output_file_path <- "../output/68-female-exon-fold/logfe.txt"
+
+# Write the logfc object to a file as tab-delimited text
+write.table(logfe, file = output_file_path, sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+
+```
+
+
+
+
+
 
 ```{r}
 ggplot(logfe, aes(x = slope)) + 
