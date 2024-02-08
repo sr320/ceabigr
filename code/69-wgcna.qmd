@@ -16,11 +16,13 @@ output:
   #   toc_depth: 3
   #   number_sections: true
   #   html_preview: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r}
 library(BiocManager)
-BiocManager::install("WGCNA")
+#BiocManager::install("WGCNA")
 ```
 
 
@@ -49,22 +51,30 @@ knitr::opts_chunk$set(
 ```
 
 ```{r}
-datExpr <- fread("../output/68-female-exon-fold/logfc.txt")
-
+datExpr <- fread("output/68-female-exon-fold/logfc.txt")
 ```
 
 ```{r}
 rownames(datExpr) <- datExpr$GeneID
+names(datExpr)
+genes<-datExpr$GeneID
 datExpr <- datExpr[ , -1, with = FALSE]
-
 ```
 
+Transpose to put "samples" or exon in rows and genes in columns. Put gene ID in row names. 
+```{r}
+datExpr <- t(datExpr) 
+datExpr<-as.data.frame(datExpr)
+
+names(datExpr)<-genes
+```
 
 ```{r}
 sampleTree = hclust(dist(datExpr), method = "average")
 plot(sampleTree, main = "Sample clustering to detect outliers", sub = "", xlab = "", cex.lab = 1.5, cex.axis = 1.5, cex.main = 2)
 
 ```
+
 ```{r}
 powers = c(1:10)
 sft = pickSoftThreshold(datExpr, powerVector = powers, verbose = 5)
@@ -73,31 +83,186 @@ text(sft$fitIndices[,1], -log(sft$fitIndices[,3]), labels=powers, cex=0.5)
 abline(h = -log(0.9), col = "red")
 
 ```
+
 ```{r}
-softPower = 6 # example value, adjust based on your plot
+softPower = 4 # example value, adjust based on your plot
 adjacency = adjacency(datExpr, power = softPower)
 TOM = TOMsimilarity(adjacency)
 dissTOM = 1-TOM
 geneTree = hclust(as.dist(dissTOM), method = "average")
-dynamicMods = cutreeDynamic(dendro = geneTree, distM = dissTOM, deepSplit = 2, pamRespectsDendro = FALSE)
-table(dynamicMods)
 
+dynamicMods = cutreeDynamic(dendro = geneTree, distM = dissTOM, deepSplit = 2, pamRespectsDendro = FALSE, minClusterSize = 100)
+
+table<-as.data.frame(table(dynamicMods)) #list modules and respective sizes
+table(dynamicMods)
 ```
+
+
 ```{r}
 # Assuming 'dynamicMods' is your vector of module assignments from cutreeDynamic
 moduleLabels = dynamicMods
 
 ```
 
-
 ```{r}
-genesInBlueModule = names(moduleLabels[moduleLabels == "blue"])
+#Calculate eigengenes
+MEList = moduleEigengenes(datExpr, colors = moduleLabels, softPower = 4)
+MEs = MEList$eigengenes
 
+#Calculate dissimilarity of module eigengenes
+MEDiss = 1-cor(MEs)
+
+#merge to 85% similar 
+MEDissThres= 0.1 #merge modules that are 85% similar
+
+merge= mergeCloseModules(datExpr, moduleLabels, cutHeight= MEDissThres, verbose =3)
+
+mergedColors= merge$colors
+mergedMEs= merge$newMEs
+
+moduleLabels=mergedColors
+moduleColors = mergedColors # Rename to moduleColors
+MEs = mergedMEs;
+ncol(MEs) #How many modules do we have now?
+
+table(mergedColors)
+table<-as.data.frame(table(mergedColors))
+table
+```
+
+We have 26 modules after merging to 85% similarity. The table shows number of genes in each module.
+
+Plot module expression across exon location. 
+```{r}
+head(MEs)
+names(MEs)
+Strader_MEs <- MEs
+Strader_MEs$exon <- c("2", "3", "4", "5", "6")
+head(Strader_MEs)
+```
+```{r}
+plot_MEs<-Strader_MEs%>%
+  gather(., key="Module", value="Mean", ME4:ME28)
 ```
 
 
+Plot module expression across exon location. 
 ```{r}
-datExprBlueModule = datExpr[genesInBlueModule, ]
+library(ggplot2)
+library(tidyverse)
 
+expression_plot<-plot_MEs%>%
+  group_by(Module, exon) %>%
+  
+  ggplot(aes(x=exon, y=Mean)) +
+  facet_wrap(~Module)+
+  geom_point() +
+  geom_line(group=1)+
+  #ylim(-0.5,1) +
+  ylab("Mean Module Eigenegene") +
+  geom_hline(yintercept = 0, linetype="dashed", color = "grey")+
+  theme_classic(); expression_plot
+```
+
+
+# Blockwise modules approach 
+
+``` {r, echo=TRUE, warning=FALSE, message=FALSE}
+
+picked_power = 4
+temp_cor <- cor       
+cor <- WGCNA::cor                                             # Force it to use WGCNA cor function (fix a namespace conflict issue)
+netwk <- blockwiseModules(datExpr,                         # <= input here
+
+                          # == Adjacency Function ==
+                          power = picked_power,               # <= power here
+                          networkType = "signed",
+
+                          # == Tree and Block Options ==
+                          deepSplit = 2,
+                          pamRespectsDendro = F,
+                          # detectCutHeight = 0.75,
+                          minModuleSize = 1000,                  
+                          maxBlockSize = 10000,
+
+                          # == Module Adjustments ==
+                          mergeCutHeight = 0.15,
+                          reassignThreshold = 1e-6,
+                          minCoreKME = 0.5,
+                          minKMEtoStay = 0.3,
+
+                          # == TOM == Archive the run results in TOM file (saves time) but it doesn't save a file
+                          saveTOMs = F,
+                          saveTOMFileBase = "ER",
+
+                          # == Output Options
+                          numericLabels = T,
+                          verbose = 3)
+
+cor <- temp_cor     # Return cor function to original namespace
+
+# Identify labels as numbers 
+mergedColors = netwk$colors
+# Plot the dendrogram and the module colors underneath
+
+#pdf("output/69-wgcna/blockwise_module_colors.pdf")
+#plotDendroAndColors(
+ # netwk$dendrograms[[1]],
+  #mergedColors[netwk$blockGenes[[1]]],
+  #"Module colors",
+  #dendroLabels = FALSE,
+  #hang = 0.03,
+  #addGuide = TRUE,
+  #guideHang = 0.05 )
+#dev.off()
+
+table(mergedColors)
+```
+
+```{r}
+#Calculate eigengenes
+MEList = moduleEigengenes(datExpr, colors = mergedColors, softPower = 4)
+MEs = MEList$eigengenes
+
+ncol(MEs) #How many modules do we have now?
+
+table(mergedColors)
+table<-as.data.frame(table(mergedColors))
+table
+```
+
+We have 31 modules after merging to 85% similarity. The table shows number of genes in each module.
+
+Plot module expression across exon location. 
+```{r}
+head(MEs)
+names(MEs)
+Strader_MEs <- MEs
+Strader_MEs$exon <- c("2", "3", "4", "5", "6")
+head(Strader_MEs)
+```
+
+```{r}
+plot_MEs<-Strader_MEs%>%
+  gather(., key="Module", value="Mean", ME0:ME7)
+```
+
+
+Plot module expression across exon location. 
+```{r}
+library(ggplot2)
+library(tidyverse)
+
+expression_plot<-plot_MEs%>%
+  group_by(Module, exon) %>%
+  
+  ggplot(aes(x=exon, y=Mean)) +
+  facet_wrap(~Module)+
+  geom_point() +
+  geom_line(group=1)+
+  #ylim(-0.5,1) +
+  ylab("Mean Module Eigenegene") +
+  geom_hline(yintercept = 0, linetype="dashed", color = "grey")+
+  theme_classic(); expression_plot
 ```
 
