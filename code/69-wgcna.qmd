@@ -83,7 +83,7 @@ datExpr[] <- lapply(datExpr, as.numeric)
 names(datExpr)<-genes
 ```
 
-
+Choose a soft power. 
 ```{r}
 powers = c(1:10)
 sft = pickSoftThreshold(datExpr, powerVector = powers, verbose = 5)
@@ -95,6 +95,7 @@ abline(h = -log(0.9), col = "red")
 
 # Blockwise modules network construction 
 
+Run blockwise modules with a signed network. 
 ``` {r, echo=TRUE, warning=FALSE, message=FALSE}
 
 picked_power = 8
@@ -144,6 +145,7 @@ names(membership)<-c("module", "gene")
 
 # Plot module eigengene level
 
+Next plot eigengene levels 
 ```{r}
 #Calculate eigengenes
 MEList = moduleEigengenes(datExpr, colors = mergedColors, softPower = 8)
@@ -204,6 +206,8 @@ expression_plot<-plot_MEs%>%
   #ylim(-0.5,1) +
   ylab("Mean Module Eigenegene") +
   theme_classic(); expression_plot
+
+ggsave(plot=expression_plot, filename="output/69-wgcna/module-expression.png", width=12, height=12)
 ```
 
 Identify modules that have only  1 instance of a gene (if we see only 1 instance, that means a gene moved between modules by treatment)
@@ -238,8 +242,6 @@ length(unique(same_within_module$gene_prefix))
 ```
 There are 1058 genes that are in the same module by treatment. 
 
-13281 total genes
-
 Number of unique genes in module 0. 
 ```{r}
 test<-membership%>%
@@ -250,7 +252,6 @@ length(unique(test$gene_prefix))
 703 unique genes 
 
 # Overlay plot of every individual gene expression level over the module mean 
-
 In the plot below, adjust "target_module", and "target_module2" to include the module number you are interested in. 
 
 Module 0 
@@ -292,6 +293,48 @@ target_plot<-ggplot() +
   xlab("Exon")+
   theme_classic(); target_plot
 
+ggsave(plot=target_plot, filename="output/69-wgcna/genes-module0.png", width=6, height=6)
+```
+
+```{r}
+target_module<-1
+target_genes<-membership%>%filter(module==target_module)%>%select(gene)
+target_genes<-unique(target_genes$gene)
+
+# Select columns in datExpr that match any item in target_genes
+selected_data <- datExpr[, colnames(datExpr) %in% target_genes, drop = FALSE]
+selected_data$exon<-c("2", "3", "4", "5", "6")
+
+selected_data<-selected_data %>%
+               pivot_longer(cols = -exon, 
+               names_to = "gene", 
+               values_to = "value")%>%
+  
+  #add color for exposed vs control 
+  mutate(treatment = ifelse(grepl("exp", gene, ignore.case = TRUE), "exposed", "control"))
+
+#add in mean module expression value from module dataframe
+target_module2<-"ME1"
+selected_module<-plot_MEs%>%
+  filter(Module==target_module2)
+
+target_plot<-ggplot() +
+  ggtitle(paste("Module ", target_module))+
+  geom_hline(yintercept = 0, linetype="dashed", color = "grey")+
+  geom_line(data=selected_data, aes(x=exon, y=value, group=gene, color=treatment))+
+  geom_point(data=selected_data, aes(x=exon, y=value, color=treatment)) +
+  
+  geom_line(data=selected_module, aes(x=exon, y=Mean, group=1), color="black", size=2)+
+  geom_point(data=selected_module, aes(x=exon, y=Mean), color="black", size=4) +
+  
+  scale_color_manual(values=c("gray", "red"), name="Treatment")+
+  
+  #ylim(-5,5) +
+  ylab("Mean Expression Relative to Exon 1") +
+  xlab("Exon")+
+  theme_classic(); target_plot
+
+ggsave(plot=target_plot, filename="output/69-wgcna/genes-module1.png", width=6, height=6)
 ```
 
 You can add any other modules here you are interested in! 
@@ -348,6 +391,7 @@ target_plot<-ggplot(data=selected_columns, aes(color=treatment, x=exon, y=value)
   xlab("Exon")+
   theme_classic(); target_plot
 
+ggsave(plot=target_plot, filename="output/69-wgcna/genes-module0-module1-treatment.png", width=6, height=6)
 ```
 
 # Next read in and plot sample-level data for these genes rather than averaged data. 
