@@ -54,7 +54,7 @@ knitr::opts_chunk$set(
 
 ```{r}
 #datExpr <- fread("output/68-female-exon-fold/logfc.txt")
-datExpr <- fread("output/68-female-exon-fold/female_merge.txt")
+datExpr <- fread("../output/68-female-exon-fold/female_merge.txt")
 ```
 
 ```{r}
@@ -360,6 +360,17 @@ interest_genes<-interest_genes%>%
 interest_genes<-interest_genes$gene_prefix
 length(interest_genes)
 ```
+
+
+```{r}
+interest_genes
+```
+
+
+
+
+
+
 
 ```{r}
 #select columns that contain the gene prefix 

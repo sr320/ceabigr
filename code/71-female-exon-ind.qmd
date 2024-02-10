@@ -142,40 +142,138 @@ for (file_path in logfile_paths) {
 head(logdata_frames$S12M)
 ```
 
-```{r}
-# Reshape the data to long format
-long_data <- tidyr::pivot_longer(female, cols = ends_with("avg.y"), names_to = "Exon", values_to = "Values")
 
-# Plotting a dot plot (scatter plot)
-ggplot(long_data, aes(x = factor(Exon), y = Values, group = GeneID)) +
-  geom_point(position = position_jitter(width = 0.3, height = 0), alpha = 0.15) +
-  labs(x = "Exon", y = "Read Counts (log10)") +
-  theme_minimal()
-```
+controls_females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F")
+exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
 
 
 ```{r}
-ggplot(logdata_frames$S12M) + 
-  geom_histogram(aes(x = fold2), binwidth = .02, fill = "blue", color = "black") +
-  geom_histogram(aes(x = fold3), binwidth = .02, fill = "red", color = "green") +
-  labs(title = "Histogram of r2", x = "r2", y = "Frequency") +
-  theme_minimal()
-```
 
+# Define the vectors for controls and exposed
+controls_females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F")
+exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F") # Assuming "S77" was intended to be "S77F"
+
+
+# Initialize an empty list to store the modified data frames
+filtered_logdata_frames <- list()
+
+# Loop through the list of data frames, filter, and add a source column
+for (name in names(logdata_frames)) {
+  # Filter the dataframe and add a new column 'Source' with the name of the dataframe
+  filtered_logdata_frames[[name]] <- logdata_frames[[name]] %>%
+    filter(GeneID == "LOC111137437") %>%
+    mutate(Source = name) %>%
+    mutate(Exposure_Status = case_when(
+    Source %in% controls_females ~ "control",
+    Source %in% exposed_females ~ "exposed",
+    TRUE ~ NA_character_ # This line handles any Source not in the two lists
+  ))
+
+}
+
+# Merge all the modified dataframes in the list into a new single dataframe
+merged_dataframe <- bind_rows(filtered_logdata_frames)
+```
 
 ```{r}
-ggplot(female) + 
-  geom_histogram(aes(x = r_squared.x), binwidth = .02, fill = "blue", color = "black") +
-  geom_histogram(aes(x = r_squared.y), binwidth = .02, fill = "red", alpha = 0.5, color = "black") +
-  labs(title = "Histogram of r2", x = "r2", y = "Frequency") +
-  theme_minimal()
-```
+# Assuming merged_dataframe is your final data frame
 
+# Reshape the data from wide to long format
+long_dataframe <- pivot_longer(merged_dataframe, 
+                               cols = starts_with("fold"),
+                               names_to = "Fold",
+                               values_to = "Value")
+
+# Plot the data
+ggplot(long_dataframe, aes(x = Fold, y = Value, group = Source, color = Exposure_Status)) +
+  geom_line() +
+  geom_point() +
+  theme_minimal() +
+  labs(title = "LOC111137437",
+       x = "Fold",
+       y = "Value") +
+  scale_color_viridis_d() # Optional: Use a viridis color scale for better visibility
+
+```
 
 ```{r}
-ggplot(female) + 
-  geom_histogram(aes(x = slope.x), binwidth = .02, fill = "blue", color = "black") +
-  geom_histogram(aes(x = slope.y), binwidth = .02, fill = "red", alpha = 0.5, color = "black") +
-  labs(title = "Histogram of slope", x = "slope", y = "Frequency") +
-  theme_minimal()
+# Define the vectors for controls and exposed
+controls_females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F")
+exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F") # Assuming "S77" was intended to be "S77F"
+
+# Initialize an empty list to store the modified data frames
+filtered_logdata_frames <- list()
+
+# Define your array of LOC numbers
+loc_numbers <- c("LOC111099772", "LOC111100989", "LOC111102631", "LOC111104769", 
+                 "LOC111106458", "LOC111108202", "LOC111110841", "LOC111112400", 
+                 "LOC111113283", "LOC111114474", "LOC111117013", "LOC111117739", 
+                 "LOC111119268", "LOC111119697", "LOC111120203", "LOC111121088", 
+                 "LOC111121543", "LOC111121944", "LOC111122118", "LOC111125917", 
+                 "LOC111126146", "LOC111126693", "LOC111127043", "LOC111129029", 
+                 "LOC111129868", "LOC111130078", "LOC111130115", "LOC111130425", 
+                 "LOC111130633", "LOC111130837", "LOC111132656", "LOC111132880", 
+                 "LOC111133439", "LOC111134707", "LOC111136541", "LOC111137437")
+
+# Loop through each LOC number
+for (loc in loc_numbers) {
+  # Loop through the list of data frames, filter for each LOC number, and add a source column
+  for (name in names(logdata_frames)) {
+    # Filter the dataframe for the current LOC number and add a new column 'Source' with the name of the dataframe
+    temp_filtered_df <- logdata_frames[[name]] %>%
+      filter(GeneID == loc) %>%
+      mutate(Source = name) %>%
+      mutate(Exposure_Status = case_when(
+        Source %in% controls_females ~ "control",
+        Source %in% exposed_females ~ "exposed",
+        TRUE ~ NA_character_ # This line handles any Source not in the two lists
+      ))
+    
+    # Append the filtered dataframe to the list
+    filtered_logdata_frames[[paste(name, loc, sep = "_")]] <- temp_filtered_df
+  }
+}
+
+# Merge all the modified dataframes in the list into a new single dataframe
+merged_dataframe <- bind_rows(filtered_logdata_frames)
+
+# Assuming merged_dataframe is your final data frame
+
+# Reshape the data from wide to long format
+long_dataframe <- pivot_longer(merged_dataframe, 
+                               cols = starts_with("fold"),
+                               names_to = "Fold",
+                               values_to = "Value")
+
+# Ensure there's a column in your dataframe that identifies the LOC ID. 
+# If your merged_dataframe does not have one, you might need to ensure that the information is retained in previous steps.
+# For the sake of this example, let's assume there's a column named 'GeneID' that contains the LOC ID.
+
+# Plot the data with facets
+ggplot(long_dataframe, aes(x = Fold, y = Value, group = Source, color = Exposure_Status)) +
+  geom_line() +
+  geom_point() +
+  theme_minimal() +
+  labs(title = "Gene Expression Across LOC Numbers",
+       x = "Fold Change",
+       y = "Expression Value") +
+  scale_color_viridis_d() + # Optional: Use a viridis color scale for better visibility
+  facet_wrap(~ GeneID, scales = "free_y") # Facet by LOC ID, allowing each plot to have its own y-axis scale
 ```
+```{r}
+ggplot(long_dataframe, aes(x = Fold, y = Value, group = Source, color = Exposure_Status)) +
+  geom_line() +
+  geom_point() +
+  theme_minimal() +
+  theme(text = element_text(size = 8), # Adjust text size down
+        axis.title = element_text(size = 10), # Adjust axis titles
+        legend.title = element_text(size = 10)) + # Adjust legend title
+  labs(title = "Gene Expression Across LOC Numbers",
+       x = "Fold Change",
+       y = "Expression Value") +
+  scale_color_viridis_d() +
+  facet_wrap(~ GeneID, scales = "free_y", ncol = 6)
+
+ 
+```
+
