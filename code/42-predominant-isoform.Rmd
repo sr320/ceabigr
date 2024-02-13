@@ -381,7 +381,7 @@ head(geneExpressionMale) #Confirm formatting
 
 ## Females
 
-### Format data
+### Load and format data
 
 The file has data for all genes, but I want to remove genes that did not have any expression data. I also want to include the number of transcripts per gene. If there is only one transcript for the gene, I don't want to include it in the analysis.
 
@@ -397,6 +397,65 @@ predIsoFemFilt <- predIsoFem %>%
   inner_join(., totTranscripts, by = "gene_name") %>%
   filter(., max_transcript > 1)
 head(predIsoFemFilt) #Confirm formatting
+```
+
+```{r}
+cov_data <- fread("https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/analyses/genes_treatment_fpkm_CoV_df.csv")
+Cvir_genom_feats <- fread("https://gannet.fish.washington.edu/Atumefaciens/20211209_cvir_gff-to-bed/20211209_cvir_GCF_002022765.2_genes.bed")
+```
+
+```{r}
+colnames(cov_data) <- c("gene_ids", "M_control","F_control", "M_treated", "F_treated")
+
+cov_data_l <- cov_data %>% pivot_longer(names_to = "sample",values_to = "CoV_FPKM", cols = 2:5)
+
+Cvir_genom_feats$length <- Cvir_genom_feats$V3 - Cvir_genom_feats$V2 + 1
+
+colnames(Cvir_genom_feats)[4] <- "gene_ids"
+
+cov_data_l <- merge(cov_data_l, Cvir_genom_feats[,c("gene_ids", "length")], by = "gene_ids")
+
+head(cov_data_l) #Confirm formatting
+```
+
+```{r}
+cov_data_fem <- cov_data_l %>%
+  mutate(., sex = case_when(sample == "M_treated" ~ "M",
+                            sample == "M_control" ~ "M",
+                            sample == "F_treated" ~ "F",
+                            sample == "F_control" ~ "F")) %>%
+  mutate(., treatment = case_when(sample == "M_treated" ~ "exposed",
+                                  sample == "M_control" ~ "control",
+                                  sample == "F_treated" ~ "exposed",
+                                  sample == "F_control" ~ "control")) %>%
+  filter(., sex == "F") %>%
+  filter(., is.na(CoV_FPKM) == FALSE) %>%
+  mutate(., gene_name = gsub("gene-", "", gene_ids)) %>%
+  select(., 3:7) #Create sex and treatment columns based on existing sample column. Filter for female data and remove entries where CoV_FPKM = NA. Remove prefix from gene names and excess columns. 
+nrow(cov_data_fem)
+head(cov_data_fem)
+```
+
+```{r}
+methCovDataFem <- read.csv("../40-gene-methylation/controls.females_v_exposed.females.CoV-mean-methylation.csv", header = TRUE) %>%
+  select(., -abs.delta.CoV) %>%
+  dplyr::rename(., gene_name = gene.id) %>%
+  mutate(., gene_name = gsub("gene-", "", gene_name)) %>%
+  pivot_longer(., cols = 2:3, names_to = "treatment", values_to = "CoV_Meth") %>%
+  mutate(., treatment = gsub(treatment, pattern = "s.females.mean.methylation.CoV", replacement = "")) %>%
+  mutate(., treatment = gsub(treatment, pattern = ".females.mean.methylation.CoV", replacement = "")) %>%
+  filter(., is.na(CoV_Meth) == FALSE) #Import CV data for female oysters. Remove deltaCV column and rename gene.id column, Remove prefix from gene names. Pivot table longer such that each row has data for either exposed or control oysters. Remove superflous information in treatment identification. Remove rows where CoV_Meth ≠ NA
+nrow(methCovDataFem)
+head(methCovDataFem)
+```
+
+```{r}
+femMethExpCV <- inner_join(femMethExp, cov_data_fem, by = c("gene_name", "treatment")) %>%
+  inner_join(., methCovDataFem, by = c("gene_name", "treatment")) %>%
+  select(., -c(t_name, sex)) %>%
+  distinct(.) #Join CV information for expression and methylation with gene-level expression and methylation data for each sample.
+nrow(femMethExpCV %>% select(gene_name) %>% distinct(.)) #9854 unique genes
+head(femMethExpCV)
 ```
 
 ### Isoform change
@@ -475,6 +534,8 @@ predIsoFemFiltAnnotF <- predIsoFemFiltAnnot %>%
   filter(., change == 1)
 as.data.frame(table(predIsoFemFiltAnnotF$GOslim))
 ```
+
+
 
 ### Isoforms and methylation
 
@@ -574,70 +635,51 @@ femMethExp %>%
   theme_minimal()
 ```
 
-### Transcriptional noise analysis
+#### Model data
 
-#### Load data
+I want to understand if a predominant isoform shift due to pH treatment can be explained by a change in gene body methylation due to pH. I will also add gene length (the longer the gene, the more potential for different isoforms/alternative start or stop sites) and change in gene expression due to pH (higher expression = higher likelihood of picking up signal associated with isoform change).
 
-```{r}
-cov_data <- fread("https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/analyses/genes_treatment_fpkm_CoV_df.csv")
-Cvir_genom_feats <- fread("https://gannet.fish.washington.edu/Atumefaciens/20211209_cvir_gff-to-bed/20211209_cvir_GCF_002022765.2_genes.bed")
-```
-
-#### Format data
+if the predominant isoform shifted under low pH  ~ change gene body methylation (exposed - control) + change in gene expression (exposed - control) + log10(gene length).
 
 ```{r}
-colnames(cov_data) <- c("gene_ids", "M_control","F_control", "M_treated", "F_treated")
-
-cov_data_l <- cov_data %>% pivot_longer(names_to = "sample",values_to = "CoV_FPKM", cols = 2:5)
-
-Cvir_genom_feats$length <- Cvir_genom_feats$V3 - Cvir_genom_feats$V2 + 1
-
-colnames(Cvir_genom_feats)[4] <- "gene_ids"
-
-cov_data_l <- merge(cov_data_l, Cvir_genom_feats[,c("gene_ids", "length")], by = "gene_ids")
-
-head(cov_data_l) #Confirm formatting
-```
-
-```{r}
-cov_data_fem <- cov_data_l %>%
-  mutate(., sex = case_when(sample == "M_treated" ~ "M",
-                            sample == "M_control" ~ "M",
-                            sample == "F_treated" ~ "F",
-                            sample == "F_control" ~ "F")) %>%
-  mutate(., treatment = case_when(sample == "M_treated" ~ "exposed",
-                                  sample == "M_control" ~ "control",
-                                  sample == "F_treated" ~ "exposed",
-                                  sample == "F_control" ~ "control")) %>%
-  filter(., sex == "F") %>%
-  filter(., is.na(CoV_FPKM) == FALSE) %>%
-  mutate(., gene_name = gsub("gene-", "", gene_ids)) %>%
-  select(., 3:7) #Create sex and treatment columns based on existing sample column. Filter for female data and remove entries where CoV_FPKM = NA. Remove prefix from gene names and excess columns. 
-nrow(cov_data_fem)
-head(cov_data_fem)
-```
-
-```{r}
-methCovDataFem <- read.csv("../40-gene-methylation/controls.females_v_exposed.females.CoV-mean-methylation.csv", header = TRUE) %>%
-  select(., -abs.delta.CoV) %>%
-  dplyr::rename(., gene_name = gene.id) %>%
-  mutate(., gene_name = gsub("gene-", "", gene_name)) %>%
-  pivot_longer(., cols = 2:3, names_to = "treatment", values_to = "CoV_Meth") %>%
-  mutate(., treatment = gsub(treatment, pattern = "s.females.mean.methylation.CoV", replacement = "")) %>%
-  mutate(., treatment = gsub(treatment, pattern = ".females.mean.methylation.CoV", replacement = "")) %>%
-  filter(., is.na(CoV_Meth) == FALSE) #Import CV data for female oysters. Remove deltaCV column and rename gene.id column, Remove prefix from gene names. Pivot table longer such that each row has data for either exposed or control oysters. Remove superflous information in treatment identification. Remove rows where CoV_Meth ≠ NA
-nrow(methCovDataFem)
-head(methCovDataFem)
-```
-
-```{r}
-femMethExpCV <- inner_join(femMethExp, cov_data_fem, by = c("gene_name", "treatment")) %>%
-  inner_join(., methCovDataFem, by = c("gene_name", "treatment")) %>%
-  select(., -c(t_name, sex)) %>%
-  distinct(.) #Join CV information for expression and methylation with gene-level expression and methylation data for each sample.
-nrow(femMethExpCV %>% select(gene_name) %>% distinct(.)) #9854 unique genes
 head(femMethExpCV)
 ```
+
+
+```{r}
+predIsoFemWide <- femMethExpCV %>%
+  select(., gene_name, treatment, change, avg_meth, avg_exp, length) %>%
+  pivot_wider(names_from = treatment, values_from = c(avg_meth, avg_exp)) %>%
+  replace(is.na(.), 0) %>%
+  mutate(., change_meth = avg_meth_exposed - avg_meth_control) %>%
+  mutate(., change_exp = avg_exp_exposed - avg_exp_control) #Take data and select gene name, change, treatment, average methylation, average expression, and length columns. Pivot wider, appending treatment information to names of the columns. Replace all NA with 0 (no expression or methylation detected). Calculate the change in methylation and expression.
+head(predIsoFemWide)
+```
+
+```{r}
+predIsoFemModel <- glm(I(change == 1) ~ change_meth +
+                         log10(length) + log2(change_exp + 1),
+                       family = binomial(),
+                       data = predIsoFemWide) #Create a binomial model, where 1 = the predominant isoform shifted when comparing low and control pH conditions. Use change in methylation, gene length, and change in gene expression as explanatory variables
+summary(predIsoFemModel) #Only length and gene expression significant
+```
+
+```{r}
+step(predIsoFemModel, test = "LRT")
+```
+
+```{r}
+predIsoFemModel2 <- glm(I(change == 1) ~ log10(length) + log2(change_exp + 1),
+                       family = binomial(),
+                       data = predIsoFemWide) #Model identified by step
+summary(predIsoFemModel2) #Only length and gene expression significant
+```
+
+```{r}
+write.csv(broom::tidy(transNoiseFem), "fem-predo-isoform-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
+```
+
+### Transcriptional noise analysis
 
 #### Plot data
 
@@ -691,7 +733,7 @@ ggsave("fem-meth-CVMeth-xy.pdf", height = 8.5, width = 11)
 
 Model needed based on Wu et al. 2020:
 
-log10(transcriptional noise) ~ gene body methylation + log2(gene expression) + log10(gene length) + indication of predominant isoform shift + pH treatment
+log10(transcriptional noise) ~ gene body methylation + log2(gene expression) + log10(gene length) + pH treatment
 
 ```{r}
 transNoiseFem <- lm(data = femMethExpCV,
