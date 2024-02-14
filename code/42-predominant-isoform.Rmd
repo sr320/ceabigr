@@ -461,18 +461,18 @@ head(femMethExpCV)
 ### Isoform change
 
 ```{r}
-nrow(predIsoFemFilt) #10559 genes total
-sum(predIsoFemFilt$change) #2198 with shift in predominant isoform
-sum(predIsoFemFilt$change) / nrow(predIsoFemFilt) * 100 #20.81637% of genes have predominant isoforms that change under OA conditions
+nrow(predIsoFemFilt) #38575 genes total
+sum(predIsoFemFilt$change) #2252 with shift in predominant isoform
+sum(predIsoFemFilt$change) / nrow(predIsoFemFilt) * 100 #5.837978% of genes have predominant isoforms that change under OA conditions
 ```
 
 ```{r}
-predIsoFemTest <- prop.test(x = 2198, n = 10559, p = 0.50,
+predIsoFemTest <- prop.test(x = 2252, n = 38575, p = 0.50,
                             alternative = "two.sided",
                             conf.level = 0.95) #Conduct 1-sample z-test. 
 predIsoFemTest
-predIsoFemTest$statistic
-predIsoFemTest$p.value #Isoform shifts happen significantly less than what would be expected by random chance
+predIsoFemTest$statistic #X-squared = 30091.12
+predIsoFemTest$p.value #p = 0. Isoform shifts happen significantly less than what would be expected by random chance
 ```
 
 #### Annotate isoforms
@@ -534,8 +534,6 @@ predIsoFemFiltAnnotF <- predIsoFemFiltAnnot %>%
   filter(., change == 1)
 as.data.frame(table(predIsoFemFiltAnnotF$GOslim))
 ```
-
-
 
 ### Isoforms and methylation
 
@@ -1042,7 +1040,7 @@ femTreatmentPlot <- femMethExpCV %>%
                     guide = "none") +
   scale_alpha_continuous(guide = "none") +
   geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
-  labs(x = "Treatment", y = "Transcriptional Noise", title = expression(paste("A.   ", beta, " = -0.10, t = -43.75, p = 0"))) +
+  labs(x = "Treatment", y = "Transcriptional Noise", title = expression(paste("A.   ", beta, " = -8.62 x", 10^-3, ", t = -3.17, p = 0.002"))) +
   stat_summary(aes(group = 1), fun = median, geom = "line", col = "black", lty = 2) +
   theme_classic(base_size = 15)
 
@@ -1053,7 +1051,7 @@ femFPKMPlot <- femMethExpCV %>%
   scale_colour_manual(values = c(plotColors[4], plotColors[8]),
                       guide = "none") +
   scale_alpha_continuous(guide = "none") +
-  labs(x = "FPKM", y = "", title = expression(paste("B.   ", beta, " = -19.26, t = -51.29, p = 0"))) +
+  labs(x = "FPKM", y = "", title = expression(paste("B.   ", beta, " = -0.10, t = -51.19, p < ", 10^-15))) +
   geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], linewidth = 2, na.rm = TRUE) +
   geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], linewidth = 2, na.rm = TRUE) +
   theme_classic(base_size = 15)
@@ -1065,7 +1063,7 @@ femMethPlot <- femMethExpCV %>%
   scale_colour_manual(values = c(plotColors[4], plotColors[8]),
                       guide = "none") +
   scale_alpha_continuous(guide = "none") +
-  labs(x = "Methylation (%)", y = "Transcriptional Noise", title = expression(paste("C.   ", beta, " = -0.004, t = -56.32, p = 0"))) +
+  labs(x = "Methylation (%)", y = "Transcriptional Noise", title = expression(paste("C.   ", beta, " = -3.85 x ", 10^-3, ", t = -56.32, p < ", 10^-15))) +
   geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], linewidth = 2, na.rm = TRUE) +
   geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], linewidth = 2, na.rm = TRUE) +
   theme_classic(base_size = 15)
@@ -1077,7 +1075,7 @@ femCVMethPlot <- femMethExpCV %>%
   scale_colour_manual(values = c(plotColors[4], plotColors[8]),
                       guide = "none") +
   scale_alpha_continuous(guide = "none") +
-  labs(x = "CV Methylation", y = "", title = expression(paste("D.   ", beta, " = 0.10, t = 35.44, p < 1.87 x", 10^-272))) +
+  labs(x = "CV Methylation", y = "", title = expression(paste("D.   ", beta, " = 0.10, t = 35.44, p < ", 10^-15))) +
   geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], linewidth = 2, na.rm = TRUE) +
   geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], linewidth = 2, na.rm = TRUE) +
   theme_classic(base_size = 15)
@@ -1167,6 +1165,7 @@ predIsoMaleTest$p.value #Isoform shifts happen significantly less than what woul
 
 ```{r}
 head(predIsoMaleFilt)
+nrow(predIsoMaleTest)
 ```
 
 ```{r}
