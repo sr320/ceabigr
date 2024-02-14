@@ -1679,7 +1679,7 @@ maleTreatmentPlot <- maleMethExpCV %>%
                     guide = "none") +
   scale_alpha_continuous(guide = "none") +
   geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
-  labs(x = "Treatment", y = "Transcriptional Noise", title = expression(paste("A.   ", beta, " = 0.01, t = 2.89, p = 0.004"))) +
+  labs(x = "Treatment", y = "Transcriptional Noise", title = expression(paste("A.   ", beta, " = 0.15, t = 7.81, p = 6.19 x ", 10^-15))) +
   stat_summary(aes(group = 1), fun = median, geom = "line", col = "black", lty = 2) +
   theme_classic(base_size = 15)
 
@@ -1690,7 +1690,7 @@ maleFPKMPlot <- maleMethExpCV %>%
   scale_colour_manual(values = c(plotColors[4], plotColors[8]),
                       guide = "none") +
   scale_alpha_continuous(guide = "none") +
-  labs(x = "FPKM", y = "", title = expression(paste("B.   ", beta, " = -3.46, t = -10.57, p = 4.76 x ", 10^-26))) +
+  labs(x = "FPKM", y = "", title = expression(paste("B.   ", beta, " = -0.41, t = -47.87, p < ", 10^-15))) +
   geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], linewidth = 2, na.rm = TRUE) +
   geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], linewidth = 2, na.rm = TRUE) +
   theme_classic(base_size = 15)
@@ -1702,7 +1702,7 @@ maleMethPlot <- maleMethExpCV %>%
   scale_colour_manual(values = c(plotColors[4], plotColors[8]),
                       guide = "none") +
   scale_alpha_continuous(guide = "none") +
-  labs(x = "Methylation (%)", y = "Transcriptional Noise", title = expression(paste("C.   ", beta, " = -0.001, t = -14.88, p = 8.45 x ", 10^-50))) +
+  labs(x = "Methylation (%)", y = "Transcriptional Noise", title = expression(paste("C.   ", beta, " = -1.40 x ", 10^-3, ", t = -14.88, p < ", 10^-15))) +
   geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], linewidth = 2, na.rm = TRUE) +
   geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], linewidth = 2, na.rm = TRUE) +
   theme_classic(base_size = 15)
@@ -1714,7 +1714,7 @@ maleCVMethPlot <- maleMethExpCV %>%
   scale_colour_manual(values = c(plotColors[4], plotColors[8]),
                       guide = "none") +
   scale_alpha_continuous(guide = "none") +
-  labs(x = "CV Methylation", y = "", title = expression(paste("D.   ", beta, " = 0.14, t = 27.45, p = 6.40 x ", 10^-163))) +
+  labs(x = "CV Methylation", y = "", title = expression(paste("D.   ", beta, " = 0.14, t = 27.46, p = < ", 10^-15))) +
   geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], linewidth = 2, na.rm = TRUE) +
   geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], linewidth = 2, na.rm = TRUE) +
   theme_classic(base_size = 15)
