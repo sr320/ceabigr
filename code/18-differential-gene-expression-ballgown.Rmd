@@ -34,6 +34,7 @@ REQUIRES the following R libraries:
 library("ballgown")
 library("tidyverse")
 library("ggplot2")
+library("ggrepel")
 ```
 
 
@@ -704,13 +705,13 @@ cat("Number of female controls vs exposed DETs with p-values and q-values <= ", 
 merged_filtered_stat_results <- merged_filtered_stat_results %>% mutate(start = start - 1)
 head(merged_filtered_stat_results)
 
-# Filter for female up-regulated transcripts (i.e. fold-change < 1)
+# Filter for female controls up-regulated transcripts (i.e. fold-change < 1)
 # Convert to BED coordinate system, which is 0-based start
 # and end EXCLUSIVE; so need to subtract 1 from start coordinates ONLY
 DET_females_controls <- filter(merged_filtered_stat_results, fc < 1) %>% mutate(start = start - 1)
 head(DET_females_controls)
 
-# Filter for male up-regulated transcripts (i.e. fold-change > 1)
+# Filter for female exposed up-regulated transcripts (i.e. fold-change > 1)
 # Convert to BED coordinate system, which is 0-based start
 # and end EXCLUSIVE; so need to subtract 1 from start coordinates ONLY
 DET_females_exposed <- filter(merged_filtered_stat_results, fc > 1) %>% mutate(start = start - 1)
@@ -728,6 +729,66 @@ count_DET_females_exposed <-  nrow(DET_females_exposed)
 # Print number of female exposed DET
 cat("Number of female exposed samples DET with p-values and q-values <= ", pvalue, ":", count_DET_females_exposed, "\n")
 ```
+
+### Volcano plot
+
+```{r}
+
+# Load phenotype info into Ballgown
+pData(bg_females) <- sample_metadata_subset_female_only
+
+
+stat_results = stattest(bg_females, feature='transcript', meas='FPKM', covariate="Treatment", getFC = TRUE)
+
+
+# Merge with full table to get subset of just differentially expressed isoforms
+stat_results_merged <- merge(x = stat_results, y = whole_tx_table, by.x = "id", by.y = "t_id")
+
+
+# default all genes to "no change"
+stat_results_merged$diffexpressed <- "No"
+
+# Log transform fold change
+stat_results_merged$log2fc <- log2(stat_results_merged[,"fc"])
+
+# Filter for female controls up-regulated transcripts (i.e. fold-change < 1) and p/qvalue < 0.05
+stat_results_merged$diffexpressed[stat_results_merged$pval <= pvalue
+                                  & stat_results_merged$qval <= qvalue
+                                  & stat_results_merged$log2fc <= log(1)] <- "Higher in controls"
+
+# Filter for female controls up-regulated transcripts (i.e. fold-change > 1) and p/qvalue < 0.05
+stat_results_merged$diffexpressed[stat_results_merged$pval <= pvalue
+                                  & stat_results_merged$qval <= qvalue
+                                  & stat_results_merged$log2fc >= log(1)] <- "Higher in exposed"
+
+stat_results_merged$gene_label <- NA
+# write the gene names of those significantly upregulated/downregulated to a new column
+stat_results_merged$gene_label[stat_results_merged$diffexpressed != "No"] <- stat_results_merged$gene_name[stat_results_merged$diffexpressed != "No"]
+
+# Filter data based on conditions
+blue_points <- stat_results_merged[stat_results_merged$diffexpressed != "No" & stat_results_merged$diffexpressed == "Higher in controls", ]
+red_points <- stat_results_merged[stat_results_merged$diffexpressed != "No" & stat_results_merged$diffexpressed == "Higher in exposed", ]
+grey_points <- stat_results_merged[stat_results_merged$pval <= pvalue & !(stat_results_merged$id %in% c(blue_points$id, red_points$id)), ]
+black_points <- stat_results_merged[!(stat_results_merged$id %in% c(blue_points$id, red_points$id, grey_points$id)), ]
+
+# Create the plot
+ggplot(stat_results_merged, aes(x = log2fc, y = -log10(pval))) +
+  geom_point(data = blue_points, aes(color = "blue"), alpha = 0.5) +
+  geom_point(data = red_points, aes(color = "red"), alpha = 0.5) +
+  geom_point(data = grey_points, aes(color = "grey"), alpha = 0.5) +
+  geom_point(data = black_points, aes(color = "black"), alpha = 0.5) +
+  geom_text(data = rbind(blue_points, red_points), aes(label = gene_label, color = ifelse(log2fc <= log(1), "blue", "red")), vjust = 1.5, hjust = 0.5, size = 3.5) +
+  scale_color_identity(guide = "legend", labels = c("Differentially expressed - Controls", "Differentially expressed - Exposed", paste0("p-value <= ", pvalue), "Black"), breaks = c("blue", "red", "grey", "black")) +
+  theme_minimal() +
+  labs(x = "log2 Fold Change", y = "-log10(p-value)", color = NULL) +
+  ggtitle("Females - Controls vs. Exposed")
+
+
+
+dev.off()
+
+```
+
 ## Write DETs females control vs. exposed to files
 ```{r write-DETs-female-OA-to-files}
 write.csv(
