@@ -100,6 +100,29 @@ write_csv(grouped18, "../output/73-gene-methylation/grouped18.csv")
 ```
 
 
+```{r}
+# For Females
+female_data <- grouped18 %>%
+  filter(Sex == "F") %>%
+  group_by(gene) %>%
+  summarize(meth_diff = mean_mean[Treatment == "Exposed"] - mean_mean[Treatment == "Control"])
+
+# For Males
+male_data <- grouped18 %>%
+  filter(Sex == "M") %>%
+  group_by(gene) %>%
+  summarize(meth_diff = mean_mean[Treatment == "Exposed"] - mean_mean[Treatment == "Control"])
+
+```
+
+
+```{r}
+write_csv(male_data, "../output/73-gene-methylation/male_data.csv")
+
+write_csv(female_data, "../output/73-gene-methylation/female_data.csv")
+```
+
+
 
 
 # Metadata
