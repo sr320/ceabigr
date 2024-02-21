@@ -923,6 +923,64 @@ count_filtered_males_DET_stat_results <-  nrow(filtered_males_DET_stat_results)
 cat("Number of male OA DETs with p-values and q-values <= ", pvalue, ":", count_filtered_males_DET_stat_results)
 ```
 
+### Volcano plot
+
+```{r}
+
+# Merge without filter
+merged_males_DET_stat_results <- merge(x = males_DET_stat_results, y = whole_tx_table, by.x = "id", by.y = "t_id")
+head(merged_males_DET_stat_results)
+
+# default all genes to "no change"
+# Used for easier/cleaner parsing
+merged_males_DET_stat_results$diffexpressed <- "No"
+
+# Log transform fold change
+merged_males_DET_stat_results$log2fc <- log2(merged_males_DET_stat_results[,"fc"])
+
+# Filter for female controls up-regulated transcripts (i.e. fold-change < 1) and p/qvalue < 0.05
+merged_males_DET_stat_results$diffexpressed[merged_males_DET_stat_results$pval <= pvalue
+                                  & merged_males_DET_stat_results$qval <= qvalue
+                                  & merged_males_DET_stat_results$log2fc <= log(1)] <- 0
+
+# Filter for female controls up-regulated transcripts (i.e. fold-change > 1) and p/qvalue < 0.05
+merged_males_DET_stat_results$diffexpressed[merged_males_DET_stat_results$pval <= pvalue
+                                  & merged_males_DET_stat_results$qval <= qvalue
+                                  & merged_males_DET_stat_results$log2fc >= log(1)] <- 1
+
+# Set gene_label column for easier/cleaner parsing.
+merged_males_DET_stat_results$gene_label <- NA
+
+# write the gene names of those significantly upregulated/downregulated to a new column
+merged_males_DET_stat_results$gene_label[merged_males_DET_stat_results$diffexpressed != "No"] <- merged_males_DET_stat_results$gene_name[merged_males_DET_stat_results$diffexpressed != "No"]
+
+# create volcano plot
+males_DET_volcano_plot <- create_volcano_plot(
+  merged_males_DET_stat_results,
+  "log2fc",
+  "pval",
+  "diffexpressed",
+  "gene_label",
+  "",
+  c("Differentially Expressed - Controls",
+    "Differentially Expressed - Exposed",
+    paste0("p-value <= ", pvalue), "P/Q-values > 0.05"
+    )
+  )
+
+
+# See plot
+males_DET_volcano_plot
+```
+
+#### Save plot
+```{r}
+# Save the plot as a PNG
+ggsave("../output/18-differential-gene-expression-ballgown/figures/volcano_plot-DETs-males-CvE.png", males_DET_volcano_plot, width = 10, height = 8, units = "in", dpi = 300, bg = "white")
+```
+
+
+
 # Identify differentially expressed genes (DEGs) between Treatment within females.
 Returns FoldChange, too (getFC = TRUE)
 
