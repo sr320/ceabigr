@@ -95,6 +95,9 @@ grouped18 <- genemeth18 %>%
 print(grouped18)
 ```
 
+```{r}
+write_csv(grouped18, "../output/73-gene-methylation/grouped18.csv")
+```
 
 
 
