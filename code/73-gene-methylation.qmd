@@ -74,6 +74,26 @@ genemeth18 <- read.csv("../RAnalysis/data/meanmethgene_10x_allsampssex.csv")
 genemeth40 <- read.csv("../output/40-gene-methylation/40-gene-methylation.csv")
 ```
 
+```{r}
+meth_all <- read.delim("../output/40-gene-methylation/meth_all-samples.out", header = FALSE)
+```
+
+
+
+# Grouping 18
+
+```{r}
+grouped18 <- genemeth18 %>%
+  group_by(gene, Sex, Treatment) %>%
+  summarise(
+    mean_mean = mean(mean),
+    mean_sem = mean(sem),
+    .groups = 'drop' # This drops the grouping structure afterwards
+  )
+
+# Printing the result
+print(grouped18)
+```
 
 
 
