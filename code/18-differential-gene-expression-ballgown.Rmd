@@ -1058,24 +1058,79 @@ females_DEG_volcano_plot
 ggsave("../output/18-differential-gene-expression-ballgown/figures/volcano_plot-DEGs-females-CvE.png", females_DEG_volcano_plot, width = 10, height = 8, units = "in", dpi = 300, bg = "white")
 ```
 
-# Identify differentially expressed genes (DETs) between Treatment within males
+# Identify differentially expressed genes (DEGs) between Treatment within males
 Returns FoldChange, too (getFC = TRUE)
 
-NOTE: 0 DETs identified.
+NOTE: 0 DEGs identified.
 ```{r DEGs-male-OA}
 # Load phenotype info into Ballgown
 pData(bg_males) <- sample_metadata_subset_male_only
 
-males_DET_all_stat_results = stattest(bg_males, feature='gene', meas='FPKM', covariate="TreatmentN", getFC = TRUE)
-head(males_DET_all_stat_results)
+males_DEG_stat_results = stattest(bg_males, feature='gene', meas='FPKM', covariate="TreatmentN", getFC = TRUE)
+head(males_DEG_stat_results)
 
 # Filter DT based on set p-values and q-values
-filtered_males_DET_all_stat_results <- filter(males_DET_all_stat_results, pval <= pvalue & qval <= qvalue)
-head(filtered_males_DET_all_stat_results)
+filtered_males_DEG_stat_results <- filter(males_DEG_stat_results, pval <= pvalue & qval <= qvalue)
+head(filtered_males_DEG_stat_results)
 
-# Count number of DETG.
-count_filtered_males_DET_all_stat_results <-  nrow(filtered_males_DET_all_stat_results)
+# Count number of DEGG.
+count_filtered_males_DEG_stat_results <-  nrow(filtered_males_DEG_stat_results)
 
 # Print number of DEG
-cat("Number of male OA DEGs with p-values and q-values <= ", pvalue, ":", count_filtered_males_DET_all_stat_results)
+cat("Number of male OA DEGs with p-values and q-values <= ", pvalue, ":", count_filtered_males_DEG_stat_results)
+```
+
+### Volcano plot
+
+```{r}
+# Merge without filter
+merged_males_DEG_stat_results <- merge(x = males_DEG_stat_results, y = whole_tx_table, by.x = "id", by.y = "gene_id")
+head(merged_males_DEG_stat_results)
+
+# default all genes to "no change"
+# Used for easier/cleaner parsing
+merged_males_DEG_stat_results$diffexpressed <- "No"
+
+# Log transform fold change
+merged_males_DEG_stat_results$log2fc <- log2(merged_males_DEG_stat_results[,"fc"])
+
+# Filter for female controls up-regulated transcripts (i.e. fold-change < 1) and p/qvalue < 0.05
+merged_males_DEG_stat_results$diffexpressed[merged_males_DEG_stat_results$pval <= pvalue
+                                  & merged_males_DEG_stat_results$qval <= qvalue
+                                  & merged_males_DEG_stat_results$log2fc <= log(1)] <- 0
+
+# Filter for female controls up-regulated transcripts (i.e. fold-change > 1) and p/qvalue < 0.05
+merged_males_DEG_stat_results$diffexpressed[merged_males_DEG_stat_results$pval <= pvalue
+                                  & merged_males_DEG_stat_results$qval <= qvalue
+                                  & merged_males_DEG_stat_results$log2fc >= log(1)] <- 1
+
+# Set gene_label column for easier/cleaner parsing.
+merged_males_DEG_stat_results$gene_label <- NA
+
+# write the gene names of those significantly upregulated/downregulated to a new column
+merged_males_DEG_stat_results$gene_label[merged_males_DEG_stat_results$diffexpressed != "No"] <- merged_males_DEG_stat_results$gene_name[merged_males_DEG_stat_results$diffexpressed != "No"]
+
+# create volcano plot
+males_DEG_volcano_plot <- create_volcano_plot(
+  merged_males_DEG_stat_results,
+  "log2fc",
+  "pval",
+  "diffexpressed",
+  "gene_label",
+  "",
+  c("Differentially Expressed - Controls",
+    "Differentially Expressed - Exposed",
+    paste0("p-value <= ", pvalue), "P/Q-values > 0.05"
+    )
+  )
+
+
+# See plot
+males_DEG_volcano_plot
+```
+
+#### Save plot
+```{r}
+# Save the plot as a PNG
+ggsave("../output/18-differential-gene-expression-ballgown/figures/volcano_plot-DEGs-males-CvE.png", males_DEG_volcano_plot, width = 10, height = 8, units = "in", dpi = 300, bg = "white")
 ```
