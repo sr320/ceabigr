@@ -7,6 +7,8 @@ output: html_document
 
 Script to annotate _C.virginica_ coding sequences (CDS) with Gene Ontology (GO) and GOslim IDs/terms.
 
+CDSs were BLASTp'd against SwissProt database here: [`17-Swiss-Prot-Annotation.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/17-Swiss-Prot-Annotation.Rmd) and the resulting SPIDs were used for gene annotation.
+
 Output files can be used for future mapping of gene subsets (e.g. differentially expressed genes, predominant isoforms, etc.)
 
 Script uses SwissProt IDs (SPIDs) as input to a Python script for retrieving data via the UniProt API.
