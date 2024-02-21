@@ -92,7 +92,7 @@ create_volcano_plot <- function(data, log2fc_col, pval_col, diffexpressed_col, g
     scale_color_identity(guide = "legend", labels = color_labels, breaks = c("blue", "red", "grey", "black")) +
     theme_minimal() +
     labs(x = "log2 Fold Change", y = "-log10(p-value)", color = NULL) +
-    ggtitle("Volcano Plot")
+    ggtitle(title)
 }
 
 
@@ -730,6 +730,9 @@ cat("Number of DEG with p-values and q-values <= ", pvalue, ":", count_filtered_
 
 # Identify differentially expressed transcripts (DETs) between `Treatment` within females.
 Returns FoldChange, too (getFC = TRUE)
+
+NOTE: 1 DET identified as expressed higher in controls.
+
 ```{r DETs-female-OA}
 # Load phenotype info into Ballgown
 pData(bg_females) <- sample_metadata_subset_female_only
@@ -812,16 +815,18 @@ merged_females_DET_stat_results$gene_label <- NA
 merged_females_DET_stat_results$gene_label[merged_females_DET_stat_results$diffexpressed != "No"] <- merged_females_DET_stat_results$gene_name[merged_females_DET_stat_results$diffexpressed != "No"]
 
 # create volcano plot
-females_DET_volcano_plot <- create_volcano_plot(merged_females_DET_stat_results,
-                    "log2fc",
-                    "pval",
-                    "diffexpressed",
-                    "gene_label",
-                    "DETs - FEMALES - Controls vs. Exposed",
-                    c("Differentially Expressed - Controls",
-                      "Differentially Expressed - Exposed",
-                      paste0("p-value <= ", pvalue), "P/Q-values > 0.05")
-                    )
+females_DET_volcano_plot <- create_volcano_plot(
+  merged_females_DET_stat_results,
+  "log2fc",
+  "pval",
+  "diffexpressed",
+  "gene_label",
+  "",
+  c("Differentially Expressed - Controls",
+    "Differentially Expressed - Exposed",
+    paste0("p-value <= ", pvalue), "P/Q-values > 0.05"
+    )
+  )
 
 
 # See plot
@@ -898,60 +903,66 @@ write.table(
 
 # Identify differentially expressed transcripts (DETs) between `Treatment` within males
 Returns FoldChange, too (getFC = TRUE)
+
+NOTE: No DETs identified.
 ```{r DETs-male-OA}
 # Load phenotype info into Ballgown
 pData(bg_males) <- sample_metadata_subset_male_only
 
-stat_results = stattest(bg_males, feature='transcript', meas='FPKM', covariate="Treatment", getFC = TRUE)
-head(stat_results)
+males_DET_stat_results = stattest(bg_males, feature='transcript', meas='FPKM', covariate="Treatment", getFC = TRUE)
+head(males_DET_stat_results)
 
 # Filter DETs based on set p-values and q-values
-filtered_stat_results <- filter(stat_results, pval <= pvalue & qval <= qvalue)
-head(filtered_stat_results)
+filtered_males_DET_stat_results <- filter(males_DET_stat_results, pval <= pvalue & qval <= qvalue)
+head(filtered_males_DET_stat_results)
 
 # Count number of DETs.
-count_filtered_stat_results <-  nrow(filtered_stat_results)
+count_filtered_males_DET_stat_results <-  nrow(filtered_males_DET_stat_results)
 
 # Print number of DETs
-cat("Number of male OA DETs with p-values and q-values <= ", pvalue, ":", count_filtered_stat_results)
+cat("Number of male OA DETs with p-values and q-values <= ", pvalue, ":", count_filtered_males_DET_stat_results)
 ```
 
 # Identify differentially expressed genes (DEGs) between Treatment within females.
 Returns FoldChange, too (getFC = TRUE)
+
+NOTE: 0 DEGs identified.
 ```{r DEGs-female-OA}
 # Load phenotype info into Ballgown
 pData(bg_females) <- sample_metadata_subset_female_only
 
-stat_results = stattest(bg_females, feature='gene', meas='FPKM', covariate="TreatmentN", getFC = TRUE)
-head(stat_results)
+females_DEG_stat_results = stattest(bg_females, feature='gene', meas='FPKM', covariate="TreatmentN", getFC = TRUE)
+head(females_DEG_stat_results)
 
 # Filter DT based on set p-values and q-values
-filtered_stat_results <- filter(stat_results, pval <= pvalue & qval <= qvalue)
-head(filtered_stat_results)
+filtered_females_DEG_stat_results <- filter(females_DEG_stat_results, pval <= pvalue & qval <= qvalue)
+head(filtered_females_DEG_stat_results)
 
 # Count number of DETG.
-count_filtered_stat_results <-  nrow(filtered_stat_results)
+count_filtered_females_DEG_stat_results <-  nrow(filtered_females_DEG_stat_results)
 
 # Print number of DEG
-cat("Number of female OA DEGs with p-values and q-values <= ", pvalue, ":", count_filtered_stat_results)
+cat("Number of female DEGs with p-values and q-values <= ", pvalue, ":", count_filtered_females_DEG_stat_results)
 ```
 
 # Identify differentially expressed genes (DETs) between Treatment within males
 Returns FoldChange, too (getFC = TRUE)
+
+NOTE: 0 DETs identified.
 ```{r DEGs-male-OA}
 # Load phenotype info into Ballgown
 pData(bg_males) <- sample_metadata_subset_male_only
 
-stat_results = stattest(bg_males, feature='gene', meas='FPKM', covariate="TreatmentN", getFC = TRUE)
-head(stat_results)
+males_DET_all_stat_results = stattest(bg_males, feature='gene', meas='FPKM', covariate="TreatmentN", getFC = TRUE)
+head(males_DET_all_stat_results)
 
 # Filter DT based on set p-values and q-values
-filtered_stat_results <- filter(stat_results, pval <= pvalue & qval <= qvalue)
-head(filtered_stat_results)
+filtered_males_DET_all_stat_results <- filter(males_DET_all_stat_results, pval <= pvalue & qval <= qvalue)
+head(filtered_males_DET_all_stat_results)
 
 # Count number of DETG.
-count_filtered_stat_results <-  nrow(filtered_stat_results)
+count_filtered_males_DET_all_stat_results <-  nrow(filtered_males_DET_all_stat_results)
 
 # Print number of DEG
-cat("Number of male OA DEGs with p-values and q-values <= ", pvalue, ":", count_filtered_stat_results)
+cat("Number of male OA DEGs with p-values and q-values <= ", pvalue, ":", count_filtered_males_DET_all_stat_results)
 ```
