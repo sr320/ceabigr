@@ -812,7 +812,7 @@ merged_females_DET_stat_results$gene_label <- NA
 merged_females_DET_stat_results$gene_label[merged_females_DET_stat_results$diffexpressed != "No"] <- merged_females_DET_stat_results$gene_name[merged_females_DET_stat_results$diffexpressed != "No"]
 
 # create volcano plot
-create_volcano_plot(merged_females_DET_stat_results,
+females_DET_volcano_plot <- create_volcano_plot(merged_females_DET_stat_results,
                     "log2fc",
                     "pval",
                     "diffexpressed",
@@ -824,6 +824,14 @@ create_volcano_plot(merged_females_DET_stat_results,
                     )
 
 
+# See plot
+females_DET_volcano_plot
+```
+
+#### Save plot
+```{r}
+# Save the plot as a PNG
+ggsave("../output/18-differential-gene-expression-ballgown/figures/volcano_plot-DETs-females-CvE.png", females_DET_volcano_plot, width = 10, height = 8, units = "in", dpi = 300)
 ```
 
 ## Write DETs females control vs. exposed to files
