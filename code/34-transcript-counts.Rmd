@@ -442,3 +442,32 @@ sapply(names(list_transcript_max_diffs_dfs),
                              row.names = FALSE)
        )
 ```
+
+
+# Create joint file of max transcript counts
+
+```{r}
+# Initialize merged_df with the first data frame
+merged_df <- loaded_objects[["transcript_counts_per_gene_per_sample_controls.rds"]]
+
+# Loop through the remaining data frames
+for (df_name in names(loaded_objects)[-1]) {
+  # Select columns containing "max_transcript_counts" from the current data frame
+  max_columns <- grep("max_transcript_counts", names(loaded_objects[[df_name]]), value = TRUE)
+  
+  # Merge the current data frame into merged_df
+  merged_df <- merge(merged_df, loaded_objects[[df_name]], by = "gene_name", all = TRUE, suffixes = c("", ""))
+  
+  # Add the columns containing "max_transcript_counts" from the current data frame to merged_df
+  merged_df[max_columns] <- loaded_objects[[df_name]][max_columns]
+}
+
+# Remove columns appended with ".1"
+merged_df <- merged_df[, !grepl("\\.1$", names(merged_df))]
+
+# Keep only the gene_name column and columns containing "max_transcript_counts"
+merged_df <- merged_df[grep("gene_name|max_transcript_counts", names(merged_df))]
+
+
+str(merged_df)
+```
