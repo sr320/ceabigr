@@ -199,7 +199,35 @@ write.table(max_transcripts_per_gene,
           sep = "\t")
 ```
 
-# Perform transcript count calcs
+# Transcript count calcs
+
+## Read in objects
+
+This allows the objects to be quickly loaded instead of waiting to re-run time consuming calcs in chunk below.
+
+
+```{r load-calculation-objects}
+# Initialize list of R objects
+loaded_objects <- list()
+
+# Define the directory path
+directory_path <- "../output/34-transcript-counts/"
+
+# Get a list of all .rds files in the directory
+file_list <- list.files(path = directory_path, pattern = "\\.rds$")
+
+# Load all RDS files using readRDS() and sapply
+loaded_objects <- sapply(file_list, function(file) readRDS(file.path(directory_path, file)), simplify = FALSE)
+
+# Now loaded_objects is a list containing all the loaded objects
+str(loaded_objects)
+
+```
+
+
+## Calculations
+
+This will take a while to run. For faster access to these datasets, load the objects in the chunk above instead.
 ```{r perform-transcript-count-calcs}
 # Perform calculations
 transcript_counts_per_gene_per_sample <- transcript_counts %>%
@@ -324,6 +352,18 @@ transcript_counts_per_gene_per_sample_exposed_males <- transcript_counts %>%
 list_transcript_counts_dfs <- mget(grep("^(?!list).*", ls(pattern = "transcript_counts_per_gene_per_sample"), value = TRUE, perl = TRUE))
 
 head(transcript_counts)
+```
+
+## Save objects
+
+This allows the objects to be quickly loaded instead of waiting to re-run time consuming calcs in above chunk.
+
+```{r}
+# Write data frames to R objects in ../output/34-transcript-counts/ dir
+# Uses names of data frames as names of output files.
+sapply(names(list_transcript_counts_dfs),
+       function(x) saveRDS(list_transcript_counts_dfs[[x]],
+                             file = file.path("../output/34-transcript-counts/", paste(x, "rds", sep="."))))
 ```
 
 ## Write transcript per gene counts to files.
