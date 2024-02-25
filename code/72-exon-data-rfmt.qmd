@@ -170,3 +170,42 @@ combined_exon_df <- bind_rows(logdata_frames, .id = "SampleID") %>%
 ```
 
 
+# reformatting to look like
+
+
+```
+x gene01 gene02 gene03
+sample_fold1
+sample_fold2
+x
+x
+sample2_fold
+```
+
+
+```{r}
+me_transformed <- male_exon_df %>%
+  pivot_longer(cols = starts_with("fold"), names_to = "fold_number", values_to = "fold_value") %>%
+  unite("SampleID_fold", SampleID, fold_number, sep = "_") %>%
+  pivot_wider(names_from = GeneID, values_from = fold_value) %>%
+  select(-Sex) 
+```
+
+
+```{r}
+fe_transformed <- female_exon_df %>%
+  pivot_longer(cols = starts_with("fold"), names_to = "fold_number", values_to = "fold_value") %>%
+  unite("SampleID_fold", SampleID, fold_number, sep = "_") %>%
+  pivot_wider(names_from = GeneID, values_from = fold_value) %>%
+  select(-Sex) 
+```
+
+
+
+```{r}
+ # Write the data frame to a CSV file
+ write.csv(me_transformed, "../output/72-exon-data-rfmt/male_exon_tf.csv", row.names = FALSE)
+ # Write the data frame to a CSV file
+ write.csv(fe_transformed, "../output/72-exon-data-rfmt/female_exon_tf.csv", row.names = FALSE)
+```
+
