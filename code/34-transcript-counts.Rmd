@@ -514,3 +514,21 @@ left_join(predom_fcoe_mcoe, by = "gene_name")
 str(max_transcripts_predom_isos)
 
 ```
+
+## Write to file
+```{r}
+# Write to CSV
+write.csv(max_transcripts_predom_isos,
+          file = "../output/34-transcript-counts/fmcoe-max-predom-isos.csv",
+          quote = FALSE,
+          row.names = FALSE
+          )
+
+# Write to CSV
+write.csv(max_transcripts_predom_isos,
+          file = "../output/42-predominant-isoform//fmcoe-max-predom-isos.csv",
+          quote = FALSE,
+          row.names = FALSE
+          )
+
+```
