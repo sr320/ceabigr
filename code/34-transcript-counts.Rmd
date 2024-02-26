@@ -451,7 +451,7 @@ sapply(names(list_transcript_max_diffs_dfs),
 merged_df <- loaded_objects[["transcript_counts_per_gene_per_sample_controls.rds"]]
 
 # Loop through the remaining data frames
-for (df_name in names(loaded_objects)[-1]) {
+for (df_name in names(loaded_objects)) {
   # Select columns containing "max_transcript_counts" from the current data frame
   max_columns <- grep("max_transcript_counts", names(loaded_objects[[df_name]]), value = TRUE)
   
@@ -466,8 +466,76 @@ for (df_name in names(loaded_objects)[-1]) {
 merged_df <- merged_df[, !grepl("\\.1$", names(merged_df))]
 
 # Keep only the gene_name column and columns containing "max_transcript_counts"
-merged_df <- merged_df[grep("gene_name|max_transcript_counts", names(merged_df))]
-
+merged_df <- merged_df[grep("gene_name|max", names(merged_df))]
 
 str(merged_df)
+
+# Select multiple columns by column name
+selected_cols <- c("gene_name",
+                   "control_females_max_transcript_counts", 
+                   "control_males_max_transcript_counts", 
+                   "exposed_females_max_transcript_counts", 
+                   "exposed_males_max_transcript_counts",
+                   "max_transcript_counts"
+                   )
+
+# Select the specified columns from merged_df
+selected_df <- merged_df %>% 
+  dplyr::select(all_of(selected_cols))
+
+str(selected_df)
+```
+
+## Write female control/exposed & male control/exposed max transcripts
+```{r}
+# Write to CSV
+write.csv(selected_df,
+          file = "../output/34-transcript-counts/max.transcripts.females-c-e.males-c-e.csv",
+          quote = FALSE,
+          row.names = FALSE
+          )
+
+```
+
+# Create canonical table max transcripts and predominant isoforms
+
+## Read in predominant isoforms
+```{r}
+predom_fcoe_mcoe <- read.csv("../output/42-predominant-isoform/predom_iso-FEMALE-and-MALE-controls-exposed.csv")
+
+str(predom_fcoe_mcoe)
+```
+
+## Join
+```{r}
+max_transcripts_predom_isos <- selected_df %>% 
+left_join(predom_fcoe_mcoe, by = "gene_name")
+
+str(max_transcripts_predom_isos)
+
+```
+
+## Write to file
+```{r}
+# Write to CSV
+write.csv(max_transcripts_predom_isos,
+          file = "../output/34-transcript-counts/fmcoe-max-predom-isos.csv",
+          quote = FALSE,
+          row.names = FALSE
+          )
+
+# Write to CSV
+write.csv(max_transcripts_predom_isos,
+          file = "../output/42-predominant-isoform/fmcoe-max-predom-isos.csv",
+          quote = FALSE,
+          row.names = FALSE
+          )
+
+
+# Write to CSV
+write.csv(max_transcripts_predom_isos,
+          file = "../supplemental-files/fmcoe-max-predom-isos.csv",
+          quote = FALSE,
+          row.names = FALSE
+          )
 ```
