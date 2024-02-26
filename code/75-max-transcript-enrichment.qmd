@@ -1,0 +1,69 @@
+---
+title: "75 max transcript enrichment"
+author: Steven Roberts
+date: "`r format(Sys.time(), '%d %B, %Y')`" 
+output: 
+  html_document:
+    theme: readable
+    highlight: zenburn
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    code_download: true
+  # github_document:
+  #   toc: true
+  #   toc_depth: 3
+  #   number_sections: true
+  #   html_preview: true
+---
+
+```{r setup, include=FALSE}
+#library(kableExtra)
+# library(DESeq2)
+# library(pheatmap)
+# library(RColorBrewer)
+# library(data.table)
+#library(DT)
+# library(Biostrings)
+#library(methylKit)
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = TRUE,         # Evaluate code chunks
+  warning = TRUE,     # Hide warnings
+  message = TRUE,     # Hide messages
+  fig.width = 6,       # Set plot width in inches
+  fig.height = 4,      # Set plot height in inches
+  fig.align = "center" # Align plots to the center
+)
+```
+
+Lets take do annoation or max transcript shift
+
+# female
+
+```{r}
+female_tr <- read_csv("../output/34-transcript-counts/diffs.max.transcripts_per_gene.controls_females.vs.exposed_females.csv")
+```
+
+
+```{r}
+female_tr %>%
+  select(gene_name) %>%
+  write.csv("../output/75-max-transcript-enrichment/fmmtrn.txt", row.names = FALSE, col.names = FALSE, quote = FALSE)
+```
+
+
+# male
+
+```{r}
+male_tr <- read_csv("../output/34-transcript-counts/diffs.max.transcripts_per_gene.controls_males.vs.exposed_males.csv")
+```
+
+```{r}
+male_tr %>%
+  select(gene_name) %>%
+  write.csv("../output/75-max-transcript-enrichment/mmtrn.txt", row.names = FALSE, col.names = FALSE, quote = FALSE)
+```
