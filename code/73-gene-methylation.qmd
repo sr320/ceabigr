@@ -180,3 +180,73 @@ genemeth40 <- read.csv("../output/40-gene-methylation/40-gene-methylation.csv")
 meth_all <- read.delim("../output/40-gene-methylation/meth_all-samples.out", header = FALSE)
 ```
 
+
+```{r}
+head(methylation.transposed.rownames)
+```
+```{r}
+head(methylation.transposed.matrix)
+```
+
+Lets grab just male data
+
+```{r}
+methmale <- methylation.transposed.rownames %>%
+  select(name,ends_with("M"))
+```
+
+```{r}
+controls_males <- c("S13M", "S64M", "S6M", "S7M")
+exposed_males <- c("S12M", "S23M", "S31M", "S48M", "S59M", "S9M")
+
+```
+
+
+```{r}
+methmale02 <- methmale %>%
+mutate(across(c("S13M", "S64M", "S6M", "S7M"), ~as.numeric(.), .names = "numeric_{.col}")) %>%
+  mutate(across(c("S12M", "S23M", "S31M", "S48M", "S59M", "S9M"), ~as.numeric(.), .names = "numeric_{.col}"))
+
+# Now, calculate the average of the columns
+methmale02 <- methmale02 %>%
+  mutate(average_control = rowMeans(select(., c("numeric_S13M", "numeric_S64M", "numeric_S6M", "numeric_S7M")), na.rm = TRUE)) %>%
+  mutate(average_exposed = rowMeans(select(., c("numeric_S12M", "numeric_S23M", "numeric_S31M", "numeric_S48M", "numeric_S59M", "numeric_S9M")), na.rm = TRUE)) %>%
+  select(name, average_control,average_exposed) %>%
+  write.csv("../output/73-gene-methylation/male_40_meth.csv", row.names = FALSE, col.names = FALSE, quote = FALSE)
+
+
+```
+
+
+# Female data based on 40
+
+controls_females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F")
+exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
+
+```{r}
+methfemale <- methylation.transposed.rownames %>%
+  select(name,ends_with("F"))
+```
+
+```{r}
+controls_females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F")
+exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
+
+```
+
+
+```{r}
+methfemale02 <- methfemale %>%
+mutate(across(c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F","S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F"), ~as.numeric(.), .names = "numeric_{.col}"))
+
+# Now, calculate the average of the columns
+methfemale02 <- methfemale02 %>%
+  mutate(average_control = rowMeans(select(., c("numeric_S16F", "numeric_S19F", "numeric_S39F", "numeric_S44F", "numeric_S52F", "numeric_S53F", "numeric_S54F")), na.rm = TRUE)) %>%
+  mutate(average_exposed = rowMeans(select(., c("numeric_S22F", "numeric_S29F", "numeric_S35F", "numeric_S36F", "numeric_S3F", "numeric_S41F", "numeric_S50F", "numeric_S77F")), na.rm = TRUE)) %>%
+  select(name, average_control,average_exposed) %>%
+  write.csv("../output/73-gene-methylation/female_40_meth.csv", row.names = FALSE, col.names = FALSE, quote = FALSE)
+
+
+```
+
+
