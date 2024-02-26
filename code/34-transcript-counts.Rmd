@@ -526,9 +526,16 @@ write.csv(max_transcripts_predom_isos,
 
 # Write to CSV
 write.csv(max_transcripts_predom_isos,
-          file = "../output/42-predominant-isoform//fmcoe-max-predom-isos.csv",
+          file = "../output/42-predominant-isoform/fmcoe-max-predom-isos.csv",
           quote = FALSE,
           row.names = FALSE
           )
 
+
+# Write to CSV
+write.csv(max_transcripts_predom_isos,
+          file = "../supplemental-files/fmcoe-max-predom-isos.csv",
+          quote = FALSE,
+          row.names = FALSE
+          )
 ```
