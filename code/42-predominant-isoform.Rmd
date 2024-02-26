@@ -214,6 +214,8 @@ mco <- tx_exp %>%
 head(mco)
 ```
 
+
+
 ```{r}
 write.table(mco, file = "../output/42-predominant-isoform/predom_iso-controls-MALE.txt",quote = F, row.names = F, sep = "\t")
 ```
@@ -261,6 +263,39 @@ full_join(mco, mex, by = "gene_name") %>%
   filter(t_name.x!=t_name.y) %>%
   filter(abs(Predom_exp.x - Predom_exp.y) > 10) %>%
   head()
+```
+
+# Join Female and Male Controls/Exposed
+
+## Rename `t_name` columns
+
+```{r rename-columns}
+# Rename t_name columns in each data frame
+names(females_controls)[names(females_controls) == "t_name"] <- "females_controls_predom_isoform"
+names(females_exposed)[names(females_exposed) == "t_name"] <- "females_exposed_predom_isoform"
+names(males_exposed)[names(males_exposed) == "t_name"] <- "males_exposed_predom_isoform"
+names(mco)[names(mco) == "t_name"] <- "males_controls_predom_isoform"
+```
+
+## Create single table
+
+```{r join-female-male-controls-exposed}
+predom_fcoe_mcoe <- predom_all %>%
+  left_join(females_controls, by = "gene_name") %>%
+  left_join(females_exposed, by = "gene_name") %>%
+  left_join(mco, by = "gene_name") %>% 
+  left_join(males_exposed, by = "gene_name") %>%
+  select(gene_name, ends_with("predom_isoform"))
+
+str(predom_fcoe_mcoe)
+```
+
+## Write to file
+```{r}
+write.csv(predom_fcoe_mcoe,
+          file = "predom_iso-FEMALE-and-MALE-controls-exposed.csv",
+          quote = FALSE,
+          row.names = FALSE)
 ```
 
 # Analyse data

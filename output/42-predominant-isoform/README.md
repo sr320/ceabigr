@@ -104,6 +104,12 @@
 
   - [42-predominant-isoform.Rmd](https://github.com/sr320/ceabigr/blob/main/code/42-predominant-isoform.Rmd)
 
+
+- [`predom_iso-FEMALE-and-MALE-controls-exposed.csv`](predom_iso-FEMALE-and-MALE-controls-exposed.csv): Table of predominant isoforms in female controls, females exposed, males controls, males exposed. Format is:
+
+  |gene_name | females_controls_predom_isoform | females_exposed_predom_isoform | males_controls_predom_isoform | males_exposed_predom_isoform |
+  |----------|---------------------------------|--------------------------------|-------------------------------|------------------------------|
+
 - [`predom_iso-exposed-MALE-unique.txt`](predom_iso-exposed-MALE-unique.txt): Table of predominant isoforms unique to OA-exposed males when compared to female controls. Format is:
 
   |gene_name | t_name	| Predom_exp |
