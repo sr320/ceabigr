@@ -185,15 +185,19 @@ anti_join(fpre, mpre, by = "t_name")
 ### Exposed
 
 ```{r exposed-males-predominant-isoforms}
-tx_exp %>%
+males_exposed <- tx_exp %>%
   select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
   select(ends_with(c("name", "name", exposed_males))) %>%
   pivot_longer(cols = c(3:length(exposed_males) + 2)) %>% # Adds length of vector "exposed males" + "name" + "name" from previous line
   group_by(gene_name, t_name) %>%
   summarise(Predom_exp = mean(value)) %>%
   group_by(gene_name) %>%
-  slice(which.max(Predom_exp)) %>% 
-  write.table(file = "../output/42-predominant-isoform/predom_iso-exposed-MALE.txt",quote = F, row.names = F, sep = "\t")
+  slice(which.max(Predom_exp))
+```
+
+#### Write to file
+```{r} 
+write.table(file = "../output/42-predominant-isoform/predom_iso-exposed-MALE.txt",quote = F, row.names = F, sep = "\t")
 ```
 
 ### Control
@@ -219,29 +223,37 @@ write.table(mco, file = "../output/42-predominant-isoform/predom_iso-controls-MA
 ### Exposed
 
 ```{r exposed-females-predominant-isoforms}
-tx_exp %>%
+females_exposed <- tx_exp %>%
   select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
   select(ends_with(c("name", "name", exposed_females))) %>%
   pivot_longer(cols = c(3:length(exposed_females) + 2)) %>% # Adds length of vector "exposed males" + "name" + "name" from previous line
   group_by(gene_name, t_name) %>%
   summarise(Predom_exp = mean(value)) %>%
   group_by(gene_name) %>%
-  slice(which.max(Predom_exp)) %>% 
-  write.table(file = "../output/42-predominant-isoform/predom_iso-exposed-FEMALE.txt",quote = F, row.names = F, sep = "\t")
+  slice(which.max(Predom_exp))
+```
+
+#### Write to file
+```{r} 
+write.table(females_exposed, file = "../output/42-predominant-isoform/predom_iso-exposed-FEMALE.txt",quote = F, row.names = F, sep = "\t")
 ```
 
 ### Control
 
 ```{r controls-females-predominant-isoforms}
-tx_exp %>%
+females_controls <- tx_exp %>%
   select(starts_with(c("gene_name", "t_name", "FPKM"))) %>%
   select(ends_with(c("name", "name", controls_females))) %>%
   pivot_longer(cols = c(3:length(controls_females) + 2)) %>%
   group_by(gene_name, t_name) %>%
   summarise(Predom_exp = mean(value)) %>%
   group_by(gene_name) %>%
-  slice(which.max(Predom_exp)) %>% 
-  write.table(file = "../output/42-predominant-isoform/predom_iso-controls-FEMALE.txt",quote = F, row.names = F, sep = "\t")
+  slice(which.max(Predom_exp))
+```
+
+#### Write to file
+```{r}
+write.table(file = "../output/42-predominant-isoform/predom_iso-controls-FEMALE.txt",quote = F, row.names = F, sep = "\t")
 ```
 
 ```{r}
