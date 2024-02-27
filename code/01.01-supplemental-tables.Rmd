@@ -4,4 +4,56 @@ author: "Sam White"
 date: "2024-02-27"
 output: html_document
 ---
+File for producing miscellaneous supplemental tables. All outputs can be found in the [`supplemental-files` directory](https://github.com/sr320/ceabigr/tree/main/supplemental-files).
 
+# Load `R` libraries
+
+```{r}
+library("tidyverse")
+```
+
+# Create canonical table max transcripts and predominant isoforms
+
+## Read in predominant isoforms and max transcripts
+```{r}
+predom_fcoe_mcoe <- read.csv("../output/42-predominant-isoform/predom_iso-FEMALE-and-MALE-controls-exposed.csv")
+
+max_transcripts_fmcoe_mcoe <- read.csv(file = "../output/34-transcript-counts/max.transcripts.females-c-e.males-c-e.csv")
+
+str(predom_fcoe_mcoe)
+str(max_transcripts_fmcoe_mcoe)
+```
+
+## Join
+```{r}
+max_transcripts_predom_isos <- max_transcripts_fmcoe_mcoe %>% 
+left_join(predom_fcoe_mcoe, by = "gene_name")
+
+str(max_transcripts_predom_isos)
+
+```
+
+## Write to file
+```{r}
+# Write to CSV
+write.csv(max_transcripts_predom_isos,
+          file = "../output/34-transcript-counts/fmcoe-max-predom-isos.csv",
+          quote = FALSE,
+          row.names = FALSE
+          )
+
+# Write to CSV
+write.csv(max_transcripts_predom_isos,
+          file = "../output/42-predominant-isoform/fmcoe-max-predom-isos.csv",
+          quote = FALSE,
+          row.names = FALSE
+          )
+
+
+# Write to CSV
+write.csv(max_transcripts_predom_isos,
+          file = "../supplemental-files/fmcoe-max-predom-isos.csv",
+          quote = FALSE,
+          row.names = FALSE
+          )
+```
