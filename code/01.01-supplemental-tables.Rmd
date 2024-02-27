@@ -12,16 +12,78 @@ File for producing miscellaneous supplemental tables. All outputs can be found i
 library("tidyverse")
 ```
 
+# Set variables
+
+## Vectors of experimental groups
+```{r set-experimental-groups}
+# Vectors for subsetting samples by different groups
+controls <- c("S13M", "S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S64M", "S6M", "S76F", "S7M")
+exposed <- c("S12M", "S22F", "S23M", "S29F", "S31M", "S35F", "S36F", "S3F", "S41F", "S48M", "S50F", "S59M", "S77F", "S9M")
+controls_males <- c("S13M", "S64M", "S6M", "S7M")
+exposed_males <- c("S12M", "S23M", "S31M", "S48M", "S59M", "S9M")
+controls_females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F")
+exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
+```
+
+# Functions
+
+## Calculate mean FPKM for each gene within a group of samples
+```{r function-mean-fpkm-per-gene}
+calculate_mean_FPKM <- function(samples) {
+  whole_gx_table %>%
+    select(name, starts_with("FPKM.")) %>%
+    pivot_longer(cols = -name, names_sep = "\\.", names_to = c("metric", "sample")) %>%
+    filter(sample %in% samples) %>%
+    group_by(name) %>%
+    summarize(mean_FPKM = mean(value, na.rm = TRUE))
+}
+```
+
 # Create canonical table max transcripts and predominant isoforms
 
-## Read in predominant isoforms and max transcripts
+## Read in predominant isoforms, max transcripts, and gene expression
 ```{r}
 predom_fcoe_mcoe <- read.csv("../output/42-predominant-isoform/predom_iso-FEMALE-and-MALE-controls-exposed.csv")
 
 max_transcripts_fmcoe_mcoe <- read.csv(file = "../output/34-transcript-counts/max.transcripts.females-c-e.males-c-e.csv")
 
+whole_gx_table <- read.csv(file = "../data/whole_gx_table.csv")
+
 str(predom_fcoe_mcoe)
 str(max_transcripts_fmcoe_mcoe)
+str(whole_gx_table)
+```
+
+## Mean gene FPKMs
+```{r}
+# Calculate mean FPKM for each group
+mean_FPKM <- list(
+  controls_males = calculate_mean_FPKM(controls_males),
+  exposed_males = calculate_mean_FPKM(exposed_males),
+  controls_females = calculate_mean_FPKM(controls_females),
+  exposed_females = calculate_mean_FPKM(exposed_females)
+)
+
+# Combine the results into a single data frame
+mean_FPKM_combined <- bind_rows(mean_FPKM, .id = "Group")
+
+# Pivot the data to the desired layout
+mean_FPKM_final <- mean_FPKM_combined %>%
+  pivot_wider(names_from = "Group", values_from = "mean_FPKM") %>%
+  mutate(name = as.character(name))
+
+# Rename the columns using the names of the original vectors
+new_colnames <- names(mean_FPKM)
+colnames(mean_FPKM_final)[-1] <- paste(new_colnames, "mean_FPKM", sep = "_")
+
+# Remove the first row
+# Summary data row lefover from Ballgown
+mean_FPKM_final <- mean_FPKM_final %>%
+  slice(-1)
+
+# View the result
+str(mean_FPKM_final)
+
 ```
 
 ## Join
@@ -35,21 +97,6 @@ str(max_transcripts_predom_isos)
 
 ## Write to file
 ```{r}
-# Write to CSV
-write.csv(max_transcripts_predom_isos,
-          file = "../output/34-transcript-counts/fmcoe-max-predom-isos.csv",
-          quote = FALSE,
-          row.names = FALSE
-          )
-
-# Write to CSV
-write.csv(max_transcripts_predom_isos,
-          file = "../output/42-predominant-isoform/fmcoe-max-predom-isos.csv",
-          quote = FALSE,
-          row.names = FALSE
-          )
-
-
 # Write to CSV
 write.csv(max_transcripts_predom_isos,
           file = "../supplemental-files/fmcoe-max-predom-isos.csv",
