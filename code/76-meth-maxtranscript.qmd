@@ -142,7 +142,14 @@ ggplot(fmethmax, aes(x = difference, y = diff_meth)) +
 
 ```
 
+```{r}
+ggplot(fmethmax, aes(x = exposed_females_max_transcript_counts.x, y = average_exposed)) +
+  geom_jitter() +  # This replaces geom_point() and adds jitter to the points
+  theme_minimal() +  # Applies a minimalistic theme
+  labs(x = "max transcript count", y = "gene methylation", title = "female exposed") +
+  geom_smooth(method = "lm", se = FALSE, color = "blue")  # Adds a linear regression line without confidence interval
 
+```
 
 
 
@@ -217,6 +224,26 @@ ggplot(mmethmax, aes(x = difference, y = diff_meth)) +
   geom_jitter() +  # This replaces geom_point() and adds jitter to the points
   theme_minimal() +  # Applies a minimalistic theme
   labs(x = "Max transcript Difference", y = "Meth Difference", title = "max transcript vs. methylation") +
+  geom_smooth(method = "lm", se = FALSE, color = "blue")  # Adds a linear regression line without confidence interval
+
+```
+
+
+
+```{r}
+ggplot(mmethmax, aes(x = exposed_males_max_transcript_counts.x, y = average_exposed)) +
+  geom_jitter() +  # This replaces geom_point() and adds jitter to the points
+  theme_minimal() +  # Applies a minimalistic theme
+  labs(x = "max transcript count", y = "gene methylation", title = "male exposed") +
+  geom_smooth(method = "lm", se = FALSE, color = "blue")  # Adds a linear regression line without confidence interval
+
+```
+
+```{r}
+ggplot(mmethmax, aes(x = control_males_max_transcript_counts.x, y = average_control)) +
+  geom_jitter() +  # This replaces geom_point() and adds jitter to the points
+  theme_minimal() +  # Applies a minimalistic theme
+  labs(x = "max transcript count", y = "gene methylation", title = "male control") +
   geom_smooth(method = "lm", se = FALSE, color = "blue")  # Adds a linear regression line without confidence interval
 
 ```
