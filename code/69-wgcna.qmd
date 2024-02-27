@@ -1,6 +1,6 @@
 ---
-title: "68 exon expression"
-author: Steven Roberts
+title: "69 exon expression WGCNA"
+author: Ariana Huffmyer 
 date: "`r format(Sys.time(), '%d %B, %Y')`" 
 output: 
   html_document:
@@ -52,40 +52,61 @@ knitr::opts_chunk$set(
 
 # Read in data 
 
+Read in data that now has sample_fold# in rows and genes in columns with values representing fold change from the first exon relative to each subsequent exon.  
+
+Running for just females for now.  
 ```{r}
+#setwd("Projects/ceabigr")
+
 #datExpr <- fread("output/68-female-exon-fold/logfc.txt")
-datExpr <- fread("../output/68-female-exon-fold/female_merge.txt")
+datExpr <- fread("output/72-exon-data-rfmt/female_exon_tf.csv")
 ```
 
+use this if genes are in rows
 ```{r}
-rownames(datExpr) <- datExpr$GeneID
-names(datExpr)
-genes<-datExpr$GeneID
+#rownames(datExpr) <- datExpr$GeneID
+#names(datExpr)
+#genes<-datExpr$GeneID
 
-datExpr <- datExpr[ , -1, with = FALSE]
+#datExpr <- datExpr[ , -1, with = FALSE]
 
-result_vector <- genes[!grepl("^L", genes, ignore.case = TRUE)]
-genes <- genes[genes != "GeneID"]
+#result_vector <- genes[!grepl("^L", genes, ignore.case = TRUE)]
+#genes <- genes[genes != "GeneID"]
 ```
 
 Transpose to put "samples" or exon in rows and genes in columns. Put gene ID in row names. 
 ```{r}
-datExpr <- t(datExpr) 
+#datExpr <- t(datExpr) 
 
-datExpr<-as.data.frame(datExpr)
+#datExpr<-as.data.frame(datExpr)
 
-names(datExpr)<-genes
+#names(datExpr)<-genes
 
-str(datExpr)
+#str(datExpr)
 
-datExpr[] <- lapply(datExpr, as.numeric)
+#datExpr[] <- lapply(datExpr, as.numeric)
 
-names(datExpr)<-genes
+#names(datExpr)<-genes
+```
+
+Set row names and remove character column. 
+```{r}
+rownames(datExpr) <- datExpr$SampleID_fold
+datExpr <- datExpr[ , -1, with = FALSE]
+```
+
+Remove rows that are a sum of 0. These are the fold 1 rows.  
+```{r}
+# Find rows with sum not equal to 0
+nonZeroSumRows <- rowSums(datExpr, na.rm=TRUE) != 0
+
+# Subset the matrix using logical indexing
+datExpr <- datExpr[nonZeroSumRows, ]
 ```
 
 Choose a soft power. 
 ```{r}
-powers = c(1:10)
+powers = c(1:15)
 sft = pickSoftThreshold(datExpr, powerVector = powers, verbose = 5)
 plot(sft$fitIndices[,1], -log(sft$fitIndices[,3]), pch = 19, xlab="Soft Threshold (power)", ylab="-log10 scale free topology model fit", type="n")
 text(sft$fitIndices[,1], -log(sft$fitIndices[,3]), labels=powers, cex=0.5)
@@ -93,12 +114,16 @@ abline(h = -log(0.9), col = "red")
 
 ```
 
+
+AH left off here - it is having a problem estimating variance or there is a problem with too many NAs
+
+
 # Blockwise modules network construction 
 
 Run blockwise modules with a signed network. 
 ``` {r, echo=TRUE, warning=FALSE, message=FALSE}
 
-picked_power = 8
+picked_power =  8
 temp_cor <- cor       
 cor <- WGCNA::cor                                             # Force it to use WGCNA cor function (fix a namespace conflict issue)
 netwk <- blockwiseModules(datExpr,                         # <= input here
