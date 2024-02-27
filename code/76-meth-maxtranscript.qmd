@@ -32,8 +32,8 @@ library(tidyverse)
 knitr::opts_chunk$set(
   echo = TRUE,         # Display code chunks
   eval = TRUE,         # Evaluate code chunks
-  warning = TRUE,     # Hide warnings
-  message = TRUE,     # Hide messages
+  warning = FALSE,     # Hide warnings
+  message = FALSE,     # Hide messages
   fig.width = 6,       # Set plot width in inches
   fig.height = 4,      # Set plot height in inches
   fig.align = "center" # Align plots to the center
@@ -53,7 +53,7 @@ female_tr <- read_csv("../output/34-transcript-counts/diffs.max.transcripts_per_
 
 ```{r}
 fmcoe_max_predom_isos <- read_csv("../supplemental-files/fmcoe-max-predom-isos.csv")
-View(fmcoe_max_predom_isos)
+
 ```
 
 lets join
@@ -174,7 +174,7 @@ mmethmax <- left_join(male_40_meth,mmax, by = setNames(col_name_1, col_name_2)) 
 mmethmax$diff_status <- ifelse(is.na(mmethmax$difference), "NA", "Not NA")
 
 # Plot
-ggplot(methmax, aes(x = mean_meth, fill = diff_status)) +
+ggplot(mmethmax, aes(x = mean_meth, fill = diff_status)) +
   geom_histogram(position = "identity", alpha = 0.5, binwidth = 1) + # Adjust binwidth as needed
   scale_fill_manual(values = c("NA" = "red", "Not NA" = "blue")) +
   labs(title = "Histogram of mean_meth",
