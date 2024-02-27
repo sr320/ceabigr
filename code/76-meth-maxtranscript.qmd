@@ -133,6 +133,14 @@ ggplot(fmethmax, aes(x = difference, y = diff_meth)) +
   geom_smooth(method = "lm", se = FALSE, color = "blue")  # Adds a linear regression line without confidence interval
 ```
 
+```{r}
+ggplot(fmethmax, aes(x = difference, y = diff_meth)) +
+  geom_jitter() +  # This replaces geom_point() and adds jitter to the points
+  theme_minimal() +  # Applies a minimalistic theme
+  labs(x = "Max transcript Difference", y = "Meth Difference", title = "max transcript vs. methylation") +
+  geom_smooth(method = "lm", se = FALSE, color = "blue")  # Adds a linear regression line without confidence interval
+
+```
 
 
 
@@ -202,4 +210,13 @@ ggplot(mmethmax, aes(x = difference, y = diff_meth)) +
   theme_minimal() +  # Optional: Applies a minimalistic theme
   labs(x = "Max transcript Difference", y = "Meth Difference", title = "max transcript vs. methylation") +
   geom_smooth(method = "lm", se = FALSE, color = "blue")  # Adds a linear regression line without confidence interval
+```
+
+```{r}
+ggplot(mmethmax, aes(x = difference, y = diff_meth)) +
+  geom_jitter() +  # This replaces geom_point() and adds jitter to the points
+  theme_minimal() +  # Applies a minimalistic theme
+  labs(x = "Max transcript Difference", y = "Meth Difference", title = "max transcript vs. methylation") +
+  geom_smooth(method = "lm", se = FALSE, color = "blue")  # Adds a linear regression line without confidence interval
+
 ```
