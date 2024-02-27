@@ -277,6 +277,16 @@ names(males_exposed)[names(males_exposed) == "t_name"] <- "males_exposed_predom_
 names(mco)[names(mco) == "t_name"] <- "males_controls_predom_isoform"
 ```
 
+## Rename `Predom_exp` columns
+
+```{r rename-predom-exp-columns}
+# Rename t_name columns in each data frame
+names(females_controls)[names(females_controls) == "Predom_exp"] <- "females_controls_predom_expression"
+names(females_exposed)[names(females_exposed) == "Predom_exp"] <- "females_exposed_predom_expression"
+names(males_exposed)[names(males_exposed) == "Predom_exp"] <- "males_exposed_predom_expression"
+names(mco)[names(mco) == "Predom_exp"] <- "males_controls_predom_expression"
+```
+
 ## Create single table
 
 ```{r join-female-male-controls-exposed}
@@ -285,7 +295,7 @@ predom_fcoe_mcoe <- predom_all %>%
   left_join(females_exposed, by = "gene_name") %>%
   left_join(mco, by = "gene_name") %>% 
   left_join(males_exposed, by = "gene_name") %>%
-  select(gene_name, ends_with("predom_isoform"))
+  dplyr::select(gene_name, ends_with("predom_isoform") | ends_with("predom_expression"))
 
 str(predom_fcoe_mcoe)
 ```

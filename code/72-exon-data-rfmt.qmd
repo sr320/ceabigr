@@ -182,13 +182,20 @@ x
 sample2_fold
 ```
 
+```{r}
+
+```
+
+
+
 
 ```{r}
 me_transformed <- male_exon_df %>%
   pivot_longer(cols = starts_with("fold"), names_to = "fold_number", values_to = "fold_value") %>%
   unite("SampleID_fold", SampleID, fold_number, sep = "_") %>%
   pivot_wider(names_from = GeneID, values_from = fold_value) %>%
-  select(-Sex) 
+  select(-Sex) %>%
+   filter(!if_any(c(SampleID_fold), ~str_detect(.x, "fold1$")))
 ```
 
 
@@ -197,7 +204,8 @@ fe_transformed <- female_exon_df %>%
   pivot_longer(cols = starts_with("fold"), names_to = "fold_number", values_to = "fold_value") %>%
   unite("SampleID_fold", SampleID, fold_number, sep = "_") %>%
   pivot_wider(names_from = GeneID, values_from = fold_value) %>%
-  select(-Sex) 
+  select(-Sex) %>%
+   filter(!if_any(c(SampleID_fold), ~str_detect(.x, "fold1$")))
 ```
 
 
