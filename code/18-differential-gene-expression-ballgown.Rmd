@@ -56,40 +56,47 @@ Accepts:
 - `data`: Input data frame
 - `log2fc_col`: Column with log2 fold change.
 - `pval_col`: Column with p-value.
+- `qval_col`: Column with q-value.
 - `diffexpressed_col`: Column indicating if gene/transcript is differentially expressed (i.e. "No" or != "No")
 - `gene_label_col`: Column with gene label for differentially expressed gene/transcript.
 - `title`: Title for plot.
-- `color_labels`: Labels for legend for data point colors.
+- `color_labels`: Labels for legend for data point colors. Three labels are required.
 
   - Order is important! As follows:
   
   1. Blue: Differentially expressed (p/q-values <= 0.05). Higher in "left" side of comparison.
   2. Red: Differentially expressed (p/q-values <= 0.05). Higher in "right" side of comparison.
-  3. Grey: P-value <= 0.05, but q-value > 0.05.
-  5. Black: P/Q-values > 0.05
+  3. Black: P/Q-values > 0.05
   
 Example usage:
-`create_volcano_plot(stat_results_merged, "log2fc", "pval", "diffexpressed", "gene_label", , "Volcano Plot", c("Higher in females", "Higher in males", "Grey", "Black"))`
+`create_volcano_plot(stat_results_merged, "log2fc", "pval", "qval", "diffexpressed", "gene_label", "Volcano Plot", c("Higher in females", "Higher in males", "p/q-values > 0.05"))`
   
 ```{r}
 
-create_volcano_plot <- function(data, log2fc_col, pval_col, diffexpressed_col, gene_label_col, title, color_labels) {
+create_volcano_plot <- function(data, log2fc_col, pval_col, qval_col, diffexpressed_col, gene_label_col, title, color_labels) {
+  
   # Filter data based on conditions
-  blue_points <- data[data[[diffexpressed_col]] != "No" & data[[log2fc_col]] <= log(1) & data[[pval_col]] <= 0.05, ]
-  red_points <- data[data[[diffexpressed_col]] != "No" & data[[log2fc_col]] > log(1) & data[[pval_col]] <= 0.05, ]
-  grey_points <- data[data[[pval_col]] <= 0.05 & !(data$id %in% c(blue_points$id, red_points$id)), ]
-  black_points <- data[!(data$id %in% c(blue_points$id, red_points$id, grey_points$id)), ]
+  blue_points <- data[data[[diffexpressed_col]] != "No" & 
+                        data[[log2fc_col]] <= log(1) & 
+                        data[[pval_col]] <= pvalue & 
+                        data[[qval_col]] <= qvalue, ]
+  
+  red_points <- data[data[[diffexpressed_col]] != "No" & 
+                       data[[log2fc_col]] > log(1) & 
+                       data[[pval_col]] <= pvalue & 
+                       data[[qval_col]] <= qvalue, ]
+  
+  black_points <- data[!(data$id %in% c(blue_points$id, red_points$id)), ]
   
   # Create the plot
   ggplot(data, aes_string(x = log2fc_col, y = paste0("-log10(", pval_col, ")"))) +
     geom_point(data = blue_points, aes(color = "blue"), alpha = 0.5) +
     geom_point(data = red_points, aes(color = "red"), alpha = 0.5) +
-    geom_point(data = grey_points, aes(color = "grey"), alpha = 0.5) +
     geom_point(data = black_points, aes(color = "black"), alpha = 0.5) +
     geom_text(data = rbind(blue_points, red_points), aes_string(label = gene_label_col, color = ifelse(paste0(log2fc_col, "<=", log(1)), "blue", "red")), vjust = 1.5, hjust = 0.5, size = 3.5) +
     geom_text(data = blue_points, aes_string(label = gene_label_col), vjust = -0.5, hjust = 0.5, size = 3.5, color = "blue") +
     geom_text(data = red_points, aes_string(label = gene_label_col), vjust = -0.5, hjust = 0.5, size = 3.5, color = "red") +
-    scale_color_identity(guide = "legend", labels = color_labels, breaks = c("blue", "red", "grey", "black")) +
+    scale_color_identity(guide = "legend", labels = color_labels, breaks = c("blue", "red", "black")) +
     theme_minimal() +
     labs(x = "log2 Fold Change", y = "-log10(p-value)", color = NULL) +
     ggtitle(title)
@@ -819,12 +826,13 @@ females_DET_volcano_plot <- create_volcano_plot(
   merged_females_DET_stat_results,
   "log2fc",
   "pval",
+  "qval",
   "diffexpressed",
   "gene_label",
   "",
   c("Differentially Expressed - Controls",
     "Differentially Expressed - Exposed",
-    paste0("p-value <= ", pvalue), "P/Q-values > 0.05"
+    paste0("p/q-values > ", pvalue)
     )
   )
 
@@ -959,12 +967,13 @@ males_DET_volcano_plot <- create_volcano_plot(
   merged_males_DET_stat_results,
   "log2fc",
   "pval",
+  "qval",
   "diffexpressed",
   "gene_label",
   "",
   c("Differentially Expressed - Controls",
     "Differentially Expressed - Exposed",
-    paste0("p-value <= ", pvalue), "P/Q-values > 0.05"
+    "p/q-values > 0.05"
     )
   )
 
@@ -1038,12 +1047,13 @@ females_DEG_volcano_plot <- create_volcano_plot(
   merged_females_DEG_stat_results,
   "log2fc",
   "pval",
+  "qval",
   "diffexpressed",
   "gene_label",
   "",
   c("Differentially Expressed - Controls",
     "Differentially Expressed - Exposed",
-    paste0("p-value <= ", pvalue), "P/Q-values > 0.05"
+    "p/q-values > 0.05"
     )
   )
 
@@ -1115,12 +1125,13 @@ males_DEG_volcano_plot <- create_volcano_plot(
   merged_males_DEG_stat_results,
   "log2fc",
   "pval",
+  "qval",
   "diffexpressed",
   "gene_label",
   "",
   c("Differentially Expressed - Controls",
     "Differentially Expressed - Exposed",
-    paste0("p-value <= ", pvalue), "P/Q-values > 0.05"
+    "p/q-values > 0.05"
     )
   )
 
