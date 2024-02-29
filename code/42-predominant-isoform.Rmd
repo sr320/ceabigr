@@ -1770,21 +1770,32 @@ femPredIsoXY / malePredIsoXY #Create patchwork plot
 ggsave("pred-isoform-meth-exp-xy.pdf", height = 8.5, width = 11)
 ```
 
-
 ## Predominant isoform vs. change in methylation distribution
 
-
-
-
-
 ```{r}
-predIsoFemWide %>%
+femPredIsoMethChange <- predIsoFemWide %>%
   ggplot(aes(x = change_meth, fill = as.factor(change))) + 
   geom_histogram() +    
-  labs(x = "Change in Methylation", y = "Number of Genes") +
+  labs(x = "", y = "Number of Genes", title = "A. Females") +
+  scale_x_continuous(limits = c(-30,30), breaks = seq(-30,30,10)) +
+  scale_fill_manual(values = c(plotColors[5], plotColors[8])) +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+```
+
+```{r}
+malePredIsoMethChange <- predIsoMaleWide %>%
+  ggplot(aes(x = change_meth, fill = as.factor(change))) + 
+  geom_histogram() +    
+  labs(x = "Change in Methylation (%)", y = "Number of Genes", title = "B. Males") +
+  scale_x_continuous(limits = c(-30,30), breaks = seq(-30,30,10)) +
   scale_fill_manual(values = c(plotColors[5], plotColors[8]),
                     labels = c("No Shift", "Shift"),
                     name = "") +
-  theme_classic(base_size = 15)
-ggsave("fem-pred-isoform-meth-exp-distribution.pdf", height = 8.5, width = 11)
+  theme_classic(base_size = 15) + theme(legend.position = "bottom")
 ```
+
+```{r}
+femPredIsoMethChange / malePredIsoMethChange
+ggsave("pred-isoform-change-meth-distribution.pdf", height = 8.5, width = 11)
+```
+
