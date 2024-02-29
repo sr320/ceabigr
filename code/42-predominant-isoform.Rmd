@@ -688,7 +688,6 @@ facet_labels <- c("0" = "No Shift",
                   "1" = "Shift") #Assign labels for facets
 ```
 
-
 ```{r}
 femMethExp %>%
   ggplot(aes(x = avg_meth, y = log(avg_exp), color = as.factor(change))) + 
@@ -1269,67 +1268,6 @@ maleMethExp <- inner_join(geneMethylationMale, geneExpressionMale, by = c("gene_
 head(maleMethExp)
 ```
 
-#### XY Plots
-
-```{r}
-maleMethExp %>%
-  filter(., change == 1) %>%
-  ggplot(.) + geom_point(aes(x = avg_meth, y = log(avg_exp)), colour = "#006D2C") +    
-  labs(x = "Methylation (%)", y = "log FPKM") +
-  geom_smooth(aes(x = avg_meth, y = log(avg_exp)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
-  theme_minimal()
-ggsave("male-pred-isoform-meth-exp-xy.pdf", height = 8.5, width = 11)
-```
-
-```{r}
-maleMethExp %>%
-  ggplot(.) + geom_point(aes(x = avg_meth, y = log(avg_exp)), colour = "#006D2C") +    
-  labs(x = "Methylation (%)", y = "log FPKM") +
-  geom_smooth(aes(x = avg_meth, y = log(avg_exp)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
-  theme_minimal()
-ggsave("male-meth-exp-xy.pdf", height = 8.5, width = 11)
-```
-
-```{r}
-maleMethExp %>%
-  filter(., avg_meth !=0 & avg_exp !=0) %>%
-  ggplot(.) + geom_point(aes(x = avg_meth, y = log(avg_exp), colour = factor(change)), alpha = 0.3) +
-  scale_color_manual(values = c("grey", "black")) +
-  theme_minimal()
-```
-
-```{r}
-maleMethExp %>%
-  filter(., avg_meth !=0 & avg_exp !=0) %>%
-  filter(., change == 1) %>%
-  ggplot(.) + geom_point(aes(x = avg_meth, y = log(avg_exp), colour = bins)) +
-  stat_smooth(method = lm, aes(x = avg_meth, y = log(avg_exp))) +
-  stat_regline_equation(aes(x = avg_meth, y = log(avg_exp), label = paste(..eq.label.., ..rr.label.., ..adj.rr.label.., sep = "~~~~")), formula = y ~ x, size = 5) +
-  theme_minimal()
-
-maleMethExp %>%
-  filter(., avg_meth !=0 & avg_exp !=0) %>%
-  filter(., change == 0) %>%
-  ggplot(.) + geom_point(aes(x = avg_meth, y = log(avg_exp), colour = bins)) +
-  stat_smooth(method = lm, aes(x = avg_meth, y = log(avg_exp))) +
-  stat_regline_equation(aes(x = avg_meth, y = log(avg_exp), label = paste(..eq.label.., ..rr.label.., ..adj.rr.label.., sep = "~~~~")), formula = y ~ x, size = 5) +
-  theme_minimal()
-```
-
-```{r}
-maleMethExp %>%
-  filter(., avg_meth !=0 & avg_exp !=0) %>%
-  filter(., change == 1) %>%
-  ggplot(.) + geom_density(aes(x = log(avg_exp), color = bins)) +
-  theme_minimal()
-
-maleMethExp %>%
-  filter(., avg_meth !=0 & avg_exp !=0) %>%
-  filter(., change == 0) %>%
-  ggplot(.) + geom_density(aes(x = log(avg_exp), color = bins)) +
-  theme_minimal()
-```
-
 #### Model data
 
 ```{r}
@@ -1358,6 +1296,33 @@ The initial model is the most parsimonious based on the `step` results.
 
 ```{r}
 write.csv(broom::tidy(predIsoMaleModel), "male-predo-isoform-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
+```
+
+#### Plot data
+
+```{r}
+femMethExp %>%
+  ggplot(aes(x = avg_meth, y = log(avg_exp), color = as.factor(change))) + 
+  geom_point() +    
+  geom_smooth(aes(x = avg_meth, y = log(avg_exp)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
+  stat_regline_equation(aes(x = avg_meth, y = log(avg_exp), label = paste(..eq.label..)), formula = y ~ x, size = 5, inherit.aes = FALSE) +
+  facet_wrap(~change, labeller = labeller(change = facet_labels)) +
+  labs(x = "Methylation (%)", y = "log FPKM") +
+  scale_color_manual(values = c(plotColors[5], plotColors[8])) +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+ggsave("fem-pred-isoform-meth-exp-xy.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+predIsoFemWide %>%
+  ggplot(aes(x = change_meth, fill = as.factor(change))) + 
+  geom_histogram() +    
+  labs(x = "Change in Methylation", y = "Number of Genes") +
+  scale_fill_manual(values = c(plotColors[5], plotColors[8]),
+                    labels = c("No Shift", "Shift"),
+                    name = "") +
+  theme_classic(base_size = 15)
+ggsave("fem-pred-isoform-meth-exp-distribution.pdf", height = 8.5, width = 11)
 ```
 
 ### Transcriptional noise analysis
