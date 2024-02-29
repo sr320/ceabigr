@@ -1301,7 +1301,7 @@ write.csv(broom::tidy(predIsoMaleModel), "male-predo-isoform-model-output.csv", 
 #### Plot data
 
 ```{r}
-femMethExp %>%
+maleMethExp %>%
   ggplot(aes(x = avg_meth, y = log(avg_exp), color = as.factor(change))) + 
   geom_point() +    
   geom_smooth(aes(x = avg_meth, y = log(avg_exp)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
@@ -1310,11 +1310,11 @@ femMethExp %>%
   labs(x = "Methylation (%)", y = "log FPKM") +
   scale_color_manual(values = c(plotColors[5], plotColors[8])) +
   theme_classic(base_size = 15) + theme(legend.position = "none")
-ggsave("fem-pred-isoform-meth-exp-xy.pdf", height = 8.5, width = 11)
+ggsave("male-pred-isoform-meth-exp-xy.pdf", height = 8.5, width = 11)
 ```
 
 ```{r}
-predIsoFemWide %>%
+predIsoMaleWide %>%
   ggplot(aes(x = change_meth, fill = as.factor(change))) + 
   geom_histogram() +    
   labs(x = "Change in Methylation", y = "Number of Genes") +
@@ -1322,7 +1322,7 @@ predIsoFemWide %>%
                     labels = c("No Shift", "Shift"),
                     name = "") +
   theme_classic(base_size = 15)
-ggsave("fem-pred-isoform-meth-exp-distribution.pdf", height = 8.5, width = 11)
+ggsave("male-pred-isoform-meth-exp-distribution.pdf", height = 8.5, width = 11)
 ```
 
 ### Transcriptional noise analysis
@@ -1732,5 +1732,59 @@ maleCVMethPlot <- maleMethExpCV %>%
 ggsave("transcriptional-noise/figures/male-TN-multipanel.pdf", height = 8.5, width = 11)
 ```
 
+# Create multipanel plots
+
+```{r}
+facet_labels <- c("0" = "No Shift",
+                  "1" = "Shift") #Assign labels for facets
+```
+
+## Predominant isoform XY plot
+
+```{r}
+femPredIsoXY <- femMethExp %>%
+  ggplot(aes(x = avg_meth, y = log(avg_exp), color = as.factor(change))) + 
+  geom_point() +    
+  geom_smooth(aes(x = avg_meth, y = log(avg_exp)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
+  stat_regline_equation(aes(x = avg_meth, y = log(avg_exp), label = paste(..eq.label..)), formula = y ~ x, size = 5, inherit.aes = FALSE) +
+  facet_wrap(~change, labeller = labeller(change = facet_labels)) +
+  labs(x = "", y = "log FPKM", title = "A. Females") +
+  scale_color_manual(values = c(plotColors[5], plotColors[8])) +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+```
+
+```{r}
+malePredIsoXY <- maleMethExp %>%
+  ggplot(aes(x = avg_meth, y = log(avg_exp), color = as.factor(change))) + 
+  geom_point() +    
+  geom_smooth(aes(x = avg_meth, y = log(avg_exp)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
+  stat_regline_equation(aes(x = avg_meth, y = log(avg_exp), label = paste(..eq.label..)), formula = y ~ x, size = 5, inherit.aes = FALSE) +
+  facet_wrap(~change, labeller = labeller(change = facet_labels)) +
+  labs(x = "Methylation (%)", y = "log FPKM", title = "B. Males") +
+  scale_color_manual(values = c(plotColors[5], plotColors[8])) +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+```
+
+```{r}
+femPredIsoXY / malePredIsoXY #Create patchwork plot
+ggsave("pred-isoform-meth-exp-xy.pdf", height = 8.5, width = 11)
+```
 
 
+## Predominant isoform vs. change in methylation distribution
+
+
+
+
+
+```{r}
+predIsoFemWide %>%
+  ggplot(aes(x = change_meth, fill = as.factor(change))) + 
+  geom_histogram() +    
+  labs(x = "Change in Methylation", y = "Number of Genes") +
+  scale_fill_manual(values = c(plotColors[5], plotColors[8]),
+                    labels = c("No Shift", "Shift"),
+                    name = "") +
+  theme_classic(base_size = 15)
+ggsave("fem-pred-isoform-meth-exp-distribution.pdf", height = 8.5, width = 11)
+```
