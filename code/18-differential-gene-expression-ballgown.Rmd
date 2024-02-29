@@ -35,6 +35,7 @@ library("ballgown")
 library("tidyverse")
 library("ggplot2")
 library("ggrepel")
+library("patchwork")
 ```
 
 
@@ -829,9 +830,9 @@ females_DET_volcano_plot <- create_volcano_plot(
   "qval",
   "diffexpressed",
   "gene_label",
-  "",
-  c("Differentially Expressed - Controls",
-    "Differentially Expressed - Exposed",
+  "Transcript Expression - Females",
+  c("Diff. Expr. - Controls",
+    "Diff. Expr. - Exposed",
     paste0("p/q-values > ", pvalue)
     )
   )
@@ -970,7 +971,7 @@ males_DET_volcano_plot <- create_volcano_plot(
   "qval",
   "diffexpressed",
   "gene_label",
-  "",
+  "Transcript Expression - Males",
   c("Differentially Expressed - Controls",
     "Differentially Expressed - Exposed",
     "p/q-values > 0.05"
@@ -1050,7 +1051,7 @@ females_DEG_volcano_plot <- create_volcano_plot(
   "qval",
   "diffexpressed",
   "gene_label",
-  "",
+  "Gene Expression - Females",
   c("Differentially Expressed - Controls",
     "Differentially Expressed - Exposed",
     "p/q-values > 0.05"
@@ -1128,7 +1129,7 @@ males_DEG_volcano_plot <- create_volcano_plot(
   "qval",
   "diffexpressed",
   "gene_label",
-  "",
+  "Gene Expression - Males",
   c("Differentially Expressed - Controls",
     "Differentially Expressed - Exposed",
     "p/q-values > 0.05"
@@ -1144,4 +1145,24 @@ males_DEG_volcano_plot
 ```{r}
 # Save the plot as a PNG
 ggsave("../output/18-differential-gene-expression-ballgown/figures/volcano_plot-DEGs-males-CvE.png", males_DEG_volcano_plot, width = 10, height = 8, units = "in", dpi = 300, bg = "white")
+```
+
+# Create faceted volcano plots
+
+Utilizes `patchwork` package to govern layout of plots.
+
+```{r}
+faceted_volcanoes <- (females_DET_volcano_plot / females_DEG_volcano_plot) | (males_DET_volcano_plot / males_DEG_volcano_plot)
+
+```
+
+## Save faceted volcano plot
+
+```{r}
+# Save to supplemental-file dir
+ggsave("../supplemental-files/18-faceted-volcano_plots-fmcoe-DETs-DEGs.png", faceted_volcanoes, width = 10, height = 8, units = "in", dpi = 300, bg = "white")
+
+# Save to 18 dir
+ggsave("../output/18-differential-gene-expression-ballgown/figures/faceted-volcano_plots-fmcoe-DETs-DEGs.png", faceted_volcanoes, width = 10, height = 8, units = "in", dpi = 300, bg = "white")
+
 ```
