@@ -19,10 +19,10 @@ library("tidyverse")
 # Vectors for subsetting samples by different groups
 controls <- c("S13M", "S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S64M", "S6M", "S76F", "S7M")
 exposed <- c("S12M", "S22F", "S23M", "S29F", "S31M", "S35F", "S36F", "S3F", "S41F", "S48M", "S50F", "S59M", "S77F", "S9M")
-controls_males <- c("S13M", "S64M", "S6M", "S7M")
-exposed_males <- c("S12M", "S23M", "S31M", "S48M", "S59M", "S9M")
-controls_females <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F")
-exposed_females <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
+males_controls <- c("S13M", "S64M", "S6M", "S7M")
+males_exposed <- c("S12M", "S23M", "S31M", "S48M", "S59M", "S9M")
+females_controls <- c("S16F", "S19F", "S39F", "S44F", "S52F", "S53F", "S54F", "S76F")
+females_exposed <- c("S22F", "S29F", "S35F", "S36F", "S3F", "S41F", "S50F", "S77F")
 ```
 
 # Functions
@@ -35,7 +35,7 @@ calculate_mean_FPKM <- function(samples) {
     pivot_longer(cols = -name, names_sep = "\\.", names_to = c("metric", "sample")) %>%
     filter(sample %in% samples) %>%
     group_by(name) %>%
-    summarize(mean_FPKM = mean(value, na.rm = TRUE))
+    summarize(mean_gene_FPKM = mean(value, na.rm = TRUE))
 }
 ```
 
@@ -58,10 +58,10 @@ str(whole_gx_table)
 ```{r}
 # Calculate mean FPKM for each group
 mean_FPKM <- list(
-  controls_males = calculate_mean_FPKM(controls_males),
-  exposed_males = calculate_mean_FPKM(exposed_males),
-  controls_females = calculate_mean_FPKM(controls_females),
-  exposed_females = calculate_mean_FPKM(exposed_females)
+  females_controls = calculate_mean_FPKM(females_controls),
+  females_exposed = calculate_mean_FPKM(females_exposed),
+  males_controls = calculate_mean_FPKM(males_controls),
+  males_exposed = calculate_mean_FPKM(males_exposed)
 )
 
 # Combine the results into a single data frame
@@ -69,17 +69,25 @@ mean_FPKM_combined <- bind_rows(mean_FPKM, .id = "Group")
 
 # Pivot the data to the desired layout
 mean_FPKM_final <- mean_FPKM_combined %>%
-  pivot_wider(names_from = "Group", values_from = "mean_FPKM") %>%
+  pivot_wider(names_from = "Group", values_from = "mean_gene_FPKM") %>%
   mutate(name = as.character(name))
 
 # Rename the columns using the names of the original vectors
 new_colnames <- names(mean_FPKM)
-colnames(mean_FPKM_final)[-1] <- paste(new_colnames, "mean_FPKM", sep = "_")
+colnames(mean_FPKM_final)[-1] <- paste(new_colnames, "mean_gene_FPKM", sep = "_")
 
 # Remove the first row
 # Summary data row lefover from Ballgown
 mean_FPKM_final <- mean_FPKM_final %>%
   slice(-1)
+
+# Rename the column 'name' to 'gene_name'
+mean_FPKM_final <- mean_FPKM_final %>%
+  rename(gene_name = name)
+
+# Remove the prefix "gene-" from the gene_name column
+mean_FPKM_final <- mean_FPKM_final %>%
+  mutate(gene_name = str_remove(gene_name, "gene-"))
 
 # View the result
 str(mean_FPKM_final)
@@ -89,7 +97,9 @@ str(mean_FPKM_final)
 ## Join
 ```{r}
 max_transcripts_predom_isos <- max_transcripts_fmcoe_mcoe %>% 
-left_join(predom_fcoe_mcoe, by = "gene_name")
+  left_join(predom_fcoe_mcoe, by = "gene_name") %>%
+  left_join(mean_FPKM_final, by = "gene_name")
+
 
 str(max_transcripts_predom_isos)
 
@@ -99,7 +109,7 @@ str(max_transcripts_predom_isos)
 ```{r}
 # Write to CSV
 write.csv(max_transcripts_predom_isos,
-          file = "../supplemental-files/fmcoe-max-predom-isos.csv",
+          file = "../supplemental-files/01.01-fmcoe-max-predom-isos-gene_fpkm.csv",
           quote = FALSE,
           row.names = FALSE
           )
