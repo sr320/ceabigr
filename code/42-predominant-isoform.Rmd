@@ -419,6 +419,13 @@ head(geneExpressionFem) #Confirm formatting
 ```
 
 ```{r}
+geneExpressionFem %>%
+  filter(., avg_exp != 0) %>%
+  select(., gene_name) %>%
+  distinct(.) %>% nrow(.)
+```
+
+```{r}
 geneExpressionMale <- geneExpressionMod %>%
   filter(., grepl("M", rownames(.), fixed = TRUE)) %>%
   t(.) %>%
@@ -434,6 +441,13 @@ geneExpressionMale <- geneExpressionMod %>%
   summarise(avg_exp = mean(exp, na.rm = TRUE)) %>%
   ungroup(.) #Filter male samples and reformat data. Remove excess information from gene name column. Add treatment information and average expression for each gene by treatment.
 head(geneExpressionMale) #Confirm formatting
+```
+
+```{r}
+geneExpressionMale %>%
+  filter(., avg_exp != 0) %>%
+  select(., gene_name) %>%
+  unique(.) %>% nrow(.)
 ```
 
 ## Females
@@ -628,68 +642,6 @@ femMethExp <- inner_join(geneMethylationFem, geneExpressionFem, by = c("gene_nam
 head(femMethExp)
 ```
 
-#### XY Plots
-
-```{r}
-femMethExp %>%
-  filter(., change == 1) %>%
-  ggplot(.) + geom_point(aes(x = avg_meth, y = log(avg_exp)), colour = "#006D2C") +    
-  labs(x = "Methylation (%)", y = "log FPKM") +
-  geom_smooth(aes(x = avg_meth, y = log(avg_exp)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
-  theme_minimal()
-ggsave("fem-pred-isoform-meth-exp-xy.pdf", height = 8.5, width = 11)
-```
-
-```{r}
-femMethExp %>%
-  ggplot(.) + geom_point(aes(x = avg_meth, y = log(avg_exp)), colour = "#006D2C") +    
-  labs(x = "Methylation (%)", y = "log FPKM") +
-  geom_smooth(aes(x = avg_meth, y = log(avg_exp)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
-  theme_minimal()
-ggsave("fem-meth-exp-xy.pdf", height = 8.5, width = 11)
-```
-
-```{r}
-femMethExp %>%
-  filter(., avg_meth !=0 & avg_exp !=0) %>%
-  ggplot(.) + geom_point(aes(x = avg_meth, y = log(avg_exp), colour = factor(change)), alpha = 0.3) +
-  scale_color_manual(values = c("grey", "black")) +
-  theme_minimal()
-```
-
-```{r}
-femMethExp %>%
-  filter(., avg_meth !=0 & avg_exp !=0) %>%
-  filter(., change == 1) %>%
-  ggplot(.) + geom_point(aes(x = avg_meth, y = log(avg_exp), colour = bins)) +
-  stat_smooth(method = lm, aes(x = avg_meth, y = log(avg_exp))) +
-  stat_regline_equation(aes(x = avg_meth, y = log(avg_exp), label = paste(..eq.label.., ..rr.label.., ..adj.rr.label.., sep = "~~~~")), formula = y ~ x, size = 5) +
-  theme_minimal()
-
-femMethExp %>%
-  filter(., avg_meth !=0 & avg_exp !=0) %>%
-  filter(., change == 0) %>%
-  ggplot(.) + geom_point(aes(x = avg_meth, y = log(avg_exp), colour = bins)) +
-  stat_smooth(method = lm, aes(x = avg_meth, y = log(avg_exp))) +
-  stat_regline_equation(aes(x = avg_meth, y = log(avg_exp), label = paste(..eq.label.., ..rr.label.., ..adj.rr.label.., sep = "~~~~")), formula = y ~ x, size = 5) +
-  theme_minimal()
-```
-
-
-```{r}
-femMethExp %>%
-  filter(., avg_meth !=0 & avg_exp !=0) %>%
-  filter(., change == 1) %>%
-  ggplot(.) + geom_density(aes(x = log(avg_exp), color = bins)) +
-  theme_minimal()
-
-femMethExp %>%
-  filter(., avg_meth !=0 & avg_exp !=0) %>%
-  filter(., change == 0) %>%
-  ggplot(.) + geom_density(aes(x = log(avg_exp), color = bins)) +
-  theme_minimal()
-```
-
 #### Model data
 
 I want to understand if a predominant isoform shift due to pH treatment can be explained by a change in gene body methylation due to pH. I will also add gene length (the longer the gene, the more potential for different isoforms/alternative start or stop sites) and change in gene expression due to pH (higher expression = higher likelihood of picking up signal associated with isoform change).
@@ -720,13 +672,46 @@ step(predIsoFemModel, test = "LRT")
 
 ```{r}
 predIsoFemModel2 <- glm(I(change == 1) ~ log10(length) + log2(change_exp + 1),
-                       family = binomial(),
-                       data = predIsoFemWide) #Model identified by step
+                        family = binomial(),
+                        data = predIsoFemWide) #Model identified by step
 summary(predIsoFemModel2) #Only length and gene expression significant
 ```
 
 ```{r}
 write.csv(broom::tidy(predIsoFemModel2), "fem-predo-isoform-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
+```
+
+#### Plot data
+
+```{r}
+facet_labels <- c("0" = "No Shift",
+                  "1" = "Shift") #Assign labels for facets
+```
+
+
+```{r}
+femMethExp %>%
+  ggplot(aes(x = avg_meth, y = log(avg_exp), color = as.factor(change))) + 
+  geom_point() +    
+  geom_smooth(aes(x = avg_meth, y = log(avg_exp)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
+  stat_regline_equation(aes(x = avg_meth, y = log(avg_exp), label = paste(..eq.label..)), formula = y ~ x, size = 5, inherit.aes = FALSE) +
+  facet_wrap(~change, labeller = labeller(change = facet_labels)) +
+  labs(x = "Methylation (%)", y = "log FPKM") +
+  scale_color_manual(values = c(plotColors[5], plotColors[8])) +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+ggsave("fem-pred-isoform-meth-exp-xy.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+predIsoFemWide %>%
+  ggplot(aes(x = change_meth, fill = as.factor(change))) + 
+  geom_histogram() +    
+  labs(x = "Change in Methylation", y = "Number of Genes") +
+  scale_fill_manual(values = c(plotColors[5], plotColors[8]),
+                    labels = c("No Shift", "Shift"),
+                    name = "") +
+  theme_classic(base_size = 15)
+ggsave("fem-pred-isoform-meth-exp-distribution.pdf", height = 8.5, width = 11)
 ```
 
 ### Transcriptional noise analysis
@@ -1359,9 +1344,9 @@ head(predIsoMaleWide)
 
 ```{r}
 predIsoMaleModel <- glm(I(change == 1) ~ change_meth +
-                         log10(length) + log2(change_exp + 1),
-                       family = binomial(),
-                       data = predIsoMaleWide) #Create a binomial model, where 1 = the predominant isoform shifted when comparing low and control pH conditions. Use change in methylation, gene length, and change in gene expression as explanatory variables
+                          log10(length) + log2(change_exp + 1),
+                        family = binomial(),
+                        data = predIsoMaleWide) #Create a binomial model, where 1 = the predominant isoform shifted when comparing low and control pH conditions. Use change in methylation, gene length, and change in gene expression as explanatory variables
 summary(predIsoMaleModel) #Only length and gene expression significant
 ```
 
