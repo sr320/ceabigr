@@ -26,12 +26,20 @@ getwd()
 ```
 
 ```{r}
+# if (!require("BiocManager", quietly = TRUE))
+#     install.packages("BiocManager")
+# 
+# BiocManager::install("topGO")
+```
+
+```{r}
 require(tidyverse)
 require(ggpubr)
 require(lme4)
 require(data.table)
 require(RColorBrewer)
 require(patchwork)
+require(topGO)
 ```
 
 ```{r}
@@ -580,10 +588,6 @@ head(GOslim)
 ```
 
 ```{r}
-head(predIsoFemFilt)
-```
-
-```{r}
 predIsoFemFiltAnnot <- inner_join(predIsoFemFilt, mRNATrack, by = "gene_name") %>%
   inner_join(., GOterms, by = "transcript") %>%
   inner_join(., GOslim, by = "GO")
@@ -604,6 +608,81 @@ predIsoFemFiltAnnotF <- predIsoFemFiltAnnot %>%
   #    filter(., change == 0)
   filter(., change == 1)
 as.data.frame(table(predIsoFemFiltAnnotF$GOslim))
+```
+
+### Enrichment test
+
+I will use `topGO` to understand if there are biological processes overrepresented in the list of genes that had a shift in the predominant isoform when compared to genes with data for more than one isoform.
+
+#### Make input files
+
+First thing I need to do is modify the GOterms list so each transcript ID has all matching GOterms in one line. I then need to pull out only the genes with data for > 1 transcript, since this will be the background list
+
+```{r}
+predIsoFemFiltAnnot %>%
+  dplyr::select(., gene_name, GO) %>%
+  unique(.) %>%
+  group_by(., gene_name) %>%
+  summarise(GO = paste(GO, collapse = ",")) %>%
+  write.table(., "geneid2go-fem_predIso.tab", quote = FALSE, sep = "\t", col.names = FALSE, row.names = FALSE)
+  #Take list of genes and GOterms for female predominant isoform data, and remove any duplicate entries (precaution). Using genes since that was the "input" for the predominant isoform analsyis. Group by transcript ID, then summarise using paste to get all GOterms for each transcript into the same row separated by ",". Save as a tab delimited file
+```
+
+```{r}
+geneID2GO <- readMappings(file = "geneid2go-fem_predIso.tab") #Loading the GO annotations and GeneIDs. Each line has one transcript ID and all associated GOterms
+str(head(geneID2GO)) #Confirm file structure
+length(geneID2GO) #31,276 genes with annotations out of 38,575 genes with data for ≥ 2 transcripts
+```
+
+```{r}
+geneNames <- names(geneID2GO) #Extract names to use as a gene universe
+head(geneNames)
+```
+
+```{r}
+predIsoFemFiltChange <- predIsoFemFilt %>%
+  filter(., change == 1) %>%
+  dplyr::select(., gene_name) #Take data and retain genes where the predominant isoform shifted (change == 1). Select the gene ID column and convert to a dataframe. Save as a new object
+predIsoFemFiltChange <- predIsoFemFiltChange$gene_name #Save column as a vector (will not work otherwise!)
+```
+
+```{r}
+predIsoFemFiltGeneList <- factor(as.integer(geneNames %in% predIsoFemFiltChange)) #Create a factor vector to indicate genes that shifted as significant (1) and didn't shift as not significant (0)
+names(predIsoFemFiltGeneList) <- geneNames
+str(predIsoFemFiltGeneList)
+```
+
+#### Run enrichment test
+
+I am only going to look at biological processes.
+
+```{r}
+predIsoFemdataBP <- new("topGOdata", ontology = "BP", allGenes = predIsoFemFiltGeneList,
+                      annot = annFUN.gene2GO, gene2GO = geneID2GO) #Create biological process topGO object
+predIsoFemdataBP #Get summary of object
+```
+
+```{r}
+test.stat <- new("classicCount", testStatistic = GOFisherTest, name = "Fisher test")
+resultFisher.predIsoFemdataBP <- getSigGroups(predIsoFemdataBP, test.stat)
+resultFisher.predIsoFemdataBP
+```
+
+```{r}
+pvalFis.predIsoFemdataBP <- score(resultFisher.predIsoFemdataBP) #Extract p-values
+head(pvalFis.predIsoFemdataBP)
+hist(pvalFis.predIsoFemdataBP, 50, xlab = "p-values") #Plot histogram of p-values
+```
+
+```{r}
+allRes.predIsoFemdataBP <- GenTable(predIsoFemdataBP, classic = resultFisher.predIsoFemdataBP, ranksOf = "classic", orderBy = "classic", topNodes = length(pvalFis.predIsoFemdataBP))
+  #Create a statistical results table with statistical test results. Order by p-value (classic), and include all results (topNodes)
+nrow(allRes.predIsoFemdataBP %>% filter(., classic < 0.01)) #193 significantly enriched terms at the 0.01 level
+head(allRes.predIsoFemdataBP)
+```
+
+```{r}
+write.csv(allRes.predIsoFemdataBP, "fem-predIso-BP-FisherTestResults.csv", quote = FALSE, row.names = FALSE) #Save dataframe
 ```
 
 ### Isoforms and methylation
