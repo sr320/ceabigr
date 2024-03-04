@@ -1332,6 +1332,98 @@ predIsoMaleFiltAnnotF <- predIsoMaleFiltAnnot %>%
 as.data.frame(table(predIsoMaleFiltAnnotF$GOslim))
 ```
 
+### Enrichment test
+
+I will use `topGO` to understand if there are biological processes overrepresented in the list of genes that had a shift in the predominant isoform when compared to genes with data for more than one isoform.
+
+#### Make input files
+
+First thing I need to do is modify the GOterms list so each transcript ID has all matching GOterms in one line. I then need to pull out only the genes with data for > 1 transcript, since this will be the background list
+
+```{r}
+predIsoMaleFiltAnnot %>%
+  dplyr::select(., gene_name, GO) %>%
+  unique(.) %>%
+  group_by(., gene_name) %>%
+  summarise(GO = paste(GO, collapse = ",")) %>%
+  write.table(., "geneid2go-male_predIso.tab", quote = FALSE, sep = "\t", col.names = FALSE, row.names = FALSE)
+  #Take list of genes and GOterms for maleale predominant isoform data, and remove any duplicate entries (precaution). Using genes since that was the "input" for the predominant isoform analsyis. Group by transcript ID, then summarise using paste to get all GOterms for each transcript into the same row separated by ",". Save as a tab delimited file
+```
+
+```{r}
+geneID2GO <- readMappings(file = "geneid2go-male_predIso.tab") #Loading the GO annotations and GeneIDs. Each line has one transcript ID and all associated GOterms
+str(head(geneID2GO)) #Confirm file structure
+length(geneID2GO) #9,149 genes with annotations out of 10,559 genes with data for ≥ 2 transcripts
+```
+
+```{r}
+geneNames <- names(geneID2GO) #Extract names to use as a gene universe
+head(geneNames)
+```
+
+```{r}
+predIsoMaleFiltChange <- predIsoMaleFilt %>%
+  filter(., change == 1) %>%
+  dplyr::select(., gene_name) #Take data and retain genes where the predominant isoform shifted (change == 1). Select the gene ID column and convert to a dataframe. Save as a new object
+predIsoMaleFiltChange <- predIsoMaleFiltChange$gene_name #Save column as a vector (will not work otherwise!)
+```
+
+```{r}
+predIsoMaleFiltGeneList <- factor(as.integer(geneNames %in% predIsoMaleFiltChange)) #Create a factor vector to indicate genes that shifted as significant (1) and didn't shift as not significant (0)
+names(predIsoMaleFiltGeneList) <- geneNames
+str(predIsoMaleFiltGeneList)
+```
+
+#### Run enrichment test
+
+I am only going to look at biological processes.
+
+```{r}
+predIsoMaledataBP <- new("topGOdata", ontology = "BP", allGenes = predIsoMaleFiltGeneList,
+                      annot = annFUN.gene2GO, gene2GO = geneID2GO) #Create biological process topGO object
+predIsoMaledataBP #Get summary of object
+```
+
+```{r}
+test.stat <- new("classicCount", testStatistic = GOFisherTest, name = "Fisher test")
+resultFisher.predIsoMaledataBP <- getSigGroups(predIsoMaledataBP, test.stat)
+resultFisher.predIsoMaledataBP
+```
+
+```{r}
+pvalFis.predIsoMaledataBP <- score(resultFisher.predIsoMaledataBP) #Extract p-values
+head(pvalFis.predIsoMaledataBP)
+hist(pvalFis.predIsoMaledataBP, 50, xlab = "p-values") #Plot histogram of p-values
+```
+
+```{r}
+allRes.predIsoMaledataBP <- GenTable(predIsoMaledataBP, classic = resultFisher.predIsoMaledataBP, ranksOf = "classic", orderBy = "classic", topNodes = length(pvalFis.predIsoMaledataBP))
+  #Create a statistical results table with statistical test results. Order by p-value (classic), and include all results (topNodes)
+head(allRes.predIsoMaledataBP)
+```
+
+```{r}
+write.csv(allRes.predIsoMaledataBP, "male-predIso-BP-FisherTestResults.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+```
+
+#### Match enriched GOterms with general annotation information
+
+```{r}
+sigRes.predIsoMaledataBP <- allRes.predIsoMaledataBP[1:33,c(1, 6)] #Filter significantly enriched GOterms, only keep GOID and p-value
+colnames(sigRes.predIsoMaledataBP) <- c("GO", "p.value") #Change column names
+head(sigRes.predIsoMaledataBP)
+```
+
+```{r}
+sigRes.predIsoMaledataBP %>%
+  left_join(., y = (predIsoMaleFiltAnnot %>% filter(., change == 1)), by = "GO") %>%
+  dplyr::select(., gene_name, change, t_name, Predom_exp, GO, p.value, product) %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C") %>%
+  dplyr::select(., -transcriptVar) %>%
+  unique(.) %>%
+  write.csv("male-predIso-BP-EnrichedGO-geneAnnot.csv", quote = FALSE, row.names = FALSE) #Take significant BPGO data and join with annotation information. Select columns of interest. Separate product column by "%2C" and remove transcriptVar column. Select unique rows. This removes all "transcript variant" information so each gene is listed once per significant GOterm. Save as a csv file.
+```
+
 ### Isoforms and methylation
 
 ```{r}
