@@ -677,12 +677,33 @@ hist(pvalFis.predIsoFemdataBP, 50, xlab = "p-values") #Plot histogram of p-value
 ```{r}
 allRes.predIsoFemdataBP <- GenTable(predIsoFemdataBP, classic = resultFisher.predIsoFemdataBP, ranksOf = "classic", orderBy = "classic", topNodes = length(pvalFis.predIsoFemdataBP))
   #Create a statistical results table with statistical test results. Order by p-value (classic), and include all results (topNodes)
-nrow(allRes.predIsoFemdataBP %>% filter(., classic < 0.01)) #193 significantly enriched terms at the 0.01 level
 head(allRes.predIsoFemdataBP)
 ```
 
 ```{r}
 write.csv(allRes.predIsoFemdataBP, "fem-predIso-BP-FisherTestResults.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+```
+
+#### Match enriched GOterms with general annotation information
+
+```{r}
+sigRes.predIsoFemdataBP <- allRes.predIsoFemdataBP[1:226,c(1, 6)] #Filter significantly enriched GOterms, only keep GOID and p-value
+colnames(sigRes.predIsoFemdataBP) <- c("GO", "p.value") #Change column names
+head(sigRes.predIsoFemdataBP)
+```
+
+```{r}
+head(predIsoFemFiltAnnot)
+```
+
+```{r}
+sigRes.predIsoFemdataBP %>%
+  left_join(., y = (predIsoFemFiltAnnot %>% filter(., change == 1)), by = "GO") %>%
+  dplyr::select(., gene_name, change, t_name, Predom_exp, GO, p.value, product) %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C") %>%
+  dplyr::select(., -transcriptVar) %>%
+  unique(.) %>%
+  write.csv("fem-predIso-BP-EnrichedGO-geneAnnot.csv", quote = FALSE, row.names = FALSE) #Take significant BPGO data and join with annotation information. Select columns of interest. Separate product column by "%2C" and remove transcriptVar column. Select unique rows. This removes all "transcript variant" information so each gene is listed once per significant GOterm. Save as a csv file.
 ```
 
 ### Isoforms and methylation
