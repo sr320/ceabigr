@@ -1738,10 +1738,10 @@ ggsave("male-pred-isoform-DML-distribution.pdf", height = 8.5, width = 11)
 #### Model data
 
 ```{r}
-predIsoMaleModel <- glm(I(change == 1) ~ change_meth +
+predIsoMaleModel <- glm(I(change == 1) ~ change_meth + DMLcount +
                           log10(length) + log2(change_exp + 1),
                         family = binomial(),
-                        data = predIsoMaleWide) #Create a binomial model, where 1 = the predominant isoform shifted when comparing low and control pH conditions. Use change in methylation, gene length, and change in gene expression as explanatory variables
+                        data = (predIsoMaleWideDML %>% dplyr::select(., -c(start, end, meth.diff)) %>% unique(.) %>% ungroup(.))) #Create a binomial model, where 1 = the predominant isoform shifted when comparing low and control pH conditions. Use change in methylation, gene length, and change in gene expression as explanatory variables
 summary(predIsoMaleModel) #Only length and gene expression significant
 ```
 
