@@ -693,10 +693,6 @@ head(sigRes.predIsoFemdataBP)
 ```
 
 ```{r}
-head(predIsoFemFiltAnnot)
-```
-
-```{r}
 sigRes.predIsoFemdataBP %>%
   left_join(., y = (predIsoFemFiltAnnot %>% filter(., change == 1)), by = "GO") %>%
   dplyr::select(., gene_name, change, t_name, Predom_exp, GO, p.value, product) %>%
@@ -779,6 +775,67 @@ summary(predIsoFemModel2) #Only length and gene expression significant
 
 ```{r}
 write.csv(broom::tidy(predIsoFemModel2), "fem-predo-isoform-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
+```
+
+#### Methylation of genes with enriched BPGO
+
+```{r}
+predIsoFemWideAnnot <- sigRes.predIsoFemdataBP %>%
+  left_join(., y = (predIsoFemFiltAnnot %>% filter(., change == 1)), by = "GO") %>%
+  dplyr::select(., gene_name, change, t_name, Predom_exp, GO, p.value, product) %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C") %>%
+  dplyr::select(., -transcriptVar) %>%
+  unique(.) %>%
+  full_join(x = predIsoFemWide, y = ., by = "gene_name") %>%
+  dplyr::select(., gene_name, change.x, change_meth, change_exp, GO, p.value, product) %>%
+  dplyr::rename(., change = "change.x") #Take significant BPGO data and join with annotation information. Select columns of interest. Separate product column by "%2C" and remove transcriptVar column. Select unique rows. This removes all "transcript variant" information so each gene is listed once per significant GOterm. Full join with the wide predominant isoform information that has change in methylation data. Select relevant columns and rename change column.
+head(predIsoFemWideAnnot) #Confirm manipulation
+```
+
+```{r}
+femPredIsoEnrichedBPGO <- predIsoFemWideAnnot %>%
+  filter(., change == 1 & is.na(GO) == FALSE) %>%
+  ggplot(aes(x = change_meth)) + 
+  geom_histogram() +
+  labs(x = "", y = "Number of Genes", title = "A. Enriched BPGO") +
+  theme_classic(base_size = 15)
+
+femPredIsoNotEnrichedBPGO <- predIsoFemWideAnnot %>%
+  filter(., change == 1 & is.na(GO) == TRUE) %>%
+  ggplot(aes(x = change_meth)) + 
+  geom_histogram() +
+  labs(x = "Change in Methylation (%)", y = "Number of Genes", title = "B. Not Enriched BPGO") +
+  theme_classic(base_size = 15)
+```
+
+```{r}
+femPredIsoEnrichedBPGO / femPredIsoNotEnrichedBPGO
+ggsave("fem-pred-isoform-changeMeth-enrichedBPGO.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+femPredIsoEnrichedBPGOExp <- predIsoFemWideAnnot %>%
+  filter(., change == 1 & is.na(GO) == FALSE) %>%
+  ggplot(aes(x = change_meth, y = log2(change_exp + 1))) + 
+  geom_point() +    
+  geom_smooth(aes(x = change_meth, y = log2(change_exp + 1)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
+  stat_regline_equation(aes(x = change_meth, y = log2(change_exp + 1), label = paste(..eq.label..)), formula = y ~ x, size = 5, inherit.aes = FALSE) +
+  labs(x = "", y = "log FPKM", title = "A. Enriched BPGO") +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+
+femPredIsoNotEnrichedBPGOExp <- predIsoFemWideAnnot %>%
+  filter(., change == 1 & is.na(GO) == TRUE) %>%
+  ggplot(aes(x = change_meth, y = log2(change_exp + 1))) + 
+  geom_point() +    
+  geom_smooth(aes(x = change_meth, y = log2(change_exp + 1)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
+  stat_regline_equation(aes(x = change_meth, y = log2(change_exp + 1), label = paste(..eq.label..)), formula = y ~ x, size = 5, inherit.aes = FALSE) +
+  labs(x = "Change in Methylation (%)", y = "log FPKM", title = "B. Not Enriched BPGO") +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+```
+
+```{r}
+femPredIsoEnrichedBPGOExp / femPredIsoNotEnrichedBPGOExp
+ggsave("fem-pred-isoform-changeMeth-changeExp-enrichedBPGO.pdf", height = 8.5, width = 11)
 ```
 
 #### Plot data
@@ -1488,6 +1545,57 @@ The initial model is the most parsimonious based on the `step` results.
 
 ```{r}
 write.csv(broom::tidy(predIsoMaleModel), "male-predo-isoform-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
+```
+
+#### Methylation of genes with enriched BPGO
+
+```{r}
+predIsoMaleWideAnnot <- sigRes.predIsoMaledataBP %>%
+  left_join(., y = (predIsoMaleFiltAnnot %>% filter(., change == 1)), by = "GO") %>%
+  dplyr::select(., gene_name, change, t_name, Predom_exp, GO, p.value, product) %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C") %>%
+  dplyr::select(., -transcriptVar) %>%
+  unique(.) %>%
+  full_join(x = predIsoMaleWide, y = ., by = "gene_name") %>%
+  dplyr::select(., gene_name, change.x, change_meth, change_exp, GO, p.value, product) %>%
+  dplyr::rename(., change = "change.x") #Take significant BPGO data and join with annotation information. Select columns of interest. Separate product column by "%2C" and remove transcriptVar column. Select unique rows. This removes all "transcript variant" information so each gene is listed once per significant GOterm. Full join with the wide predominant isoform information that has change in methylation data. Select relevant columns and rename change column.
+head(predIsoMaleWideAnnot) #Confirm manipulation
+```
+
+```{r}
+predIsoMaleWideAnnot %>%
+  filter(., change == 1 & is.na(GO) == FALSE) %>%
+  ggplot(aes(x = change_meth)) + 
+  geom_histogram() +
+  labs(x = "Change in Methylation", y = "Number of Genes") +
+  theme_classic(base_size = 15)
+
+predIsoMaleWideAnnot %>%
+  filter(., change == 1 & is.na(GO) == TRUE) %>%
+  ggplot(aes(x = change_meth)) + 
+  geom_histogram() +
+  labs(x = "Change in Methylation", y = "Number of Genes") +
+  theme_classic(base_size = 15)
+```
+
+```{r}
+predIsoMaleWideAnnot %>%
+  filter(., change == 1 & is.na(GO) == FALSE) %>%
+  ggplot(aes(x = change_meth, y = log2(change_exp + 1))) + 
+  geom_point() +    
+  geom_smooth(aes(x = change_meth, y = log2(change_exp + 1)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
+  stat_regline_equation(aes(x = change_meth, y = log2(change_exp + 1), label = paste(..eq.label..)), formula = y ~ x, size = 5, inherit.aes = FALSE) +
+  labs(x = "Methylation (%)", y = "log FPKM") +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+
+predIsoMaleWideAnnot %>%
+  filter(., change == 1 & is.na(GO) == TRUE) %>%
+  ggplot(aes(x = change_meth, y = log2(change_exp + 1))) + 
+  geom_point() +    
+  geom_smooth(aes(x = change_meth, y = log2(change_exp + 1)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
+  stat_regline_equation(aes(x = change_meth, y = log2(change_exp + 1), label = paste(..eq.label..)), formula = y ~ x, size = 5, inherit.aes = FALSE) +
+  labs(x = "Methylation (%)", y = "log FPKM") +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
 ```
 
 #### Plot data
