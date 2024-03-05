@@ -400,6 +400,24 @@ geneMethylationMale <- geneMethylationMod %>%
 head(geneMethylationMale) #Confirm formatting
 ```
 
+```{r}
+DMLLocationsFemale <- read.delim("../DML-characterization/female_dml-Gene-wb.bed", sep = "\t", header = FALSE, col.names = c("chr", "start", "end", "f_DML", "meth.diff", "gene.chr", "Gnomon", "gene", "gene.start", "gene.end", "V11", "strand", "V13", "V14")) %>%
+  dplyr::select(., "chr", "start", "end", "meth.diff", "gene.start", "gene.end", "V14") %>%
+  separate(., col = V14, into = c("gene_name", "misc"), sep = ";Dbxref=GeneID:") %>%
+  dplyr::select(., -misc) %>%
+  mutate(., gene_name = gsub(pattern = "ID=gene-", replacement = "", x = gene_name)) #Import bedfile with DML locations in genes with gene ID annotations. Rename columns as file is imported then select columns of interest. Separate gene ID annotation information from misc information, and remove misc column. Remove extra information before gene ID
+head(DMLLocationsFemale) #Confirm file import and changes
+```
+
+```{r}
+DMLLocationsMale <- read.delim("../DML-characterization/male_dml-Gene-wb.bed", sep = "\t", header = FALSE, col.names = c("chr", "start", "end", "f_DML", "meth.diff", "gene.chr", "Gnomon", "gene", "gene.start", "gene.end", "V11", "strand", "V13", "V14")) %>%
+  dplyr::select(., "chr", "start", "end", "meth.diff", "gene.start", "gene.end", "V14") %>%
+  separate(., col = V14, into = c("gene_name", "misc"), sep = ";Dbxref=GeneID:") %>%
+  dplyr::select(., -misc) %>%
+  mutate(., gene_name = gsub(pattern = "ID=gene-", replacement = "", x = gene_name)) #Import bedfile with DML locations in genes with gene ID annotations. Rename columns as file is imported then select columns of interest. Separate gene ID annotation information from misc information, and remove misc column. Remove extra information before gene ID
+head(DMLLocationsMale) #Confirm file import and changes
+```
+
 ### Expression data
 
 ```{r}
@@ -705,11 +723,6 @@ sigRes.predIsoFemdataBP %>%
 ### Isoforms and methylation
 
 ```{r}
-head(geneMethylationFem)
-head(geneExpressionFem)
-```
-
-```{r}
 femMethExp <- inner_join(geneMethylationFem, geneExpressionFem, by = c("gene_name", "treatment")) %>%
   inner_join(., predIsoFemFilt, by = "gene_name") %>%
   select(., 1:6) %>%
@@ -738,14 +751,8 @@ femMethExp <- inner_join(geneMethylationFem, geneExpressionFem, by = c("gene_nam
 head(femMethExp)
 ```
 
-#### Model data
-
-I want to understand if a predominant isoform shift due to pH treatment can be explained by a change in gene body methylation due to pH. I will also add gene length (the longer the gene, the more potential for different isoforms/alternative start or stop sites) and change in gene expression due to pH (higher expression = higher likelihood of picking up signal associated with isoform change).
-
-if the predominant isoform shifted under low pH  ~ change gene body methylation (exposed - control) + change in gene expression (exposed - control) + log10(gene length).
-
 ```{r}
-predIsoFemWide <- femMethExpCV %>%
+predIsoFemWideDML <- femMethExpCV %>%
   select(., gene_name, treatment, change, avg_meth, avg_exp, length) %>%
   pivot_wider(names_from = treatment, values_from = c(avg_meth, avg_exp)) %>%
   replace(is.na(.), 0) %>%
@@ -754,30 +761,9 @@ predIsoFemWide <- femMethExpCV %>%
 head(predIsoFemWide)
 ```
 
-```{r}
-predIsoFemModel <- glm(I(change == 1) ~ change_meth +
-                         log10(length) + log2(change_exp + 1),
-                       family = binomial(),
-                       data = predIsoFemWide) #Create a binomial model, where 1 = the predominant isoform shifted when comparing low and control pH conditions. Use change in methylation, gene length, and change in gene expression as explanatory variables
-summary(predIsoFemModel) #Only length and gene expression significant
-```
-
-```{r}
-step(predIsoFemModel, test = "LRT")
-```
-
-```{r}
-predIsoFemModel2 <- glm(I(change == 1) ~ log10(length) + log2(change_exp + 1),
-                        family = binomial(),
-                        data = predIsoFemWide) #Model identified by step
-summary(predIsoFemModel2) #Only length and gene expression significant
-```
-
-```{r}
-write.csv(broom::tidy(predIsoFemModel2), "fem-predo-isoform-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
-```
-
 #### Methylation of genes with enriched BPGO
+
+##### Change in methylation
 
 ```{r}
 predIsoFemWideAnnot <- sigRes.predIsoFemdataBP %>%
@@ -838,6 +824,37 @@ femPredIsoEnrichedBPGOExp / femPredIsoNotEnrichedBPGOExp
 ggsave("fem-pred-isoform-changeMeth-changeExp-enrichedBPGO.pdf", height = 8.5, width = 11)
 ```
 
+#### Number of DML in genes with changes in the predominant isoform
+
+```{r}
+predIsoFemWideDML <- left_join(predIsoFemWide, DMLLocationsFemale, by = "gene_name") %>%
+  dplyr::select(., -c(chr, gene.start, gene.end)) %>%
+  group_by(., gene_name) %>%
+  mutate(., DMLcount = n()) %>%
+  mutate(., DMLcount = case_when(is.na(meth.diff) == TRUE ~ 0,
+                                 is.na(meth.diff) == FALSE ~ DMLcount)) #Join pred iso data with DML annotations and remove superfluous columns. Group by gene name and count the number of DML per gene. When there is no DML in the gene (meth.diff == NA), change the DML count to 0.
+head(predIsoFemWideDML) #Confirm dataframe creation
+```
+
+```{r}
+write.csv(predIsoFemWideDML, "fem-pred-isoform-DML-annotations.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+```
+
+```{r}
+predIsoFemWideDML %>%
+  group_by(., DMLcount, change) %>%
+  summarise(., count = n()) #Group data by DML count and change, then count the number of genes with or without predominant isoform shifts with various DML counts
+```
+
+DMLcount change count
+0	       0	    30253		
+0	       1	    2065		
+1	       0	    53		
+1	       1	    2		
+2	       0	    14		
+2	       1	    2		
+3	       0	    3	
+
 #### Plot data
 
 ```{r}
@@ -868,6 +885,50 @@ predIsoFemWide %>%
                     name = "") +
   theme_classic(base_size = 15)
 ggsave("fem-pred-isoform-meth-exp-distribution.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+predIsoFemWideDML %>%
+  dplyr::select(., -c(start, end, meth.diff)) %>%
+  unique(.) %>%
+  ggplot(aes(x = DMLcount, fill = as.factor(change))) + 
+  geom_histogram() +
+  facet_wrap(.~change, scales = "free_x") +
+  labs(x = "Number of DML", y = "Number of Genes") +
+  scale_fill_manual(values = c(plotColors[5], plotColors[8]),
+                    labels = c("No Shift", "Shift"),
+                    name = "") +
+  theme_classic(base_size = 15)
+ggsave("frem-pred-isoform-DML-distribution.pdf", height = 8.5, width = 11)
+```
+
+#### Model data
+
+I want to understand if a predominant isoform shift due to pH treatment can be explained by a change in gene body methylation due to pH. I will also add gene length (the longer the gene, the more potential for different isoforms/alternative start or stop sites) and change in gene expression due to pH (higher expression = higher likelihood of picking up signal associated with isoform change).
+
+if the predominant isoform shifted under low pH  ~ change gene body methylation (exposed - control) + change in gene expression (exposed - control) + log10(gene length) + number of DML.
+
+```{r}
+predIsoFemModel <- glm(I(change == 1) ~ change_meth + DMLcount +
+                         log10(length) + log2(change_exp + 1),
+                       family = binomial(),
+                       data = (predIsoFemWideDML %>% dplyr::select(., -c(start, end, meth.diff)) %>% unique(.) %>% ungroup(.))) #Create a binomial model, where 1 = the predominant isoform shifted when comparing low and control pH conditions. Use change in methylation, gene length, and change in gene expression as explanatory variables
+summary(predIsoFemModel) #Only length and gene expression significant
+```
+
+```{r}
+step(predIsoFemModel, test = "LRT")
+```
+
+```{r}
+predIsoFemModel2 <- glm(I(change == 1) ~ DMLcount + log10(length) + log2(change_exp + 1),
+                        family = binomial(),
+                        data = (predIsoFemWideDML %>% dplyr::select(., -c(start, end, meth.diff)) %>% unique(.) %>% ungroup(.))) #Model identified by step
+summary(predIsoFemModel2) #Only length and gene expression significant
+```
+
+```{r}
+write.csv(broom::tidy(predIsoFemModel2), "fem-pred-isoform-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
 ```
 
 ### Transcriptional noise analysis
@@ -1563,39 +1624,49 @@ head(predIsoMaleWideAnnot) #Confirm manipulation
 ```
 
 ```{r}
-predIsoMaleWideAnnot %>%
+malePredIsoEnrichedBPGO <- predIsoMaleWideAnnot %>%
   filter(., change == 1 & is.na(GO) == FALSE) %>%
   ggplot(aes(x = change_meth)) + 
   geom_histogram() +
-  labs(x = "Change in Methylation", y = "Number of Genes") +
+  labs(x = "", y = "Number of Genes", title = "A. Enriched BPGO") +
   theme_classic(base_size = 15)
 
-predIsoMaleWideAnnot %>%
+malePredIsoNotEnrichedBPGO <- predIsoMaleWideAnnot %>%
   filter(., change == 1 & is.na(GO) == TRUE) %>%
   ggplot(aes(x = change_meth)) + 
   geom_histogram() +
-  labs(x = "Change in Methylation", y = "Number of Genes") +
+  labs(x = "Change in Methylation (%)", y = "Number of Genes", title = "B. Not Enriched BPGO") +
   theme_classic(base_size = 15)
 ```
 
 ```{r}
-predIsoMaleWideAnnot %>%
+malePredIsoEnrichedBPGO / malePredIsoNotEnrichedBPGO
+ggsave("male-pred-isoform-changeMeth-enrichedBPGO.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+malePredIsoEnrichedBPGOExp <- predIsoMaleWideAnnot %>%
   filter(., change == 1 & is.na(GO) == FALSE) %>%
   ggplot(aes(x = change_meth, y = log2(change_exp + 1))) + 
   geom_point() +    
   geom_smooth(aes(x = change_meth, y = log2(change_exp + 1)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
   stat_regline_equation(aes(x = change_meth, y = log2(change_exp + 1), label = paste(..eq.label..)), formula = y ~ x, size = 5, inherit.aes = FALSE) +
-  labs(x = "Methylation (%)", y = "log FPKM") +
+  labs(x = "", y = "log FPKM", title = "A. Enriched BPGO") +
   theme_classic(base_size = 15) + theme(legend.position = "none")
 
-predIsoMaleWideAnnot %>%
+malePredIsoNotEnrichedBPGOExp <- predIsoMaleWideAnnot %>%
   filter(., change == 1 & is.na(GO) == TRUE) %>%
   ggplot(aes(x = change_meth, y = log2(change_exp + 1))) + 
   geom_point() +    
   geom_smooth(aes(x = change_meth, y = log2(change_exp + 1)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
   stat_regline_equation(aes(x = change_meth, y = log2(change_exp + 1), label = paste(..eq.label..)), formula = y ~ x, size = 5, inherit.aes = FALSE) +
-  labs(x = "Methylation (%)", y = "log FPKM") +
+  labs(x = "Change in Methylation (%)", y = "log FPKM", title = "B. Not Enriched BPGO") +
   theme_classic(base_size = 15) + theme(legend.position = "none")
+```
+
+```{r}
+malePredIsoEnrichedBPGOExp / malePredIsoNotEnrichedBPGOExp
+ggsave("male-pred-isoform-changeMeth-changeExp-enrichedBPGO.pdf", height = 8.5, width = 11)
 ```
 
 #### Plot data
