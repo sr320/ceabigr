@@ -763,8 +763,6 @@ head(predIsoFemWide)
 
 #### Methylation of genes with enriched BPGO
 
-##### Change in methylation
-
 ```{r}
 predIsoFemWideAnnot <- sigRes.predIsoFemdataBP %>%
   left_join(., y = (predIsoFemFiltAnnot %>% filter(., change == 1)), by = "GO") %>%
@@ -893,13 +891,13 @@ predIsoFemWideDML %>%
   unique(.) %>%
   ggplot(aes(x = DMLcount, fill = as.factor(change))) + 
   geom_histogram() +
-  facet_wrap(.~change, scales = "free_x") +
+  facet_wrap(.~change, scales = "free_x", labeller = labeller(change = facet_labels)) +
   labs(x = "Number of DML", y = "Number of Genes") +
   scale_fill_manual(values = c(plotColors[5], plotColors[8]),
                     labels = c("No Shift", "Shift"),
                     name = "") +
   theme_classic(base_size = 15)
-ggsave("frem-pred-isoform-DML-distribution.pdf", height = 8.5, width = 11)
+ggsave("fem-pred-isoform-DML-distribution.pdf", height = 8.5, width = 11)
 ```
 
 #### Model data
@@ -928,7 +926,7 @@ summary(predIsoFemModel2) #Only length and gene expression significant
 ```
 
 ```{r}
-write.csv(broom::tidy(predIsoFemModel2), "fem-pred-isoform-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
+write.csv(broom::tidy(predIsoFemModel2), "fem-predo-isoform-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
 ```
 
 ### Transcriptional noise analysis
@@ -1578,8 +1576,6 @@ maleMethExp <- inner_join(geneMethylationMale, geneExpressionMale, by = c("gene_
 head(maleMethExp)
 ```
 
-#### Model data
-
 ```{r}
 predIsoMaleWide <- maleMethExpCV %>%
   select(., gene_name, treatment, change, avg_meth, avg_exp, length) %>%
@@ -1588,24 +1584,6 @@ predIsoMaleWide <- maleMethExpCV %>%
   mutate(., change_meth = avg_meth_exposed - avg_meth_control) %>%
   mutate(., change_exp = avg_exp_exposed - avg_exp_control) #Take data and select gene name, change, treatment, average methylation, average expression, and length columns. Pivot wider, appending treatment information to names of the columns. Replace all NA with 0 (no expression or methylation detected). Calculate the change in methylation and expression.
 head(predIsoMaleWide)
-```
-
-```{r}
-predIsoMaleModel <- glm(I(change == 1) ~ change_meth +
-                          log10(length) + log2(change_exp + 1),
-                        family = binomial(),
-                        data = predIsoMaleWide) #Create a binomial model, where 1 = the predominant isoform shifted when comparing low and control pH conditions. Use change in methylation, gene length, and change in gene expression as explanatory variables
-summary(predIsoMaleModel) #Only length and gene expression significant
-```
-
-```{r}
-step(predIsoMaleModel, test = "LRT")
-```
-
-The initial model is the most parsimonious based on the `step` results.
-
-```{r}
-write.csv(broom::tidy(predIsoMaleModel), "male-predo-isoform-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
 ```
 
 #### Methylation of genes with enriched BPGO
@@ -1669,6 +1647,52 @@ malePredIsoEnrichedBPGOExp / malePredIsoNotEnrichedBPGOExp
 ggsave("male-pred-isoform-changeMeth-changeExp-enrichedBPGO.pdf", height = 8.5, width = 11)
 ```
 
+#### Number of DML in genes with changes in the predominant isoform
+
+```{r}
+predIsoMaleWideDML <- left_join(predIsoMaleWide, DMLLocationsMale, by = "gene_name") %>%
+  dplyr::select(., -c(chr, gene.start, gene.end)) %>%
+  group_by(., gene_name) %>%
+  mutate(., DMLcount = n()) %>%
+  mutate(., DMLcount = case_when(is.na(meth.diff) == TRUE ~ 0,
+                                 is.na(meth.diff) == FALSE ~ DMLcount)) #Join pred iso data with DML annotations and remove superfluous columns. Group by gene name and count the number of DML per gene. When there is no DML in the gene (meth.diff == NA), change the DML count to 0.
+head(predIsoMaleWideDML) #Confirm dataframe creation
+```
+
+```{r}
+write.csv(predIsoMaleWideDML, "male-pred-isoform-DML-annotations.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+```
+
+```{r}
+predIsoMaleWideDML %>%
+  group_by(., DMLcount, change) %>%
+  summarise(., count = n()) #Group data by DML count and change, then count the number of genes with or without predominant isoform shifts with various DML counts
+```
+
+DMLcount change count
+0	       0	    7692		
+0	       1	    1541		
+1	       0	    429		
+1	       1	    71		
+2	       0	    212		
+2	       1	    46		
+3	       0	    84		
+3	       1	    27		
+4	       0	    76		
+4	       1	    8		
+5	       0	    35		
+5	       1	    5		
+6	       0	    24		
+7	       0	    14		
+8	       0	    16		
+9	       1	    18		
+13	     0	    13		
+14	     1	    14		
+15	     1	    15		
+17	     0	    17	
+23	     0	    23		
+25	     1	    25	
+
 #### Plot data
 
 ```{r}
@@ -1694,6 +1718,41 @@ predIsoMaleWide %>%
                     name = "") +
   theme_classic(base_size = 15)
 ggsave("male-pred-isoform-meth-exp-distribution.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+predIsoMaleWideDML %>%
+  dplyr::select(., -c(start, end, meth.diff)) %>%
+  unique(.) %>%
+  ggplot(aes(x = DMLcount, fill = as.factor(change))) + 
+  geom_histogram() +
+  facet_wrap(.~change, scales = "free_x", labeller = labeller(change = facet_labels)) +
+  labs(x = "Number of DML", y = "Number of Genes") +
+  scale_fill_manual(values = c(plotColors[5], plotColors[8]),
+                    labels = c("No Shift", "Shift"),
+                    name = "") +
+  theme_classic(base_size = 15)
+ggsave("male-pred-isoform-DML-distribution.pdf", height = 8.5, width = 11)
+```
+
+#### Model data
+
+```{r}
+predIsoMaleModel <- glm(I(change == 1) ~ change_meth +
+                          log10(length) + log2(change_exp + 1),
+                        family = binomial(),
+                        data = predIsoMaleWide) #Create a binomial model, where 1 = the predominant isoform shifted when comparing low and control pH conditions. Use change in methylation, gene length, and change in gene expression as explanatory variables
+summary(predIsoMaleModel) #Only length and gene expression significant
+```
+
+```{r}
+step(predIsoMaleModel, test = "LRT")
+```
+
+The initial model is the most parsimonious based on the `step` results.
+
+```{r}
+write.csv(broom::tidy(predIsoMaleModel), "male-predo-isoform-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
 ```
 
 ### Transcriptional noise analysis
