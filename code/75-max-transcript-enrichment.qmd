@@ -289,3 +289,36 @@ maxTransDecFemTest$p.value #p = 0. Decreases in max transcripts happen significa
 I want to add methylation and expression data to the maximum transcript data.
 
 # Males
+
+## Maximum transcript change
+
+```{r}
+nrow(male_tr) #39104 genes total
+sum(male_tr$difference > 0) #3123 genes with more transcripts expressed in exposed
+sum(male_tr$difference == 0) #34687
+sum(male_tr$difference < 0) #1204 genes with less transcripts expressed in exposed
+sum(male_tr$difference > 0) / nrow(male_tr) * 100 #8.00% of genes have more transcripts expressed in exposed
+sum(male_tr$difference == 0) / nrow(male_tr) * 100 #88.9% of genes have more transcripts expressed in exposed
+sum(male_tr$difference < 0) / nrow(male_tr) * 100 #3.09% of genes have less transcripts expressed in exposed
+```
+
+```{r}
+maxTransIncMaleTest <- prop.test(x = 3123, n = 39104, p = 0.33,
+                             alternative = "two.sided", 
+                             conf.level = 0.95) #Conduct a 1-sample z test
+maxTransIncMaleTest
+maxTransIncMaleTest$statistic #X-squared = 11064.72
+maxTransIncMaleTest$p.value #p = 0. Increases in max transcripts happen significantly less than what would be expected by random chance
+```
+
+```{r}
+maxTransDecMaleTest <- prop.test(x = 1204, n = 39104, p = 0.33,
+                             alternative = "two.sided", 
+                             conf.level = 0.95) #Conduct a 1-sample z test
+maxTransDecMaleTest
+maxTransDecMaleTest$statistic #X-squared = 15832.46
+maxTransDecMaleTest$p.value #p = 0. Decreases in max transcripts happen significantly less than what would be expected by random chance
+```
+
+
+
