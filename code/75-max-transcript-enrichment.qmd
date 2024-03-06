@@ -84,12 +84,17 @@ head(metadata)
 ## Maximum transcript data
 
 ```{r}
-female_tr <- read_csv("../34-transcript-counts/diffs.max.transcripts_per_gene.controls_females.vs.exposed_females.csv") #Import transcript count data per gene
-head(female_tr) #Confirm import
+female_tr <- read.csv("../../supplemental-files/01.01-fmcoe-max-predom-isos-gene_fpkm.csv") %>%
+  dplyr::select(., c(1:2,4)) %>%
+  mutate(., difference = females_exposed_max_transcript_counts - females_controls_max_transcript_counts) #Import transcript count data per gene. Select only the data for females. Create a difference column for exposed vs. control
+nrow(female_tr)
+head(female_tr)
 ```
 
 ```{r}
-male_tr <- read_csv("../34-transcript-counts/diffs.max.transcripts_per_gene.controls_males.vs.exposed_males.csv") #Import transcript count data per gene
+male_tr <- read.csv("../../supplemental-files/01.01-fmcoe-max-predom-isos-gene_fpkm.csv") %>%
+  dplyr::select(., c(1,3,5)) %>%
+  mutate(., difference = males_exposed_max_transcript_counts - males_controls_max_transcript_counts) #Import transcript count data per gene. Select only the data for females. Create a difference column for exposed vs. control
 head(male_tr) #Confirm import
 ```
 
@@ -121,6 +126,14 @@ head(geneMethylationFem) #Confirm formatting. Resultant df has one line per gene
 ```
 
 ```{r}
+geneMethylationFemWide <- geneMethylationFem %>%
+  pivot_wider(., names_from = treatment, names_prefix = "avg_meth_", values_from = avg_meth) %>%
+  replace(is.na(.), 0) %>%
+  mutate(., change_meth = avg_meth_exposed - avg_meth_control) #Pivot dataaframe wider and calculate change in gene methylation
+head(geneMethylationFemWide)
+```
+
+```{r}
 geneMethylationMale <- geneMethylationMod %>%
   filter(., grepl("M", rownames(.), fixed = TRUE)) %>% 
   t(.) %>%
@@ -136,6 +149,14 @@ geneMethylationMale <- geneMethylationMod %>%
   summarise(avg_meth = mean(meth, na.rm = TRUE)) %>%
   ungroup(.) #Filter male samples and reformat data. Remove excess information from gene name column. Add treatment information and average methylation for each gene by treatment.
 head(geneMethylationMale) #Confirm formatting
+```
+
+```{r}
+geneMethylationMaleWide <- geneMethylationMale %>%
+  pivot_wider(., names_from = treatment, names_prefix = "avg_meth_", values_from = avg_meth) %>%
+  replace(is.na(.), 0) %>%
+  mutate(., change_meth = avg_meth_exposed - avg_meth_control) #Pivot dataaframe wider and calculate change in gene methylation
+head(geneMethylationMaleWide)
 ```
 
 ```{r}
@@ -157,11 +178,6 @@ head(DMLLocationsMale) #Confirm file import and changes
 ```
 
 ## Expression data
-
-```{r}
-metadata
-```
-
 
 ```{r}
 geneExpression <- read.csv("../../data/gene_fpkm.csv", header = TRUE, row.names = metadata$sample)
@@ -196,6 +212,14 @@ geneExpressionFem %>%
 ```
 
 ```{r}
+geneExpressionFemWide <- geneExpressionFem %>%
+  pivot_wider(., names_from = treatment, names_prefix = "avg_exp_", values_from = avg_exp) %>%
+  replace(is.na(.), 0) %>%
+  mutate(., change_exp = avg_exp_exposed - avg_exp_control) #Pivot dataaframe wider and calculate change in gene Expression
+head(geneExpressionFemWide)
+```
+
+```{r}
 geneExpressionMale <- geneExpressionMod %>%
   filter(., grepl("M", rownames(.), fixed = TRUE)) %>%
   t(.) %>%
@@ -218,5 +242,471 @@ geneExpressionMale %>%
   filter(., avg_exp != 0) %>%
   dplyr::select(., gene_name) %>%
   unique(.) %>% nrow(.)
+```
+
+```{r}
+geneExpressionMaleWide <- geneExpressionMale %>%
+  pivot_wider(., names_from = treatment, names_prefix = "avg_exp_", values_from = avg_exp) %>%
+  replace(is.na(.), 0) %>%
+  mutate(., change_exp = avg_exp_exposed - avg_exp_control) #Pivot dataaframe wider and calculate change in gene Expression
+head(geneExpressionMaleWide)
+```
+
+## Annotation data
+
+```{r}
+mRNATrack <- read.delim("../../genome-features/C_virginica-3.0-mRNA.gff", header = FALSE) %>%
+  separate(., V9, into = c("V10", "V11"), sep = "ID=rna-") %>%
+  separate(., V11, into = c("V12", "V13"), sep = ";Parent=") %>%
+  separate(., V13, into = c("V14", "V15"), sep = ";Dbxref=") %>%
+  separate(., V15, into = c("V16", "V17"), sep = ";product=") %>%
+  separate(., V17, into = c("V18", "V19"), sep = ";transcript_id=") %>%
+  dplyr::select(., c("V12", "V14", "V18")) %>%
+  dplyr::rename(., transcript = V12, gene = V14, product = V18) #Winnow down mRNA track
+mRNATrack$gene_name <- gsub("gene-", "", mRNATrack$gene) #Make gene naming consistent
+head(mRNATrack) #Confirm changes
+```
+
+```{r}
+GOterms <- read.delim("../../genome-features/_blast-GO-unfolded.sorted", header = FALSE, col.names = c("GO", "transcript"))
+head(GOterms)
+```
+
+```{r}
+GOslim <- read.delim("../../genome-features/GO-GOslim.sorted", header = FALSE, col.names = c("GO", "GOterm", "GOslim", "process"))
+head(GOslim)
+```
+
+# Females
+
+## Maximum transcript change
+
+```{r}
+nrow(female_tr) #39104 genes total
+sum(female_tr$difference > 0) #1529 genes with more transcripts expressed in exposed
+sum(female_tr$difference == 0) #35048
+sum(female_tr$difference < 0) #2437 genes with less transcripts expressed in exposed
+sum(female_tr$difference > 0) / nrow(female_tr) * 100 #3.92% of genes have more transcripts expressed in exposed
+sum(female_tr$difference == 0) / nrow(female_tr) * 100 #89.83% of genes have more transcripts expressed in exposed
+sum(female_tr$difference < 0) / nrow(female_tr) * 100 #6.25% of genes have less transcripts expressed in exposed
+```
+
+```{r}
+maxTransIncFemTest <- prop.test(x = 1529, n = 39104, p = 0.33,
+                                alternative = "two.sided", 
+                                conf.level = 0.95) #Conduct a 1-sample z test
+maxTransIncFemTest
+maxTransIncFemTest$statistic #X-squared = 14965
+maxTransIncFemTest$p.value #p = 0. Increases in max transcripts happen significantly less than what would be expected by random chance
+```
+
+```{r}
+maxTransDecFemTest <- prop.test(x = 2437, n = 39104, p = 0.33,
+                                alternative = "two.sided", 
+                                conf.level = 0.95) #Conduct a 1-sample z test
+maxTransDecFemTest
+maxTransDecFemTest$statistic #X-squared = 12671.25
+maxTransDecFemTest$p.value #p = 0. Decreases in max transcripts happen significantly less than what would be expected by random chance
+```
+
+## Annotate data
+
+```{r}
+maxTransFemAnnot <- inner_join(female_tr, mRNATrack, by = "gene_name") %>%
+  inner_join(., GOterms, by = "transcript") %>%
+  inner_join(., GOslim, by = "GO")
+head(maxTransFemAnnot)
+```
+
+## Enrichment test
+
+I will use `topGO` to understand if there are biological processes overrepresented in the list of genes that had changes in the maximum number of transcripts expressed when compared to all genes with expression data. I will examine genes with an increase or decrease in maximum transcripts in exposed samples separate for enrichment.
+
+### Make input files
+
+First thing I need to do is modify the GOterms list so each transcript ID has all matching GOterms in one line. I then need to pull out only the genes with data for > 1 transcript, since this will be the background list
+
+```{r}
+maxTransFemAnnot %>%
+  dplyr::select(., gene_name, GO) %>%
+  unique(.) %>%
+  group_by(., gene_name) %>%
+  summarise(GO = paste(GO, collapse = ",")) %>%
+  write.table(., "geneid2go-fem_maxTrans.tab", quote = FALSE, sep = "\t", col.names = FALSE, row.names = FALSE)
+#Take list of genes and GOterms for female maximum transcript data, and remove any duplicate entries (precaution). Using genes since that was the "input" for the maximum transcrpt analysis. Group by gene ID, then summarise using paste to get all GOterms for each transcript into the same row separated by ",". Save as a tab delimited file
+```
+
+```{r}
+geneID2GO <- readMappings(file = "geneid2go-fem_maxTrans.tab") #Loading the GO annotations and GeneIDs. Each line has one transcript ID and all associated GOterms
+str(head(geneID2GO)) #Confirm file structure
+length(geneID2GO) #31,501 genes with annotations out of 39,104 genes with data for ≥ 2 transcripts
+```
+
+```{r}
+geneNames <- names(geneID2GO) #Extract names to use as a gene universe
+head(geneNames)
+```
+
+```{r}
+maxTransFemPos <- female_tr %>%
+  filter(., difference > 0) %>%
+  dplyr::select(., gene_name) #Take data and retain genes where the predominant isoform shifted (difference > 0). Select the gene ID column and convert to a dataframe. Save as a new object
+maxTransFemPos <- maxTransFemPos$gene_name #Save column as a vector (will not work otherwise!)
+```
+
+```{r}
+maxTransFemPosGeneList <- factor(as.integer(geneNames %in% maxTransFemPos))  #Create a factor vector to indicate genes that increased transcripts as significant (1) and didn't as not significant (0)
+names(maxTransFemPosGeneList) <- geneNames
+str(maxTransFemPosGeneList)
+```
+
+```{r}
+maxTransFemNeg <- female_tr %>%
+  filter(., difference < 0) %>%
+  dplyr::select(., gene_name) #Take data and retain genes where the predominant isoform shifted (difference < 0). Select the gene ID column and convert to a dataframe. Save as a new object
+maxTransFemNeg <- maxTransFemNeg$gene_name #Save column as a vector (will not work otherwise!)
+```
+
+```{r}
+maxTransFemNegGeneList <- factor(as.integer(geneNames %in% maxTransFemNeg))  #Create a factor vector to indicate genes that increased transcripts as significant (1) and didn't as not significant (0)
+names(maxTransFemNegGeneList) <- geneNames
+str(maxTransFemNegGeneList)
+```
+
+### Increases in maximum transcripts
+
+#### Run enrichment test
+
+I am only going to look at biological processes.
+
+```{r}
+maxTransFemPosDataBP <- new("topGOdata", ontology = "BP", allGenes = maxTransFemPosGeneList,
+                            annot = annFUN.gene2GO, gene2GO = geneID2GO) #Create biological process topGO object
+maxTransFemPosDataBP #Get summary of object
+```
+
+```{r}
+test.stat <- new("classicCount", testStatistic = GOFisherTest, name = "Fisher test")
+resultFisher.maxTransFemPosDataBP <- getSigGroups(maxTransFemPosDataBP, test.stat)
+resultFisher.maxTransFemPosDataBP
+```
+
+```{r}
+pvalFis.maxTransFemPosDataBP <- score(resultFisher.maxTransFemPosDataBP) #Extract p-values
+head(pvalFis.maxTransFemPosDataBP)
+hist(pvalFis.maxTransFemPosDataBP, 50, xlab = "p-values") #Plot histogram of p-values
+```
+
+```{r}
+allRes.maxTransFemPosDataBP <- GenTable(maxTransFemPosDataBP, classic = resultFisher.maxTransFemPosDataBP, ranksOf = "classic", orderBy = "classic", topNodes = length(pvalFis.maxTransFemPosDataBP))
+#Create a statistical results table with statistical test results. Order by p-value (classic), and include all results (topNodes)
+head(allRes.maxTransFemPosDataBP)
+```
+
+```{r}
+write.csv(allRes.maxTransFemPosDataBP, "fem-maxTransPos-BP-FisherTestResults.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+```
+
+#### Match enriched GOterms with general annotation information
+
+```{r}
+sigRes.maxTransFemPosDataBP <- allRes.maxTransFemPosDataBP[1:211,c(1, 6)] #Filter significantly enriched GOterms, only keep GOID and p-value
+colnames(sigRes.maxTransFemPosDataBP) <- c("GO", "p.value") #Change column names
+head(sigRes.maxTransFemPosDataBP)
+```
+
+```{r}
+sigRes.maxTransFemPosDataBP %>%
+  left_join(., y = maxTransFemAnnot, by = "GO") %>%
+  filter(., difference > 0) %>%
+  dplyr::select(., gene_name, difference, females_controls_max_transcript_counts, females_exposed_max_transcript_counts, GO, p.value, product) %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C") %>%
+  dplyr::select(., -transcriptVar) %>%
+  unique(.) %>%
+  write.csv("fem-maxTransPos-BP-EnrichedGO-geneAnnot.csv", quote = FALSE, row.names = FALSE) #Take significant BPGO data and join with annotation information. Select columns of interest. Separate product column by "%2C" and remove transcriptVar column. Select unique rows. This removes all "transcript variant" information so each gene is listed once per significant GOterm. Save as a csv file.
+```
+
+### Decreases in maximum transcripts
+
+#### Run enrichment test
+
+```{r}
+maxTransFemNegDataBP <- new("topGOdata", ontology = "BP", allGenes = maxTransFemNegGeneList,
+                            annot = annFUN.gene2GO, gene2GO = geneID2GO) #Create biological process topGO object
+maxTransFemNegDataBP #Get summary of object
+```
+
+```{r}
+test.stat <- new("classicCount", testStatistic = GOFisherTest, name = "Fisher test")
+resultFisher.maxTransFemNegDataBP <- getSigGroups(maxTransFemNegDataBP, test.stat)
+resultFisher.maxTransFemNegDataBP
+```
+
+```{r}
+pvalFis.maxTransFemNegDataBP <- score(resultFisher.maxTransFemNegDataBP) #Extract p-values
+head(pvalFis.maxTransFemNegDataBP)
+hist(pvalFis.maxTransFemNegDataBP, 50, xlab = "p-values") #Plot histogram of p-values
+```
+
+```{r}
+allRes.maxTransFemNegDataBP <- GenTable(maxTransFemNegDataBP, classic = resultFisher.maxTransFemNegDataBP, ranksOf = "classic", orderBy = "classic", topNodes = length(pvalFis.maxTransFemNegDataBP))
+#Create a statistical results table with statistical test results. Order by p-value (classic), and include all results (topNodes)
+head(allRes.maxTransFemNegDataBP)
+```
+
+```{r}
+write.csv(allRes.maxTransFemNegDataBP, "fem-maxTransNeg-BP-FisherTestResults.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+```
+
+#### Match enriched GOterms with general annotation information
+
+```{r}
+sigRes.maxTransFemNegDataBP <- allRes.maxTransFemNegDataBP[1:469,c(1, 6)] #Filter significantly enriched GOterms, only keep GOID and p-value
+colnames(sigRes.maxTransFemNegDataBP) <- c("GO", "p.value") #Change column names
+head(sigRes.maxTransFemNegDataBP)
+```
+
+```{r}
+sigRes.maxTransFemNegDataBP %>%
+  left_join(., y = maxTransFemAnnot, by = "GO") %>%
+  filter(., difference < 0) %>%
+  dplyr::select(., gene_name, difference, females_controls_max_transcript_counts, females_exposed_max_transcript_counts, GO, p.value, product) %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C") %>%
+  dplyr::select(., -transcriptVar) %>%
+  unique(.) %>%
+  write.csv("fem-maxTransNeg-BP-EnrichedGO-geneAnnot.csv", quote = FALSE, row.names = FALSE) #Take significant BPGO data and join with annotation information. Select columns of interest. Separate product column by "%2C" and remove transcriptVar column. Select unique rows. This removes all "transcript variant" information so each gene is listed once per significant GOterm. Save as a csv file.
+```
+
+# Changes in maximum transcripts expressed and methylation
+
+## Format data
+
+```{r}
+maxTransFemWide <- inner_join(female_tr, geneMethylationFemWide, by = "gene_name") %>%
+  inner_join(., geneExpressionFemWide, by = "gene_name") #Join maximum transcript expression data with gene methylation and expression data
+head(maxTransFemWide)
+```
+
+## Methylation of genes with enriched BPGO
+
+```{r}
+maxTransFemPosAnnot <- sigRes.maxTransFemPosDataBP %>%
+  left_join(., y = maxTransFemAnnot, by = "GO") %>%
+  filter(., difference > 0) %>%
+  dplyr::select(., gene_name, difference, females_controls_max_transcript_counts, females_exposed_max_transcript_counts, GO, p.value, product) %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C") %>%
+  dplyr::select(., -transcriptVar) %>%
+  unique(.)
+full_join(x = maxTransFemWide, y = ., by = "gene_name") %>%
+  dplyr::select(., gene_name, change.x, change_meth, change_exp, GO, p.value, product) %>%
+  dplyr::rename(., change = "change.x") #Take significant BPGO data and join with annotation information. Select columns of interest. Separate product column by "%2C" and remove transcriptVar column. Select unique rows. This removes all "transcript variant" information so each gene is listed once per significant GOterm. Full join with the wide predominant isoform information that has change in methylation data. Select relevant columns and rename change column.
+head(maxTransFemPosAnnot) #Confirm manipulation
+```
+
+
+
+
+
+
+
+
+## Format data
+
+
+
+
+
+# Males
+
+## Maximum transcript change
+
+```{r}
+nrow(male_tr) #39104 genes total
+sum(male_tr$difference > 0) #3123 genes with more transcripts expressed in exposed
+sum(male_tr$difference == 0) #34687
+sum(male_tr$difference < 0) #1204 genes with less transcripts expressed in exposed
+sum(male_tr$difference > 0) / nrow(male_tr) * 100 #8.00% of genes have more transcripts expressed in exposed
+sum(male_tr$difference == 0) / nrow(male_tr) * 100 #88.9% of genes have more transcripts expressed in exposed
+sum(male_tr$difference < 0) / nrow(male_tr) * 100 #3.09% of genes have less transcripts expressed in exposed
+```
+
+```{r}
+maxTransIncMaleTest <- prop.test(x = 3123, n = 39104, p = 0.33,
+                                 alternative = "two.sided", 
+                                 conf.level = 0.95) #Conduct a 1-sample z test
+maxTransIncMaleTest
+maxTransIncMaleTest$statistic #X-squared = 11064.72
+maxTransIncMaleTest$p.value #p = 0. Increases in max transcripts happen significantly less than what would be expected by random chance
+```
+
+```{r}
+maxTransDecMaleTest <- prop.test(x = 1204, n = 39104, p = 0.33,
+                                 alternative = "two.sided", 
+                                 conf.level = 0.95) #Conduct a 1-sample z test
+maxTransDecMaleTest
+maxTransDecMaleTest$statistic #X-squared = 15832.46
+maxTransDecMaleTest$p.value #p = 0. Decreases in max transcripts happen significantly less than what would be expected by random chance
+```
+
+## Annotate data
+
+```{r}
+maxTransMaleAnnot <- inner_join(male_tr, mRNATrack, by = "gene_name") %>%
+  inner_join(., GOterms, by = "transcript") %>%
+  inner_join(., GOslim, by = "GO")
+head(maxTransMaleAnnot)
+```
+
+## Enrichment test
+
+## Make input files
+
+```{r}
+maxTransMaleAnnot %>%
+  dplyr::select(., gene_name, GO) %>%
+  unique(.) %>%
+  group_by(., gene_name) %>%
+  summarise(GO = paste(GO, collapse = ",")) %>%
+  write.table(., "geneid2go-male_maxTrans.tab", quote = FALSE, sep = "\t", col.names = FALSE, row.names = FALSE)
+#Take list of genes and GOterms for male maximum transcript data, and remove any duplicate entries (precaution). Using genes since that was the "input" for the maximum transcrpt analysis. Group by gene ID, then summarise using paste to get all GOterms for each transcript into the same row separated by ",". Save as a tab delimited file
+```
+
+```{r}
+geneID2GO <- readMappings(file = "geneid2go-male_maxTrans.tab") #Loading the GO annotations and GeneIDs. Each line has one transcript ID and all associated GOterms
+str(head(geneID2GO)) #Confirm file structure
+length(geneID2GO) #31,501 genes with annotations out of 39,104 genes with data for ≥ 2 transcripts
+```
+
+```{r}
+geneNames <- names(geneID2GO) #Extract names to use as a gene universe
+head(geneNames)
+```
+
+```{r}
+maxTransMalePos <- male_tr %>%
+  filter(., difference > 0) %>%
+  dplyr::select(., gene_name) #Take data and retain genes where the predominant isoform shifted (difference > 0). Select the gene ID column and convert to a dataframe. Save as a new object
+maxTransMalePos <- maxTransMalePos$gene_name #Save column as a vector (will not work otherwise!)
+```
+
+```{r}
+maxTransMalePosGeneList <- factor(as.integer(geneNames %in% maxTransMalePos))  #Create a factor vector to indicate genes that increased transcripts as significant (1) and didn't as not significant (0)
+names(maxTransMalePosGeneList) <- geneNames
+str(maxTransMalePosGeneList)
+```
+
+```{r}
+maxTransMaleNeg <- male_tr %>%
+  filter(., difference < 0) %>%
+  dplyr::select(., gene_name) #Take data and retain genes where the predominant isoform shifted (difference < 0). Select the gene ID column and convert to a dataframe. Save as a new object
+maxTransMaleNeg <- maxTransMaleNeg$gene_name #Save column as a vector (will not work otherwise!)
+```
+
+```{r}
+maxTransMaleNegGeneList <- factor(as.integer(geneNames %in% maxTransMaleNeg))  #Create a factor vector to indicate genes that increased transcripts as significant (1) and didn't as not significant (0)
+names(maxTransMaleNegGeneList) <- geneNames
+str(maxTransMaleNegGeneList)
+```
+
+### Increases in maximum transcripts
+
+#### Run enrichment test
+
+```{r}
+maxTransMalePosDataBP <- new("topGOdata", ontology = "BP", allGenes = maxTransMalePosGeneList,
+                             annot = annFUN.gene2GO, gene2GO = geneID2GO) #Create biological process topGO object
+maxTransMalePosDataBP #Get summary of object
+```
+
+```{r}
+test.stat <- new("classicCount", testStatistic = GOFisherTest, name = "Fisher test")
+resultFisher.maxTransMalePosDataBP <- getSigGroups(maxTransMalePosDataBP, test.stat)
+resultFisher.maxTransMalePosDataBP
+```
+
+```{r}
+pvalFis.maxTransMalePosDataBP <- score(resultFisher.maxTransMalePosDataBP) #Extract p-values
+head(pvalFis.maxTransMalePosDataBP)
+hist(pvalFis.maxTransMalePosDataBP, 50, xlab = "p-values") #Plot histogram of p-values
+```
+
+```{r}
+allRes.maxTransMalePosDataBP <- GenTable(maxTransMalePosDataBP, classic = resultFisher.maxTransMalePosDataBP, ranksOf = "classic", orderBy = "classic", topNodes = length(pvalFis.maxTransMalePosDataBP))
+#Create a statistical results table with statistical test results. Order by p-value (classic), and include all results (topNodes)
+head(allRes.maxTransMalePosDataBP)
+```
+
+```{r}
+write.csv(allRes.maxTransMalePosDataBP, "male-maxTransPos-BP-FisherTestResults.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+```
+
+#### Match enriched GOterms with general annotation information
+
+```{r}
+sigRes.maxTransMalePosDataBP <- allRes.maxTransMalePosDataBP[1:391,c(1, 6)] #Filter significantly enriched GOterms, only keep GOID and p-value
+colnames(sigRes.maxTransMalePosDataBP) <- c("GO", "p.value") #Change column names
+head(sigRes.maxTransMalePosDataBP)
+```
+
+```{r}
+sigRes.maxTransMalePosDataBP %>%
+  left_join(., y = maxTransMaleAnnot, by = "GO") %>%
+  filter(., difference > 0) %>%
+  dplyr::select(., gene_name, difference, males_controls_max_transcript_counts, males_exposed_max_transcript_counts, GO, p.value, product) %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C") %>%
+  dplyr::select(., -transcriptVar) %>%
+  unique(.) %>%
+  write.csv("male-maxTransPos-BP-EnrichedGO-geneAnnot.csv", quote = FALSE, row.names = FALSE) #Take significant BPGO data and join with annotation information. Select columns of interest. Separate product column by "%2C" and remove transcriptVar column. Select unique rows. This removes all "transcript variant" information so each gene is listed once per significant GOterm. Save as a csv file.
+```
+
+### Decreases in maximum transcripts
+
+#### Run enrichment test
+
+```{r}
+maxTransMaleNegDataBP <- new("topGOdata", ontology = "BP", allGenes = maxTransMaleNegGeneList,
+                             annot = annFUN.gene2GO, gene2GO = geneID2GO) #Create biological process topGO object
+maxTransMaleNegDataBP #Get summary of object
+```
+
+```{r}
+test.stat <- new("classicCount", testStatistic = GOFisherTest, name = "Fisher test")
+resultFisher.maxTransMaleNegDataBP <- getSigGroups(maxTransMaleNegDataBP, test.stat)
+resultFisher.maxTransMaleNegDataBP
+```
+
+```{r}
+pvalFis.maxTransMaleNegDataBP <- score(resultFisher.maxTransMaleNegDataBP) #Extract p-values
+head(pvalFis.maxTransMaleNegDataBP)
+hist(pvalFis.maxTransMaleNegDataBP, 50, xlab = "p-values") #Plot histogram of p-values
+```
+
+```{r}
+allRes.maxTransMaleNegDataBP <- GenTable(maxTransMaleNegDataBP, classic = resultFisher.maxTransMaleNegDataBP, ranksOf = "classic", orderBy = "classic", topNodes = length(pvalFis.maxTransMaleNegDataBP))
+#Create a statistical results table with statistical test results. Order by p-value (classic), and include all results (topNodes)
+head(allRes.maxTransMaleNegDataBP)
+```
+
+```{r}
+write.csv(allRes.maxTransMaleNegDataBP, "male-maxTransNeg-BP-FisherTestResults.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+```
+
+#### Match enriched GOterms with general annotation information
+
+```{r}
+sigRes.maxTransMaleNegDataBP <- allRes.maxTransMaleNegDataBP[1:238,c(1, 6)] #Filter significantly enriched GOterms, only keep GOID and p-value
+colnames(sigRes.maxTransMaleNegDataBP) <- c("GO", "p.value") #Change column names
+head(sigRes.maxTransMaleNegDataBP)
+```
+
+```{r}
+sigRes.maxTransMaleNegDataBP %>%
+  left_join(., y = maxTransMaleAnnot, by = "GO") %>%
+  filter(., difference < 0) %>%
+  dplyr::select(., gene_name, difference, males_controls_max_transcript_counts, males_exposed_max_transcript_counts, GO, p.value, product) %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C") %>%
+  dplyr::select(., -transcriptVar) %>%
+  unique(.) %>%
+  write.csv("male-maxTransNeg-BP-EnrichedGO-geneAnnot.csv", quote = FALSE, row.names = FALSE) #Take significant BPGO data and join with annotation information. Select columns of interest. Separate product column by "%2C" and remove transcriptVar column. Select unique rows. This removes all "transcript variant" information so each gene is listed once per significant GOterm. Save as a csv file.
 ```
 

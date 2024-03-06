@@ -1,0 +1,795 @@
+gene_name,difference,females_controls_max_transcript_counts,females_exposed_max_transcript_counts,GO,p.value,product
+LOC111099499,1,0,1,GO:0007155,2.6e-10,uncharacterized LOC111099499
+LOC111100079,1,1,2,GO:0007155,2.6e-10,hemicentin-1-like
+LOC111100081,1,0,1,GO:0007155,2.6e-10,basement membrane-specific heparan sulfate proteoglycan core protein-like
+LOC111100084,1,0,1,GO:0007155,2.6e-10,cell adhesion molecule 2-like
+LOC111100393,1,3,4,GO:0007155,2.6e-10,disintegrin and metalloproteinase domain-containing protein 12-like
+LOC111101171,1,1,2,GO:0007155,2.6e-10,sushi
+LOC111101298,1,1,2,GO:0007155,2.6e-10,hemicentin-1-like
+LOC111101500,1,0,1,GO:0007155,2.6e-10,multiple epidermal growth factor-like domains protein 10
+LOC111101651,1,1,2,GO:0007155,2.6e-10,uncharacterized LOC111101651
+LOC111101677,1,1,2,GO:0007155,2.6e-10,uncharacterized LOC111101677
+LOC111104078,1,1,2,GO:0007155,2.6e-10,protocadherin gamma-B7-like
+LOC111104340,1,1,2,GO:0007155,2.6e-10,uncharacterized LOC111104340
+LOC111104545,1,2,3,GO:0007155,2.6e-10,beta-1
+LOC111104689,1,4,5,GO:0007155,2.6e-10,spondin-1-like
+LOC111104773,1,1,2,GO:0007155,2.6e-10,uncharacterized LOC111104773
+LOC111104879,1,0,1,GO:0007155,2.6e-10,uncharacterized LOC111104879
+LOC111105924,1,1,2,GO:0007155,2.6e-10,integrin beta-like protein D
+LOC111105948,1,1,2,GO:0007155,2.6e-10,prion-like-(Q/N-rich) domain-bearing protein 25
+LOC111106240,1,9,10,GO:0007155,2.6e-10,uncharacterized LOC111106240
+LOC111106244,1,1,2,GO:0007155,2.6e-10,uncharacterized LOC111106244
+LOC111106333,2,5,7,GO:0007155,2.6e-10,prion-like-(Q/N-rich) domain-bearing protein 25
+LOC111106412,1,1,2,GO:0007155,2.6e-10,receptor-type tyrosine-protein phosphatase T-like
+LOC111108428,1,3,4,GO:0007155,2.6e-10,prion-like-(Q/N-rich) domain-bearing protein 25
+LOC111108507,1,1,2,GO:0007155,2.6e-10,cell death abnormality protein 1-like
+LOC111108943,1,0,1,GO:0007155,2.6e-10,cell death abnormality protein 1-like
+LOC111109487,1,1,2,GO:0007155,2.6e-10,tenascin-like
+LOC111109728,1,0,1,GO:0007155,2.6e-10,tenascin-like
+LOC111111161,1,1,2,GO:0007155,2.6e-10,multiple epidermal growth factor-like domains protein 10
+LOC111111280,1,0,1,GO:0007155,2.6e-10,uncharacterized LOC111111280
+LOC111111392,3,17,20,GO:0007155,2.6e-10,integrin alpha-2-like
+LOC111111481,1,0,1,GO:0007155,2.6e-10,spondin-1-like
+LOC111111818,1,3,4,GO:0007155,2.6e-10,uncharacterized LOC111111818
+LOC111111872,1,2,3,GO:0007155,2.6e-10,uncharacterized LOC111111872
+LOC111111873,1,2,3,GO:0007155,2.6e-10,uncharacterized LOC111111873
+LOC111112086,1,2,3,GO:0007155,2.6e-10,uncharacterized LOC111112086
+LOC111112504,1,2,3,GO:0007155,2.6e-10,uncharacterized LOC111112504
+LOC111112605,2,24,26,GO:0007155,2.6e-10,talin-1-like
+LOC111112757,3,0,3,GO:0007155,2.6e-10,multiple epidermal growth factor-like domains protein 10
+LOC111112926,1,3,4,GO:0007155,2.6e-10,usherin-like
+LOC111113294,1,1,2,GO:0007155,2.6e-10,uncharacterized LOC111113294
+LOC111114375,1,0,1,GO:0007155,2.6e-10,scavenger receptor class F member 2-like
+LOC111114709,1,1,2,GO:0007155,2.6e-10,multiple epidermal growth factor-like domains protein 10
+LOC111114985,1,1,2,GO:0007155,2.6e-10,collagen alpha-5(IV) chain-like
+LOC111114994,1,1,2,GO:0007155,2.6e-10,uncharacterized LOC111114994
+LOC111115120,2,1,3,GO:0007155,2.6e-10,uncharacterized LOC111115120
+LOC111115701,1,0,1,GO:0007155,2.6e-10,C-type lectin domain family 3 member A-like
+LOC111116565,1,0,1,GO:0007155,2.6e-10,multiple epidermal growth factor-like domains protein 11
+LOC111117048,1,1,2,GO:0007155,2.6e-10,receptor-type tyrosine-protein phosphatase epsilon-like
+LOC111117051,1,1,2,GO:0007155,2.6e-10,multiple epidermal growth factor-like domains protein 10
+LOC111117117,1,2,3,GO:0007155,2.6e-10,multiple epidermal growth factor-like domains protein 10
+LOC111117400,1,3,4,GO:0007155,2.6e-10,protein draper-like
+LOC111117958,1,0,1,GO:0007155,2.6e-10,E-selectin-like
+LOC111118172,1,1,2,GO:0007155,2.6e-10,receptor-type tyrosine-protein phosphatase delta-like
+LOC111118178,1,0,1,GO:0007155,2.6e-10,uncharacterized LOC111118178
+LOC111118657,1,2,3,GO:0007155,2.6e-10,uncharacterized LOC111118657
+LOC111119374,1,2,3,GO:0007155,2.6e-10,synaptogenesis protein syg-2-like
+LOC111119616,1,5,6,GO:0007155,2.6e-10,uncharacterized LOC111119616
+LOC111119720,1,2,3,GO:0007155,2.6e-10,multiple epidermal growth factor-like domains protein 11
+LOC111121454,1,1,2,GO:0007155,2.6e-10,tyrosine-protein phosphatase Lar-like
+LOC111122954,1,1,2,GO:0007155,2.6e-10,uncharacterized LOC111122954
+LOC111123246,1,1,2,GO:0007155,2.6e-10,tenascin-X-like
+LOC111123689,1,1,2,GO:0007155,2.6e-10,uncharacterized LOC111123689
+LOC111124513,1,1,2,GO:0007155,2.6e-10,ovochymase-2-like
+LOC111125243,1,2,3,GO:0007155,2.6e-10,protocadherin Fat 4-like
+LOC111125677,1,3,4,GO:0007155,2.6e-10,receptor-type tyrosine-protein phosphatase F-like
+LOC111126552,1,1,2,GO:0007155,2.6e-10,uncharacterized LOC111126552
+LOC111126715,1,3,4,GO:0007155,2.6e-10,uncharacterized LOC111126715
+LOC111126810,1,11,12,GO:0007155,2.6e-10,teneurin-m-like
+LOC111127640,1,1,2,GO:0007155,2.6e-10,CD63 antigen-like
+LOC111131147,1,14,15,GO:0007155,2.6e-10,1-phosphatidylinositol 4
+LOC111131516,1,1,2,GO:0007155,2.6e-10,uncharacterized LOC111131516
+LOC111132115,4,2,6,GO:0007155,2.6e-10,loricrin-like
+LOC111132477,1,0,1,GO:0007155,2.6e-10,uncharacterized LOC111132477
+LOC111132478,1,0,1,GO:0007155,2.6e-10,uncharacterized LOC111132478
+LOC111133506,1,7,8,GO:0007155,2.6e-10,uncharacterized LOC111133506
+LOC111134168,1,1,2,GO:0007155,2.6e-10,neurogenic locus notch homolog protein 2-like
+LOC111134632,1,4,5,GO:0007155,2.6e-10,hemicentin-1-like
+LOC111134784,2,1,3,GO:0007155,2.6e-10,contactin-3-like
+LOC111134790,4,8,12,GO:0007155,2.6e-10,loricrin-like
+LOC111135012,1,1,2,GO:0007155,2.6e-10,uncharacterized LOC111135012
+LOC111135904,1,5,6,GO:0007155,2.6e-10,neurogenic locus notch homolog protein 1-like
+LOC111136267,1,1,2,GO:0007155,2.6e-10,protein toll-like
+LOC111136671,1,1,2,GO:0007155,2.6e-10,tenascin-like
+LOC111136691,1,10,11,GO:0007155,2.6e-10,SCO-spondin-like
+LOC111137474,1,1,2,GO:0007155,2.6e-10,hemicentin-1-like
+LOC111100523,1,9,10,GO:0006810,2.7e-10,acetyl-CoA carboxylase-like
+LOC111106706,1,2,3,GO:0006810,2.7e-10,ATP-binding cassette sub-family A member 3-like
+LOC111109202,1,0,1,GO:0006810,2.7e-10,uncharacterized LOC111109202
+LOC111110316,1,4,5,GO:0006810,2.7e-10,ATP-binding cassette sub-family A member 3-like
+LOC111113363,1,3,4,GO:0006810,2.7e-10,sodium- and chloride-dependent GABA transporter 2-like
+LOC111114239,1,0,1,GO:0006810,2.7e-10,uncharacterized LOC111114239
+LOC111115655,1,1,2,GO:0006810,2.7e-10,uncharacterized LOC111115655
+LOC111119220,1,5,6,GO:0006810,2.7e-10,ATP-binding cassette sub-family G member 2-like
+LOC111119334,1,2,3,GO:0006810,2.7e-10,choline transporter-like protein 1
+LOC111120778,1,5,6,GO:0006810,2.7e-10,choline transporter-like protein 1
+LOC111125338,5,2,7,GO:0006810,2.7e-10,sodium- and chloride-dependent GABA transporter 2-like
+LOC111129393,1,1,2,GO:0006810,2.7e-10,acetylcholine receptor subunit beta-like
+LOC111137130,2,2,4,GO:0006810,2.7e-10,cyclic nucleotide-gated cation channel beta-1-like
+LOC111134168,1,1,2,GO:0009653,3.7e-07,neurogenic locus notch homolog protein 2-like
+LOC111100053,1,0,1,GO:0030154,2.9e-06,deleted in malignant brain tumors 1 protein-like
+LOC111101163,2,5,7,GO:0030154,2.9e-06,uncharacterized LOC111101163
+LOC111103744,2,7,9,GO:0030154,2.9e-06,receptor-type tyrosine-protein phosphatase eta-like
+LOC111109695,1,0,1,GO:0030154,2.9e-06,uncharacterized LOC111109695
+LOC111111872,1,2,3,GO:0030154,2.9e-06,uncharacterized LOC111111872
+LOC111111873,1,2,3,GO:0030154,2.9e-06,uncharacterized LOC111111873
+LOC111112006,1,16,17,GO:0030154,2.9e-06,cubilin-like
+LOC111112227,1,3,4,GO:0030154,2.9e-06,uncharacterized LOC111112227
+LOC111112487,1,4,5,GO:0030154,2.9e-06,protein boule-like
+LOC111114226,1,0,1,GO:0030154,2.9e-06,deleted in malignant brain tumors 1 protein-like
+LOC111114994,1,1,2,GO:0030154,2.9e-06,uncharacterized LOC111114994
+LOC111115780,1,1,2,GO:0030154,2.9e-06,uncharacterized LOC111115780
+LOC111119534,1,1,2,GO:0030154,2.9e-06,uncharacterized LOC111119534
+LOC111119720,1,2,3,GO:0030154,2.9e-06,multiple epidermal growth factor-like domains protein 11
+LOC111122408,1,1,2,GO:0030154,2.9e-06,uncharacterized LOC111122408
+LOC111124494,1,11,12,GO:0030154,2.9e-06,formin-binding protein 1-like
+LOC111124944,1,15,16,GO:0030154,2.9e-06,thioredoxin domain-containing protein 3 homolog
+LOC111125656,1,3,4,GO:0030154,2.9e-06,cathepsin L1-like
+LOC111125859,1,2,3,GO:0030154,2.9e-06,cell wall protein DAN4-like
+LOC111127572,1,1,2,GO:0030154,2.9e-06,uncharacterized LOC111127572
+LOC111128686,1,0,1,GO:0030154,2.9e-06,delta-like protein 3
+LOC111130168,1,2,3,GO:0030154,2.9e-06,uncharacterized LOC111130168
+LOC111132115,4,2,6,GO:0030154,2.9e-06,loricrin-like
+LOC111132370,1,0,1,GO:0030154,2.9e-06,uncharacterized LOC111132370
+LOC111133062,1,7,8,GO:0030154,2.9e-06,huntingtin-interacting protein 1-like
+LOC111133200,1,1,2,GO:0030154,2.9e-06,deleted in malignant brain tumors 1 protein-like
+LOC111134790,4,8,12,GO:0030154,2.9e-06,loricrin-like
+LOC111135875,1,2,3,GO:0030154,2.9e-06,probable E3 ubiquitin-protein ligase hulA
+LOC111099781,1,4,5,GO:0016192,9.2e-06,syntaxin-7-like
+LOC111101552,1,2,3,GO:0016192,9.2e-06,blood vessel epicardial substance-like
+LOC111103287,1,15,16,GO:0016192,9.2e-06,phosphatidylinositol-binding clathrin assembly protein LAP-like
+LOC111108280,1,1,2,GO:0016192,9.2e-06,A disintegrin and metalloproteinase with thrombospondin motifs 9-like
+LOC111130114,1,2,3,GO:0016192,9.2e-06,jouberin-like
+LOC111134950,1,6,7,GO:0016192,9.2e-06,protein spire homolog 1-like
+LOC111103847,1,4,5,GO:0032502,1.1e-05,macrophage mannose receptor 1-like
+LOC111100144,1,2,3,GO:0007010,1.5e-05,uncharacterized LOC111100144
+LOC111101645,1,1,2,GO:0007010,1.5e-05,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111102281,1,0,1,GO:0007010,1.5e-05,receptor-interacting serine/threonine-protein kinase 4-like
+LOC111103219,1,0,1,GO:0007010,1.5e-05,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit C-like
+LOC111104776,1,1,2,GO:0007010,1.5e-05,uncharacterized LOC111104776
+LOC111106424,1,1,2,GO:0007010,1.5e-05,ankyrin-2-like
+LOC111107253,1,2,3,GO:0007010,1.5e-05,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111107464,1,0,1,GO:0007010,1.5e-05,ankyrin-1-like
+LOC111107721,1,0,1,GO:0007010,1.5e-05,uncharacterized LOC111107721
+LOC111107927,1,1,2,GO:0007010,1.5e-05,uncharacterized LOC111107927
+LOC111108540,1,1,2,GO:0007010,1.5e-05,uncharacterized LOC111108540
+LOC111113858,1,0,1,GO:0007010,1.5e-05,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111133218,2,3,5,GO:0007010,1.5e-05,uncharacterized LOC111133218
+LOC111099078,1,1,2,GO:0007275,1.6e-05,uncharacterized LOC111099078
+LOC111099673,1,3,4,GO:0007275,1.6e-05,uncharacterized LOC111099673
+LOC111100053,1,0,1,GO:0007275,1.6e-05,deleted in malignant brain tumors 1 protein-like
+LOC111100073,1,0,1,GO:0007275,1.6e-05,uncharacterized LOC111100073
+LOC111102216,1,0,1,GO:0007275,1.6e-05,uncharacterized LOC111102216
+LOC111103847,1,4,5,GO:0007275,1.6e-05,macrophage mannose receptor 1-like
+LOC111104776,1,1,2,GO:0007275,1.6e-05,uncharacterized LOC111104776
+LOC111108048,1,1,2,GO:0007275,1.6e-05,uncharacterized LOC111108048
+LOC111108280,1,1,2,GO:0007275,1.6e-05,A disintegrin and metalloproteinase with thrombospondin motifs 9-like
+LOC111110329,1,1,2,GO:0007275,1.6e-05,kielin/chordin-like protein
+LOC111112006,1,16,17,GO:0007275,1.6e-05,cubilin-like
+LOC111112487,1,4,5,GO:0007275,1.6e-05,protein boule-like
+LOC111113294,1,1,2,GO:0007275,1.6e-05,uncharacterized LOC111113294
+LOC111114226,1,0,1,GO:0007275,1.6e-05,deleted in malignant brain tumors 1 protein-like
+LOC111115780,1,1,2,GO:0007275,1.6e-05,uncharacterized LOC111115780
+LOC111124944,1,15,16,GO:0007275,1.6e-05,thioredoxin domain-containing protein 3 homolog
+LOC111125634,1,6,7,GO:0007275,1.6e-05,titin-like
+LOC111125656,1,3,4,GO:0007275,1.6e-05,cathepsin L1-like
+LOC111129402,2,1,3,GO:0007275,1.6e-05,membrane progestin receptor beta-like
+LOC111132370,1,0,1,GO:0007275,1.6e-05,uncharacterized LOC111132370
+LOC111133813,1,1,2,GO:0007275,1.6e-05,uncharacterized LOC111133813
+LOC111134304,1,4,5,GO:0007275,1.6e-05,CCR4-NOT transcription complex subunit 1-like
+LOC111135792,1,6,7,GO:0007275,1.6e-05,protein broad-minded-like
+LOC111138175,1,2,3,GO:0007275,1.6e-05,O-acyltransferase like protein-like
+LOC111134950,1,6,7,GO:0030029,2.5e-05,protein spire homolog 1-like
+LOC111106240,1,9,10,GO:0009611,3.1e-05,uncharacterized LOC111106240
+LOC111106333,2,5,7,GO:0009611,3.1e-05,prion-like-(Q/N-rich) domain-bearing protein 25
+LOC111106802,1,1,2,GO:0009611,3.1e-05,uncharacterized LOC111106802
+LOC111108507,1,1,2,GO:0009611,3.1e-05,cell death abnormality protein 1-like
+LOC111123246,1,1,2,GO:0009611,3.1e-05,tenascin-X-like
+LOC111132879,1,8,9,GO:0009611,3.1e-05,E3 ubiquitin-protein ligase RGLG4-like
+LOC111133218,2,3,5,GO:0009611,3.1e-05,uncharacterized LOC111133218
+LOC111100304,2,2,4,GO:0010960,3.2e-05,ankyrin-3-like
+LOC111101645,1,1,2,GO:0010960,3.2e-05,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111107271,1,1,2,GO:0010960,3.2e-05,potassium voltage-gated channel subfamily A member 1-like
+LOC111108482,1,1,2,GO:0010960,3.2e-05,uncharacterized LOC111108482
+LOC111108483,1,0,1,GO:0010960,3.2e-05,ankyrin-1-like
+LOC111110037,1,1,2,GO:0010960,3.2e-05,ankyrin-2-like
+LOC111112666,1,1,2,GO:0010960,3.2e-05,uncharacterized LOC111112666
+LOC111122316,1,29,30,GO:0010960,3.2e-05,ankyrin-2-like
+LOC111124528,1,3,4,GO:0010960,3.2e-05,transient receptor potential cation channel subfamily M member 2-like
+LOC111113294,1,1,2,GO:0030182,4.0e-05,uncharacterized LOC111113294
+LOC111118906,1,3,4,GO:0030182,4.0e-05,serine/threonine-protein phosphatase alpha-2 isoform-like
+LOC111120684,1,3,4,GO:0030182,4.0e-05,brain-specific angiogenesis inhibitor 1-associated protein 2-like
+LOC111123460,2,11,13,GO:0030182,4.0e-05,leucine-rich repeat-containing protein 24-like
+LOC111127351,1,7,8,GO:0030182,4.0e-05,leucine-rich repeat-containing protein 24-like
+LOC111136699,1,5,6,GO:0030182,4.0e-05,neuroligin-4
+LOC111104839,1,3,4,GO:0048468,4.3e-05,cytochrome b5 reductase 4-like
+LOC111101651,1,1,2,GO:0030036,4.5e-05,uncharacterized LOC111101651
+LOC111105903,1,1,2,GO:0030036,4.5e-05,nischarin-like
+LOC111105948,1,1,2,GO:0030036,4.5e-05,prion-like-(Q/N-rich) domain-bearing protein 25
+LOC111107441,1,0,1,GO:0030036,4.5e-05,uncharacterized LOC111107441
+LOC111107503,1,0,1,GO:0030036,4.5e-05,uncharacterized LOC111107503
+LOC111108124,1,14,15,GO:0030036,4.5e-05,IQ motif and SEC7 domain-containing protein 2-like
+LOC111108428,1,3,4,GO:0030036,4.5e-05,prion-like-(Q/N-rich) domain-bearing protein 25
+LOC111109487,1,1,2,GO:0030036,4.5e-05,tenascin-like
+LOC111116201,1,1,2,GO:0030036,4.5e-05,uncharacterized LOC111116201
+LOC111117051,1,1,2,GO:0030036,4.5e-05,multiple epidermal growth factor-like domains protein 10
+LOC111130951,1,7,8,GO:0030036,4.5e-05,spectrin alpha chain
+LOC111134950,1,6,7,GO:0030036,4.5e-05,protein spire homolog 1-like
+LOC111135904,1,5,6,GO:0030036,4.5e-05,neurogenic locus notch homolog protein 1-like
+LOC111112517,1,1,2,GO:0022008,8.7e-05,uncharacterized LOC111112517
+LOC111113345,2,2,4,GO:0022008,8.7e-05,BTB/POZ domain-containing protein 6-like
+LOC111115986,1,1,2,GO:0022008,8.7e-05,BTB/POZ domain-containing protein 6-like
+LOC111116212,1,0,1,GO:0022008,8.7e-05,BTB/POZ domain-containing protein 6-like
+LOC111124018,1,6,7,GO:0022008,8.7e-05,myomegalin-like
+LOC111134173,1,0,1,GO:0022008,8.7e-05,multiple epidermal growth factor-like domains protein 10
+LOC111113363,1,3,4,GO:0019226,0.00016,sodium- and chloride-dependent GABA transporter 2-like
+LOC111121946,1,1,2,GO:0019226,0.00016,voltage-dependent calcium channel gamma-7 subunit-like
+LOC111130972,1,1,2,GO:0019226,0.00016,doublesex- and mab-3-related transcription factor B1-like
+LOC111099773,1,3,4,GO:0007399,0.00024,transcription factor AP-2-epsilon-like
+LOC111101545,1,1,2,GO:0007399,0.00024,uncharacterized LOC111101545
+LOC111101913,1,0,1,GO:0007399,0.00024,uncharacterized LOC111101913
+LOC111102339,1,1,2,GO:0007399,0.00024,probable E3 ubiquitin-protein ligase MID2
+LOC111104078,1,1,2,GO:0007399,0.00024,protocadherin gamma-B7-like
+LOC111108993,1,0,1,GO:0007399,0.00024,uncharacterized LOC111108993
+LOC111110615,1,2,3,GO:0007399,0.00024,uncharacterized LOC111110615
+LOC111111872,1,2,3,GO:0007399,0.00024,uncharacterized LOC111111872
+LOC111111873,1,2,3,GO:0007399,0.00024,uncharacterized LOC111111873
+LOC111114521,1,1,2,GO:0007399,0.00024,uncharacterized LOC111114521
+LOC111114820,1,4,5,GO:0007399,0.00024,SWI/SNF-related matrix-associated actin-dependent regulator of chromatin subfamily D member 1-like
+LOC111114842,1,4,5,GO:0007399,0.00024,SWI/SNF-related matrix-associated actin-dependent regulator of chromatin subfamily D member 1-like
+LOC111114916,1,0,1,GO:0007399,0.00024,tripartite motif-containing protein 3-like
+LOC111115921,1,1,2,GO:0007399,0.00024,uncharacterized LOC111115921
+LOC111121454,1,1,2,GO:0007399,0.00024,tyrosine-protein phosphatase Lar-like
+LOC111124494,1,11,12,GO:0007399,0.00024,formin-binding protein 1-like
+LOC111125859,1,2,3,GO:0007399,0.00024,cell wall protein DAN4-like
+LOC111128360,1,3,4,GO:0007399,0.00024,transmembrane protein 41B-like
+LOC111129007,1,3,4,GO:0007399,0.00024,uncharacterized LOC111129007
+LOC111130345,1,3,4,GO:0007399,0.00024,integrase/recombinase xerD homolog
+LOC111132366,1,1,2,GO:0007399,0.00024,glycoprotein 3-alpha-L-fucosyltransferase A-like
+LOC111132939,1,5,6,GO:0007399,0.00024,agrin-like
+LOC111134784,2,1,3,GO:0007399,0.00024,contactin-3-like
+LOC111136994,1,2,3,GO:0007399,0.00024,tripartite motif-containing protein 5-like
+LOC111100304,2,2,4,GO:0010765,0.00025,ankyrin-3-like
+LOC111101645,1,1,2,GO:0010765,0.00025,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111108482,1,1,2,GO:0010765,0.00025,uncharacterized LOC111108482
+LOC111108483,1,0,1,GO:0010765,0.00025,ankyrin-1-like
+LOC111110037,1,1,2,GO:0010765,0.00025,ankyrin-2-like
+LOC111112666,1,1,2,GO:0010765,0.00025,uncharacterized LOC111112666
+LOC111122316,1,29,30,GO:0010765,0.00025,ankyrin-2-like
+LOC111101863,1,1,2,GO:0007601,0.00025,DNA damage-regulated autophagy modulator protein 2-like
+LOC111106228,1,2,3,GO:0007601,0.00025,ADP-ribosylation factor-like protein 6
+LOC111108244,1,1,2,GO:0007601,0.00025,A disintegrin and metalloproteinase with thrombospondin motifs adt-1-like
+LOC111111156,1,4,5,GO:0007601,0.00025,orexin receptor type 2-like
+LOC111113202,1,1,2,GO:0007601,0.00025,uncharacterized LOC111113202
+LOC111115402,2,0,2,GO:0007601,0.00025,uncharacterized LOC111115402
+LOC111118035,1,1,2,GO:0007601,0.00025,cadherin-23-like
+LOC111123341,2,2,4,GO:0007601,0.00025,uncharacterized LOC111123341
+LOC111123402,2,1,3,GO:0007601,0.00025,hemicentin-1-like
+LOC111123618,1,1,2,GO:0007601,0.00025,hemicentin-1-like
+LOC111124554,2,9,11,GO:0007601,0.00025,myosin-IIIb-like
+LOC111124679,1,1,2,GO:0007601,0.00025,hemicentin-2-like
+LOC111125530,1,1,2,GO:0007601,0.00025,coadhesin-like
+LOC111125594,2,3,5,GO:0007601,0.00025,uncharacterized LOC111125594
+LOC111126252,1,3,4,GO:0007601,0.00025,hemicentin-1-like
+LOC111127852,1,1,2,GO:0007601,0.00025,coadhesin-like
+LOC111128424,1,2,3,GO:0007601,0.00025,probable nuclear hormone receptor HR3
+LOC111130964,1,1,2,GO:0007601,0.00025,melatonin receptor type 1C-like
+LOC111131846,1,1,2,GO:0007601,0.00025,brain-specific angiogenesis inhibitor 1-like
+LOC111134985,1,0,1,GO:0007601,0.00025,uncharacterized LOC111134985
+LOC111137130,2,2,4,GO:0007601,0.00025,cyclic nucleotide-gated cation channel beta-1-like
+LOC111100292,1,2,3,GO:0035023,0.00028,T-lymphoma invasion and metastasis-inducing protein 1-like
+LOC111102216,1,0,1,GO:0035023,0.00028,uncharacterized LOC111102216
+LOC111102342,1,2,3,GO:0035023,0.00028,uncharacterized LOC111102342
+LOC111102366,1,2,3,GO:0035023,0.00028,uncharacterized LOC111102366
+LOC111103297,1,3,4,GO:0035023,0.00028,epithelial cell-transforming sequence 2 oncogene-like
+LOC111109803,1,1,2,GO:0035023,0.00028,muscle M-line assembly protein unc-89-like
+LOC111110642,2,3,5,GO:0035023,0.00028,uncharacterized LOC111110642
+LOC111112612,1,3,4,GO:0035023,0.00028,uncharacterized LOC111112612
+LOC111125634,1,6,7,GO:0035023,0.00028,titin-like
+LOC111133350,2,10,12,GO:0035023,0.00028,pleckstrin homology domain-containing family G member 5-like
+LOC111135371,1,7,8,GO:0035023,0.00028,pleckstrin homology domain-containing family G member 4B-like
+LOC111113027,1,1,2,GO:0048469,0.00032,parathyroid hormone/parathyroid hormone-related peptide receptor-like
+LOC111118035,1,1,2,GO:0050953,0.00034,cadherin-23-like
+LOC111123341,2,2,4,GO:0050953,0.00034,uncharacterized LOC111123341
+LOC111125594,2,3,5,GO:0050953,0.00034,uncharacterized LOC111125594
+LOC111101500,1,0,1,GO:0006909,0.00044,multiple epidermal growth factor-like domains protein 10
+LOC111103035,1,0,1,GO:0006909,0.00044,cell death abnormality protein 1-like
+LOC111104030,1,1,2,GO:0006909,0.00044,uncharacterized LOC111104030
+LOC111106203,1,1,2,GO:0006909,0.00044,uncharacterized LOC111106203
+LOC111108943,1,0,1,GO:0006909,0.00044,cell death abnormality protein 1-like
+LOC111111161,1,1,2,GO:0006909,0.00044,multiple epidermal growth factor-like domains protein 10
+LOC111111671,1,1,2,GO:0006909,0.00044,calpain-1 catalytic subunit-like
+LOC111112086,1,2,3,GO:0006909,0.00044,uncharacterized LOC111112086
+LOC111112504,1,2,3,GO:0006909,0.00044,uncharacterized LOC111112504
+LOC111112757,3,0,3,GO:0006909,0.00044,multiple epidermal growth factor-like domains protein 10
+LOC111114709,1,1,2,GO:0006909,0.00044,multiple epidermal growth factor-like domains protein 10
+LOC111115120,2,1,3,GO:0006909,0.00044,uncharacterized LOC111115120
+LOC111115163,1,1,2,GO:0006909,0.00044,uncharacterized LOC111115163
+LOC111115412,1,1,2,GO:0006909,0.00044,uncharacterized LOC111115412
+LOC111115507,1,0,1,GO:0006909,0.00044,protein draper-like
+LOC111115585,1,1,2,GO:0006909,0.00044,protein draper-like
+LOC111117400,1,3,4,GO:0006909,0.00044,protein draper-like
+LOC111127906,2,8,10,GO:0006909,0.00044,unconventional myosin-VIIb-like
+LOC111133506,1,7,8,GO:0006909,0.00044,uncharacterized LOC111133506
+LOC111118684,1,6,7,GO:0031032,0.00047,phosphatase and actin regulator 4B-like
+LOC111122954,1,1,2,GO:0031032,0.00047,uncharacterized LOC111122954
+LOC111136524,1,8,9,GO:0031032,0.00047,unconventional myosin-XVIIIa-like
+LOC111107271,1,1,2,GO:0010644,0.00047,potassium voltage-gated channel subfamily A member 1-like
+LOC111101500,1,0,1,GO:0030239,0.00048,multiple epidermal growth factor-like domains protein 10
+LOC111108943,1,0,1,GO:0030239,0.00048,cell death abnormality protein 1-like
+LOC111111161,1,1,2,GO:0030239,0.00048,multiple epidermal growth factor-like domains protein 10
+LOC111112086,1,2,3,GO:0030239,0.00048,uncharacterized LOC111112086
+LOC111112504,1,2,3,GO:0030239,0.00048,uncharacterized LOC111112504
+LOC111112757,3,0,3,GO:0030239,0.00048,multiple epidermal growth factor-like domains protein 10
+LOC111114709,1,1,2,GO:0030239,0.00048,multiple epidermal growth factor-like domains protein 10
+LOC111114836,1,3,4,GO:0030239,0.00048,tropomodulin-like
+LOC111115120,2,1,3,GO:0030239,0.00048,uncharacterized LOC111115120
+LOC111117400,1,3,4,GO:0030239,0.00048,protein draper-like
+LOC111133506,1,7,8,GO:0030239,0.00048,uncharacterized LOC111133506
+LOC111125634,1,6,7,GO:0055002,0.00048,titin-like
+LOC111106240,1,9,10,GO:0042060,0.00050,uncharacterized LOC111106240
+LOC111106333,2,5,7,GO:0042060,0.00050,prion-like-(Q/N-rich) domain-bearing protein 25
+LOC111108507,1,1,2,GO:0042060,0.00050,cell death abnormality protein 1-like
+LOC111123246,1,1,2,GO:0042060,0.00050,tenascin-X-like
+LOC111125994,2,2,4,GO:0042060,0.00050,uncharacterized LOC111125994
+LOC111101412,3,3,6,GO:0046177,0.00055,uncharacterized LOC111101412
+LOC111106861,2,3,5,GO:0046177,0.00055,cell wall integrity and stress response component 4-like
+LOC111107097,1,3,4,GO:0046177,0.00055,mucin-5AC-like
+LOC111130408,1,4,5,GO:0048666,0.00060,aryl hydrocarbon receptor nuclear translocator homolog
+LOC111137705,1,1,2,GO:0048666,0.00060,uncharacterized LOC111137705
+LOC111104041,1,1,2,GO:0006897,0.00061,cysteine-rich
+LOC111113349,1,1,2,GO:0006897,0.00061,uncharacterized LOC111113349
+LOC111113757,1,0,1,GO:0006897,0.00061,CD209 antigen-like protein A
+LOC111114666,1,1,2,GO:0006897,0.00061,hemicentin-1-like
+LOC111115869,1,1,2,GO:0006897,0.00061,cell wall protein DAN4-like
+LOC111118785,1,0,1,GO:0006897,0.00061,delta and Notch-like epidermal growth factor-related receptor
+LOC111124494,1,11,12,GO:0006897,0.00061,formin-binding protein 1-like
+LOC111126007,1,6,7,GO:0006897,0.00061,extended synaptotagmin-2-like
+LOC111135967,1,5,6,GO:0006897,0.00061,sorting nexin-33-like
+LOC111104545,1,2,3,GO:0030198,0.00062,beta-1
+LOC111105948,1,1,2,GO:0030198,0.00062,prion-like-(Q/N-rich) domain-bearing protein 25
+LOC111106240,1,9,10,GO:0030198,0.00062,uncharacterized LOC111106240
+LOC111106333,2,5,7,GO:0030198,0.00062,prion-like-(Q/N-rich) domain-bearing protein 25
+LOC111108507,1,1,2,GO:0030198,0.00062,cell death abnormality protein 1-like
+LOC111109728,1,0,1,GO:0030198,0.00062,tenascin-like
+LOC111110318,1,1,2,GO:0030198,0.00062,complement C1q-like protein 4
+LOC111110489,1,0,1,GO:0030198,0.00062,complement C1q-like protein 3
+LOC111112086,1,2,3,GO:0030198,0.00062,uncharacterized LOC111112086
+LOC111112926,1,3,4,GO:0030198,0.00062,usherin-like
+LOC111123246,1,1,2,GO:0030198,0.00062,tenascin-X-like
+LOC111129922,1,3,4,GO:0030198,0.00062,ADAMTS-like protein 4
+LOC111132939,1,5,6,GO:0030198,0.00062,agrin-like
+LOC111133835,1,2,3,GO:0030198,0.00062,contactin-4-like
+LOC111099673,1,3,4,GO:0034446,0.00079,uncharacterized LOC111099673
+LOC111100219,1,4,5,GO:0034446,0.00079,uncharacterized LOC111100219
+LOC111101552,1,2,3,GO:0034446,0.00079,blood vessel epicardial substance-like
+LOC111102681,1,0,1,GO:0034446,0.00079,uncharacterized LOC111102681
+LOC111102933,2,0,2,GO:0034446,0.00079,uncharacterized LOC111102933
+LOC111104830,1,1,2,GO:0034446,0.00079,scavenger receptor class F member 1-like
+LOC111106240,1,9,10,GO:0034446,0.00079,uncharacterized LOC111106240
+LOC111108048,1,1,2,GO:0034446,0.00079,uncharacterized LOC111108048
+LOC111111392,3,17,20,GO:0034446,0.00079,integrin alpha-2-like
+LOC111111956,1,1,2,GO:0034446,0.00079,multiple epidermal growth factor-like domains protein 11
+LOC111117400,1,3,4,GO:0034446,0.00079,protein draper-like
+LOC111124857,1,0,1,GO:0034446,0.00079,uncharacterized LOC111124857
+LOC111136355,2,1,3,GO:0034446,0.00079,protein draper-like
+LOC111119616,1,5,6,GO:0032735,0.00087,uncharacterized LOC111119616
+LOC111131147,1,14,15,GO:0032735,0.00087,1-phosphatidylinositol 4
+LOC111133952,1,0,1,GO:0032735,0.00087,uncharacterized LOC111133952
+LOC111136384,1,1,2,GO:0032735,0.00087,uncharacterized LOC111136384
+LOC111100304,2,2,4,GO:0007528,0.00099,ankyrin-3-like
+LOC111101645,1,1,2,GO:0007528,0.00099,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111106333,2,5,7,GO:0007528,0.00099,prion-like-(Q/N-rich) domain-bearing protein 25
+LOC111108482,1,1,2,GO:0007528,0.00099,uncharacterized LOC111108482
+LOC111108483,1,0,1,GO:0007528,0.00099,ankyrin-1-like
+LOC111108507,1,1,2,GO:0007528,0.00099,cell death abnormality protein 1-like
+LOC111110037,1,1,2,GO:0007528,0.00099,ankyrin-2-like
+LOC111112666,1,1,2,GO:0007528,0.00099,uncharacterized LOC111112666
+LOC111122316,1,29,30,GO:0007528,0.00099,ankyrin-2-like
+LOC111123246,1,1,2,GO:0007528,0.00099,tenascin-X-like
+LOC111123689,1,1,2,GO:0007528,0.00099,uncharacterized LOC111123689
+LOC111131099,1,16,17,GO:0007528,0.00099,protein unc-13 homolog A-like
+LOC111132939,1,5,6,GO:0007528,0.00099,agrin-like
+LOC111137230,2,0,2,GO:0007528,0.00099,atlastin-2-like
+LOC111100144,1,2,3,GO:0045199,0.00099,uncharacterized LOC111100144
+LOC111101645,1,1,2,GO:0045199,0.00099,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111102281,1,0,1,GO:0045199,0.00099,receptor-interacting serine/threonine-protein kinase 4-like
+LOC111103219,1,0,1,GO:0045199,0.00099,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit C-like
+LOC111106424,1,1,2,GO:0045199,0.00099,ankyrin-2-like
+LOC111107253,1,2,3,GO:0045199,0.00099,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111107464,1,0,1,GO:0045199,0.00099,ankyrin-1-like
+LOC111107721,1,0,1,GO:0045199,0.00099,uncharacterized LOC111107721
+LOC111107927,1,1,2,GO:0045199,0.00099,uncharacterized LOC111107927
+LOC111108540,1,1,2,GO:0045199,0.00099,uncharacterized LOC111108540
+LOC111113858,1,0,1,GO:0045199,0.00099,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111133218,2,3,5,GO:0045199,0.00099,uncharacterized LOC111133218
+LOC111101645,1,1,2,GO:0050808,0.00102,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111105948,1,1,2,GO:0050808,0.00102,prion-like-(Q/N-rich) domain-bearing protein 25
+LOC111109728,1,0,1,GO:0050808,0.00102,tenascin-like
+LOC111112086,1,2,3,GO:0050808,0.00102,uncharacterized LOC111112086
+LOC111112666,1,1,2,GO:0050808,0.00102,uncharacterized LOC111112666
+LOC111122316,1,29,30,GO:0050808,0.00102,ankyrin-2-like
+LOC111123689,1,1,2,GO:0050808,0.00102,uncharacterized LOC111123689
+LOC111126810,1,11,12,GO:0050808,0.00102,teneurin-m-like
+LOC111136699,1,5,6,GO:0050808,0.00102,neuroligin-4
+LOC111107441,1,0,1,GO:0030717,0.00107,uncharacterized LOC111107441
+LOC111107503,1,0,1,GO:0030717,0.00107,uncharacterized LOC111107503
+LOC111134950,1,6,7,GO:0030717,0.00107,protein spire homolog 1-like
+LOC111107441,1,0,1,GO:0030723,0.00107,uncharacterized LOC111107441
+LOC111107503,1,0,1,GO:0030723,0.00107,uncharacterized LOC111107503
+LOC111126644,1,1,2,GO:0030723,0.00107,A-agglutinin anchorage subunit-like
+LOC111100292,1,2,3,GO:0051056,0.00128,T-lymphoma invasion and metastasis-inducing protein 1-like
+LOC111130297,7,23,30,GO:0051056,0.00128,A-kinase anchor protein 13-like
+LOC111133350,2,10,12,GO:0051056,0.00128,pleckstrin homology domain-containing family G member 5-like
+LOC111133403,2,13,15,GO:0051056,0.00128,rap1 GTPase-activating protein 1-like
+LOC111102781,1,1,2,GO:0007596,0.00144,plasminogen-like
+LOC111103635,1,3,4,GO:0007596,0.00144,lysine-specific histone demethylase 1A-like
+LOC111111426,1,1,2,GO:0007596,0.00144,antistasin-like
+LOC111111467,1,1,2,GO:0007596,0.00144,uncharacterized LOC111111467
+LOC111111516,1,1,2,GO:0007596,0.00144,antistasin-like
+LOC111115654,1,0,1,GO:0007596,0.00144,antistasin-like
+LOC111117029,1,1,2,GO:0007596,0.00144,mucin-5AC-like
+LOC111119301,1,1,2,GO:0007596,0.00144,plasminogen-like
+LOC111119616,1,5,6,GO:0007596,0.00144,uncharacterized LOC111119616
+LOC111136026,1,1,2,GO:0007596,0.00144,P2X purinoceptor 7-like
+LOC111137705,1,1,2,GO:0007596,0.00144,uncharacterized LOC111137705
+LOC111125464,1,1,2,GO:0007487,0.00150,homeobox protein Dlx6a-like
+LOC111134507,1,2,3,GO:0007487,0.00150,homeobox protein Dlx6a-like
+LOC111103119,1,1,2,GO:0048389,0.00150,protein odd-skipped-related 1-like
+LOC111114851,1,1,2,GO:0048389,0.00150,protein odd-skipped-related 1-like
+LOC111125464,1,1,2,GO:0048728,0.00150,homeobox protein Dlx6a-like
+LOC111134507,1,2,3,GO:0048728,0.00150,homeobox protein Dlx6a-like
+LOC111113124,2,4,6,GO:0048193,0.00153,vacuolar protein sorting-associated protein 41 homolog
+LOC111135673,1,1,2,GO:0048193,0.00153,uncharacterized LOC111135673
+LOC111101552,1,2,3,GO:0007519,0.00158,blood vessel epicardial substance-like
+LOC111108046,1,3,4,GO:0007519,0.00158,uncharacterized LOC111108046
+LOC111134632,1,4,5,GO:0007519,0.00158,hemicentin-1-like
+LOC111136398,1,5,6,GO:0007519,0.00158,AN1-type zinc finger protein 1-like
+LOC111137474,1,1,2,GO:0007519,0.00158,hemicentin-1-like
+LOC111114979,1,3,4,GO:0030030,0.00161,stabilizer of axonemal microtubules 2-like
+LOC111100304,2,2,4,GO:0010650,0.00162,ankyrin-3-like
+LOC111101645,1,1,2,GO:0010650,0.00162,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111108482,1,1,2,GO:0010650,0.00162,uncharacterized LOC111108482
+LOC111108483,1,0,1,GO:0010650,0.00162,ankyrin-1-like
+LOC111110037,1,1,2,GO:0010650,0.00162,ankyrin-2-like
+LOC111112666,1,1,2,GO:0010650,0.00162,uncharacterized LOC111112666
+LOC111122316,1,29,30,GO:0010650,0.00162,ankyrin-2-like
+LOC111113202,1,1,2,GO:0008037,0.00178,uncharacterized LOC111113202
+LOC111128686,1,0,1,GO:0050793,0.00178,delta-like protein 3
+LOC111103635,1,3,4,GO:0042551,0.00188,lysine-specific histone demethylase 1A-like
+LOC111102817,2,6,8,GO:0030168,0.00191,diacylglycerol kinase zeta-like
+LOC111104269,2,9,11,GO:0030168,0.00191,diacylglycerol kinase zeta-like
+LOC111106802,1,1,2,GO:0030168,0.00191,uncharacterized LOC111106802
+LOC111115896,1,8,9,GO:0030168,0.00191,uncharacterized LOC111115896
+LOC111122008,1,1,2,GO:0030168,0.00191,short transient receptor potential channel 3-like
+LOC111133952,1,0,1,GO:0030168,0.00191,uncharacterized LOC111133952
+LOC111136384,1,1,2,GO:0030168,0.00191,uncharacterized LOC111136384
+LOC111126810,1,11,12,GO:0034110,0.00191,teneurin-m-like
+LOC111100144,1,2,3,GO:0010638,0.00202,uncharacterized LOC111100144
+LOC111101645,1,1,2,GO:0010638,0.00202,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111102281,1,0,1,GO:0010638,0.00202,receptor-interacting serine/threonine-protein kinase 4-like
+LOC111103219,1,0,1,GO:0010638,0.00202,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit C-like
+LOC111106424,1,1,2,GO:0010638,0.00202,ankyrin-2-like
+LOC111107253,1,2,3,GO:0010638,0.00202,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111107464,1,0,1,GO:0010638,0.00202,ankyrin-1-like
+LOC111107721,1,0,1,GO:0010638,0.00202,uncharacterized LOC111107721
+LOC111107927,1,1,2,GO:0010638,0.00202,uncharacterized LOC111107927
+LOC111108540,1,1,2,GO:0010638,0.00202,uncharacterized LOC111108540
+LOC111113858,1,0,1,GO:0010638,0.00202,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111133218,2,3,5,GO:0010638,0.00202,uncharacterized LOC111133218
+LOC111124602,1,0,1,GO:0045197,0.00203,uncharacterized LOC111124602
+LOC111106802,1,1,2,GO:0030194,0.00218,uncharacterized LOC111106802
+LOC111119616,1,5,6,GO:0030194,0.00218,uncharacterized LOC111119616
+LOC111100304,2,2,4,GO:0034112,0.00238,ankyrin-3-like
+LOC111101645,1,1,2,GO:0034112,0.00238,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111108482,1,1,2,GO:0034112,0.00238,uncharacterized LOC111108482
+LOC111108483,1,0,1,GO:0034112,0.00238,ankyrin-1-like
+LOC111110037,1,1,2,GO:0034112,0.00238,ankyrin-2-like
+LOC111112666,1,1,2,GO:0034112,0.00238,uncharacterized LOC111112666
+LOC111122316,1,29,30,GO:0034112,0.00238,ankyrin-2-like
+LOC111103842,1,1,2,GO:0050892,0.00242,potassium voltage-gated channel subfamily KQT member 1-like
+LOC111119616,1,5,6,GO:0050892,0.00242,uncharacterized LOC111119616
+LOC111122954,1,1,2,GO:0050892,0.00242,uncharacterized LOC111122954
+LOC111129668,1,1,2,GO:0050892,0.00242,N-acetyllactosaminide beta-1
+LOC111130892,1,2,3,GO:0007163,0.00256,B9 domain-containing protein 2-like
+LOC111134168,1,1,2,GO:0007163,0.00256,neurogenic locus notch homolog protein 2-like
+LOC111111182,2,2,4,GO:0048630,0.00282,corticotropin-releasing factor receptor 2-like
+LOC111100144,1,2,3,GO:0006888,0.00284,uncharacterized LOC111100144
+LOC111100304,2,2,4,GO:0006888,0.00284,ankyrin-3-like
+LOC111101645,1,1,2,GO:0006888,0.00284,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111102281,1,0,1,GO:0006888,0.00284,receptor-interacting serine/threonine-protein kinase 4-like
+LOC111103219,1,0,1,GO:0006888,0.00284,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit C-like
+LOC111105624,1,1,2,GO:0006888,0.00284,coatomer subunit beta-like
+LOC111106424,1,1,2,GO:0006888,0.00284,ankyrin-2-like
+LOC111107253,1,2,3,GO:0006888,0.00284,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111107464,1,0,1,GO:0006888,0.00284,ankyrin-1-like
+LOC111107721,1,0,1,GO:0006888,0.00284,uncharacterized LOC111107721
+LOC111107927,1,1,2,GO:0006888,0.00284,uncharacterized LOC111107927
+LOC111108482,1,1,2,GO:0006888,0.00284,uncharacterized LOC111108482
+LOC111108483,1,0,1,GO:0006888,0.00284,ankyrin-1-like
+LOC111108540,1,1,2,GO:0006888,0.00284,uncharacterized LOC111108540
+LOC111113858,1,0,1,GO:0006888,0.00284,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111120467,1,2,3,GO:0006888,0.00284,protein transport protein Sec24C-like
+LOC111125994,2,2,4,GO:0006888,0.00284,uncharacterized LOC111125994
+LOC111130951,1,7,8,GO:0006888,0.00284,spectrin alpha chain
+LOC111133218,2,3,5,GO:0006888,0.00284,uncharacterized LOC111133218
+LOC111100219,1,4,5,GO:0051897,0.00302,uncharacterized LOC111100219
+LOC111102681,1,0,1,GO:0051897,0.00302,uncharacterized LOC111102681
+LOC111103677,1,1,2,GO:0051897,0.00302,complement component 1 Q subcomponent-binding protein
+LOC111104830,1,1,2,GO:0051897,0.00302,scavenger receptor class F member 1-like
+LOC111104854,1,0,1,GO:0051897,0.00302,complement C1q tumor necrosis factor-related protein 3-like
+LOC111110354,1,0,1,GO:0051897,0.00302,heavy metal-binding protein HIP-like
+LOC111111956,1,1,2,GO:0051897,0.00302,multiple epidermal growth factor-like domains protein 11
+LOC111117400,1,3,4,GO:0051897,0.00302,protein draper-like
+LOC111121291,1,2,3,GO:0051897,0.00302,protein FAM110B-like
+LOC111124857,1,0,1,GO:0051897,0.00302,uncharacterized LOC111124857
+LOC111133062,1,7,8,GO:0051897,0.00302,huntingtin-interacting protein 1-like
+LOC111136355,2,1,3,GO:0051897,0.00302,protein draper-like
+LOC111102982,1,2,3,GO:0031103,0.00304,platelet endothelial aggregation receptor 1-like
+LOC111103258,1,0,1,GO:0007157,0.00336,complement C1q-like protein 4
+LOC111103413,1,0,1,GO:0007157,0.00336,uncharacterized LOC111103413
+LOC111103533,1,0,1,GO:0007157,0.00336,uncharacterized LOC111103533
+LOC111103753,1,0,1,GO:0007157,0.00336,protein draper-like
+LOC111104938,1,0,1,GO:0007157,0.00336,multiple epidermal growth factor-like domains protein 10
+LOC111105008,1,0,1,GO:0007157,0.00336,cerebellin-1-like
+LOC111111392,3,17,20,GO:0007157,0.00336,integrin alpha-2-like
+LOC111112264,1,0,1,GO:0007157,0.00336,tyrosine-protein kinase receptor Tie-1-like
+LOC111112517,1,1,2,GO:0007157,0.00336,uncharacterized LOC111112517
+LOC111113202,1,1,2,GO:0007157,0.00336,uncharacterized LOC111113202
+LOC111113689,1,0,1,GO:0007157,0.00336,uncharacterized LOC111113689
+LOC111113760,1,0,1,GO:0007157,0.00336,multiple epidermal growth factor-like domains protein 10
+LOC111115163,1,1,2,GO:0007157,0.00336,uncharacterized LOC111115163
+LOC111127048,1,5,6,GO:0007157,0.00336,uncharacterized LOC111127048
+LOC111133506,1,7,8,GO:0007157,0.00336,uncharacterized LOC111133506
+LOC111134173,1,0,1,GO:0007157,0.00336,multiple epidermal growth factor-like domains protein 10
+LOC111134985,1,0,1,GO:0007157,0.00336,uncharacterized LOC111134985
+LOC111100304,2,2,4,GO:0045838,0.00338,ankyrin-3-like
+LOC111101645,1,1,2,GO:0045838,0.00338,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111108482,1,1,2,GO:0045838,0.00338,uncharacterized LOC111108482
+LOC111108483,1,0,1,GO:0045838,0.00338,ankyrin-1-like
+LOC111110037,1,1,2,GO:0045838,0.00338,ankyrin-2-like
+LOC111112666,1,1,2,GO:0045838,0.00338,uncharacterized LOC111112666
+LOC111122316,1,29,30,GO:0045838,0.00338,ankyrin-2-like
+LOC111108244,1,1,2,GO:0050896,0.00341,A disintegrin and metalloproteinase with thrombospondin motifs adt-1-like
+LOC111113202,1,1,2,GO:0050896,0.00341,uncharacterized LOC111113202
+LOC111115402,2,0,2,GO:0050896,0.00341,uncharacterized LOC111115402
+LOC111118035,1,1,2,GO:0050896,0.00341,cadherin-23-like
+LOC111123341,2,2,4,GO:0050896,0.00341,uncharacterized LOC111123341
+LOC111123402,2,1,3,GO:0050896,0.00341,hemicentin-1-like
+LOC111123618,1,1,2,GO:0050896,0.00341,hemicentin-1-like
+LOC111124554,2,9,11,GO:0050896,0.00341,myosin-IIIb-like
+LOC111124679,1,1,2,GO:0050896,0.00341,hemicentin-2-like
+LOC111125530,1,1,2,GO:0050896,0.00341,coadhesin-like
+LOC111125594,2,3,5,GO:0050896,0.00341,uncharacterized LOC111125594
+LOC111126252,1,3,4,GO:0050896,0.00341,hemicentin-1-like
+LOC111127852,1,1,2,GO:0050896,0.00341,coadhesin-like
+LOC111131846,1,1,2,GO:0050896,0.00341,brain-specific angiogenesis inhibitor 1-like
+LOC111099196,1,5,6,GO:0031175,0.00343,bicaudal D-related protein homolog
+LOC111119720,1,2,3,GO:0031175,0.00343,multiple epidermal growth factor-like domains protein 11
+LOC111125677,1,3,4,GO:0031175,0.00343,receptor-type tyrosine-protein phosphatase F-like
+LOC111099499,1,0,1,GO:0016322,0.00356,uncharacterized LOC111099499
+LOC111101677,1,1,2,GO:0016322,0.00356,uncharacterized LOC111101677
+LOC111103035,1,0,1,GO:0016322,0.00356,cell death abnormality protein 1-like
+LOC111104340,1,1,2,GO:0016322,0.00356,uncharacterized LOC111104340
+LOC111104879,1,0,1,GO:0016322,0.00356,uncharacterized LOC111104879
+LOC111111671,1,1,2,GO:0016322,0.00356,calpain-1 catalytic subunit-like
+LOC111114375,1,0,1,GO:0016322,0.00356,scavenger receptor class F member 2-like
+LOC111115163,1,1,2,GO:0016322,0.00356,uncharacterized LOC111115163
+LOC111115412,1,1,2,GO:0016322,0.00356,uncharacterized LOC111115412
+LOC111115507,1,0,1,GO:0016322,0.00356,protein draper-like
+LOC111115585,1,1,2,GO:0016322,0.00356,protein draper-like
+LOC111116565,1,0,1,GO:0016322,0.00356,multiple epidermal growth factor-like domains protein 11
+LOC111117117,1,2,3,GO:0016322,0.00356,multiple epidermal growth factor-like domains protein 10
+LOC111118178,1,0,1,GO:0016322,0.00356,uncharacterized LOC111118178
+LOC111130487,2,13,15,GO:0016322,0.00356,calpain-B-like
+LOC111132477,1,0,1,GO:0016322,0.00356,uncharacterized LOC111132477
+LOC111132478,1,0,1,GO:0016322,0.00356,uncharacterized LOC111132478
+LOC111135012,1,1,2,GO:0016322,0.00356,uncharacterized LOC111135012
+LOC111105923,1,3,4,GO:0001556,0.00358,WASH complex subunit 1-like
+LOC111108719,1,1,2,GO:0001556,0.00358,uncharacterized LOC111108719
+LOC111116003,4,0,4,GO:0001556,0.00358,interferon-induced protein 44-like
+LOC111131147,1,14,15,GO:0001556,0.00358,1-phosphatidylinositol 4
+LOC111103035,1,0,1,GO:0048678,0.00368,cell death abnormality protein 1-like
+LOC111115163,1,1,2,GO:0048678,0.00368,uncharacterized LOC111115163
+LOC111115412,1,1,2,GO:0048678,0.00368,uncharacterized LOC111115412
+LOC111115507,1,0,1,GO:0048678,0.00368,protein draper-like
+LOC111115585,1,1,2,GO:0048678,0.00368,protein draper-like
+LOC111100304,2,2,4,GO:0019228,0.00391,ankyrin-3-like
+LOC111101645,1,1,2,GO:0019228,0.00391,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B-like
+LOC111107271,1,1,2,GO:0019228,0.00391,potassium voltage-gated channel subfamily A member 1-like
+LOC111108482,1,1,2,GO:0019228,0.00391,uncharacterized LOC111108482
+LOC111108483,1,0,1,GO:0019228,0.00391,ankyrin-1-like
+LOC111112666,1,1,2,GO:0019228,0.00391,uncharacterized LOC111112666
+LOC111122316,1,29,30,GO:0019228,0.00391,ankyrin-2-like
+LOC111136026,1,1,2,GO:0019228,0.00391,P2X purinoceptor 7-like
+LOC111103287,1,15,16,GO:0048488,0.00407,phosphatidylinositol-binding clathrin assembly protein LAP-like
+LOC111118737,1,6,7,GO:0048488,0.00407,uncharacterized LOC111118737
+LOC111119817,1,5,6,GO:0048488,0.00407,bifunctional heparan sulfate N-deacetylase/N-sulfotransferase 4-like
+LOC111131389,1,2,3,GO:0048488,0.00407,synaptotagmin-A-like
+LOC111136699,1,5,6,GO:0048488,0.00407,neuroligin-4
+LOC111123661,1,4,5,GO:0006663,0.00439,cytosolic phospholipase A2-like
+LOC111127642,1,4,5,GO:0006663,0.00439,cytosolic phospholipase A2-like
+LOC111122408,1,1,2,GO:0032417,0.00439,uncharacterized LOC111122408
+LOC111131147,1,14,15,GO:0032417,0.00439,1-phosphatidylinositol 4
+LOC111116730,1,2,3,GO:0033564,0.00439,receptor-type tyrosine-protein phosphatase delta-like
+LOC111124602,1,0,1,GO:0033564,0.00439,uncharacterized LOC111124602
+LOC111105814,1,0,1,GO:0046092,0.00439,deoxynucleoside kinase-like
+LOC111106556,1,1,2,GO:0046092,0.00439,thymidine kinase 2
+LOC111106119,3,7,10,GO:0050849,0.00439,inositol 1
+LOC111138112,1,7,8,GO:0050849,0.00439,inositol 1
+LOC111099499,1,0,1,GO:0010976,0.00468,uncharacterized LOC111099499
+LOC111101677,1,1,2,GO:0010976,0.00468,uncharacterized LOC111101677
+LOC111102342,1,2,3,GO:0010976,0.00468,uncharacterized LOC111102342
+LOC111103635,1,3,4,GO:0010976,0.00468,lysine-specific histone demethylase 1A-like
+LOC111104340,1,1,2,GO:0010976,0.00468,uncharacterized LOC111104340
+LOC111104879,1,0,1,GO:0010976,0.00468,uncharacterized LOC111104879
+LOC111114375,1,0,1,GO:0010976,0.00468,scavenger receptor class F member 2-like
+LOC111116565,1,0,1,GO:0010976,0.00468,multiple epidermal growth factor-like domains protein 11
+LOC111117117,1,2,3,GO:0010976,0.00468,multiple epidermal growth factor-like domains protein 10
+LOC111118178,1,0,1,GO:0010976,0.00468,uncharacterized LOC111118178
+LOC111120684,1,3,4,GO:0010976,0.00468,brain-specific angiogenesis inhibitor 1-associated protein 2-like
+LOC111127587,1,2,3,GO:0010976,0.00468,arylsulfatase B-like
+LOC111132477,1,0,1,GO:0010976,0.00468,uncharacterized LOC111132477
+LOC111132478,1,0,1,GO:0010976,0.00468,uncharacterized LOC111132478
+LOC111134985,1,0,1,GO:0010976,0.00468,uncharacterized LOC111134985
+LOC111135012,1,1,2,GO:0010976,0.00468,uncharacterized LOC111135012
+LOC111099482,1,0,1,GO:0001525,0.00505,uncharacterized LOC111099482
+LOC111099602,1,0,1,GO:0001525,0.00505,uncharacterized LOC111099602
+LOC111100219,1,4,5,GO:0001525,0.00505,uncharacterized LOC111100219
+LOC111101104,1,0,1,GO:0001525,0.00505,uncharacterized LOC111101104
+LOC111102246,1,0,1,GO:0001525,0.00505,uncharacterized LOC111102246
+LOC111102681,1,0,1,GO:0001525,0.00505,uncharacterized LOC111102681
+LOC111102933,2,0,2,GO:0001525,0.00505,uncharacterized LOC111102933
+LOC111102982,1,2,3,GO:0001525,0.00505,platelet endothelial aggregation receptor 1-like
+LOC111103951,1,0,1,GO:0001525,0.00505,cell death abnormality protein 1-like
+LOC111104560,1,1,2,GO:0001525,0.00505,multiple epidermal growth factor-like domains protein 10
+LOC111104562,1,0,1,GO:0001525,0.00505,scavenger receptor class F member 1-like
+LOC111104830,1,1,2,GO:0001525,0.00505,scavenger receptor class F member 1-like
+LOC111104907,1,0,1,GO:0001525,0.00505,uncharacterized LOC111104907
+LOC111105605,1,0,1,GO:0001525,0.00505,uncharacterized LOC111105605
+LOC111106218,1,0,1,GO:0001525,0.00505,multiple epidermal growth factor-like domains protein 10
+LOC111106240,1,9,10,GO:0001525,0.00505,uncharacterized LOC111106240
+LOC111109695,1,0,1,GO:0001525,0.00505,uncharacterized LOC111109695
+LOC111110318,1,1,2,GO:0001525,0.00505,complement C1q-like protein 4
+LOC111110489,1,0,1,GO:0001525,0.00505,complement C1q-like protein 3
+LOC111111873,1,2,3,GO:0001525,0.00505,uncharacterized LOC111111873
+LOC111111956,1,1,2,GO:0001525,0.00505,multiple epidermal growth factor-like domains protein 11
+LOC111113352,1,5,6,GO:0001525,0.00505,calcitonin gene-related peptide type 1 receptor-like
+LOC111113516,1,0,1,GO:0001525,0.00505,uncharacterized LOC111113516
+LOC111113693,1,0,1,GO:0001525,0.00505,multiple epidermal growth factor-like domains protein 11
+LOC111117400,1,3,4,GO:0001525,0.00505,protein draper-like
+LOC111124857,1,0,1,GO:0001525,0.00505,uncharacterized LOC111124857
+LOC111128424,1,2,3,GO:0001525,0.00505,probable nuclear hormone receptor HR3
+LOC111128686,1,0,1,GO:0001525,0.00505,delta-like protein 3
+LOC111132115,4,2,6,GO:0001525,0.00505,loricrin-like
+LOC111133410,1,0,1,GO:0001525,0.00505,uncharacterized LOC111133410
+LOC111134790,4,8,12,GO:0001525,0.00505,loricrin-like
+LOC111135012,1,1,2,GO:0001525,0.00505,uncharacterized LOC111135012
+LOC111136355,2,1,3,GO:0001525,0.00505,protein draper-like
+LOC111099602,1,0,1,GO:0007169,0.00514,uncharacterized LOC111099602
+LOC111100219,1,4,5,GO:0007169,0.00514,uncharacterized LOC111100219
+LOC111101104,1,0,1,GO:0007169,0.00514,uncharacterized LOC111101104
+LOC111102681,1,0,1,GO:0007169,0.00514,uncharacterized LOC111102681
+LOC111102982,1,2,3,GO:0007169,0.00514,platelet endothelial aggregation receptor 1-like
+LOC111104830,1,1,2,GO:0007169,0.00514,scavenger receptor class F member 1-like
+LOC111104926,1,0,1,GO:0007169,0.00514,uncharacterized LOC111104926
+LOC111105023,1,0,1,GO:0007169,0.00514,uncharacterized LOC111105023
+LOC111106218,1,0,1,GO:0007169,0.00514,multiple epidermal growth factor-like domains protein 10
+LOC111106412,1,1,2,GO:0007169,0.00514,receptor-type tyrosine-protein phosphatase T-like
+LOC111109695,1,0,1,GO:0007169,0.00514,uncharacterized LOC111109695
+LOC111111956,1,1,2,GO:0007169,0.00514,multiple epidermal growth factor-like domains protein 11
+LOC111117035,1,1,2,GO:0007169,0.00514,receptor-type tyrosine-protein phosphatase epsilon-like
+LOC111117048,1,1,2,GO:0007169,0.00514,receptor-type tyrosine-protein phosphatase epsilon-like
+LOC111117104,1,1,2,GO:0007169,0.00514,receptor-type tyrosine-protein phosphatase epsilon-like
+LOC111117400,1,3,4,GO:0007169,0.00514,protein draper-like
+LOC111118172,1,1,2,GO:0007169,0.00514,receptor-type tyrosine-protein phosphatase delta-like
+LOC111124857,1,0,1,GO:0007169,0.00514,uncharacterized LOC111124857
+LOC111130114,1,2,3,GO:0007169,0.00514,jouberin-like
+LOC111135012,1,1,2,GO:0007169,0.00514,uncharacterized LOC111135012
+LOC111136355,2,1,3,GO:0007169,0.00514,protein draper-like
+LOC111119532,1,7,8,GO:0001508,0.00524,potassium voltage-gated channel subfamily B member 2-like
+LOC111110910,1,2,3,GO:0034058,0.00548,uncharacterized LOC111110910
+LOC111112688,1,2,3,GO:0034058,0.00548,uncharacterized LOC111112688
+LOC111113124,2,4,6,GO:0034058,0.00548,vacuolar protein sorting-associated protein 41 homolog
+LOC111122363,1,1,2,GO:0034058,0.00548,uncharacterized LOC111122363
+LOC111136026,1,1,2,GO:0015695,0.00562,P2X purinoceptor 7-like
+LOC111099499,1,0,1,GO:0048680,0.00568,uncharacterized LOC111099499
+LOC111101677,1,1,2,GO:0048680,0.00568,uncharacterized LOC111101677
+LOC111102982,1,2,3,GO:0048680,0.00568,platelet endothelial aggregation receptor 1-like
+LOC111104340,1,1,2,GO:0048680,0.00568,uncharacterized LOC111104340
+LOC111104879,1,0,1,GO:0048680,0.00568,uncharacterized LOC111104879
+LOC111114375,1,0,1,GO:0048680,0.00568,scavenger receptor class F member 2-like
+LOC111116565,1,0,1,GO:0048680,0.00568,multiple epidermal growth factor-like domains protein 11
+LOC111117117,1,2,3,GO:0048680,0.00568,multiple epidermal growth factor-like domains protein 10
+LOC111118178,1,0,1,GO:0048680,0.00568,uncharacterized LOC111118178
+LOC111132477,1,0,1,GO:0048680,0.00568,uncharacterized LOC111132477
+LOC111132478,1,0,1,GO:0048680,0.00568,uncharacterized LOC111132478
+LOC111135012,1,1,2,GO:0048680,0.00568,uncharacterized LOC111135012
+LOC111100336,1,6,7,GO:0006910,0.00616,tubby-related protein 3-like
+LOC111114933,1,1,2,GO:0006910,0.00616,uncharacterized LOC111114933
+LOC111115297,1,0,1,GO:0006910,0.00616,C-type lectin domain family 4 member G-like
+LOC111116242,1,0,1,GO:0006910,0.00616,perlucin-like protein
+LOC111119616,1,5,6,GO:0006910,0.00616,uncharacterized LOC111119616
+LOC111112926,1,3,4,GO:0030155,0.00656,usherin-like
+LOC111099482,1,0,1,GO:0007498,0.00662,uncharacterized LOC111099482
+LOC111102246,1,0,1,GO:0007498,0.00662,uncharacterized LOC111102246
+LOC111104907,1,0,1,GO:0007498,0.00662,uncharacterized LOC111104907
+LOC111105605,1,0,1,GO:0007498,0.00662,uncharacterized LOC111105605
+LOC111108046,1,3,4,GO:0007498,0.00662,uncharacterized LOC111108046
+LOC111133410,1,0,1,GO:0007498,0.00662,uncharacterized LOC111133410
+LOC111113632,1,0,1,GO:0009228,0.00664,uncharacterized LOC111113632
+LOC111113776,1,0,1,GO:0009228,0.00664,uncharacterized LOC111113776
+LOC111136422,2,3,5,GO:0009228,0.00664,uncharacterized LOC111136422
+LOC111137281,1,1,2,GO:0009228,0.00664,uncharacterized LOC111137281
+LOC111133311,1,2,3,GO:0001895,0.00666,uncharacterized LOC111133311
+LOC111137130,2,2,4,GO:0001895,0.00666,cyclic nucleotide-gated cation channel beta-1-like
+LOC111134858,1,9,10,GO:0051896,0.00696,PH domain leucine-rich repeat-containing protein phosphatase 2-like
+LOC111100876,1,1,2,GO:0022407,0.00724,brain-specific angiogenesis inhibitor 1-like
+LOC111111224,1,2,3,GO:0022407,0.00724,cadherin EGF LAG seven-pass G-type receptor 2-like
+LOC111125243,1,2,3,GO:0022407,0.00724,protocadherin Fat 4-like
+LOC111123246,1,1,2,GO:0007154,0.00724,tenascin-X-like
+LOC111101163,2,5,7,GO:0002063,0.00760,uncharacterized LOC111101163
+LOC111105847,1,4,5,GO:0002063,0.00760,carbohydrate sulfotransferase 11-like
+LOC111125994,2,2,4,GO:0002063,0.00760,uncharacterized LOC111125994
+LOC111112086,1,2,3,GO:0007213,0.00760,uncharacterized LOC111112086
+LOC111131147,1,14,15,GO:0007213,0.00760,1-phosphatidylinositol 4
+LOC111132939,1,5,6,GO:0007213,0.00760,agrin-like
+LOC111112006,1,16,17,GO:0048632,0.00760,cubilin-like
+LOC111114226,1,0,1,GO:0048632,0.00760,deleted in malignant brain tumors 1 protein-like
+LOC111115780,1,1,2,GO:0048632,0.00760,uncharacterized LOC111115780
+LOC111102781,1,1,2,GO:0060707,0.00760,plasminogen-like
+LOC111119301,1,1,2,GO:0060707,0.00760,plasminogen-like
+LOC111130317,1,2,3,GO:0060707,0.00760,uncharacterized LOC111130317
+LOC111099965,2,2,4,GO:0006869,0.00806,low-density lipoprotein receptor-related protein 8-like
+LOC111106706,1,2,3,GO:0006869,0.00806,ATP-binding cassette sub-family A member 3-like
+LOC111110316,1,4,5,GO:0006869,0.00806,ATP-binding cassette sub-family A member 3-like
+LOC111119298,1,2,3,GO:0006869,0.00806,apolipoprotein(a)-like
+LOC111119301,1,1,2,GO:0006869,0.00806,plasminogen-like
+LOC111126007,1,6,7,GO:0006869,0.00806,extended synaptotagmin-2-like
+LOC111136229,1,5,6,GO:0006869,0.00806,PTB domain-containing engulfment adapter protein 1-like
+LOC111138175,1,2,3,GO:0006869,0.00806,O-acyltransferase like protein-like
+LOC111101455,2,1,3,GO:0051301,0.00829,uncharacterized LOC111101455
+LOC111102286,1,0,1,GO:0051301,0.00829,uncharacterized LOC111102286
+LOC111103095,2,4,6,GO:0051301,0.00829,titin-like
+LOC111106220,1,0,1,GO:0051301,0.00829,uncharacterized LOC111106220
+LOC111106508,1,4,5,GO:0051301,0.00829,cell division cycle protein 123 homolog
+LOC111108046,1,3,4,GO:0051301,0.00829,uncharacterized LOC111108046
+LOC111108244,1,1,2,GO:0051301,0.00829,A disintegrin and metalloproteinase with thrombospondin motifs adt-1-like
+LOC111108787,1,1,2,GO:0051301,0.00829,uncharacterized LOC111108787
+LOC111109141,1,0,1,GO:0051301,0.00829,uncharacterized LOC111109141
+LOC111110881,1,2,3,GO:0051301,0.00829,uncharacterized LOC111110881
+LOC111111518,1,0,1,GO:0051301,0.00829,uncharacterized LOC111111518
+LOC111113202,1,1,2,GO:0051301,0.00829,uncharacterized LOC111113202
+LOC111116201,1,1,2,GO:0051301,0.00829,uncharacterized LOC111116201
+LOC111116747,3,3,6,GO:0051301,0.00829,uncharacterized LOC111116747
+LOC111118391,1,1,2,GO:0051301,0.00829,uncharacterized LOC111118391
+LOC111118906,1,3,4,GO:0051301,0.00829,serine/threonine-protein phosphatase alpha-2 isoform-like
+LOC111119141,1,1,2,GO:0051301,0.00829,brain-specific angiogenesis inhibitor 1-like
+LOC111121152,1,1,2,GO:0051301,0.00829,uncharacterized LOC111121152
+LOC111122828,1,2,3,GO:0051301,0.00829,uncharacterized LOC111122828
+LOC111123402,2,1,3,GO:0051301,0.00829,hemicentin-1-like
+LOC111123618,1,1,2,GO:0051301,0.00829,hemicentin-1-like
+LOC111124679,1,1,2,GO:0051301,0.00829,hemicentin-2-like
+LOC111125441,1,4,5,GO:0051301,0.00829,tetratricopeptide repeat protein 28-like
+LOC111125488,2,4,6,GO:0051301,0.00829,serine/threonine-protein kinase Nek1-like
+LOC111125530,1,1,2,GO:0051301,0.00829,coadhesin-like
+LOC111125942,2,17,19,GO:0051301,0.00829,centriolin-like
+LOC111126252,1,3,4,GO:0051301,0.00829,hemicentin-1-like
+LOC111127852,1,1,2,GO:0051301,0.00829,coadhesin-like
+LOC111128725,1,3,4,GO:0051301,0.00829,nuclear distribution protein nudE-like 1
+LOC111131846,1,1,2,GO:0051301,0.00829,brain-specific angiogenesis inhibitor 1-like
+LOC111132405,1,0,1,GO:0051301,0.00829,tankyrase-like
+LOC111135269,1,0,1,GO:0051301,0.00829,uncharacterized LOC111135269
+LOC111136595,2,3,5,GO:0051301,0.00829,DNA excision repair protein ERCC-6-like
+LOC111137234,1,1,2,GO:0051301,0.00829,SCO-spondin-like
+LOC111125464,1,1,2,GO:0007479,0.00856,homeobox protein Dlx6a-like
+LOC111134507,1,2,3,GO:0007479,0.00856,homeobox protein Dlx6a-like
+LOC111113294,1,1,2,GO:0043491,0.00889,uncharacterized LOC111113294
+LOC111103134,1,0,1,GO:0007586,0.00894,uncharacterized LOC111103134
+LOC111108794,1,0,1,GO:0007586,0.00894,meprin A subunit alpha-like
+LOC111099569,1,1,2,GO:0045071,0.00951,serine protease inhibitor dipetalogastin-like
+LOC111099841,1,1,2,GO:0045071,0.00951,serine protease inhibitor dipetalogastin-like
+LOC111120077,1,3,4,GO:0045071,0.00951,TNFAIP3-interacting protein 1-like
+LOC111122732,1,4,5,GO:0045071,0.00951,uncharacterized LOC111122732
+LOC111138466,1,4,5,GO:0045071,0.00951,uncharacterized LOC111138466
+LOC111119727,1,5,6,GO:0032275,0.00985,TATA element modulatory factor-like
+LOC111109141,1,0,1,GO:0045003,0.00985,uncharacterized LOC111109141
+LOC111100010,1,3,4,GO:0046827,0.00985,uncharacterized LOC111100010
+LOC111122855,1,2,3,GO:0046827,0.00985,uncharacterized LOC111122855
+LOC111128725,1,3,4,GO:0046827,0.00985,nuclear distribution protein nudE-like 1
+LOC111117352,1,5,6,GO:0048087,0.00985,homeobox protein abdominal-B-like
+LOC111120242,1,0,1,GO:0050908,0.00985,uncharacterized LOC111120242
+LOC111125030,1,6,7,GO:0050908,0.00985,transient receptor potential-gamma protein-like
+LOC111137130,2,2,4,GO:0050908,0.00985,cyclic nucleotide-gated cation channel beta-1-like
+LOC111101163,2,5,7,GO:0030166,0.00996,uncharacterized LOC111101163

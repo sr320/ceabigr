@@ -3,7 +3,29 @@
 `ceabigr/code`
 
 ---
+
+## Manu-scripts
+- [`bismark`](https://github.com/sr320/ceabigr/blob/main/code/01-bismark.sh): bismark code
+- 
+- [`20220131_cvir_hisat2-GCF_002022765.2_adult-oa-gonad.sh`](https://github.com/sr320/ceabigr/blob/main/code/20220131_cvir_hisat2-GCF_002022765.2_adult-oa-gonad.sh): Bash script to align RNA-seq data to _C.virginica_ genome using HISAT2.
+
 - [`01.01-supplemental-tables.Rmd`](01.01-supplemental-tables.Rmd): R Markdown document for generating supplemental tables for manuscript. Output files are in [`supplemental-files/`](../supplemental-files/)
+
+- [`18-differential-gene-expression-ballgown.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/18-differential-gene-expression-ballgown.Rmd): Differential gene and transcript expression analysis using `ballgown` R package.
+
+- [`20220921-cvir-ceabigr-nextflow-epidiverse-snp.sh`](https://github.com/sr320/ceabigr/blob/main/code/20220921-cvir-ceabigr-nextflow-epidiverse-snp.sh): Bash script to run the Nextflow EpiDiverse/snp pipeline.
+
+- [`42-predominant-isoform.Rmd)`](https://github.com/sr320/ceabigr/blob/main/code/42-predominant-isoform.Rmd): Influence of Methylation on Predominant Transcript Shifts & Transcriptional Noise Analysis
+
+- [`Genomic-Location-of-DML.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/Genomic-Location-of-DML.Rmd):
+
+- [`Genomic-Location-of-DML.ipynb`](https://github.com/sr320/ceabigr/blob/main/code/Genomic-Location-of-DML.ipynb): 
+
+---
+
+## Exploratory Scripts
+
+
 
 - [02-te-all.sh](https://github.com/sr320/ceabigr/blob/main/code/02-te-all.sh): determining copy number of TE looking at WGBS coverage
 
@@ -16,8 +38,6 @@
 - [`17.1-GO-and-GOslim-CDS-Annotation.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/17.1-GO-and-GOslim-CDS-Annotation.Rmd): Gene ontology (GO) and GOslim annotations of _C.virginica_ coding sequences (CDS).
 
 - [`17-Swiss-Prot-Annotation.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/17-Swiss-Prot-Annotation.Rmd): SwissProt annotation via NCBI BLASTp of _C.virginica_ protein and coding sequences (CDS).
-
-- [`18-differential-gene-expression-ballgown.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/18-differential-gene-expression-ballgown.Rmd): Differential gene and transcript expression analysis using `ballgown` R package.
 
 - [`19-exon-expression.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/19-exon-expression.Rmd): Script to create a table of exon read counts per gene. Output files are in [`outputs/19-exon-expression`](https://github.com/sr320/ceabigr/tree/main/output/19-exon-expression).
 
