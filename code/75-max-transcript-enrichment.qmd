@@ -84,12 +84,17 @@ head(metadata)
 ## Maximum transcript data
 
 ```{r}
-female_tr <- read_csv("../34-transcript-counts/diffs.max.transcripts_per_gene.controls_females.vs.exposed_females.csv") #Import transcript count data per gene
-head(female_tr) #Confirm import
+female_tr <- read.csv("../../supplemental-files/01.01-fmcoe-max-predom-isos-gene_fpkm.csv") %>%
+  dplyr::select(., c(1:2,4)) %>%
+  mutate(., difference = females_exposed_max_transcript_counts - females_controls_max_transcript_counts) #Import transcript count data per gene. Select only the data for females. Create a difference column for exposed vs. control
+nrow(female_tr)
+head(female_tr)
 ```
 
 ```{r}
-male_tr <- read_csv("../34-transcript-counts/diffs.max.transcripts_per_gene.controls_males.vs.exposed_males.csv") #Import transcript count data per gene
+male_tr <- read.csv("../../supplemental-files/01.01-fmcoe-max-predom-isos-gene_fpkm.csv") %>%
+  dplyr::select(., c(1,3,5)) %>%
+  mutate(., difference = males_exposed_max_transcript_counts - males_controls_max_transcript_counts) #Import transcript count data per gene. Select only the data for females. Create a difference column for exposed vs. control
 head(male_tr) #Confirm import
 ```
 
@@ -121,6 +126,14 @@ head(geneMethylationFem) #Confirm formatting. Resultant df has one line per gene
 ```
 
 ```{r}
+geneMethylationFemWide <- geneMethylationFem %>%
+  pivot_wider(., names_from = treatment, names_prefix = "avg_meth_", values_from = avg_meth) %>%
+  replace(is.na(.), 0) %>%
+  mutate(., change_meth = avg_meth_exposed - avg_meth_control) #Pivot dataaframe wider and calculate change in gene methylation
+head(geneMethylationFemWide)
+```
+
+```{r}
 geneMethylationMale <- geneMethylationMod %>%
   filter(., grepl("M", rownames(.), fixed = TRUE)) %>% 
   t(.) %>%
@@ -136,6 +149,14 @@ geneMethylationMale <- geneMethylationMod %>%
   summarise(avg_meth = mean(meth, na.rm = TRUE)) %>%
   ungroup(.) #Filter male samples and reformat data. Remove excess information from gene name column. Add treatment information and average methylation for each gene by treatment.
 head(geneMethylationMale) #Confirm formatting
+```
+
+```{r}
+geneMethylationMaleWide <- geneMethylationMale %>%
+  pivot_wider(., names_from = treatment, names_prefix = "avg_meth_", values_from = avg_meth) %>%
+  replace(is.na(.), 0) %>%
+  mutate(., change_meth = avg_meth_exposed - avg_meth_control) #Pivot dataaframe wider and calculate change in gene methylation
+head(geneMethylationMaleWide)
 ```
 
 ```{r}
@@ -157,11 +178,6 @@ head(DMLLocationsMale) #Confirm file import and changes
 ```
 
 ## Expression data
-
-```{r}
-metadata
-```
-
 
 ```{r}
 geneExpression <- read.csv("../../data/gene_fpkm.csv", header = TRUE, row.names = metadata$sample)
@@ -196,6 +212,14 @@ geneExpressionFem %>%
 ```
 
 ```{r}
+geneExpressionFemWide <- geneExpressionFem %>%
+  pivot_wider(., names_from = treatment, names_prefix = "avg_exp_", values_from = avg_exp) %>%
+  replace(is.na(.), 0) %>%
+  mutate(., change_exp = avg_exp_exposed - avg_exp_control) #Pivot dataaframe wider and calculate change in gene Expression
+head(geneExpressionFemWide)
+```
+
+```{r}
 geneExpressionMale <- geneExpressionMod %>%
   filter(., grepl("M", rownames(.), fixed = TRUE)) %>%
   t(.) %>%
@@ -220,3 +244,48 @@ geneExpressionMale %>%
   unique(.) %>% nrow(.)
 ```
 
+```{r}
+geneExpressionMaleWide <- geneExpressionMale %>%
+  pivot_wider(., names_from = treatment, names_prefix = "avg_exp_", values_from = avg_exp) %>%
+  replace(is.na(.), 0) %>%
+  mutate(., change_exp = avg_exp_exposed - avg_exp_control) #Pivot dataaframe wider and calculate change in gene Expression
+head(geneExpressionMaleWide)
+```
+
+# Females
+
+## Maximum transcript change
+
+```{r}
+nrow(female_tr) #39104 genes total
+sum(female_tr$difference > 0) #1529 genes with more transcripts expressed in exposed
+sum(female_tr$difference == 0) #35048
+sum(female_tr$difference < 0) #2437 genes with less transcripts expressed in exposed
+sum(female_tr$difference > 0) / nrow(female_tr) * 100 #3.92% of genes have more transcripts expressed in exposed
+sum(female_tr$difference == 0) / nrow(female_tr) * 100 #89.83% of genes have more transcripts expressed in exposed
+sum(female_tr$difference < 0) / nrow(female_tr) * 100 #6.25% of genes have less transcripts expressed in exposed
+```
+
+```{r}
+maxTransIncFemTest <- prop.test(x = 1529, n = 39104, p = 0.33,
+                             alternative = "two.sided", 
+                             conf.level = 0.95) #Conduct a 1-sample z test
+maxTransIncFemTest
+maxTransIncFemTest$statistic #X-squared = 14965
+maxTransIncFemTest$p.value #p = 0. Increases in max transcripts happen significantly less than what would be expected by random chance
+```
+
+```{r}
+maxTransDecFemTest <- prop.test(x = 2437, n = 39104, p = 0.33,
+                             alternative = "two.sided", 
+                             conf.level = 0.95) #Conduct a 1-sample z test
+maxTransDecFemTest
+maxTransDecFemTest$statistic #X-squared = 12671.25
+maxTransDecFemTest$p.value #p = 0. Decreases in max transcripts happen significantly less than what would be expected by random chance
+```
+
+## Format data
+
+I want to add methylation and expression data to the maximum transcript data.
+
+# Males
