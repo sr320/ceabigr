@@ -18,17 +18,11 @@ output:
   #   html_preview: true
 ---
 
-```{r setup, include=FALSE}
-#library(kableExtra)
-# library(DESeq2)
-# library(pheatmap)
-# library(RColorBrewer)
-# library(data.table)
-#library(DT)
-# library(Biostrings)
-#library(methylKit)
-library(tidyverse)
+In this document, I'll take information about changes in the maximum number of transcripts expressed and investigate 1) the significance of these changes, 2) functions associated with these changes and 3) determine if there are any overrepresented biological processes associated with changes
 
+# Set up R Markdown document
+
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,         # Display code chunks
   eval = TRUE,         # Evaluate code chunks
@@ -38,32 +32,58 @@ knitr::opts_chunk$set(
   fig.height = 4,      # Set plot height in inches
   fig.align = "center" # Align plots to the center
 )
-```
 
-Lets take do annoation or max transcript shift
-
-# female
-
-```{r}
-female_tr <- read_csv("../output/34-transcript-counts/diffs.max.transcripts_per_gene.controls_females.vs.exposed_females.csv")
-```
-
-
-```{r}
-female_tr %>%
-  select(gene_name) %>%
-  write.csv("../output/75-max-transcript-enrichment/fmmtrn.txt", row.names = FALSE, col.names = FALSE, quote = FALSE)
-```
-
-
-# male
-
-```{r}
-male_tr <- read_csv("../output/34-transcript-counts/diffs.max.transcripts_per_gene.controls_males.vs.exposed_males.csv")
+knitr::opts_knit$set(root.dir = normalizePath("../output/75-max-transcript-enrichment/")) #Set root directory
 ```
 
 ```{r}
-male_tr %>%
-  select(gene_name) %>%
-  write.csv("../output/75-max-transcript-enrichment/mmtrn.txt", row.names = FALSE, col.names = FALSE, quote = FALSE)
+getwd()
 ```
+
+# Install packages
+
+```{r setup, include=FALSE}
+# if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse')
+# if ("ggpubr" %in% rownames(installed.packages()) == 'FALSE') install.packages('ggpubr')
+# if ("data.table" %in% rownames(installed.packages()) == 'FALSE') install.packages('data.table')
+# if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages('RColorBrewer')
+# if ("patchwork" %in% rownames(installed.packages()) == 'FALSE') install.packages('patchwork')
+```
+
+```{r}
+# if (!require("BiocManager", quietly = TRUE))
+#     install.packages("BiocManager")
+# 
+# BiocManager::install("topGO")
+```
+
+```{r}
+require(tidyverse)
+require(ggpubr)
+require(data.table)
+require(RColorBrewer)
+require(patchwork)
+require(topGO)
+```
+
+```{r}
+sessionInfo()
+```
+
+# Import data
+
+## Maximum transcript data
+
+```{r}
+female_tr <- read_csv("../34-transcript-counts/diffs.max.transcripts_per_gene.controls_females.vs.exposed_females.csv") #Import transcript count data per gene
+head(female_tr) #Confirm import
+```
+
+```{r}
+male_tr <- read_csv("../34-transcript-counts/diffs.max.transcripts_per_gene.controls_males.vs.exposed_males.csv") #Import transcript count data per gene
+head(male_tr) #Confirm import
+```
+
+## Methylation data
+
+## Expression data
