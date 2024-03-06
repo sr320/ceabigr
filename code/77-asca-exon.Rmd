@@ -1,0 +1,242 @@
+---
+title: "77-asca-exon"
+author: "Ariana Huffmyer"
+date: "2024-03-06"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Run an ASCA analysis on exon expression data.  
+
+# Load libraries 
+
+```{r}
+library(tidyverse)
+```
+
+# Load data 
+
+```{r}
+data <- fread("output/72-exon-data-rfmt/female_exon_tf.csv")
+```
+
+# Format data 
+
+Format data by adding a sample and fold change column.  
+
+```{r}
+data <- data %>%
+  mutate(fold = sapply(strsplit(as.character(SampleID_fold), "_"), function(x) x[2]))%>%
+  mutate(sample = sapply(strsplit(as.character(SampleID_fold), "_"), function(x) x[1]))%>%
+  select(!SampleID_fold)%>%
+  select(sample, fold, everything())
+
+head(data)
+```
+
+Read in metadata and add information for treatment.  
+
+```{r}
+meta<-read_csv("data/adult-meta.csv")
+
+data$treatment<-meta$Treatment[match(data$sample, meta$OldSample.ID)]
+
+data <- data %>%
+  mutate(sex=c("Female"))%>%
+  select(sample, fold, treatment, sex, everything())
+```
+
+We now have a column for sample, fold, treatment, sex, and a column for each gene. Here are the levels of each factor.   
+
+```{r}
+levels(as.factor(data$sample))
+levels(as.factor(data$fold))
+levels(as.factor(data$treatment))
+levels(as.factor(data$sex))
+```
+
+Remove genes that have NA values. 
+
+```{r}
+data<-data %>%
+    select_if(~ !any(is.na(.)))
+```
+
+We had 13284 columns (13280 genes) and now have 11270 after NA removal. 
+
+Finally, format with gene in a column and value in its own column. 
+```{r}
+long_data<-data%>%
+  pivot_longer(cols=5:11274, names_to="gene", values_to="value")
+
+str(long_data)
+
+
+```
+
+# try linear mixed models
+
+```{r}
+library(lme4)
+library(lmerTest)
+#install.packages("lmerTest")
+
+model<-lmer(value ~ fold * treatment + (1|gene) + (1|sample), data=long_data)
+summary(model)
+
+anova(model)
+```
+
+We can test this with the model, but I'm not sure where to go from here.... We can't get information about which expression patterns differ by treatment. 
+
+# ASCA 
+
+Run an ASCA.  
+
+Load packages.  
+```{r}
+library(MetStaT) #package no longer available, try another one 
+
+install.packages('multiblock')
+library(multiblock)
+```
+
+Generate a matrix of genes and values and a matrix of metadata informatin. 
+```{r}
+genes <- data[, 5:11274]
+meta <- data[, 1:4]
+
+correct <- data.frame(meta, genes = I(genes))
+str(correct)
+```
+
+Run using the multiblock package "asca" function. 
+```{r}
+mod.mix <- asca(genes ~ fold * treatment, data=correct)
+scoreplot(mod.mix)
+
+str(correct$genes)
+
+str(correct)
+```
+
+
+
+Test
+```{r}
+# Load candies data
+data(candies)
+
+# Basic ASCA model with two factors
+mod <- asca(assessment ~ candy + assessor, data=candies)
+print(mod)
+
+# ASCA model with interaction
+mod <- asca(assessment ~ candy * assessor, data=candies)
+print(mod)
+
+# Result plotting for first factor
+loadingplot(mod, scatter=TRUE, labels="names")
+scoreplot(mod, ellipsoids = "confidence")
+
+# ASCA model with compressed response using 5 principal components
+mod.pca <- asca(assessment ~ candy + assessor, data=candies, pca.in=5)
+
+# Mixed Model ASCA, random assessor
+mod.mix <- asca(assessment ~ candy + (1|assessor), data=candies)
+scoreplot(mod.mix)
+summary(mod.mix)
+```
+
+Not sure this package is working.... Lets try something else. 
+
+# ALASCA package 
+
+https://pubmed.ncbi.nlm.nih.gov/36387276/ 
+https://github.com/andjar/ALASCA
+
+```{r}
+#if (!requireNamespace("devtools", quietly = TRUE))
+#    install.packages("devtools")
+
+#devtools::install_github("andjar/ALASCA", ref = "main")
+
+#install.packages("Rfast")
+#library(Rfast)
+#remotes::install_version("Rfast", version = "2.0.8")
+
+library(ALASCA)
+```
+
+```{r}
+long_data<-long_data%>%
+  rename(variable=gene)%>%
+  select(!sex)
+
+res <- ALASCA(
+  long_data,
+  value ~ fold * treatment + (1|sample)
+)
+
+head(long_data)
+```
+
+Plot comp 1
+```{r}
+plot(res, effect = 1, component = 1, type = 'effect', n_limit=3)
+```
+
+```{r}
+plot(res, effect = 1, component = 2, type = 'effect', n_limit=20)
+```
+
+```{r}
+plot(res, effect = 1, component = 3, type = 'effect', n_limit=20)
+```
+
+```{r}
+plot(res, effect = 1, component = 4, type = 'effect', n_limit=20)
+```
+
+```{r}
+plot(res, effect = 1, component = 5, type = 'effect', n_limit=3)
+```
+
+```{r}
+plot(res, effect = 1, component = 6, type = 'effect', n_limit=20)
+```
+
+```{r}
+plot(res, effect = 1, component = 7, type = 'effect', n_limit=20)
+```
+
+```{r}
+plot(res, effect = 1, component = 8, type = 'effect', n_limit=20)
+```
+
+```{r}
+plot(res, effect = 1, component = 9, type = 'effect', n_limit=20)
+```
+
+```{r}
+plot(res, effect = 1, component = 10, type = 'effect', n_limit=20)
+```
+
+Genes for ground truthing: 
+
+List of 6 genes from PC1 (linear decreasing trend; no difference between treatment)
+- LOC111124637
+- LOC111134737
+- LOC111133851
+- LOC111118302
+- LOC111138117
+- LOC111118372
+
+List of 6 genes from PC5 
+- LOC111124776
+- LOC111100951
+- LOC111119253
+- LOC111119077
+- LOC111136820
+- LOC111126804
