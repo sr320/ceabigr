@@ -12,8 +12,6 @@
 
 - [`18-differential-gene-expression-ballgown.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/18-differential-gene-expression-ballgown.Rmd): Differential gene and transcript expression analysis using `ballgown` R package.
 
-- [`34-transcript-counts.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/34-transcript-counts.Rmd)
-
 ---
 
 ## Exploratory Scripts
