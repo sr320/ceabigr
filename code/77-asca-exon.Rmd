@@ -200,28 +200,47 @@ plot(res, effect = 1, component = 4, type = 'effect', n_limit=20)
 ```
 
 ```{r}
-plot(res, effect = 1, component = 5, type = 'effect', n_limit=3)
+plot(res, effect = 1, component = 5, type = 'effect', n_limit=10)
 ```
 
 ```{r}
-plot(res, effect = 1, component = 6, type = 'effect', n_limit=20)
+plot(res, effect = 1, component = 6, type = 'effect', n_limit=10)
 ```
 
 ```{r}
-plot(res, effect = 1, component = 7, type = 'effect', n_limit=20)
+plot(res, effect = 1, component = 7, type = 'effect', n_limit=10)
 ```
 
 ```{r}
-plot(res, effect = 1, component = 8, type = 'effect', n_limit=20)
+plot(res, effect = 1, component = 8, type = 'effect', n_limit=10)
 ```
 
 ```{r}
-plot(res, effect = 1, component = 9, type = 'effect', n_limit=20)
+plot(res, effect = 1, component = 9, type = 'effect', n_limit=10)
 ```
 
 ```{r}
-plot(res, effect = 1, component = 10, type = 'effect', n_limit=20)
+plot(res, effect = 1, component = 10, type = 'effect', n_limit=10)
 ```
+
+Show scree plot: 
+```{r}
+plot(res, component = seq(1,10), effect = 1, type = 'scree')
+```
+
+Need to get table to quantify variance explained by treatment effects. 
+
+
+```{r}
+#PC plot
+plot(res, effect = 1, component = 5, type = 'effect', n_limit=10)
+
+#individual plot
+plot(res, component = 5, effect = 1, type = 'prediction')
+```
+
+
+three panel plots: 1) PC overall 2) PC scores for genes 3) gene individual patterns 
 
 Genes for ground truthing: 
 
@@ -240,3 +259,26 @@ List of 6 genes from PC5
 - LOC111119077
 - LOC111136820
 - LOC111126804
+
+List of 6 genes from PC6 (opposite pattern of increase/decrease)
+- LOC111106360
+- LOC111137309
+- LOC111137877
+- LOC111136509
+- LOC111121599
+- LOC111118507
+
+
+Next steps: 
+
+- Pull out top 10 genes (on each side; so 20 per pattern) for the PC1-4 (not different between treatment) and PC5-10 (different between treatment) and perform annotation on these. What are the functions of these genes? 
+- How does this relate to methylation? 
+
+Data frame
+- PC; pattern; difference; gene
+
+Figure in supplement for each PC panel (1-10) - 10 panel supplement figure with PC, scores, and individual genes for each PC 
+
+Table of model results or in text + scree plot or table 
+
+Expression relative to exon #1 
