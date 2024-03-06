@@ -12,7 +12,7 @@
 
 - [`18-differential-gene-expression-ballgown.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/18-differential-gene-expression-ballgown.Rmd): Differential gene and transcript expression analysis using `ballgown` R package.
 
-- [`42-predominant-isoform.Rmd)`](https://github.com/sr320/ceabigr/blob/main/code/42-predominant-isoform.Rmd): Transcriptional Noise Analysis
+- [`42-predominant-isoform.Rmd)`](https://github.com/sr320/ceabigr/blob/main/code/42-predominant-isoform.Rmd): Influence of Methylation on Predominant Transcript Shifts & Transcriptional Noise Analysis
 
 ---
 
