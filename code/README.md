@@ -8,6 +8,11 @@
 
 
 ---
+
+## Exploratory Scripts
+
+- [`20220131_cvir_hisat2-GCF_002022765.2_adult-oa-gonad.sh`](https://github.com/sr320/ceabigr/blob/main/code/20220131_cvir_hisat2-GCF_002022765.2_adult-oa-gonad.sh): Bash script to aling RNA-seq data to _C.virginica_ genome.
+
 - [`01.01-supplemental-tables.Rmd`](01.01-supplemental-tables.Rmd): R Markdown document for generating supplemental tables for manuscript. Output files are in [`supplemental-files/`](../supplemental-files/)
 
 - [02-te-all.sh](https://github.com/sr320/ceabigr/blob/main/code/02-te-all.sh): determining copy number of TE looking at WGBS coverage
