@@ -3,6 +3,11 @@
 `ceabigr/code`
 
 ---
+
+## Manu-scripts
+
+
+---
 - [`01.01-supplemental-tables.Rmd`](01.01-supplemental-tables.Rmd): R Markdown document for generating supplemental tables for manuscript. Output files are in [`supplemental-files/`](../supplemental-files/)
 
 - [02-te-all.sh](https://github.com/sr320/ceabigr/blob/main/code/02-te-all.sh): determining copy number of TE looking at WGBS coverage
