@@ -5,7 +5,7 @@
 ---
 
 ## Manu-scripts
-- [bismark](https://github.com/sr320/ceabigr/blob/main/code/01-bismark.sh): bismark code
+- [`bismark`](https://github.com/sr320/ceabigr/blob/main/code/01-bismark.sh): bismark code
 - 
 - [`20220131_cvir_hisat2-GCF_002022765.2_adult-oa-gonad.sh`](https://github.com/sr320/ceabigr/blob/main/code/20220131_cvir_hisat2-GCF_002022765.2_adult-oa-gonad.sh): Bash script to align RNA-seq data to _C.virginica_ genome using HISAT2.
 
