@@ -13,6 +13,8 @@
 
 - [`18-differential-gene-expression-ballgown.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/18-differential-gene-expression-ballgown.Rmd): Differential gene and transcript expression analysis using `ballgown` R package.
 
+- [`20220921-cvir-ceabigr-nextflow-epidiverse-snp.sh`](https://github.com/sr320/ceabigr/blob/main/code/20220921-cvir-ceabigr-nextflow-epidiverse-snp.sh): Bash script to run the Nextflow EpiDiverse/snp pipeline.
+
 - [`42-predominant-isoform.Rmd)`](https://github.com/sr320/ceabigr/blob/main/code/42-predominant-isoform.Rmd): Influence of Methylation on Predominant Transcript Shifts & Transcriptional Noise Analysis
 
 - [`Genomic-Location-of-DML.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/Genomic-Location-of-DML.Rmd):
