@@ -72,6 +72,15 @@ sessionInfo()
 
 # Import data
 
+```{r}
+metadata <- read.csv("../../data/adult-meta.csv", header = TRUE) %>%
+  dplyr::rename(., sample = Sample.ID) %>%
+  dplyr::rename(., treatment = Treatment) %>%
+  mutate(., treatment = gsub(treatment, pattern = "Control", replacement = "control")) %>%
+  mutate(., treatment = gsub(treatment, pattern = "Exposed", replacement = "exposed")) #Import metadata. Change column name and contents to be consistent throughout script
+head(metadata)
+```
+
 ## Maximum transcript data
 
 ```{r}
@@ -86,4 +95,128 @@ head(male_tr) #Confirm import
 
 ## Methylation data
 
+```{r}
+geneMethylation <- read.csv("../40-gene-methylaiton.csv", header = TRUE, row.names = 2)
+geneMethylationMod <- geneMethylation %>%
+  dplyr::select(., -1) #Remove extra column
+head(geneMethylationMod)
+```
+
+```{r}
+geneMethylationFem <- geneMethylationMod %>%
+  filter(., grepl("F", rownames(.), fixed = TRUE)) %>% 
+  t(.) %>%
+  as.data.frame(.) %>%
+  drop_na(.) %>%
+  as.data.frame(.) %>% 
+  rownames_to_column(., var = "gene_name") %>%
+  pivot_longer(., !gene_name, names_to = "sample", values_to = "meth") %>%
+  mutate(., gene_name = gsub(pattern = "gene.", replacement = "", gene_name)) %>%
+  left_join(., metadata, by = "sample") %>%
+  dplyr::select(., c(gene_name, meth, treatment)) %>%
+  dplyr::group_by(gene_name, treatment) %>%
+  summarise(avg_meth = mean(meth, na.rm = TRUE)) %>%
+  ungroup(.) #Filter female samples and reformat data. Remove excess information from gene name column. Add treatment information and average methylation for each gene by treatment.
+head(geneMethylationFem) #Confirm formatting. Resultant df has one line per gene/treatment.
+```
+
+```{r}
+geneMethylationMale <- geneMethylationMod %>%
+  filter(., grepl("M", rownames(.), fixed = TRUE)) %>% 
+  t(.) %>%
+  as.data.frame(.) %>%
+  drop_na(.) %>%
+  as.data.frame(.) %>% 
+  rownames_to_column(., var = "gene_name")  %>%
+  pivot_longer(., !gene_name, names_to = "sample", values_to = "meth") %>%
+  mutate(., gene_name = gsub(pattern = "gene.", replacement = "", gene_name)) %>%
+  left_join(., metadata, by = "sample") %>%
+  dplyr::select(., c(gene_name, meth, treatment)) %>%
+  dplyr::group_by(gene_name, treatment) %>%
+  summarise(avg_meth = mean(meth, na.rm = TRUE)) %>%
+  ungroup(.) #Filter male samples and reformat data. Remove excess information from gene name column. Add treatment information and average methylation for each gene by treatment.
+head(geneMethylationMale) #Confirm formatting
+```
+
+```{r}
+DMLLocationsFemale <- read.delim("../DML-characterization/female_dml-Gene-wb.bed", sep = "\t", header = FALSE, col.names = c("chr", "start", "end", "f_DML", "meth.diff", "gene.chr", "Gnomon", "gene", "gene.start", "gene.end", "V11", "strand", "V13", "V14")) %>%
+  dplyr::select(., "chr", "start", "end", "meth.diff", "gene.start", "gene.end", "V14") %>%
+  separate(., col = V14, into = c("gene_name", "misc"), sep = ";Dbxref=GeneID:") %>%
+  dplyr::select(., -misc) %>%
+  mutate(., gene_name = gsub(pattern = "ID=gene-", replacement = "", x = gene_name)) #Import bedfile with DML locations in genes with gene ID annotations. Rename columns as file is imported then select columns of interest. Separate gene ID annotation information from misc information, and remove misc column. Remove extra information before gene ID
+head(DMLLocationsFemale) #Confirm file import and changes
+```
+
+```{r}
+DMLLocationsMale <- read.delim("../DML-characterization/male_dml-Gene-wb.bed", sep = "\t", header = FALSE, col.names = c("chr", "start", "end", "f_DML", "meth.diff", "gene.chr", "Gnomon", "gene", "gene.start", "gene.end", "V11", "strand", "V13", "V14")) %>%
+  dplyr::select(., "chr", "start", "end", "meth.diff", "gene.start", "gene.end", "V14") %>%
+  separate(., col = V14, into = c("gene_name", "misc"), sep = ";Dbxref=GeneID:") %>%
+  dplyr::select(., -misc) %>%
+  mutate(., gene_name = gsub(pattern = "ID=gene-", replacement = "", x = gene_name)) #Import bedfile with DML locations in genes with gene ID annotations. Rename columns as file is imported then select columns of interest. Separate gene ID annotation information from misc information, and remove misc column. Remove extra information before gene ID
+head(DMLLocationsMale) #Confirm file import and changes
+```
+
 ## Expression data
+
+```{r}
+metadata
+```
+
+
+```{r}
+geneExpression <- read.csv("../../data/gene_fpkm.csv", header = TRUE, row.names = metadata$sample)
+geneExpressionMod <- geneExpression %>%
+  dplyr::select(., -c(1:6)) #Remove extra information to have just FPKM for each gene
+head(geneExpressionMod)
+```
+
+```{r}
+geneExpressionFem <- geneExpressionMod %>%
+  filter(., grepl("F", rownames(.), fixed = TRUE)) %>%
+  t(.) %>%
+  as.data.frame(.) %>%
+  drop_na(.) %>%
+  as.data.frame(.) %>% 
+  rownames_to_column(., var = "gene_name")  %>%
+  pivot_longer(., cols = !gene_name, names_to = "sample", values_to = "exp") %>% 
+  mutate(., gene_name = gsub("gene.", "", gene_name))  %>%
+  left_join(., metadata, by = "sample") %>%
+  dplyr::select(., c(gene_name, exp, treatment)) %>%
+  dplyr::group_by(gene_name, treatment) %>%
+  summarise(avg_exp = mean(exp, na.rm = TRUE)) %>%
+  ungroup(.) #Filter female samples and reformat data. Remove excess information from gene name column. Add treatment information and average expression for each gene by treatment.
+head(geneExpressionFem) #Confirm formatting
+```
+
+```{r}
+geneExpressionFem %>%
+  filter(., avg_exp != 0) %>%
+  dplyr::select(., gene_name) %>%
+  distinct(.) %>% nrow(.)
+```
+
+```{r}
+geneExpressionMale <- geneExpressionMod %>%
+  filter(., grepl("M", rownames(.), fixed = TRUE)) %>%
+  t(.) %>%
+  as.data.frame(.) %>%
+  drop_na(.) %>%
+  as.data.frame(.) %>% 
+  rownames_to_column(., var = "gene_name")  %>%
+  pivot_longer(., !gene_name, names_to = "sample", values_to = "exp") %>% 
+  mutate(., gene_name = gsub("gene.", "", gene_name)) %>%
+  left_join(., metadata, by = "sample") %>%
+  dplyr::select(., c(gene_name, exp, treatment)) %>%
+  dplyr::group_by(gene_name, treatment) %>%
+  summarise(avg_exp = mean(exp, na.rm = TRUE)) %>%
+  ungroup(.) #Filter male samples and reformat data. Remove excess information from gene name column. Add treatment information and average expression for each gene by treatment.
+head(geneExpressionMale) #Confirm formatting
+```
+
+```{r}
+geneExpressionMale %>%
+  filter(., avg_exp != 0) %>%
+  dplyr::select(., gene_name) %>%
+  unique(.) %>% nrow(.)
+```
+
