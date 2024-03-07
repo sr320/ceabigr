@@ -614,6 +614,81 @@ DMLcount difference count
 2	       -2	        4		
 2	       -1	        2		
 
+## Plot data
+
+```{r}
+plotColors <- RColorBrewer::brewer.pal(9, "Greens")
+```
+
+```{r}
+maxTransFemLong <- maxTransFemWide %>%
+  dplyr::select(., -c(females_controls_max_transcript_counts, females_exposed_max_transcript_counts,
+                      change_meth, change_exp)) %>%
+  mutate(., difference_type = case_when(difference > 0 ~ "Increase",
+                                        difference == 0 ~ "No Change",
+                                        difference < 0 ~ "Decrease")) %>%
+  pivot_longer(., cols = starts_with("avg_meth_"), names_to = "meth_treatment", values_to = "avg_meth") %>%
+  pivot_longer(., cols = starts_with("avg_exp_"), names_to = "exp_treatment", values_to = "avg_exp") %>%
+  mutate(., meth_treatment = gsub(x = meth_treatment, pattern = "avg_meth_", replacement  = "")) %>%
+  mutate(., exp_treatment = gsub(x = exp_treatment, pattern = "avg_exp_", replacement  = "")) %>%
+  filter(., meth_treatment == exp_treatment) %>%
+  dplyr::select(., -exp_treatment) %>%
+  dplyr::rename(., treatment = "meth_treatment") %>%
+  mutate(., treatment = case_when(treatment == "control" ~ "Control",
+                                  treatment == "exposed" ~ "Exposed"))
+#Remove transcript count and change in methylation/expressoin columns. Create a categorical column for difference in max transcripts. Pivot methylation data longer, then pivot expression data longer. Mutate treatment columns and filter rows where the methylation and expression treatments are the same. Remove the expression treatment column and rename the methylation treatment column
+head(maxTransFemLong) #Confirm formatting
+```
+
+```{r}
+maxTransFemLong %>%
+  ggplot(aes(x = avg_meth, y = log(avg_exp + 1), color = difference_type), alpha = 0.8) +
+  geom_point() +
+  geom_smooth(aes(x = avg_meth, y = log(avg_exp + 1)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
+  stat_regline_equation(aes(x = avg_meth, y = log(avg_exp + 1), label = paste(..eq.label..)), formula = y ~ x, size = 5, inherit.aes = FALSE) +
+  facet_grid(treatment~difference_type) +
+  labs(x = "Methylation (%)", y = "log FPKM") +
+  scale_color_manual(values = c(plotColors[5], plotColors[8], "grey")) +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+ggsave("fem-max-trans-meth-exp-xy.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+maxTransFemWide %>%
+  mutate(., difference_type = case_when(difference > 0 ~ "Increase",
+                                        difference == 0 ~ "No Change",
+                                        difference < 0 ~ "Decrease")) %>%
+  ggplot(aes(x = change_meth, fill = difference_type)) + 
+  geom_histogram() +    
+  facet_grid(.~difference_type, scales = "free") +
+  labs(x = "Change in Methylation", y = "Number of Genes") +
+  scale_fill_manual(values = c(plotColors[5], plotColors[8], "grey"),
+                    labels = c("Increase", "Decrease", "No Change"),
+                    name = "") +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+ggsave("fem-max-trans-meth-exp-distribution.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+maxTransFemWideDML %>%
+  mutate(., difference_type = case_when(difference > 0 ~ "Increase",
+                                        difference == 0 ~ "No Change",
+                                        difference < 0 ~ "Decrease")) %>%
+  dplyr::select(., -c(start, end, meth.diff)) %>%
+  unique(.) %>%
+  ggplot(aes(x = DMLcount, fill = difference_type)) + 
+  geom_histogram() +
+  facet_wrap(.~difference_type, scales = "free_x") +
+  labs(x = "Number of DML", y = "Number of Genes") +
+  scale_fill_manual(values = c(plotColors[5], plotColors[8])) +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+ggsave("fem-max-trans-DML-distribution.pdf", height = 8.5, width = 11)
+```
+
+
+
+
+
 # Males
 
 ## Maximum transcript change
@@ -967,3 +1042,73 @@ DMLcount difference count
 15	-1	15
 17	-1	17		
 25	1	25	
+
+##Plot data
+
+```{r}
+maxTransMaleLong <- maxTransMaleWide %>%
+  dplyr::select(., -c(males_controls_max_transcript_counts, males_exposed_max_transcript_counts,
+                      change_meth, change_exp)) %>%
+  mutate(., difference_type = case_when(difference > 0 ~ "Increase",
+                                        difference == 0 ~ "No Change",
+                                        difference < 0 ~ "Decrease")) %>%
+  pivot_longer(., cols = starts_with("avg_meth_"), names_to = "meth_treatment", values_to = "avg_meth") %>%
+  pivot_longer(., cols = starts_with("avg_exp_"), names_to = "exp_treatment", values_to = "avg_exp") %>%
+  mutate(., meth_treatment = gsub(x = meth_treatment, pattern = "avg_meth_", replacement  = "")) %>%
+  mutate(., exp_treatment = gsub(x = exp_treatment, pattern = "avg_exp_", replacement  = "")) %>%
+  filter(., meth_treatment == exp_treatment) %>%
+  dplyr::select(., -exp_treatment) %>%
+  dplyr::rename(., treatment = "meth_treatment") %>%
+  mutate(., treatment = case_when(treatment == "control" ~ "Control",
+                                  treatment == "exposed" ~ "Exposed"))
+#Remove transcript count and change in methylation/expressoin columns. Create a categorical column for difference in max transcripts. Pivot methylation data longer, then pivot expression data longer. Mutate treatment columns and filter rows where the methylation and expression treatments are the same. Remove the expression treatment column and rename the methylation treatment column
+head(maxTransMaleLong) #Confirm formatting
+```
+
+```{r}
+maxTransMaleLong %>%
+  ggplot(aes(x = avg_meth, y = log(avg_exp + 1), color = difference_type), alpha = 0.8) +
+  geom_point() +
+  geom_smooth(aes(x = avg_meth, y = log(avg_exp + 1)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
+  stat_regline_equation(aes(x = avg_meth, y = log(avg_exp + 1), label = paste(..eq.label..)), formula = y ~ x, size = 5, inherit.aes = FALSE) +
+  facet_grid(treatment~difference_type) +
+  labs(x = "Methylation (%)", y = "log FPKM") +
+  scale_color_manual(values = c(plotColors[5], plotColors[8], "grey")) +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+ggsave("male-max-trans-meth-exp-xy.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+maxTransMaleWide %>%
+  mutate(., difference_type = case_when(difference > 0 ~ "Increase",
+                                        difference == 0 ~ "No Change",
+                                        difference < 0 ~ "Decrease")) %>%
+  ggplot(aes(x = change_meth, fill = difference_type)) + 
+  geom_histogram() +    
+  facet_grid(.~difference_type, scales = "free") +
+  labs(x = "Change in Methylation", y = "Number of Genes") +
+  scale_fill_manual(values = c(plotColors[5], plotColors[8], "grey"),
+                    labels = c("Increase", "Decrease", "No Change"),
+                    name = "") +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+ggsave("male-max-trans-meth-exp-distribution.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+maxTransMaleWideDML %>%
+  mutate(., difference_type = case_when(difference > 0 ~ "Increase",
+                                        difference == 0 ~ "No Change",
+                                        difference < 0 ~ "Decrease")) %>%
+  dplyr::select(., -c(start, end, meth.diff)) %>%
+  unique(.) %>%
+  ggplot(aes(x = DMLcount, fill = difference_type)) + 
+  geom_histogram() +
+  facet_wrap(.~difference_type, scales = "free_x") +
+  labs(x = "Number of DML", y = "Number of Genes") +
+  scale_fill_manual(values = c(plotColors[5], plotColors[8])) +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+ggsave("male-max-trans-DML-distribution.pdf", height = 8.5, width = 11)
+```
+
+
+
