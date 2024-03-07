@@ -565,6 +565,57 @@ femMaxTransNegEnrichedBPGO / femMaxTransNegNotEnrichedBPGO
 ggsave("fem-max-transcripts-negative-changeMeth-enrichedBPGO.pdf", height = 8.5, width = 11)
 ```
 
+## Number of DML in genes with changes in the maximum transcripts expressed
+
+```{r}
+maxTransFemWideDML <- left_join(maxTransFemWide, DMLLocationsFemale, by = "gene_name") %>%
+  dplyr::select(., -c(chr, gene.start, gene.end)) %>%
+  group_by(., gene_name) %>%
+  mutate(., DMLcount = n()) %>%
+  mutate(., DMLcount = case_when(is.na(meth.diff) == TRUE ~ 0,
+                                 is.na(meth.diff) == FALSE ~ DMLcount)) #Join max trans data with DML annotations and remove superfluous columns. Group by gene name and count the number of DML per gene. When there is no DML in the gene (meth.diff == NA), change the DML count to 0.
+head(maxTransFemWideDML) #Confirm dataframe creation
+```
+
+```{r}
+write.csv(maxTransFemWideDML, "fem-max-trans-DML-annotations.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+```
+
+```{r}
+maxTransFemWideDML %>%
+  group_by(., DMLcount, difference) %>%
+  summarise(., count = n()) #Group data by DML count and change, then count the number of genes with or without predominant isoform shifts with various DML counts
+```
+
+DMLcount difference count
+0	       -17	      1		
+0	       -16	      1		
+0	       -15      	1		
+0	       -13	      1		
+0	       -10	      2		
+0	       -9	        3		
+0	       -8	        1		
+0	       -7	        3		
+0	       -6	        5		
+0	       -5	        10
+0	       -4	        26		
+0	       -3	        72		
+0	       -2	        273		
+0	       -1	        1624		
+0        0	        29283		
+0	       1	        1067		
+0	       2	        106		
+0        3	        15		
+0	       4	        5		
+0	       5	        1	
+0	       7	        1		
+1	       -3	        1		
+1	       0	        53		
+1	       1	        1		
+2	       -2	        4		
+2	       -1	        2		
+2	       0	        10		
+3	       0	        3	
 
 # Males
 
@@ -846,8 +897,90 @@ maleMaxTransNegEnrichedBPGO / maleMaxTransNegNotEnrichedBPGO
 ggsave("male-max-transcripts-negative-changeMeth-enrichedBPGO.pdf", height = 8.5, width = 11)
 ```
 
+## Number of DML in genes with changes in the maximum transcripts expressed
 
+```{r}
+maxTransMaleWideDML <- left_join(maxTransMaleWide, DMLLocationsMale, by = "gene_name") %>%
+  dplyr::select(., -c(chr, gene.start, gene.end)) %>%
+  group_by(., gene_name) %>%
+  mutate(., DMLcount = n()) %>%
+  mutate(., DMLcount = case_when(is.na(meth.diff) == TRUE ~ 0,
+                                 is.na(meth.diff) == FALSE ~ DMLcount)) #Join max trans data with DML annotations and remove superfluous columns. Group by gene name and count the number of DML per gene. When there is no DML in the gene (meth.diff == NA), change the DML count to 0.
+head(maxTransMaleWideDML) #Confirm dataframe creation
+```
 
+```{r}
+write.csv(maxTransMaleWideDML, "male-max-trans-DML-annotations.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+```
 
+```{r}
+maxTransMaleWideDML %>%
+  group_by(., DMLcount, difference) %>%
+  summarise(., count = n()) #Group data by DML count and change, then count the number of genes with or without predominant isoform shifts with various DML counts
+```
 
-
+DMLcount difference count
+0	-7	1		
+0	-5	2		
+0	-4	3		
+0	-3	13		
+0	-2	87		
+0	-1	863		
+0	0	28314		
+0	1	2134		
+0	2	325		
+0	3	72	
+0	4	26		
+0	5	13		
+0	6	3		
+0	7	3		
+0	8	1		
+0	13	1		
+1	-3	1		
+1	-2	7		
+1	-1	57		
+1	0	916	
+1	1	95		
+1	2	20		
+1	3	5		
+1	4	4		
+1	6	1		
+2	-2	2		
+2	-1	16		
+2	0	436		
+2	1	58		
+2	2	20	
+2	3	2		
+2	4	2		
+2	7	2		
+3	-3	3		
+3	-2	6		
+3	-1	18		
+3	0	165		
+3	1	21		
+3	2	9		
+3	3	3	
+3	4	3		
+4	-1	4		
+4	0	144		
+4	1	8		
+4	2	4		
+5	0	70		
+5	3	10		
+6	-2	6		
+6	0	36		
+7	0	28
+7	3	7		
+8	0	32		
+9	0	27		
+9	1	18		
+11	0	11		
+12	0	12		
+13	0	13		
+13	1	13		
+14	-1	14		
+15	-1	15
+16	0	32		
+17	-1	17		
+23	0	23		
+25	1	25	
