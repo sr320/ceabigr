@@ -489,31 +489,81 @@ head(maxTransFemWide)
 
 ## Methylation of genes with enriched BPGO
 
+### Increases in maximum transcripts
+
 ```{r}
 maxTransFemPosAnnot <- sigRes.maxTransFemPosDataBP %>%
   left_join(., y = maxTransFemAnnot, by = "GO") %>%
-  filter(., difference > 0) %>%
   dplyr::select(., gene_name, difference, females_controls_max_transcript_counts, females_exposed_max_transcript_counts, GO, p.value, product) %>%
   separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C") %>%
   dplyr::select(., -transcriptVar) %>%
-  unique(.)
-full_join(x = maxTransFemWide, y = ., by = "gene_name") %>%
-  dplyr::select(., gene_name, change.x, change_meth, change_exp, GO, p.value, product) %>%
-  dplyr::rename(., change = "change.x") #Take significant BPGO data and join with annotation information. Select columns of interest. Separate product column by "%2C" and remove transcriptVar column. Select unique rows. This removes all "transcript variant" information so each gene is listed once per significant GOterm. Full join with the wide predominant isoform information that has change in methylation data. Select relevant columns and rename change column.
+  unique(.) %>%
+  full_join(x = maxTransFemWide, y = ., by = "gene_name") %>%
+  dplyr::select(., gene_name, difference.x, change_meth, change_exp, GO, p.value, product) %>%
+  dplyr::rename(., difference = "difference.x") %>% 
+  filter(., difference > 0)
+#Take significant BPGO data and join with annotation information. Select columns of interest. Separate product column by "%2C" and remove transcriptVar column. Select unique rows. This removes all "transcript variant" information so each gene is listed once per significant GOterm. Full join with the wide maximum transcript dataframe that has change in methylation and expression data. Select relevant columns and rename change column.
 head(maxTransFemPosAnnot) #Confirm manipulation
+nrow(maxTransFemPosAnnot)
 ```
 
+```{r}
+femMaxTransPosEnrichedBPGO <- maxTransFemPosAnnot %>%
+  filter(., is.na(GO) == FALSE) %>%
+  ggplot(aes(x = change_meth)) + 
+  geom_histogram() +
+  labs(x = "", y = "Number of Genes", title = "A. Enriched BPGO") +
+  theme_classic(base_size = 15)
 
+femMaxTransPosNotEnrichedBPGO <- maxTransFemPosAnnot %>%
+  filter(., is.na(GO) == TRUE) %>%
+  ggplot(aes(x = change_meth)) + 
+  geom_histogram() +
+  labs(x = "Change in Methylation (%)", y = "Number of Genes", title = "B. Not Enriched BPGO") +
+  theme_classic(base_size = 15)
+```
 
+```{r}
+femMaxTransPosEnrichedBPGO / femMaxTransPosNotEnrichedBPGO
+ggsave("fem-max-transcripts-positive-changeMeth-enrichedBPGO.pdf", height = 8.5, width = 11)
+```
 
+### Decreases in maximum transcripts
 
+```{r}
+maxTransFemNegAnnot <- sigRes.maxTransFemNegDataBP %>%
+  left_join(., y = maxTransFemAnnot, by = "GO") %>%
+  dplyr::select(., gene_name, difference, females_controls_max_transcript_counts, females_exposed_max_transcript_counts, GO, p.value, product) %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C") %>%
+  dplyr::select(., -transcriptVar) %>%
+  unique(.) %>%
+  full_join(x = maxTransFemWide, y = ., by = "gene_name") %>%
+  dplyr::select(., gene_name, difference.x, change_meth, change_exp, GO, p.value, product) %>%
+  dplyr::rename(., difference = "difference.x") %>%
+  filter(., difference < 0) #Take significant BPGO data and join with annotation information. Select columns of interest. Separate product column by "%2C" and remove transcriptVar column. Select unique rows. This removes all "transcript variant" information so each gene is listed once per significant GOterm. Full join with the wide maximum transcript dataframe that has change in methylation and expression data. Select relevant columns and rename change column.
+head(maxTransFemNegAnnot) #Confirm manipulation
+```
 
+```{r}
+femMaxTransNegEnrichedBPGO <- maxTransFemNegAnnot %>%
+  filter(., is.na(GO) == FALSE) %>%
+  ggplot(aes(x = change_meth)) + 
+  geom_histogram() +
+  labs(x = "", y = "Number of Genes", title = "A. Enriched BPGO") +
+  theme_classic(base_size = 15)
 
+femMaxTransNegNotEnrichedBPGO <- maxTransFemNegAnnot %>%
+  filter(., is.na(GO) == TRUE) %>%
+  ggplot(aes(x = change_meth)) + 
+  geom_histogram() +
+  labs(x = "Change in Methylation (%)", y = "Number of Genes", title = "B. Not Enriched BPGO") +
+  theme_classic(base_size = 15)
+```
 
-## Format data
-
-
-
+```{r}
+femMaxTransNegEnrichedBPGO / femMaxTransNegNotEnrichedBPGO
+ggsave("fem-max-transcripts-negative-changeMeth-enrichedBPGO.pdf", height = 8.5, width = 11)
+```
 
 
 # Males
@@ -709,4 +759,95 @@ sigRes.maxTransMaleNegDataBP %>%
   unique(.) %>%
   write.csv("male-maxTransNeg-BP-EnrichedGO-geneAnnot.csv", quote = FALSE, row.names = FALSE) #Take significant BPGO data and join with annotation information. Select columns of interest. Separate product column by "%2C" and remove transcriptVar column. Select unique rows. This removes all "transcript variant" information so each gene is listed once per significant GOterm. Save as a csv file.
 ```
+
+# Changes in maximum transcripts expressed and methylation
+
+## Format data
+
+```{r}
+maxTransMaleWide <- inner_join(male_tr, geneMethylationMaleWide, by = "gene_name") %>%
+  inner_join(., geneExpressionMaleWide, by = "gene_name") #Join maximum transcript expression data with gene methylation and expression data
+head(maxTransMaleWide)
+```
+
+## Methylation of genes with enriched BPGO
+
+### Increases in maximum transcripts
+
+```{r}
+maxTransMalePosAnnot <- sigRes.maxTransMalePosDataBP %>%
+  left_join(., y = maxTransMaleAnnot, by = "GO") %>%
+  dplyr::select(., gene_name, difference, males_controls_max_transcript_counts, males_exposed_max_transcript_counts, GO, p.value, product) %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C") %>%
+  dplyr::select(., -transcriptVar) %>%
+  unique(.) %>%
+  full_join(x = maxTransMaleWide, y = ., by = "gene_name") %>%
+  dplyr::select(., gene_name, difference.x, change_meth, change_exp, GO, p.value, product) %>%
+  dplyr::rename(., difference = "difference.x") %>%
+  filter(., difference > 0) #Take significant BPGO data and join with annotation information. Select columns of interest. Separate product column by "%2C" and remove transcriptVar column. Select unique rows. This removes all "transcript variant" information so each gene is listed once per significant GOterm. Full join with the wide maximum transcript dataframe that has change in methylation and expression data. Select relevant columns and rename change column.
+head(maxTransMalePosAnnot) #Confirm manipulation
+```
+
+```{r}
+maleMaxTransPosEnrichedBPGO <- maxTransMalePosAnnot %>%
+  filter(., is.na(GO) == FALSE) %>%
+  ggplot(aes(x = change_meth)) + 
+  geom_histogram() +
+  labs(x = "", y = "Number of Genes", title = "A. Enriched BPGO") +
+  theme_classic(base_size = 15)
+
+maleMaxTransPosNotEnrichedBPGO <- maxTransMalePosAnnot %>%
+  filter(., is.na(GO) == TRUE) %>%
+  ggplot(aes(x = change_meth)) + 
+  geom_histogram() +
+  labs(x = "Change in Methylation (%)", y = "Number of Genes", title = "B. Not Enriched BPGO") +
+  theme_classic(base_size = 15)
+```
+
+```{r}
+maleMaxTransPosEnrichedBPGO / maleMaxTransPosNotEnrichedBPGO
+ggsave("male-max-transcripts-positive-changeMeth-enrichedBPGO.pdf", height = 8.5, width = 11)
+```
+
+### Decreases in maximum transcripts
+
+```{r}
+maxTransMaleNegAnnot <- sigRes.maxTransMaleNegDataBP %>%
+  left_join(., y = maxTransMaleAnnot, by = "GO") %>%
+  dplyr::select(., gene_name, difference, males_controls_max_transcript_counts, males_exposed_max_transcript_counts, GO, p.value, product) %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C") %>%
+  dplyr::select(., -transcriptVar) %>%
+  unique(.) %>%
+  full_join(x = maxTransMaleWide, y = ., by = "gene_name") %>%
+  dplyr::select(., gene_name, difference.x, change_meth, change_exp, GO, p.value, product) %>%
+  dplyr::rename(., difference = "difference.x") %>%
+  filter(., difference < 0) #Take significant BPGO data and join with annotation information. Select columns of interest. Separate product column by "%2C" and remove transcriptVar column. Select unique rows. This removes all "transcript variant" information so each gene is listed once per significant GOterm. Full join with the wide maximum transcript dataframe that has change in methylation and expression data. Select relevant columns and rename change column.
+head(maxTransMaleNegAnnot) #Confirm manipulation
+```
+
+```{r}
+maleMaxTransNegEnrichedBPGO <- maxTransMaleNegAnnot %>%
+  filter(., is.na(GO) == FALSE) %>%
+  ggplot(aes(x = change_meth)) + 
+  geom_histogram() +
+  labs(x = "", y = "Number of Genes", title = "A. Enriched BPGO") +
+  theme_classic(base_size = 15)
+
+maleMaxTransNegNotEnrichedBPGO <- maxTransMaleNegAnnot %>%
+  filter(., is.na(GO) == TRUE) %>%
+  ggplot(aes(x = change_meth)) + 
+  geom_histogram() +
+  labs(x = "Change in Methylation (%)", y = "Number of Genes", title = "B. Not Enriched BPGO") +
+  theme_classic(base_size = 15)
+```
+
+```{r}
+maleMaxTransNegEnrichedBPGO / maleMaxTransNegNotEnrichedBPGO
+ggsave("male-max-transcripts-negative-changeMeth-enrichedBPGO.pdf", height = 8.5, width = 11)
+```
+
+
+
+
+
 
