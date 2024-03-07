@@ -752,7 +752,7 @@ head(femMethExp)
 ```
 
 ```{r}
-predIsoFemWideDML <- femMethExpCV %>%
+predIsoFemWide <- femMethExpCV %>%
   select(., gene_name, treatment, change, avg_meth, avg_exp, length) %>%
   pivot_wider(names_from = treatment, values_from = c(avg_meth, avg_exp)) %>%
   replace(is.na(.), 0) %>%
