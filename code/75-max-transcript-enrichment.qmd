@@ -117,8 +117,9 @@ head(Cvir_genom_feats) #Confirm changes
 geneLengths <- cov_data_l[, c("gene_ids")] %>%
   unique(.) %>%
   merge(., Cvir_genom_feats[,c("gene_ids", "length")], by = "gene_ids") %>% 
-  dplyr::rename(gene_names = "gene_ids") %>%
-  dplyr::select(., gene_names, length) #Add gene length to CoV data and retain only gene ID and length column. Rename columns to match naming conventions in this script
+  dplyr::rename(gene_name = "gene_ids") %>%
+  dplyr::select(., gene_name, length) %>%
+  mutate(., gene_name = gsub(x = gene_name, pattern = "gene-", replacement = "")) #Add gene length to CoV data and retain only gene ID and length column. Rename columns to match naming conventions in this script and remove "gene-" prefix from names
 head(geneLengths) #Confirm formatting #Confirmm changes
 ```
 
@@ -709,43 +710,55 @@ maxTransFemWideDML %>%
 ggsave("fem-max-trans-DML-distribution.pdf", height = 8.5, width = 11)
 ```
 
-#### Model data
+## Model data
 
 I want to understand if a change in maximum transcripts expressed due to pH treatment can be explained by a change in gene body methylation due to pH. I will also add number of DML in a gene, gene length (the longer the gene, the more potential for different isoforms/alternative start or stop sites) and change in gene expression due to pH (higher expression = higher likelihood of picking up signal associated with isoform change).
 
 I'm going to examine this is in two ways: 1) the difference in maximum transcripts expressed or 2) whether or not there was a change in the maximum number of transcripts.
 
+### Format data
+
 ```{r}
-maxTransFemWideDML
+maxTransFemWideDMLLengths <- maxTransFemWideDML %>%
+  dplyr::select(., -c(start, end, meth.diff)) %>%
+  unique(.) %>%
+  left_join(., geneLengths, by = "gene_name") %>%
+  ungroup(.) %>%
+  mutate(., difference_type = case_when(difference > 0 ~ "Increase",
+                                        difference == 0 ~ "No Change",
+                                        difference < 0 ~ "Decrease")) %>%
+  mutate(., difference_binary = case_when(difference == 0 ~ 0,
+                                          difference != 0 ~ 1))
+#Remove specific DML information and retain unique rows. Join with gene length information. Create other modifications, including a categorical variable for difference and a binary variable for difference.
+head(maxTransFemWideDMLLengths)
 ```
 
-
-##### Standard model
-
+### Standard model
 
 ```{r}
 maxTransFemModel <- glm(difference ~ change_meth + DMLcount +
-                         log10(length) + log2(change_exp + 1),
-                       data = (maxTransFemWideDML %>% dplyr::select(., -c(start, end, meth.diff)) %>% unique(.) %>% ungroup(.))) #Create a binomial model, where 1 = the predominant isoform shifted when comparing low and control pH conditions. Use change in methylation, gene length, and change in gene expression as explanatory variables
+                          log2(change_exp + 1) + log10(length),
+                        data = maxTransFemWideDMLLengths) #Model the difference in maximum transcripts based on change in methylation, DML count, change in expression, and gene length
 summary(maxTransFemModel) #Only length and gene expression significant
 ```
 
 ```{r}
-step(maxTransFemModel, test = "LRT")
+write.csv(broom::tidy(maxTransFemModel), "fem-max-trans-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
+```
+
+### Binomial model
+
+```{r}
+maxTransFemModel3 <- glm(I(difference == 1) ~ change_meth + DMLcount +
+                         log10(length) + log2(change_exp + 1),
+                       family = binomial(),
+                       data = maxTransFemWideDMLLengths) #Create a binomial model, where 1 = the predominant isoform shifted when comparing low and control pH conditions. Use change in methylation, gene length, and change in gene expression as explanatory variables
+summary(maxTransFemModel3) #Only length and gene expression significant
 ```
 
 ```{r}
-maxTransFemModel2 <- glm(I(change == 1) ~ DMLcount + log10(length) + log2(change_exp + 1),
-                        family = binomial(),
-                        data = (predIsoFemWideDML %>% dplyr::select(., -c(start, end, meth.diff)) %>% unique(.) %>% ungroup(.))) #Model identified by step
-summary(maxTransFemModel2) #Only length and gene expression significant
+write.csv(broom::tidy(maxTransFemModel3), "fem-max-trans-binomial-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
 ```
-
-```{r}
-write.csv(broom::tidy(maxTransFemModel2), "fem-max-trans-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
-```
-
-##### Binomial model
 
 # Males
 
