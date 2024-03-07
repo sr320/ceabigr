@@ -1043,7 +1043,7 @@ DMLcount difference count
 17	-1	17		
 25	1	25	
 
-##Plot data
+## Plot data
 
 ```{r}
 maxTransMaleLong <- maxTransMaleWide %>%
@@ -1110,5 +1110,75 @@ maxTransMaleWideDML %>%
 ggsave("male-max-trans-DML-distribution.pdf", height = 8.5, width = 11)
 ```
 
+# Create multipanel plots
+
+## Maximum transcripts XY plot
+
+```{r}
+femMaxTransXY <- maxTransFemLong %>%
+  ggplot(aes(x = avg_meth, y = log(avg_exp + 1), color = difference_type), alpha = 0.8) +
+  geom_point() +
+  geom_smooth(aes(x = avg_meth, y = log(avg_exp + 1)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
+  stat_regline_equation(aes(x = avg_meth, y = log(avg_exp + 1), label = paste(..eq.label..)), formula = y ~ x, size = 5, inherit.aes = FALSE) +
+  facet_grid(treatment~difference_type) +
+  labs(x = "", y = "log FPKM", title = "A. Females") +
+  scale_color_manual(values = c(plotColors[5], plotColors[8], "grey")) +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+```
+
+
+```{r}
+maleMaxTransXY <- maxTransMaleLong %>%
+  ggplot(aes(x = avg_meth, y = log(avg_exp + 1), color = difference_type), alpha = 0.8) +
+  geom_point() +
+  geom_smooth(aes(x = avg_meth, y = log(avg_exp + 1)), method = lm, colour = "grey20", linewidth = 2, na.rm = TRUE) +
+  stat_regline_equation(aes(x = avg_meth, y = log(avg_exp + 1), label = paste(..eq.label..)), formula = y ~ x, size = 5, inherit.aes = FALSE) +
+  facet_grid(treatment~difference_type) +
+  labs(x = "Methylation (%)", y = "log FPKM", title = "B. Males") +
+  scale_color_manual(values = c(plotColors[5], plotColors[8], "grey")) +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+```
+
+```{r}
+femMaxTransXY / maleMaxTransXY #Create patchwork plot
+ggsave("max-trans-meth-exp-xy.pdf", height = 8.5, width = 11)
+```
+
+## Maximum transcript vs. change in methylation distribution
+
+```{r}
+femMaxTransMethChange <- maxTransFemWide %>%
+  mutate(., difference_type = case_when(difference > 0 ~ "Increase",
+                                        difference == 0 ~ "No Change",
+                                        difference < 0 ~ "Decrease")) %>%
+  ggplot(aes(x = change_meth, fill = difference_type)) + 
+  geom_histogram() +    
+  facet_grid(.~difference_type, scales = "free") +
+  labs(x = "", y = "Number of Genes", title = "A. Females") +
+  scale_fill_manual(values = c(plotColors[5], plotColors[8], "grey"),
+                    labels = c("Increase", "Decrease", "No Change"),
+                    name = "") +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+```
+
+```{r}
+maleMaxTransMethChange <- maxTransMaleWide %>%
+  mutate(., difference_type = case_when(difference > 0 ~ "Increase",
+                                        difference == 0 ~ "No Change",
+                                        difference < 0 ~ "Decrease")) %>%
+  ggplot(aes(x = change_meth, fill = difference_type)) + 
+  geom_histogram() +    
+  facet_grid(.~difference_type, scales = "free") +
+  labs(x = "Change in Methylation", y = "Number of Genes", title = "B. Males") +
+  scale_fill_manual(values = c(plotColors[5], plotColors[8], "grey"),
+                    labels = c("Increase", "Decrease", "No Change"),
+                    name = "") +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+```
+
+```{r}
+femMaxTransMethChange / maleMaxTransMethChange
+ggsave("max-trans-change-meth-distribution.pdf", height = 8.5, width = 11)
+```
 
 
