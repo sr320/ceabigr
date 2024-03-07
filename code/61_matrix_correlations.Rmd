@@ -235,11 +235,11 @@ pdf(file="output/61_matrix_correlations/genetic_correlations_figure.pdf", width=
 # create a 1x3 grid 
 par(mfrow= c(1,3)) 
 
-genes.snp.plot<-corrplot(genes.snp.cor$r, p.mat = genes.snp.cor$p, insig = "blank", hclust.method=c("complete"), type="full", col=COL2('PRGn', 10), order="hclust", pch.col="black", tl.col="black", title="A. Gene Expression ~ Genetic Distance", mar = c(1, 1, 1, 1))
+genes.snp.plot<-corrplot(genes.snp.cor$r, p.mat = genes.snp.cor$p, insig = "blank", hclust.method=c("complete"), type="full", col=COL2('RdYlBu', 10), order="hclust", pch.col="black", tl.col="black", title="A. Gene Expression ~ Genetic Distance", mar = c(1, 1, 1, 1))
 
-methyl.snp.plot<-corrplot(methyl.snp.cor$r, p.mat = methyl.snp.cor$p, insig = "blank", hclust.method=c("complete"), type="full", col=COL2('PRGn', 10), order="hclust", pch.col="black", tl.col="black", title="B. Methylation ~ Genetic Distance", mar = c(1, 1, 1, 1))
+methyl.snp.plot<-corrplot(methyl.snp.cor$r, p.mat = methyl.snp.cor$p, insig = "blank", hclust.method=c("complete"), type="full", col=COL2('RdYlBu', 10), order="hclust", pch.col="black", tl.col="black", title="B. Methylation ~ Genetic Distance", mar = c(1, 1, 1, 1))
 
-genes.methyl.plot<-corrplot(genes.methyl.cor$r, p.mat = genes.methyl.cor$p, insig = "blank", hclust.method=c("complete"), type="full", col=COL2('PRGn', 10), order="hclust", pch.col="black", tl.col="black", title="C. Methylation ~ Gene Expression", mar = c(1, 1, 1, 1))
+genes.methyl.plot<-corrplot(genes.methyl.cor$r, p.mat = genes.methyl.cor$p, insig = "blank", hclust.method=c("complete"), type="full", col=COL2('RdYlBu', 10), order="hclust", pch.col="black", tl.col="black", title="C. Methylation ~ Gene Expression", mar = c(1, 1, 1, 1))
 
 dev.off()
 ```
