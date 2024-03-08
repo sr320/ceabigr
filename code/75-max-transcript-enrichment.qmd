@@ -109,7 +109,7 @@ head(cov_data_l) #Confirm formatting
 
 ```{r}
 Cvir_genom_feats <- fread("https://gannet.fish.washington.edu/Atumefaciens/20211209_cvir_gff-to-bed/20211209_cvir_GCF_002022765.2_genes.bed", col.names = c("chr", "start", "stop", "gene_ids", "V5", "strand")) %>%
-  mutate(., length = Cvir_genom_feats$stop - Cvir_genom_feats$start + 1) #Import genome feature BEDfile and create a new column for gene length
+  mutate(., length = stop - start + 1) #Import genome feature BEDfile and create a new column for gene length
 head(Cvir_genom_feats) #Confirm changes
 ```
 
@@ -343,13 +343,12 @@ maxTransFemTest$statistic #24847.36
 maxTransFemTest$p.value #p = 0. Changes in max transcripts happen significantly less than what would be expected by random chance
 ```
 
-
 ## Annotate data
 
 ```{r}
 maxTransFemAnnot <- inner_join(female_tr, mRNATrack, by = "gene_name") %>%
   inner_join(., GOterms, by = "transcript") %>%
-  inner_join(., GOslim, by = "GO")
+  inner_join(., GOslim, by = "GO") #Join maximum transcript information with mRNA, GOterms, and GOSlim information
 head(maxTransFemAnnot)
 ```
 
@@ -620,7 +619,8 @@ write.csv(maxTransFemWideDML, "fem-max-trans-DML-annotations.csv", quote = FALSE
 ```{r}
 maxTransFemWideDML %>%
   group_by(., DMLcount, difference) %>%
-  summarise(., count = n()) #Group data by DML count and change, then count the number of genes with or without predominant isoform shifts with various DML counts
+  summarise(., count = n()) %>% 
+  write.csv(., "fem-max-trans-DML-counts.csv", quote = FALSE, row.names = FALSE) #Group data by DML count and change, then count the number of genes with or without predominant isoform shifts with various DML counts. Save as a csv
 ```
 
 DMLcount difference count
@@ -734,12 +734,9 @@ maxTransFemWideDMLLengths <- maxTransFemWideDML %>%
   unique(.) %>%
   left_join(., geneLengths, by = "gene_name") %>%
   ungroup(.) %>%
-  mutate(., difference_cat = case_when(difference > 0 ~ 1,
-                                        difference == 0 ~ 0,
-                                        difference < 0 ~ -1)) %>%
   mutate(., difference_binary = case_when(difference == 0 ~ 0,
                                           difference != 0 ~ 1))
-#Remove specific DML information and retain unique rows. Join with gene length information. Create other modifications, including a categorical variable for difference and a binary variable for difference.
+#Remove specific DML information and retain unique rows. Join with gene length information. Create binary variable for difference.
 head(maxTransFemWideDMLLengths)
 ```
 
@@ -816,7 +813,7 @@ maxTransMaleTest$p.value #p = 0. Changes in max transcripts happen significantly
 ```{r}
 maxTransMaleAnnot <- inner_join(male_tr, mRNATrack, by = "gene_name") %>%
   inner_join(., GOterms, by = "transcript") %>%
-  inner_join(., GOslim, by = "GO")
+  inner_join(., GOslim, by = "GO") #Join with mRNA, GOterm, and GOSlim information
 head(maxTransMaleAnnot)
 ```
 
@@ -1079,7 +1076,8 @@ write.csv(maxTransMaleWideDML, "male-max-trans-DML-annotations.csv", quote = FAL
 ```{r}
 maxTransMaleWideDML %>%
   group_by(., DMLcount, difference) %>%
-  summarise(., count = n()) #Group data by DML count and change, then count the number of genes with or without predominant isoform shifts with various DML counts
+  summarise(., count = n()) %>% 
+  write.csv(., "male-max-trans-DML-count.csv") #Group data by DML count and change, then count the number of genes with or without predominant isoform shifts with various DML counts. Save as a csv
 ```
 
 DMLcount difference count
@@ -1200,6 +1198,52 @@ maxTransMaleWideDML %>%
 ggsave("male-max-trans-DML-distribution.pdf", height = 8.5, width = 11)
 ```
 
+## Model data
+
+### Format data
+
+```{r}
+maxTransMaleWideDMLLengths <- maxTransMaleWideDML %>%
+  dplyr::select(., -c(start, end, meth.diff)) %>%
+  unique(.) %>%
+  left_join(., geneLengths, by = "gene_name") %>%
+  ungroup(.) %>%
+  mutate(., difference_type = case_when(difference > 0 ~ "Increase",
+                                        difference == 0 ~ "No Change",
+                                        difference < 0 ~ "Decrease")) %>%
+  mutate(., difference_binary = case_when(difference == 0 ~ 0,
+                                          difference != 0 ~ 1))
+#Remove specific DML information and retain unique rows. Join with gene length information. Create other modifications, including a categorical variable for difference and a binary variable for difference.
+head(maxTransMaleWideDMLLengths)
+```
+
+### Standard model
+
+```{r}
+maxTransMaleModel <- glm(difference ~ change_meth + DMLcount +
+                          log2(change_exp + 1) + log10(length),
+                        data = maxTransMaleWideDMLLengths) #Model the difference in maximum transcripts based on change in methylation, DML count, change in expression, and gene length
+summary(maxTransMaleModel) #Only length and gene expression significant
+```
+
+```{r}
+write.csv(broom::tidy(maxTransMaleModel), "male-max-trans-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
+```
+
+### Binomial model
+
+```{r}
+maxTransMaleModel2 <- glm(I(difference == 1) ~ change_meth + DMLcount +
+                         log10(length) + log2(change_exp + 1),
+                       family = binomial(),
+                       data = maxTransMaleWideDMLLengths) #Create a binomial model, where 1 = the predominant isoform shifted when comparing low and control pH conditions. Use change in methylation, gene length, and change in gene expression as explanatory variables
+summary(maxTransMaleModel2) #Only length and gene expression significant
+```
+
+```{r}
+write.csv(broom::tidy(maxTransMaleModel2), "male-max-trans-binomial-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
+```
+
 # Create multipanel plots
 
 ## Maximum transcripts XY plot
@@ -1270,50 +1314,3 @@ maleMaxTransMethChange <- maxTransMaleWide %>%
 femMaxTransMethChange / maleMaxTransMethChange
 ggsave("max-trans-change-meth-distribution.pdf", height = 8.5, width = 11)
 ```
-
-## Model data
-
-### Format data
-
-```{r}
-maxTransMaleWideDMLLengths <- maxTransMaleWideDML %>%
-  dplyr::select(., -c(start, end, meth.diff)) %>%
-  unique(.) %>%
-  left_join(., geneLengths, by = "gene_name") %>%
-  ungroup(.) %>%
-  mutate(., difference_type = case_when(difference > 0 ~ "Increase",
-                                        difference == 0 ~ "No Change",
-                                        difference < 0 ~ "Decrease")) %>%
-  mutate(., difference_binary = case_when(difference == 0 ~ 0,
-                                          difference != 0 ~ 1))
-#Remove specific DML information and retain unique rows. Join with gene length information. Create other modifications, including a categorical variable for difference and a binary variable for difference.
-head(maxTransMaleWideDMLLengths)
-```
-
-### Standard model
-
-```{r}
-maxTransMaleModel <- glm(difference ~ change_meth + DMLcount +
-                          log2(change_exp + 1) + log10(length),
-                        data = maxTransMaleWideDMLLengths) #Model the difference in maximum transcripts based on change in methylation, DML count, change in expression, and gene length
-summary(maxTransMaleModel) #Only length and gene expression significant
-```
-
-```{r}
-write.csv(broom::tidy(maxTransMaleModel), "male-max-trans-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
-```
-
-### Binomial model
-
-```{r}
-maxTransMaleModel2 <- glm(I(difference == 1) ~ change_meth + DMLcount +
-                         log10(length) + log2(change_exp + 1),
-                       family = binomial(),
-                       data = maxTransMaleWideDMLLengths) #Create a binomial model, where 1 = the predominant isoform shifted when comparing low and control pH conditions. Use change in methylation, gene length, and change in gene expression as explanatory variables
-summary(maxTransMaleModel2) #Only length and gene expression significant
-```
-
-```{r}
-write.csv(broom::tidy(maxTransMaleModel2), "male-max-trans-binomial-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
-```
-
