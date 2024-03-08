@@ -161,7 +161,7 @@ filtered_logdata_frames <- list()
 for (name in names(logdata_frames)) {
   # Filter the dataframe and add a new column 'Source' with the name of the dataframe
   filtered_logdata_frames[[name]] <- logdata_frames[[name]] %>%
-    filter(GeneID == "LOC111137437") %>%
+    filter(GeneID == "LOC111126804") %>%
     mutate(Source = name) %>%
     mutate(Exposure_Status = case_when(
     Source %in% controls_females ~ "control",
@@ -189,12 +189,19 @@ ggplot(long_dataframe, aes(x = Fold, y = Value, group = Source, color = Exposure
   geom_line() +
   geom_point() +
   theme_minimal() +
-  labs(title = "LOC111137437",
+  labs(title = "GOI",
        x = "Fold",
        y = "Value") +
   scale_color_viridis_d() # Optional: Use a viridis color scale for better visibility
 
 ```
+
+
+
+
+
+
+
 
 ```{r}
 # Define the vectors for controls and exposed
