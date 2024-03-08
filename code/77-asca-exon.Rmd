@@ -1,0 +1,544 @@
+---
+title: "77-asca-exon"
+author: "Ariana Huffmyer"
+date: "2024-03-06"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Run an ASCA analysis on exon expression data.  
+
+# Load libraries 
+
+```{r}
+library(tidyverse)
+```
+
+# Females  
+
+## Load data 
+
+```{r}
+females <- fread("output/72-exon-data-rfmt/female_exon_tf.csv")
+```
+
+## Format data 
+
+Format data by adding a sample and fold change column.  
+
+```{r}
+females <- females %>%
+  mutate(fold = sapply(strsplit(as.character(SampleID_fold), "_"), function(x) x[2]))%>%
+  mutate(sample = sapply(strsplit(as.character(SampleID_fold), "_"), function(x) x[1]))%>%
+  select(!SampleID_fold)%>%
+  select(sample, fold, everything())
+
+head(females)
+```
+
+Read in metadata and add information for treatment.  
+
+```{r}
+meta<-read_csv("data/adult-meta.csv")
+
+females$treatment<-meta$Treatment[match(females$sample, meta$OldSample.ID)]
+
+females <- females %>%
+  mutate(sex=c("Female"))%>%
+  select(sample, fold, treatment, sex, everything())
+```
+
+We now have a column for sample, fold, treatment, sex, and a column for each gene. Here are the levels of each factor.   
+
+```{r}
+levels(as.factor(females$sample))
+levels(as.factor(females$fold))
+levels(as.factor(females$treatment))
+levels(as.factor(females$sex))
+```
+
+Remove genes that have NA values. 
+
+```{r}
+females<-females %>%
+    select_if(~ !any(is.na(.)))
+```
+
+We had 13284 columns (13280 genes) and now have 11270 after NA removal. 
+
+Finally, format with gene in a column and value in its own column. 
+```{r}
+long_females<-females%>%
+  pivot_longer(cols=5:11274, names_to="gene", values_to="value")
+
+str(long_females)
+```
+
+## ALASCA   
+
+https://pubmed.ncbi.nlm.nih.gov/36387276/ 
+https://github.com/andjar/ALASCA
+
+```{r}
+#if (!requireNamespace("devtools", quietly = TRUE))
+#    install.packages("devtools")
+
+#devtools::install_github("andjar/ALASCA", ref = "main")
+
+#install.packages("Rfast")
+#library(Rfast)
+#remotes::install_version("Rfast", version = "2.0.8")
+
+library(ALASCA)
+```
+
+Run model with fold and treatment as main effects, samples as random effect to account for repeated measures. Will need to boostrap (default is 1000 times) to generate error estimates. 
+```{r}
+long_females<-long_females%>%
+  rename(variable=gene)%>%
+  select(!sex)
+
+head(long_females)
+
+res <- ALASCA(
+  long_females,
+  value ~ fold * treatment + (1|sample),
+  n_validation_runs = 100, #bootstrap 100 times; takes about 10 min to run 
+  validate = TRUE, #bootstrap
+  reduce_dimensions = TRUE #reduce variables to highest explanatory value
+)
+
+```
+
+View scree plot 
+
+```{r}
+pdf(file="output/77-asca-exon/scree_females.pdf", width=3, height=3)
+plot(res, component = seq(1,10), effect = 1, type = 'scree')
+dev.off()
+```
+
+Plot PC components for components with variance explained >1%. 
+
+PC1: 38.65%
+```{r}
+pdf(file="output/77-asca-exon/female_plots/PC1_females.pdf", width=8, height=4)
+plot(res, effect = 1, component = 1, type = 'effect', 
+     n_limit=10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis=TRUE,
+     palette = c("gray", "darkred"),
+     my_theme = theme_classic())
+dev.off()
+```
+
+PC2: 24.51%
+```{r}
+pdf(file="output/77-asca-exon/female_plots/PC2_females.pdf", width=8, height=4)
+plot(res, effect = 1, component = 2, type = 'effect', 
+     n_limit=10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis=TRUE,
+     palette = c("gray", "darkred"),
+     my_theme = theme_classic())
+dev.off()
+```
+
+PC3: 16.62%
+```{r}
+pdf(file="output/77-asca-exon/female_plots/PC3_females.pdf", width=8, height=4)
+plot(res, effect = 1, component = 3, type = 'effect', 
+     n_limit=10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis=TRUE,
+     palette = c("gray", "darkred"),
+     my_theme = theme_classic())
+dev.off()
+```
+
+PC4: 11.99%
+```{r}
+pdf(file="output/77-asca-exon/female_plots/PC4_females.pdf", width=8, height=4)
+plot(res, effect = 1, component = 4, type = 'effect', 
+     n_limit=10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis=TRUE,
+     palette = c("gray", "darkred"),
+     my_theme = theme_classic())
+dev.off()
+```
+
+PC5: 6.49%
+```{r}
+pdf(file="output/77-asca-exon/female_plots/PC5_females.pdf", width=8, height=4)
+plot(res, effect = 1, component = 5, type = 'effect', 
+     n_limit=10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis=TRUE,
+     palette = c("gray", "darkred"),
+     my_theme = theme_classic())
+dev.off()
+```
+
+PC6: 1.2% (Couldn't estimate error for this PC so there isn't shading)
+```{r}
+pdf(file="output/77-asca-exon/female_plots/PC6_females.pdf", width=8, height=4)
+plot(res, effect = 1, component = 6, type = 'effect', 
+     n_limit=10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis=TRUE,
+     palette = c("gray", "darkred"),
+     my_theme = theme_classic())
+dev.off()
+```
+
+### Plot gene patterns 
+
+PC1
+```{r}
+#individual plot
+pdf(file="output/77-asca-exon/female_plots/PC1_genes_females.pdf", width=12, height=6)
+plot(res, component = 1, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
+```
+
+PC2
+```{r}
+#individual plot
+pdf(file="output/77-asca-exon/female_plots/PC2_genes_females.pdf", width=12, height=6)
+plot(res, component = 2, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
+```
+
+PC3
+```{r}
+#individual plot
+pdf(file="output/77-asca-exon/female_plots/PC3_genes_females.pdf", width=12, height=6)
+plot(res, component = 3, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
+```
+
+PC4
+```{r}
+#individual plot
+pdf(file="output/77-asca-exon/female_plots/PC4_genes_females.pdf", width=12, height=6)
+plot(res, component = 4, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
+```
+
+PC5
+```{r}
+#individual plot
+pdf(file="output/77-asca-exon/female_plots/PC5_genes_females.pdf", width=12, height=6)
+plot(res, component = 5, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
+```
+
+PC6
+```{r}
+#individual plot
+pdf(file="output/77-asca-exon/female_plots/PC6_genes_females.pdf", width=12, height=6)
+plot(res, component = 6, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
+```
+
+## Extract lists of top 20 genes from each PC for genes that are different by treatment
+
+The PCs that describe differences between treatment are PC5 and PC6. 
+
+```{r}
+loadings5<-get_loadings(res, component=5, effect=1, n_limit=10)
+list5<-loadings5[[1]]$covars
+loadings6<-get_loadings(res, component=6, effect=1, n_limit=10)
+list6<-loadings6[[1]]$covars
+
+list<-c(list5, list6)
+
+list<-as.data.frame(list)
+
+capture.output(list, file="output/77-asca-exon/females_splicing_treatments_gene_list.csv")
+```
+
+The PCs that describe no differences between treatment PC1-4. 
+
+```{r}
+loadings1<-get_loadings(res, component=1, effect=1, n_limit=10)
+list1<-loadings1[[1]]$covars
+loadings2<-get_loadings(res, component=2, effect=1, n_limit=10)
+list2<-loadings2[[1]]$covars
+loadings3<-get_loadings(res, component=3, effect=1, n_limit=10)
+list3<-loadings3[[1]]$covars
+loadings4<-get_loadings(res, component=4, effect=1, n_limit=10)
+list4<-loadings4[[1]]$covars
+
+list<-c(list1, list2, list3, list4)
+
+list<-as.data.frame(list)
+
+capture.output(list, file="output/77-asca-exon/females_splicing_nodifference_gene_list.csv")
+```
+
+# Males   
+
+## Load data 
+
+```{r}
+males <- fread("output/72-exon-data-rfmt/male_exon_tf.csv")
+```
+
+## Format data 
+
+Format data by adding a sample and fold change column.  
+
+```{r}
+males <- males %>%
+  mutate(fold = sapply(strsplit(as.character(SampleID_fold), "_"), function(x) x[2]))%>%
+  mutate(sample = sapply(strsplit(as.character(SampleID_fold), "_"), function(x) x[1]))%>%
+  select(!SampleID_fold)%>%
+  select(sample, fold, everything())
+
+head(males)
+```
+
+Read in metadata and add information for treatment.  
+
+```{r}
+meta<-read_csv("data/adult-meta.csv")
+
+males$treatment<-meta$Treatment[match(males$sample, meta$OldSample.ID)]
+
+males <- males %>%
+  mutate(sex=c("Male"))%>%
+  select(sample, fold, treatment, sex, everything())
+```
+
+We now have a column for sample, fold, treatment, sex, and a column for each gene. Here are the levels of each factor.   
+
+```{r}
+levels(as.factor(males$sample))
+levels(as.factor(males$fold))
+levels(as.factor(males$treatment))
+levels(as.factor(males$sex))
+```
+
+Remove genes that have NA values. 
+
+```{r}
+males<-males %>%
+    select_if(~ !any(is.na(.)))
+```
+
+We had 13284 columns (13280 genes) and now have 12645 after NA removal. 
+
+Finally, format with gene in a column and value in its own column. 
+```{r}
+long_males<-males%>%
+  pivot_longer(cols=5:12645, names_to="gene", values_to="value")
+
+str(long_males)
+```
+
+## ALASCA   
+
+Run model with fold and treatment as main effects, samples as random effect to account for repeated measures. Will need to boostrap to generate error estimates. We will boostrap 100 times following https://pubmed.ncbi.nlm.nih.gov/20377449/
+```{r}
+long_males<-long_males%>%
+  rename(variable=gene)%>%
+  select(!sex)
+
+head(long_males)
+
+res_male <- ALASCA(
+  long_males,
+  value ~ fold * treatment + (1|sample),
+  n_validation_runs = 100, #bootstrap 100 times; takes about 10 min to run 
+  validate = TRUE, #bootstrap
+  reduce_dimensions = TRUE #reduce variables to highest explanatory value
+)
+```
+
+View scree plot 
+
+```{r}
+pdf(file="output/77-asca-exon/scree_males.pdf", width=3, height=3)
+plot(res_male, component = seq(1,10), effect = 1, type = 'scree')
+dev.off()
+```
+
+Plot PC components for components with variance explained >1%. 
+
+PC1: 29.66%
+```{r}
+pdf(file="output/77-asca-exon/male_plots/PC1_males.pdf", width=8, height=4)
+plot(res_male, effect = 1, component = 1, type = 'effect', 
+     n_limit=10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis=TRUE,
+     palette = c("gray", "darkred"),
+     my_theme = theme_classic())
+dev.off()
+```
+
+PC2: 22.29%
+```{r}
+pdf(file="output/77-asca-exon/male_plots/PC2_males.pdf", width=8, height=4)
+plot(res_male, effect = 1, component = 2, type = 'effect', 
+     n_limit=10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis=TRUE,
+     palette = c("gray", "darkred"),
+     my_theme = theme_classic())
+dev.off()
+```
+
+PC3: 18.35%
+```{r}
+pdf(file="output/77-asca-exon/male_plots/PC3_males.pdf", width=8, height=4)
+plot(res_male, effect = 1, component = 3, type = 'effect', 
+     n_limit=10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis=TRUE,
+     palette = c("gray", "darkred"),
+     my_theme = theme_classic())
+dev.off()
+```
+
+PC4: 16.42%
+```{r}
+pdf(file="output/77-asca-exon/male_plots/PC4_males.pdf", width=8, height=4)
+plot(res_male, effect = 1, component = 4, type = 'effect', 
+     n_limit=10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis=TRUE,
+     palette = c("gray", "darkred"),
+     my_theme = theme_classic())
+dev.off()
+```
+
+PC5: 9.14%
+```{r}
+pdf(file="output/77-asca-exon/male_plots/PC5_males.pdf", width=8, height=4)
+plot(res_male, effect = 1, component = 5, type = 'effect', 
+     n_limit=10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis=TRUE,
+     palette = c("gray", "darkred"),
+     my_theme = theme_classic())
+dev.off()
+```
+
+PC6: 1.75% 
+```{r}
+pdf(file="output/77-asca-exon/male_plots/PC6_males.pdf", width=8, height=4)
+plot(res_male, effect = 1, component = 6, type = 'effect', 
+     n_limit=10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis=TRUE,
+     palette = c("gray", "darkred"),
+     my_theme = theme_classic())
+dev.off()
+```
+
+Variance from component 6 was not calculated. 
+```{r}
+get_scores(res_male, component=6)
+```
+
+### Plot gene patterns 
+
+PC1
+```{r}
+#individual plot
+pdf(file="output/77-asca-exon/male_plots/PC1_genes_males.pdf", width=12, height=6)
+plot(res_male, component = 1, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
+```
+
+PC2
+```{r}
+#individual plot
+pdf(file="output/77-asca-exon/male_plots/PC2_genes_males.pdf", width=12, height=6)
+plot(res_male, component = 2, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
+```
+
+PC3
+```{r}
+#individual plot
+pdf(file="output/77-asca-exon/male_plots/PC3_genes_males.pdf", width=12, height=6)
+plot(res_male, component = 3, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
+```
+
+PC4
+```{r}
+#individual plot
+pdf(file="output/77-asca-exon/male_plots/PC4_genes_males.pdf", width=12, height=6)
+plot(res_male, component = 4, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
+```
+
+PC5
+```{r}
+#individual plot
+pdf(file="output/77-asca-exon/male_plots/PC5_genes_males.pdf", width=12, height=6)
+plot(res_male, component = 5, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
+```
+
+PC6
+```{r}
+#individual plot
+pdf(file="output/77-asca-exon/male_plots/PC6_genes_males.pdf", width=12, height=6)
+plot(res_male, component = 6, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
+```
+
+## Extract lists of top 20 genes from each PC for genes that are different by treatment
+
+The PCs that describe differences between treatment are PC5 and PC6. 
+
+```{r}
+loadings5_m<-get_loadings(res_male, component=5, effect=1, n_limit=10)
+list5_m<-loadings5_m[[1]]$covars
+loadings6_m<-get_loadings(res_male, component=6, effect=1, n_limit=10)
+list6_m<-loadings6_m[[1]]$covars
+
+list_m<-c(list5_m, list6_m)
+
+list_m<-as.data.frame(list_m)
+
+capture.output(list_m, file="output/77-asca-exon/males_splicing_treatments_gene_list.csv")
+```
+
+The PCs that describe no differences between treatment PC1-4. 
+
+```{r}
+loadings1_m<-get_loadings(res_male, component=1, effect=1, n_limit=10)
+list1_m<-loadings1_m[[1]]$covars
+loadings2_m<-get_loadings(res_male, component=2, effect=1, n_limit=10)
+list2_m<-loadings2_m[[1]]$covars
+loadings3_m<-get_loadings(res_male, component=3, effect=1, n_limit=10)
+list3_m<-loadings3_m[[1]]$covars
+loadings4_m<-get_loadings(res_male, component=4, effect=1, n_limit=10)
+list4_m<-loadings4_m[[1]]$covars
+
+list_m<-c(list1_m, list2_m, list3_m, list4_m)
+
+list_m<-as.data.frame(list_m)
+
+capture.output(list_m, file="output/77-asca-exon/males_splicing_nodifference_gene_list.csv")
+```

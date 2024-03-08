@@ -35,3 +35,5 @@ genome-features/C_virginica-3.0-CDS.gff
 *.RData
 *.RData
 *.RData
+ALASCA/
+*.RDataTmp
