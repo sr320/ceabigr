@@ -841,7 +841,8 @@ write.csv(predIsoFemWideDML, "fem-pred-isoform-DML-annotations.csv", quote = FAL
 ```{r}
 predIsoFemWideDML %>%
   group_by(., DMLcount, change) %>%
-  summarise(., count = n()) #Group data by DML count and change, then count the number of genes with or without predominant isoform shifts with various DML counts
+  summarise(., count = n()) %>%
+  write.csv(., "fem-pred-isoform-DML-count.csv") #Group data by DML count and change, then count the number of genes with or without predominant isoform shifts with various DML counts. Save as a csv
 ```
 
 DMLcount change count
@@ -915,18 +916,7 @@ summary(predIsoFemModel) #Only length and gene expression significant
 ```
 
 ```{r}
-step(predIsoFemModel, test = "LRT")
-```
-
-```{r}
-predIsoFemModel2 <- glm(I(change == 1) ~ DMLcount + log10(length) + log2(change_exp + 1),
-                        family = binomial(),
-                        data = (predIsoFemWideDML %>% dplyr::select(., -c(start, end, meth.diff)) %>% unique(.) %>% ungroup(.))) #Model identified by step
-summary(predIsoFemModel2) #Only length and gene expression significant
-```
-
-```{r}
-write.csv(broom::tidy(predIsoFemModel2), "fem-predo-isoform-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
+write.csv(broom::tidy(predIsoFemModel), "fem-predo-isoform-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
 ```
 
 ### Transcriptional noise analysis
@@ -1666,7 +1656,8 @@ write.csv(predIsoMaleWideDML, "male-pred-isoform-DML-annotations.csv", quote = F
 ```{r}
 predIsoMaleWideDML %>%
   group_by(., DMLcount, change) %>%
-  summarise(., count = n()) #Group data by DML count and change, then count the number of genes with or without predominant isoform shifts with various DML counts
+  summarise(., count = n()) %>% 
+  write.csv(., "male-pred-isoform-DML-count.csv") #Group data by DML count and change, then count the number of genes with or without predominant isoform shifts with various DML counts. Save as a csv
 ```
 
 DMLcount change count
@@ -1744,12 +1735,6 @@ predIsoMaleModel <- glm(I(change == 1) ~ change_meth + DMLcount +
                         data = (predIsoMaleWideDML %>% dplyr::select(., -c(start, end, meth.diff)) %>% unique(.) %>% ungroup(.))) #Create a binomial model, where 1 = the predominant isoform shifted when comparing low and control pH conditions. Use change in methylation, gene length, and change in gene expression as explanatory variables
 summary(predIsoMaleModel) #Only length and gene expression significant
 ```
-
-```{r}
-step(predIsoMaleModel, test = "LRT")
-```
-
-The initial model is the most parsimonious based on the `step` results.
 
 ```{r}
 write.csv(broom::tidy(predIsoMaleModel), "male-predo-isoform-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
