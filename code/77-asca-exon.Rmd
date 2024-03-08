@@ -123,6 +123,7 @@ Plot PC components for components with variance explained >1%.
 
 PC1: 38.65%
 ```{r}
+pdf(file="output/77-asca-exon/female_plots/PC1_females.pdf", width=8, height=4)
 plot(res, effect = 1, component = 1, type = 'effect', 
      n_limit=10, 
      ribbon = TRUE,
@@ -130,10 +131,12 @@ plot(res, effect = 1, component = 1, type = 'effect',
      flip_axis=TRUE,
      palette = c("gray", "darkred"),
      my_theme = theme_classic())
+dev.off()
 ```
 
 PC2: 24.51%
 ```{r}
+pdf(file="output/77-asca-exon/female_plots/PC2_females.pdf", width=8, height=4)
 plot(res, effect = 1, component = 2, type = 'effect', 
      n_limit=10, 
      ribbon = TRUE,
@@ -141,10 +144,12 @@ plot(res, effect = 1, component = 2, type = 'effect',
      flip_axis=TRUE,
      palette = c("gray", "darkred"),
      my_theme = theme_classic())
+dev.off()
 ```
 
 PC3: 16.62%
 ```{r}
+pdf(file="output/77-asca-exon/female_plots/PC3_females.pdf", width=8, height=4)
 plot(res, effect = 1, component = 3, type = 'effect', 
      n_limit=10, 
      ribbon = TRUE,
@@ -152,10 +157,12 @@ plot(res, effect = 1, component = 3, type = 'effect',
      flip_axis=TRUE,
      palette = c("gray", "darkred"),
      my_theme = theme_classic())
+dev.off()
 ```
 
 PC4: 11.99%
 ```{r}
+pdf(file="output/77-asca-exon/female_plots/PC4_females.pdf", width=8, height=4)
 plot(res, effect = 1, component = 4, type = 'effect', 
      n_limit=10, 
      ribbon = TRUE,
@@ -163,10 +170,12 @@ plot(res, effect = 1, component = 4, type = 'effect',
      flip_axis=TRUE,
      palette = c("gray", "darkred"),
      my_theme = theme_classic())
+dev.off()
 ```
 
 PC5: 6.49%
 ```{r}
+pdf(file="output/77-asca-exon/female_plots/PC5_females.pdf", width=8, height=4)
 plot(res, effect = 1, component = 5, type = 'effect', 
      n_limit=10, 
      ribbon = TRUE,
@@ -174,10 +183,12 @@ plot(res, effect = 1, component = 5, type = 'effect',
      flip_axis=TRUE,
      palette = c("gray", "darkred"),
      my_theme = theme_classic())
+dev.off()
 ```
 
 PC6: 1.2% (Couldn't estimate error for this PC so there isn't shading)
 ```{r}
+pdf(file="output/77-asca-exon/female_plots/PC6_females.pdf", width=8, height=4)
 plot(res, effect = 1, component = 6, type = 'effect', 
      n_limit=10, 
      ribbon = TRUE,
@@ -185,6 +196,7 @@ plot(res, effect = 1, component = 6, type = 'effect',
      flip_axis=TRUE,
      palette = c("gray", "darkred"),
      my_theme = theme_classic())
+dev.off()
 ```
 
 ### Plot gene patterns 
@@ -192,37 +204,49 @@ plot(res, effect = 1, component = 6, type = 'effect',
 PC1
 ```{r}
 #individual plot
-plot(res, component = 1, effect = 1, type = 'prediction', n_limit = 10, variable = c())
+pdf(file="output/77-asca-exon/female_plots/PC1_genes_females.pdf", width=12, height=6)
+plot(res, component = 1, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
 ```
 
 PC2
 ```{r}
 #individual plot
-plot(res, component = 2, effect = 1, type = 'prediction', n_limit = 10, variable = c())
+pdf(file="output/77-asca-exon/female_plots/PC2_genes_females.pdf", width=12, height=6)
+plot(res, component = 2, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
 ```
 
 PC3
 ```{r}
 #individual plot
-plot(res, component = 3, effect = 1, type = 'prediction', n_limit = 10, variable = c())
+pdf(file="output/77-asca-exon/female_plots/PC3_genes_females.pdf", width=12, height=6)
+plot(res, component = 3, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
 ```
 
 PC4
 ```{r}
 #individual plot
-plot(res, component = 4, effect = 1, type = 'prediction', n_limit = 10, variable = c())
+pdf(file="output/77-asca-exon/female_plots/PC4_genes_females.pdf", width=12, height=6)
+plot(res, component = 4, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
 ```
 
 PC5
 ```{r}
 #individual plot
-plot(res, component = 5, effect = 1, type = 'prediction', n_limit = 10, variable = c())
+pdf(file="output/77-asca-exon/female_plots/PC5_genes_females.pdf", width=12, height=6)
+plot(res, component = 5, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
 ```
 
 PC6
 ```{r}
 #individual plot
-plot(res, component = 6, effect = 1, type = 'prediction', n_limit = 10, variable = c())
+pdf(file="output/77-asca-exon/female_plots/PC6_genes_females.pdf", width=12, height=6)
+plot(res, component = 6, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
 ```
 
 ## Extract lists of top 20 genes from each PC for genes that are different by treatment
@@ -240,6 +264,25 @@ list<-c(list5, list6)
 list<-as.data.frame(list)
 
 capture.output(list, file="output/77-asca-exon/females_splicing_treatments_gene_list.csv")
+```
+
+The PCs that describe no differences between treatment PC1-4. 
+
+```{r}
+loadings1<-get_loadings(res, component=1, effect=1, n_limit=10)
+list1<-loadings1[[1]]$covars
+loadings2<-get_loadings(res, component=2, effect=1, n_limit=10)
+list2<-loadings2[[1]]$covars
+loadings3<-get_loadings(res, component=3, effect=1, n_limit=10)
+list3<-loadings3[[1]]$covars
+loadings4<-get_loadings(res, component=4, effect=1, n_limit=10)
+list4<-loadings4[[1]]$covars
+
+list<-c(list1, list2, list3, list4)
+
+list<-as.data.frame(list)
+
+capture.output(list, file="output/77-asca-exon/females_splicing_nodifference_gene_list.csv")
 ```
 
 # Males   
@@ -333,6 +376,7 @@ Plot PC components for components with variance explained >1%.
 
 PC1: 29.66%
 ```{r}
+pdf(file="output/77-asca-exon/male_plots/PC1_males.pdf", width=8, height=4)
 plot(res_male, effect = 1, component = 1, type = 'effect', 
      n_limit=10, 
      ribbon = TRUE,
@@ -340,10 +384,12 @@ plot(res_male, effect = 1, component = 1, type = 'effect',
      flip_axis=TRUE,
      palette = c("gray", "darkred"),
      my_theme = theme_classic())
+dev.off()
 ```
 
 PC2: 22.29%
 ```{r}
+pdf(file="output/77-asca-exon/male_plots/PC2_males.pdf", width=8, height=4)
 plot(res_male, effect = 1, component = 2, type = 'effect', 
      n_limit=10, 
      ribbon = TRUE,
@@ -351,10 +397,12 @@ plot(res_male, effect = 1, component = 2, type = 'effect',
      flip_axis=TRUE,
      palette = c("gray", "darkred"),
      my_theme = theme_classic())
+dev.off()
 ```
 
 PC3: 18.35%
 ```{r}
+pdf(file="output/77-asca-exon/male_plots/PC3_males.pdf", width=8, height=4)
 plot(res_male, effect = 1, component = 3, type = 'effect', 
      n_limit=10, 
      ribbon = TRUE,
@@ -362,10 +410,12 @@ plot(res_male, effect = 1, component = 3, type = 'effect',
      flip_axis=TRUE,
      palette = c("gray", "darkred"),
      my_theme = theme_classic())
+dev.off()
 ```
 
 PC4: 16.42%
 ```{r}
+pdf(file="output/77-asca-exon/male_plots/PC4_males.pdf", width=8, height=4)
 plot(res_male, effect = 1, component = 4, type = 'effect', 
      n_limit=10, 
      ribbon = TRUE,
@@ -373,10 +423,12 @@ plot(res_male, effect = 1, component = 4, type = 'effect',
      flip_axis=TRUE,
      palette = c("gray", "darkred"),
      my_theme = theme_classic())
+dev.off()
 ```
 
 PC5: 9.14%
 ```{r}
+pdf(file="output/77-asca-exon/male_plots/PC5_males.pdf", width=8, height=4)
 plot(res_male, effect = 1, component = 5, type = 'effect', 
      n_limit=10, 
      ribbon = TRUE,
@@ -384,10 +436,12 @@ plot(res_male, effect = 1, component = 5, type = 'effect',
      flip_axis=TRUE,
      palette = c("gray", "darkred"),
      my_theme = theme_classic())
+dev.off()
 ```
 
 PC6: 1.75% 
 ```{r}
+pdf(file="output/77-asca-exon/male_plots/PC6_males.pdf", width=8, height=4)
 plot(res_male, effect = 1, component = 6, type = 'effect', 
      n_limit=10, 
      ribbon = TRUE,
@@ -395,6 +449,12 @@ plot(res_male, effect = 1, component = 6, type = 'effect',
      flip_axis=TRUE,
      palette = c("gray", "darkred"),
      my_theme = theme_classic())
+dev.off()
+```
+
+Variance from component 6 was not calculated. 
+```{r}
+get_scores(res_male, component=6)
 ```
 
 ### Plot gene patterns 
@@ -402,37 +462,49 @@ plot(res_male, effect = 1, component = 6, type = 'effect',
 PC1
 ```{r}
 #individual plot
-plot(res_male, component = 1, effect = 1, type = 'prediction', n_limit = 10, variable = c())
+pdf(file="output/77-asca-exon/male_plots/PC1_genes_males.pdf", width=12, height=6)
+plot(res_male, component = 1, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
 ```
 
 PC2
 ```{r}
 #individual plot
-plot(res_male, component = 2, effect = 1, type = 'prediction', n_limit = 10, variable = c())
+pdf(file="output/77-asca-exon/male_plots/PC2_genes_males.pdf", width=12, height=6)
+plot(res_male, component = 2, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
 ```
 
 PC3
 ```{r}
 #individual plot
-plot(res_male, component = 3, effect = 1, type = 'prediction', n_limit = 10, variable = c())
+pdf(file="output/77-asca-exon/male_plots/PC3_genes_males.pdf", width=12, height=6)
+plot(res_male, component = 3, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
 ```
 
 PC4
 ```{r}
 #individual plot
-plot(res_male, component = 4, effect = 1, type = 'prediction', n_limit = 10, variable = c())
+pdf(file="output/77-asca-exon/male_plots/PC4_genes_males.pdf", width=12, height=6)
+plot(res_male, component = 4, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
 ```
 
 PC5
 ```{r}
 #individual plot
-plot(res_male, component = 5, effect = 1, type = 'prediction', n_limit = 10, variable = c())
+pdf(file="output/77-asca-exon/male_plots/PC5_genes_males.pdf", width=12, height=6)
+plot(res_male, component = 5, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
 ```
 
 PC6
 ```{r}
 #individual plot
-plot(res_male, component = 6, effect = 1, type = 'prediction', n_limit = 10, variable = c())
+pdf(file="output/77-asca-exon/male_plots/PC6_genes_males.pdf", width=12, height=6)
+plot(res_male, component = 6, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+dev.off()
 ```
 
 ## Extract lists of top 20 genes from each PC for genes that are different by treatment
@@ -452,11 +524,21 @@ list_m<-as.data.frame(list_m)
 capture.output(list_m, file="output/77-asca-exon/males_splicing_treatments_gene_list.csv")
 ```
 
+The PCs that describe no differences between treatment PC1-4. 
 
-TO DO: 
+```{r}
+loadings1_m<-get_loadings(res_male, component=1, effect=1, n_limit=10)
+list1_m<-loadings1_m[[1]]$covars
+loadings2_m<-get_loadings(res_male, component=2, effect=1, n_limit=10)
+list2_m<-loadings2_m[[1]]$covars
+loadings3_m<-get_loadings(res_male, component=3, effect=1, n_limit=10)
+list3_m<-loadings3_m[[1]]$covars
+loadings4_m<-get_loadings(res_male, component=4, effect=1, n_limit=10)
+list4_m<-loadings4_m[[1]]$covars
 
-output PC's to female plots folder 
-then repeat with male 
-will need to assemble in illustrator or other document 
-need to figure out how to plot wider confidence intervals and change Y axis for A and change X axis for B 
+list_m<-c(list1_m, list2_m, list3_m, list4_m)
 
+list_m<-as.data.frame(list_m)
+
+capture.output(list_m, file="output/77-asca-exon/males_splicing_nodifference_gene_list.csv")
+```
