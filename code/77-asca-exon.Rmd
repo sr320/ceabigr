@@ -237,12 +237,10 @@ list6<-loadings6[[1]]$covars
 
 list<-c(list5, list6)
 
+list<-as.data.frame(list)
+
 capture.output(list, file="output/77-asca-exon/females_splicing_treatments_gene_list.csv")
 ```
-
-output PC's to female plots folder 
-then repeat with male 
-will need to assemble in illustrator or other document 
 
 # Males   
 
@@ -437,20 +435,28 @@ PC6
 plot(res_male, component = 6, effect = 1, type = 'prediction', n_limit = 10, variable = c())
 ```
 
-
 ## Extract lists of top 20 genes from each PC for genes that are different by treatment
 
 The PCs that describe differences between treatment are PC5 and PC6. 
 
 ```{r}
-loadings5<-get_loadings(res_male, component=5, effect=1, n_limit=10)
-list5<-loadings5[[1]]$covars
-loadings6<-get_loadings(res_male, component=6, effect=1, n_limit=10)
-list6<-loadings6[[1]]$covars
-loadings7<-get_loadings(res_male, component=6, effect=1, n_limit=10)
-list7<-loadings7[[1]]$covars
+loadings5_m<-get_loadings(res_male, component=5, effect=1, n_limit=10)
+list5_m<-loadings5_m[[1]]$covars
+loadings6_m<-get_loadings(res_male, component=6, effect=1, n_limit=10)
+list6_m<-loadings6_m[[1]]$covars
 
-list<-c(list5, list6, list7)
+list_m<-c(list5_m, list6_m)
 
-capture.output(list, file="output/77-asca-exon/males_splicing_treatments_gene_list.csv")
+list_m<-as.data.frame(list_m)
+
+capture.output(list_m, file="output/77-asca-exon/males_splicing_treatments_gene_list.csv")
 ```
+
+
+TO DO: 
+
+output PC's to female plots folder 
+then repeat with male 
+will need to assemble in illustrator or other document 
+need to figure out how to plot wider confidence intervals and change Y axis for A and change X axis for B 
+
