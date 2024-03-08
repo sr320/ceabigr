@@ -1,0 +1,386 @@
+---
+title: "78 asca meth-diff"
+author: Steven Roberts
+date: "`r format(Sys.time(), '%d %B, %Y')`" 
+output: 
+  html_document:
+    theme: readable
+    highlight: zenburn
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    code_download: true
+  # github_document:
+  #   toc: true
+  #   toc_depth: 3
+  #   number_sections: true
+  #   html_preview: true
+---
+
+```{r setup, include=FALSE}
+#library(kableExtra)
+# library(DESeq2)
+# library(pheatmap)
+# library(RColorBrewer)
+# library(data.table)
+#library(DT)
+# library(Biostrings)
+#library(methylKit)
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = TRUE,         # Evaluate code chunks
+  warning = FALSE,     # Hide warnings
+  message = FALSE,     # Hide messages
+  fig.width = 6,       # Set plot width in inches
+  fig.height = 4,      # Set plot height in inches
+  fig.align = "center" # Align plots to the center
+)
+```
+
+Ariana created lists of genes were exon patterning was similar and DIFFERENT under OA conditions for both sexes.
+
+The question becomes is there a clear difference in methylation patterns in these genes. 
+
+This includes determining the preponderance in DMLs and
+
+if gene body methylation differed.
+
+## female where pattern differed.
+
+
+```{r}
+female_splice <- read.table("../output/77-asca-exon/females_splicing_treatments_gene_list.csv", col.names = c("name")) %>%
+  mutate(desc = "f_diff")
+```
+
+
+female DMLs
+
+
+
+```{r}
+female_dml <- read.table("../output/16-DML-annotation/female_dml_geneID.txt") %>%
+  mutate(desc = "fdml")
+```
+
+
+
+join
+
+```{r}
+fsp_dml <- female_splice %>%
+  left_join(female_dml, by = c("name" = "V1"))
+```
+
+nothing
+
+
+# GBM
+
+```{r}
+female_40_meth <- read_csv("../output/73-gene-methylation/female_40_meth.csv") %>%
+  mutate(name = str_replace(name, "gene-", ""))
+```
+
+
+```{r}
+f_splice_meth <- female_40_meth %>%
+  left_join(female_splice, by = c("name" = "name")) %>%
+  filter(desc == "f_diff")
+```
+
+
+# plot 
+
+
+```{r}
+ggplot(f_splice_meth, aes(x = average_control, y = average_exposed)) +
+  geom_point() +  # This adds the points to the plot
+  theme_minimal() 
+```
+
+## female no splice
+
+
+```{r}
+female_NOsplice <- read.table("../output/77-asca-exon/females_splicing_nodifference_gene_list.csv", col.names = c("name")) %>%
+  mutate(desc = "f_same")
+```
+
+
+female DMLs
+
+
+
+```{r}
+female_dml <- read.table("../output/16-DML-annotation/female_dml_geneID.txt") %>%
+  mutate(desc = "fdml")
+```
+
+
+
+join
+
+```{r}
+fNOsp_dml <- female_NOsplice %>%
+  left_join(female_dml, by = c("name" = "V1"))
+```
+
+1 dml overlap
+
+
+# GBM
+
+```{r}
+female_40_meth <- read_csv("../output/73-gene-methylation/female_40_meth.csv") %>%
+  mutate(name = str_replace(name, "gene-", ""))
+```
+
+
+```{r}
+f_NOsplice_meth <- female_40_meth %>%
+  left_join(female_NOsplice, by = c("name" = "name")) %>%
+  filter(desc == "f_same")
+```
+
+
+# plot 
+
+
+```{r}
+ggplot(f_NOsplice_meth, aes(x = average_control, y = average_exposed)) +
+  geom_point() +  # This adds the points to the plot
+  theme_minimal() 
+```
+
+
+# lets look at together on one plot
+
+```{r}
+ggplot() +
+  geom_point(data = f_NOsplice_meth, aes(x = average_control, y = average_exposed), color = "blue") +
+  geom_point(data = f_splice_meth, aes(x = average_control, y = average_exposed), color = "red") +
+  theme_minimal() +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "black") +
+  geom_abline(intercept = -5, slope = 1, linetype = "solid", color = "grey") + # Line below
+  geom_abline(intercept = 5, slope = 1, linetype = "solid", color = "grey") + # Line above
+  labs(x = "control", y = "exposed", title = "female methylation difference")
+
+```
+
+
+
+
+
+
+--
+Lets take make a histogram of methylation for those genes that change methylation versus those that do not.. Need to grab one version of the files Sam made and joing with recent (40-based) methylation data
+
+
+This only has transcripts that change.
+
+```{r}
+female_tr <- read_csv("../output/34-transcript-counts/diffs.max.transcripts_per_gene.controls_females.vs.exposed_females.csv")
+```
+
+
+
+```{r}
+fmcoe_max_predom_isos <- read_csv("../supplemental-files/fmcoe-max-predom-isos.csv")
+
+```
+
+lets join
+
+```{r}
+fmmax <- fmcoe_max_predom_isos %>%
+  left_join(female_tr, by = "gene_name") %>%
+  select(gene_name, control_females_max_transcript_counts.x, exposed_females_max_transcript_counts.x, difference)
+```
+
+
+lets join methylation data
+
+```{r}
+female_40_meth <- read_csv("../output/73-gene-methylation/female_40_meth.csv") %>%
+  mutate(name = str_replace(name, "gene-", ""))
+```
+```{r}
+structure(female_40_meth)
+```
+
+
+```{r}
+col_name_1 <- names(fmmax)[1] # Get the name of the first column in fmmax
+col_name_2 <- names(female_40_meth)[1] # Get the name of the first column in female_40_meth
+
+# Perform the join
+fmethmax <- left_join(female_40_meth,fmmax, by = setNames(col_name_1, col_name_2)) %>%
+  mutate(mean_meth = (average_control + average_exposed)/2) %>%
+  mutate(diff_meth = (average_exposed - average_control))
+```
+
+
+
+```{r}
+# Add a new column to indicate whether 'difference' is NA or not
+fmethmax$diff_status <- ifelse(is.na(fmethmax$difference), "NA", "Not NA")
+
+# Plot
+ggplot(fmethmax, aes(x = mean_meth, fill = diff_status)) +
+  geom_histogram(position = "identity", alpha = 0.5, binwidth = 1) + # Adjust binwidth as needed
+  scale_fill_manual(values = c("NA" = "red", "Not NA" = "blue")) +
+  labs(title = "Female gene methylation - change max transcript (not NA)",
+       x = "Mean Methylation",
+       fill = "Difference Status") +
+  theme_minimal()
+```
+```{r}
+ggplot(fmethmax, aes(x = mean_meth)) + 
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") + # Adjust binwidth as needed
+  facet_wrap(~diff_status, scales = "fixed") + 
+  scale_y_log10() + # Apply log scale to y-axis) 
+  labs(x = "Mean Meth", y = "Frequency") +
+  theme_minimal() +
+  ggtitle("Female gene methylation - change max transcript (not NA)")
+```
+
+# Plot
+
+
+
+```{r}
+ggplot(fmethmax, aes(x = mean_meth, fill = diff_status)) + 
+  geom_histogram(binwidth = 1) + # Adjust binwidth as needed
+  scale_fill_manual(values = c("NA" = "red", "Not NA" = "blue")) +
+  scale_y_log10() + # Apply log scale to y-axis) 
+  labs(x = "Mean Meth", y = "Frequency") +
+  theme_minimal() +
+  ggtitle("Female gene methylation - change max transcript (not NA)")
+```
+
+```{r}
+ggplot(fmethmax, aes(x = difference, y = diff_meth)) +
+  geom_point() +  # This adds the points to the plot
+  theme_minimal() +  # Optional: Applies a minimalistic theme
+  labs(x = "Max transcript Difference", y = "Meth Difference", title = "max transcript vs. methylation") +
+  geom_smooth(method = "lm", se = FALSE, color = "blue")  # Adds a linear regression line without confidence interval
+```
+
+```{r}
+ggplot(fmethmax, aes(x = difference, y = diff_meth)) +
+  geom_jitter() +  # This replaces geom_point() and adds jitter to the points
+  theme_minimal() +  # Applies a minimalistic theme
+  labs(x = "Max transcript Difference", y = "Meth Difference", title = "max transcript vs. methylation") +
+  geom_smooth(method = "lm", se = FALSE, color = "blue")  # Adds a linear regression line without confidence interval
+
+```
+
+```{r}
+ggplot(fmethmax, aes(x = exposed_females_max_transcript_counts.x, y = average_exposed)) +
+  geom_jitter() +  # This replaces geom_point() and adds jitter to the points
+  theme_minimal() +  # Applies a minimalistic theme
+  labs(x = "max transcript count", y = "gene methylation", title = "female exposed") +
+  geom_smooth(method = "lm", se = FALSE, color = "blue")  # Adds a linear regression line without confidence interval
+
+```
+
+
+
+
+# male
+```{r}
+male_tr <- read_csv("../output/34-transcript-counts/diffs.max.transcripts_per_gene.controls_males.vs.exposed_males.csv")
+```
+```{r}
+mmax <- fmcoe_max_predom_isos %>%
+  left_join(male_tr, by = "gene_name") %>%
+  select(gene_name, control_males_max_transcript_counts.x, exposed_males_max_transcript_counts.x, difference)
+```
+
+
+lets join methylation data
+
+```{r}
+male_40_meth <- read_csv("../output/73-gene-methylation/male_40_meth.csv") %>%
+  mutate(name = str_replace(name, "gene-", ""))
+```
+
+
+```{r}
+col_name_1 <- names(mmax)[1] # Get the name of the first column in fmmax
+col_name_2 <- names(male_40_meth)[1] # Get the name of the first column in female_40_meth
+
+# Perform the join
+mmethmax <- left_join(male_40_meth,mmax, by = setNames(col_name_1, col_name_2)) %>%
+  mutate(mean_meth = (average_control + average_exposed)/2) %>%
+  mutate(diff_meth = (average_exposed - average_control))
+```
+
+
+```{r}
+# Add a new column to indicate whether 'difference' is NA or not
+mmethmax$diff_status <- ifelse(is.na(mmethmax$difference), "NA", "Not NA")
+
+# Plot
+ggplot(mmethmax, aes(x = mean_meth, fill = diff_status)) +
+  geom_histogram(position = "identity", alpha = 0.5, binwidth = 1) + # Adjust binwidth as needed
+  scale_fill_manual(values = c("NA" = "red", "Not NA" = "blue")) +
+  labs(title = "Histogram of mean_meth",
+       x = "Mean Methylation",
+       fill = "Difference Status") +
+  theme_minimal()
+```
+
+
+```{r}
+ggplot(mmethmax, aes(x = mean_meth, fill = diff_status)) + 
+  geom_histogram(binwidth = 1) + # Adjust binwidth as needed
+  scale_fill_manual(values = c("NA" = "red", "Not NA" = "blue")) +
+  scale_y_log10() + # Apply log scale to y-axis) 
+  labs(x = "Mean Meth", y = "Frequency") +
+  theme_minimal() +
+  ggtitle("Histogram of Mean Meth by Difference Status")
+```
+
+
+
+```{r}
+ggplot(mmethmax, aes(x = difference, y = diff_meth)) +
+  geom_point() +  # This adds the points to the plot
+  theme_minimal() +  # Optional: Applies a minimalistic theme
+  labs(x = "Max transcript Difference", y = "Meth Difference", title = "max transcript vs. methylation") +
+  geom_smooth(method = "lm", se = FALSE, color = "blue")  # Adds a linear regression line without confidence interval
+```
+
+```{r}
+ggplot(mmethmax, aes(x = difference, y = diff_meth)) +
+  geom_jitter() +  # This replaces geom_point() and adds jitter to the points
+  theme_minimal() +  # Applies a minimalistic theme
+  labs(x = "Max transcript Difference", y = "Meth Difference", title = "max transcript vs. methylation") +
+  geom_smooth(method = "lm", se = FALSE, color = "blue")  # Adds a linear regression line without confidence interval
+
+```
+
+
+
+```{r}
+ggplot(mmethmax, aes(x = exposed_males_max_transcript_counts.x, y = average_exposed)) +
+  geom_jitter() +  # This replaces geom_point() and adds jitter to the points
+  theme_minimal() +  # Applies a minimalistic theme
+  labs(x = "max transcript count", y = "gene methylation", title = "male exposed") +
+  geom_smooth(method = "lm", se = FALSE, color = "blue")  # Adds a linear regression line without confidence interval
+
+```
+
+```{r}
+ggplot(mmethmax, aes(x = control_males_max_transcript_counts.x, y = average_control)) +
+  geom_jitter() +  # This replaces geom_point() and adds jitter to the points
+  theme_minimal() +  # Applies a minimalistic theme
+  labs(x = "max transcript count", y = "gene methylation", title = "male control") +
+  geom_smooth(method = "lm", se = FALSE, color = "blue")  # Adds a linear regression line without confidence interval
+
+```
