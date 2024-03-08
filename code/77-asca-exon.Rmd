@@ -119,7 +119,7 @@ plot(res, component = seq(1,10), effect = 1, type = 'scree')
 dev.off()
 ```
 
-Plot PC components for components with variance explained >1%. 
+Plot PC components for components with variance explained >1.5%. 
 
 PC1: 38.65%
 ```{r}
@@ -372,7 +372,7 @@ plot(res_male, component = seq(1,10), effect = 1, type = 'scree')
 dev.off()
 ```
 
-Plot PC components for components with variance explained >1%. 
+Plot PC components for components with variance explained >1.5%. 
 
 PC1: 29.66%
 ```{r}
@@ -452,7 +452,7 @@ plot(res_male, effect = 1, component = 6, type = 'effect',
 dev.off()
 ```
 
-Variance from component 6 was not calculated. 
+Variance from component 6 could not be calculated. 
 ```{r}
 get_scores(res_male, component=6)
 ```
