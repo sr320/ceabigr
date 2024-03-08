@@ -643,7 +643,7 @@ predIsoFemFiltAnnot %>%
   group_by(., gene_name) %>%
   summarise(GO = paste(GO, collapse = ",")) %>%
   write.table(., "geneid2go-fem_predIso.tab", quote = FALSE, sep = "\t", col.names = FALSE, row.names = FALSE)
-  #Take list of genes and GOterms for female predominant isoform data, and remove any duplicate entries (precaution). Using genes since that was the "input" for the predominant isoform analsyis. Group by transcript ID, then summarise using paste to get all GOterms for each transcript into the same row separated by ",". Save as a tab delimited file
+#Take list of genes and GOterms for female predominant isoform data, and remove any duplicate entries (precaution). Using genes since that was the "input" for the predominant isoform analsyis. Group by transcript ID, then summarise using paste to get all GOterms for each transcript into the same row separated by ",". Save as a tab delimited file
 ```
 
 ```{r}
@@ -676,7 +676,7 @@ I am only going to look at biological processes.
 
 ```{r}
 predIsoFemdataBP <- new("topGOdata", ontology = "BP", allGenes = predIsoFemFiltGeneList,
-                      annot = annFUN.gene2GO, gene2GO = geneID2GO) #Create biological process topGO object
+                        annot = annFUN.gene2GO, gene2GO = geneID2GO) #Create biological process topGO object
 predIsoFemdataBP #Get summary of object
 ```
 
@@ -694,7 +694,7 @@ hist(pvalFis.predIsoFemdataBP, 50, xlab = "p-values") #Plot histogram of p-value
 
 ```{r}
 allRes.predIsoFemdataBP <- GenTable(predIsoFemdataBP, classic = resultFisher.predIsoFemdataBP, ranksOf = "classic", orderBy = "classic", topNodes = length(pvalFis.predIsoFemdataBP))
-  #Create a statistical results table with statistical test results. Order by p-value (classic), and include all results (topNodes)
+#Create a statistical results table with statistical test results. Order by p-value (classic), and include all results (topNodes)
 head(allRes.predIsoFemdataBP)
 ```
 
@@ -1453,7 +1453,7 @@ predIsoMaleFiltAnnot %>%
   group_by(., gene_name) %>%
   summarise(GO = paste(GO, collapse = ",")) %>%
   write.table(., "geneid2go-male_predIso.tab", quote = FALSE, sep = "\t", col.names = FALSE, row.names = FALSE)
-  #Take list of genes and GOterms for maleale predominant isoform data, and remove any duplicate entries (precaution). Using genes since that was the "input" for the predominant isoform analsyis. Group by transcript ID, then summarise using paste to get all GOterms for each transcript into the same row separated by ",". Save as a tab delimited file
+#Take list of genes and GOterms for maleale predominant isoform data, and remove any duplicate entries (precaution). Using genes since that was the "input" for the predominant isoform analsyis. Group by transcript ID, then summarise using paste to get all GOterms for each transcript into the same row separated by ",". Save as a tab delimited file
 ```
 
 ```{r}
@@ -1486,7 +1486,7 @@ I am only going to look at biological processes.
 
 ```{r}
 predIsoMaledataBP <- new("topGOdata", ontology = "BP", allGenes = predIsoMaleFiltGeneList,
-                      annot = annFUN.gene2GO, gene2GO = geneID2GO) #Create biological process topGO object
+                         annot = annFUN.gene2GO, gene2GO = geneID2GO) #Create biological process topGO object
 predIsoMaledataBP #Get summary of object
 ```
 
@@ -1504,7 +1504,7 @@ hist(pvalFis.predIsoMaledataBP, 50, xlab = "p-values") #Plot histogram of p-valu
 
 ```{r}
 allRes.predIsoMaledataBP <- GenTable(predIsoMaledataBP, classic = resultFisher.predIsoMaledataBP, ranksOf = "classic", orderBy = "classic", topNodes = length(pvalFis.predIsoMaledataBP))
-  #Create a statistical results table with statistical test results. Order by p-value (classic), and include all results (topNodes)
+#Create a statistical results table with statistical test results. Order by p-value (classic), and include all results (topNodes)
 head(allRes.predIsoMaledataBP)
 ```
 
@@ -2214,3 +2214,119 @@ femPredIsoMethChange / malePredIsoMethChange
 ggsave("pred-isoform-change-meth-distribution.pdf", height = 8.5, width = 11)
 ```
 
+## Transcriptional noise results
+
+### Save individual plots
+
+```{r}
+#Save individual plots
+
+#FEMALES
+
+#A. Treatment
+
+femTreatmentPlot <- femMethExpCV %>%
+  mutate(., treatment = case_when(treatment == "control" ~ "Control",
+                                  treatment == "exposed" ~ "Exposed")) %>%
+  ggplot(aes(x = treatment, y = log10(CoV_FPKM))) + geom_violin(aes(fill = treatment)) +   
+  scale_fill_manual(values = c(plotColors[4], plotColors[8]),
+                    guide = "none") +
+  scale_alpha_continuous(guide = "none") +
+  geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
+  labs(x = "Treatment", y = "Transcriptional Noise", subtitle = expression(paste("A. ", beta, " = -8.62 x", 10^-3, ", t = -3.17, p = 0.002")), title = "Females") +
+  stat_summary(aes(group = 1), fun = median, geom = "line", col = "black", lty = 2) +
+  theme_classic(base_size = 12) + theme(plot.margin = margin(t = 5, r = 10, b = 5, l = 0, unit = "pt"),)
+
+#C. FPKM
+
+femFPKMPlot <- femMethExpCV %>%
+  ggplot(aes(x = log2(avg_exp + 1), y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c(plotColors[4], plotColors[8]),
+                      guide = "none") +
+  scale_alpha_continuous(guide = "none") +
+  labs(x = "FPKM", y = "", subtitle = expression(paste("C. ", beta, " = -0.10, t = -51.19, p < ", 10^-15)), title = "") +
+  geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], linewidth = 2, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], linewidth = 2, na.rm = TRUE) +
+  theme_classic(base_size = 12) + theme(plot.margin = margin(t = 5, r = 10, b = 5, l = 0, unit = "pt"),)
+
+#E. Methylation
+
+femMethPlot <- femMethExpCV %>%
+  ggplot(aes(x = avg_meth, y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c(plotColors[4], plotColors[8]),
+                      guide = "none") +
+  scale_alpha_continuous(guide = "none") +
+  labs(x = "Methylation (%)", y = "", subtitle = expression(paste("E. ", beta, " = -3.85 x ", 10^-3, ", t = -56.32, p < ", 10^-15)), title = "") +
+  geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], linewidth = 2, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], linewidth = 2, na.rm = TRUE) +
+  theme_classic(base_size = 12) + theme(plot.margin = margin(t = 5, r = 10, b = 5, l = 0, unit = "pt"),)
+
+#G. CV Methylation
+
+femCVMethPlot <- femMethExpCV %>%
+  ggplot(aes(x = log10(CoV_Meth), y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c(plotColors[4], plotColors[8]),
+                      guide = "none") +
+  scale_alpha_continuous(guide = "none") +
+  labs(x = "CV Methylation", y = "", subtitle = expression(paste("G. ", beta, " = 0.10, t = 35.44, p < ", 10^-15)), title = "") +
+  geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], linewidth = 2, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], linewidth = 2, na.rm = TRUE) +
+  theme_classic(base_size = 12) + theme(plot.margin = margin(t = 5, r = 10, b = 5, l = 0, unit = "pt"),)
+
+#MALES
+
+#B. Treatment
+
+maleTreatmentPlot <- maleMethExpCV %>%
+  mutate(., treatment = case_when(treatment == "control" ~ "Control",
+                                  treatment == "exposed" ~ "Exposed")) %>%
+  ggplot(aes(x = treatment, y = log10(CoV_FPKM))) + geom_violin(aes(fill = treatment)) +   
+  scale_fill_manual(values = c(plotColors[4], plotColors[8]),
+                    guide = "none") +
+  scale_alpha_continuous(guide = "none") +
+  geom_boxplot(width = 0.1, colour = "grey20", alpha = 0.2) +
+  labs(x = "Treatment", y = "Transcriptional Noise", subtitle = expression(paste("B. ", beta, " = 0.15, t = 7.81, p = 6.19 x ", 10^-15)), title = "Males") +
+  stat_summary(aes(group = 1), fun = median, geom = "line", col = "black", lty = 2) +
+  theme_classic(base_size = 12) + theme(plot.margin = margin(t = 5, r = 10, b = 5, l = 0, unit = "pt"),)
+
+#D. FPKM
+
+maleFPKMPlot <- maleMethExpCV %>%
+  ggplot(aes(x = log2(avg_exp + 1), y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c(plotColors[4], plotColors[8]),
+                      guide = "none") +
+  scale_alpha_continuous(guide = "none") +
+  labs(x = "FPKM", y = "", subtitle = expression(paste("D. ", beta, " = -0.41, t = -47.87, p < ", 10^-15)), title = "") +
+  geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], linewidth = 2, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], linewidth = 2, na.rm = TRUE) +
+  theme_classic(base_size = 12) + theme(plot.margin = margin(t = 5, r = 10, b = 5, l = 0, unit = "pt"),)
+
+#F. Methylation
+
+maleMethPlot <- maleMethExpCV %>%
+  ggplot(aes(x = avg_meth, y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c(plotColors[4], plotColors[8]),
+                      guide = "none") +
+  scale_alpha_continuous(guide = "none") +
+  labs(x = "Methylation (%)", y = "", subtitle = expression(paste("F. ", beta, " = -1.40 x ", 10^-3, ", t = -14.88, p < ", 10^-15)), title = "") +
+  geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], linewidth = 2, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], linewidth = 2, na.rm = TRUE) +
+  theme_classic(base_size = 12) + theme(plot.margin = margin(t = 5, r = 10, b = 5, l = 0, unit = "pt"),)
+
+#H. CV Methylation
+
+maleCVMethPlot <- maleMethExpCV %>%
+  ggplot(aes(x = log10(CoV_Meth), y = log10(CoV_FPKM))) + geom_point(aes(colour = treatment, alpha = 0.5)) +    
+  scale_colour_manual(values = c(plotColors[4], plotColors[8]),
+                      guide = "none") +
+  scale_alpha_continuous(guide = "none") +
+  labs(x = "CV Methylation", y = "", subtitle = expression(paste("H. ", beta, " = 0.14, t = 27.46, p = < ", 10^-15)), title = ) +
+  geom_smooth(data = (. %>% filter(treatment == "control")), method = lm, colour = plotColors[7], linewidth = 2, na.rm = TRUE) +
+  geom_smooth(data = (. %>% filter(treatment == "exposed")), method = lm, colour = plotColors[9], linewidth = 2, na.rm = TRUE) +
+  theme_classic(base_size = 12) + theme(plot.margin = margin(t = 5, r = 10, b = 5, l = 0, unit = "pt"),)
+```
+
+```{r}
+(femTreatmentPlot | femFPKMPlot | femMethPlot | femCVMethPlot) / (maleTreatmentPlot | maleFPKMPlot | maleMethPlot | maleCVMethPlot) #Create patchwork plot
+ggsave("transcriptional-noise/TN-multipanel.pdf", height = 8.5, width = 15)
+```
