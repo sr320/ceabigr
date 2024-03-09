@@ -35,6 +35,7 @@ females <- females %>%
   select(sample, fold, everything())
 
 head(females)
+str(females)
 ```
 
 Read in metadata and add information for treatment.  
@@ -47,6 +48,8 @@ females$treatment<-meta$Treatment[match(females$sample, meta$OldSample.ID)]
 females <- females %>%
   mutate(sex=c("Female"))%>%
   select(sample, fold, treatment, sex, everything())
+
+str(females)
 ```
 
 We now have a column for sample, fold, treatment, sex, and a column for each gene. Here are the levels of each factor.   
@@ -102,8 +105,8 @@ long_females<-long_females%>%
 head(long_females)
 
 res <- ALASCA(
-  long_females,
-  value ~ fold * treatment + (1|sample),
+  long_females, #dataframe
+  value ~ fold * treatment + (1|sample), #set model
   n_validation_runs = 100, #bootstrap 100 times; takes about 10 min to run 
   validate = TRUE, #bootstrap
   reduce_dimensions = TRUE #reduce variables to highest explanatory value
