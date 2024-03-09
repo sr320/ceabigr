@@ -10,7 +10,11 @@ In this script, I'll create summary tables for genomic location information, run
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = "/Users/yaaminivenkataraman/Documents/ceabigr/output/DML-characterization/") #Set root directory
+knitr::opts_knit$set(root.dir = normalizePath( "../output/DML-characterization/")) #Set root directory
+```
+
+```{r}
+getwd()
 ```
 
 # Install packages
@@ -34,11 +38,7 @@ sessionInfo()
 # Establish color scheme
 
 ```{r}
-plotColors <- rev(RColorBrewer::brewer.pal(5, "Blues")) #Create a color palette for the barplots. Use 5 shades from RColorBrewer. Reverse the order so the darkest shade is used first.
-```
-
-```{r}
-plotColors2 <- rev(RColorBrewer::brewer.pal(8, "Blues")) #Create a color palette for the barplots. Use 8 shades from RColorBrewer. Reverse the order so the darkest shade is used first.
+plotColors <- RColorBrewer::brewer.pal(9, "Greens")
 ```
 
 # Genomic location of DML
@@ -55,6 +55,7 @@ cpgFeatureOverlapsFem <- cpgFeatureOverlapsFem[-c(2),] #Drop extra lines
 cpgFeatureOverlapsFem <- cpgFeatureOverlapsFem[c(4, 1, 6, 8, 3, 7, 2, 5),] #Reorganize rows to match order: exon UTR, CDS, intron, upstream, downstream, lncRNA, TE, intergenic
 head(cpgFeatureOverlapsFem, n = 9) #Confirm import
 ```
+
 ```{r}
 femCpGFeatureOverlaps <- read.csv("../methylation-landscape/fem-CpG-feature-overlaps.csv", row.names = 1) #Import female methylation landscape
 head(femCpGFeatureOverlaps) #Confirm formatting
@@ -193,7 +194,6 @@ head(cpgFeatureOverlapsPercentsBind)
 mkdir figures
 ```
 
-
 ```{r}
 #pdf("figures/DML-feature-overlaps.pdf", width = 11, height = 8.5)
 
@@ -202,26 +202,26 @@ par(mar = c(3,5,1,1), oma = c(0, 1, 1, 11), mfrow = c(2, 1)) #Change figure boun
 #Females
 
 barplot(t(t(cpgFeatureOverlapsPercentsBind[,c(2,1)])), 
-        col= plotColors2, 
+        col= rev(plotColors), 
         axes = FALSE,
         names.arg = c("10x CpGs", "Female DML"), cex.names = 1.5,
         ylim = c(0, 110)) #Create base plot. Everything should be white. Do not plot axes. Include sequencing type as labels and set size. Set y-axis specs. 
 
 axis(side = 2, at = seq(0, 100, by = 10), las = 2, col = "grey80", cex.axis = 1.2) #Add y-axis
 mtext(side = 2, "% CpGs", line = 3, cex = 1.5) #Add y-axis label
-mtext("A) Females", x = 0, y = 105, cex = 1.5, adj = 0) #Add panel title
+mtext("A. Females", x = 0, y = 105, cex = 1.5, adj = 0) #Add panel title
 
 #Males
 
 barplot(t(t(cpgFeatureOverlapsPercentsBind[,c(4,3)])), 
-        col= plotColors2, 
+        col= rev(plotColors), 
         axes = FALSE, 
         names.arg = c("10x CpGs", "Male DML"), cex.names = 1.5,
         ylim = c(0, 110)) #Create base plot. Everything should be white. Do not plot axes. Include sequencing type as labels and set size. Set y-axis specs. 
 
 axis(side = 2, at = seq(0, 100, by = 10), las = 2, col = "grey80", cex.axis = 1.2) #Add y-axis
 mtext(side = 2, "% CpGs", line = 3, cex = 1.5) #Add y-axis label
-mtext("B) Males", x = 0, y = 105, cex = 1.5, adj = 0) #Add panel title
+mtext("B. Males", x = 0, y = 105, cex = 1.5, adj = 0) #Add panel title
 
 #Legend
 
@@ -230,16 +230,16 @@ plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n") #Add new plot on top o
 legend(x = 0.57, y = 0.87, 
        xpd = TRUE,
        legend = rev(c("Exon UTR", 
-                  "CDS", 
-                  "Introns", 
-                  "Upstream Flank", 
-                  "Downstream Flank", 
-                  "lncRNA", 
-                  "TE", 
-                  "Intergenic")),
+                      "CDS", 
+                      "Introns", 
+                      "Upstream Flank", 
+                      "Downstream Flank", 
+                      "lncRNA", 
+                      "TE", 
+                      "Intergenic")),
        pch = 22, 
-        col = "black", 
-        pt.bg = rev(plotColors2),
+       col = "black", 
+       pt.bg = plotColors,
        bty = "n",
        cex = 1.5, 
        x.intersp = 0.7, xjust = 0) #Place a legend in the top right of the figure with no box
