@@ -349,8 +349,11 @@ write.csv(broom::tidy(maleSpliceMethModel), "../output/78-asca-methdiff/male-spl
 femAllSpliceMethPlot <- f_allSplice_meth %>%
   ggplot(aes(x = average_control, y = average_exposed, color = desc)) +
   geom_point() +
-  geom_smooth(method = lm, data = f_noSplice_meth, aes(x = average_control, y = average_exposed), color = plotColors[5]) +
-  geom_smooth(method = lm, data = f_splice_meth, aes(x = average_control, y = average_exposed), color = plotColors[8]) +
+  geom_smooth(method = lm, data = f_noSplice_meth, aes(x = average_control, y = average_exposed), color = plotColors[5], lty = 2, alpha = 0.3) +
+  geom_smooth(method = lm, data = f_splice_meth, aes(x = average_control, y = average_exposed), color = plotColors[8], lty = 2, alpha = 0.3) +
+  xlim(c(0,100)) +
+  scale_y_continuous(breaks = seq(0, 100, 25),
+                     limits = c(0,110)) +
   labs(x = "", y = "Exposed Methylation (%)", title = "A. Females") +
   scale_color_manual(values = c(plotColors[8], plotColors[5]), 
                      breaks = c("f_diff", "f_same")) +
@@ -359,8 +362,11 @@ femAllSpliceMethPlot <- f_allSplice_meth %>%
 maleAllSpliceMethPlot <- m_allSplice_meth %>%
   ggplot(aes(x = average_control, y = average_exposed, color = desc)) +
   geom_point() +
-  geom_smooth(method = lm, data = m_noSplice_meth, aes(x = average_control, y = average_exposed), color = plotColors[5]) +
-  geom_smooth(method = lm, data = m_splice_meth, aes(x = average_control, y = average_exposed), color = plotColors[8]) +
+  geom_smooth(method = lm, data = m_noSplice_meth, aes(x = average_control, y = average_exposed), color = plotColors[5], lty = 2, alpha = 0.3) +
+  geom_smooth(method = lm, data = m_splice_meth, aes(x = average_control, y = average_exposed), color = plotColors[8], lty = 2, alpha = 0.3) +
+  xlim(c(0,100)) + 
+  scale_y_continuous(breaks = seq(0, 100, 25),
+                     limits = c(0,110)) +
   labs(x = "Control Methylation (%)", y = "Exposed Methylation (%)", title = "B. Males") +
   scale_color_manual(name = "Splicing Pattern",
                      values = c(plotColors[8], plotColors[5]), 
