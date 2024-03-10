@@ -361,7 +361,7 @@ maleAllSpliceMethPlot <- m_allSplice_meth %>%
   geom_point() +
   geom_smooth(method = lm, data = m_noSplice_meth, aes(x = average_control, y = average_exposed), color = plotColors[5]) +
   geom_smooth(method = lm, data = m_splice_meth, aes(x = average_control, y = average_exposed), color = plotColors[8]) +
-  labs(x = "Control Methylation (%)", y = "Exposed Methylation (%)", title = "Males") +
+  labs(x = "Control Methylation (%)", y = "Exposed Methylation (%)", title = "B. Males") +
   scale_color_manual(name = "Splicing Pattern",
                      values = c(plotColors[8], plotColors[5]), 
                      breaks = c("m_diff", "m_same"),
@@ -371,6 +371,6 @@ maleAllSpliceMethPlot <- m_allSplice_meth %>%
 
 ```{r}
 femAllSpliceMethPlot / maleAllSpliceMethPlot #Create patchwork plot
-ggsave("../output/78-asca-methdiff/methylation-patterns-splice-type.pdf")
+ggsave("../output/78-asca-methdiff/methylation-patterns-splice-type.pdf", height = 8.5, width = 11)
 ```
 
