@@ -200,23 +200,30 @@ f_allSplice_meth %>%
 ggsave("../output/78-asca-methdiff/methylation-patterns-splice-type.pdf", height = 8.5, width = 11)
 ```
 
-
-```{r}
-ggplot() +
-  geom_point(data = f_allSplice_meth, aes(x = average_control, y = average_exposed), color = plotColors[5]) +
-  geom_smooth(method = lm, data = f_noSplice_meth, aes(x = average_control, y = average_exposed), color = plotColors[5]) +
-  geom_point(data = f_splice_meth, aes(x = average_control, y = average_exposed), color = plotColors[8]) +
-  geom_smooth(method = lm, data = f_splice_meth, aes(x = average_control, y = average_exposed), color = plotColors[8]) +
-  labs(x = "Control Methylation (%)", y = "Exposed Methylation (%)") +
-  scale_color_manual(values = c(plotColors[5], plotColors[8]), 
-                     breaks = c("No Difference", "Difference")) +
-  theme_classic(base_size = 15) 
-```
-
 ### Model data
 
-BINOMIAL MODEL: CAN METHYLATION PREDICT GROUP
-add gene length?
+I will use a binomial model to understand if average control methylation or average exposed methylation can predict success (gene being alternatively spliced by treatment). I will also include gene length in this model.
+
+#### Format data
+
+```{r}
+f_allSplice_methLengths <- f_allSplice_meth %>%
+  left_join(., geneLengths, by = "gene_name") #Join with gene length information
+head(f_allSplice_methLengths) #Confirm changes
+```
+
+#### Run model
+
+```{r}
+femSpliceMethModel <- glm(I(desc == "f_diff") ~ average_control + average_exposed + log10(length),
+                          family = binomial(),
+                          data = f_allSplice_methLengths) #Create a binomial model, where 1 = success = different splicing by treatment. Use average control methylation, average exposed methylation, and gene length as explanatory variables
+summary(femSpliceMethModel) #No significant terms
+```
+
+```{r}
+write.csv(broom::tidy(femSpliceMethModel), "../output/78-asca-methdiff/fem-splicing-binomial-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
+```
 
 # Males
 
