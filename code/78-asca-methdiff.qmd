@@ -18,17 +18,11 @@ output:
   #   html_preview: true
 ---
 
-```{r setup, include=FALSE}
-#library(kableExtra)
-# library(DESeq2)
-# library(pheatmap)
-# library(RColorBrewer)
-# library(data.table)
-#library(DT)
-# library(Biostrings)
-#library(methylKit)
-library(tidyverse)
+Ariana created lists of genes were exon expression patterns were similar and different under OA conditions for both sexes. This script will investigate if there a clear difference in methylation patterns in these genes. This includes determining the presence of DML in these genes and if gene body methylation differed.
 
+# Set up R Markdown document
+
+```{r}
 knitr::opts_chunk$set(
   echo = TRUE,         # Display code chunks
   eval = TRUE,         # Evaluate code chunks
@@ -38,138 +32,191 @@ knitr::opts_chunk$set(
   fig.height = 4,      # Set plot height in inches
   fig.align = "center" # Align plots to the center
 )
+
+knitr::opts_knit$set(root.dir = normalizePath("../output/78-asca-methdiff/")) #Set root directory
 ```
-
-Ariana created lists of genes were exon patterning was similar and DIFFERENT under OA conditions for both sexes.
-
-The question becomes is there a clear difference in methylation patterns in these genes. 
-
-This includes determining the preponderance in DMLs and
-
-if gene body methylation differed.
-
-## female where pattern differed.
-
 
 ```{r}
-female_splice <- read.table("../output/77-asca-exon/females_splicing_treatments_gene_list.csv", col.names = c("name")) %>%
-  mutate(desc = "f_diff")
+getwd()
+```
+
+# Install packages
+
+```{r, include = FALSE}
+# if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse')
+# if ("data.table" %in% rownames(installed.packages()) == 'FALSE') install.packages('data.table')
+# if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages('RColorBrewer')
 ```
 
 
-female DMLs
-
-
+```{r setup, include = FALSE}
+require(tidyverse)
+require(data.table)
+require(RColorBrewer)
+```
 
 ```{r}
-female_dml <- read.table("../output/16-DML-annotation/female_dml_geneID.txt") %>%
-  mutate(desc = "fdml")
+sessionInfo()
 ```
+# Import overarching data
 
-
-
-join
+## Gene lengths
 
 ```{r}
-fsp_dml <- female_splice %>%
-  left_join(female_dml, by = c("name" = "V1"))
+cov_data <- fread("https://raw.githubusercontent.com/epigeneticstoocean/2018_L18-adult-methylation/main/analyses/genes_treatment_fpkm_CoV_df.csv", col.names = c("gene_ids", "M_control","F_control", "M_exposed", "F_exposed")) #Import cov data
+cov_data_l <- cov_data %>% 
+  pivot_longer(names_to = "sample", values_to = "CoV_FPKM", cols = 2:5) #Pivot longer
+head(cov_data_l) #Confirm formatting
 ```
 
-nothing
+```{r}
+Cvir_genom_feats <- fread("https://gannet.fish.washington.edu/Atumefaciens/20211209_cvir_gff-to-bed/20211209_cvir_GCF_002022765.2_genes.bed", col.names = c("chr", "start", "stop", "gene_ids", "V5", "strand")) %>%
+  mutate(., length = stop - start + 1) #Import genome feature BEDfile and create a new column for gene length
+head(Cvir_genom_feats) #Confirm changes
+```
 
+```{r}
+geneLengths <- cov_data_l[, c("gene_ids")] %>%
+  unique(.) %>%
+  merge(., Cvir_genom_feats[,c("gene_ids", "length")], by = "gene_ids") %>% 
+  dplyr::rename(gene_name = "gene_ids") %>%
+  dplyr::select(., gene_name, length) %>%
+  mutate(., gene_name = gsub(x = gene_name, pattern = "gene-", replacement = "")) #Add gene length to CoV data and retain only gene ID and length column. Rename columns to match naming conventions in this script and remove "gene-" prefix from names
+head(geneLengths) #Confirm formatting #Confirmm changes
+```
 
-# GBM
+## Annotation data
+
+```{r}
+mRNATrack <- read.delim("../../genome-features/C_virginica-3.0-mRNA.gff", header = FALSE) %>%
+  separate(., V9, into = c("V10", "V11"), sep = "ID=rna-") %>%
+  separate(., V11, into = c("V12", "V13"), sep = ";Parent=") %>%
+  separate(., V13, into = c("V14", "V15"), sep = ";Dbxref=") %>%
+  separate(., V15, into = c("V16", "V17"), sep = ";product=") %>%
+  separate(., V17, into = c("V18", "V19"), sep = ";transcript_id=") %>%
+  dplyr::select(., c("V12", "V14", "V18")) %>%
+  dplyr::rename(., transcript = V12, gene = V14, product = V18) #Winnow down mRNA track
+mRNATrack$gene_name <- gsub("gene-", "", mRNATrack$gene) #Make gene naming consistent
+head(mRNATrack) #Confirm changes
+```
+
+```{r}
+GOterms <- read.delim("../../genome-features/_blast-GO-unfolded.sorted", header = FALSE, col.names = c("GO", "transcript"))
+head(GOterms)
+```
+
+# Females
+
+## Import data
+
+```{r}
+female_splice <- read.table("../output/77-asca-exon/females_splicing_treatments_gene_list.csv", col.names = c("gene_name")) %>%
+  mutate(desc = "f_diff") #Import the list of genes with changes in alternative splicing. Change column names and add descriptive column for what these genes are
+head(female_splice) #Confirm import and formatting
+```
+
+```{r}
+female_noSplice <- read.table("../output/77-asca-exon/females_splicing_nodifference_gene_list.csv", col.names = c("gene_name")) %>%
+  mutate(desc = "f_same") #Import the list of genes with no change in alternative splicing. Change column names and add descriptive column for what these genes are
+head(female_noSplice) #Confirm import and formatting
+```
+
+```{r}
+female_dml <- read.table("../output/16-DML-annotation/female_dml_geneID.txt", col.names = c("gene_name")) %>%
+  mutate(desc = "f_dml")
+head(female_dml)
+```
 
 ```{r}
 female_40_meth <- read_csv("../output/73-gene-methylation/female_40_meth.csv") %>%
-  mutate(name = str_replace(name, "gene-", ""))
+  dplyr::rename(., gene_name = "name") %>%
+  mutate(gene_name = str_replace(gene_name, "gene-", "")) #Import data with average gene methylation for control and exposed samples
+head(female_40_meth) #Confirm import
 ```
 
+## DML presence in alternatively spliced genes
+
+```{r}
+female_splice %>%
+  left_join(., female_dml, by = "gene_name") %>%
+  filter(., is.na(desc.y) == FALSE) %>%
+  dplyr::select(., gene_name) %>%
+  unique(.) %>%
+  nrow(.) #0 alternatively spliced genes contain DML
+```
+
+```{r}
+female_noSplice %>%
+  left_join(., female_dml, by = "gene_name") %>%
+  filter(., is.na(desc.y) == FALSE) %>%
+  dplyr::select(., gene_name) %>%
+  unique(.) %>%
+  nrow(.) #1 not spliced gene contain DML
+```
+
+## Gene body methylation
+
+To examine differences in gene body methylation, we'll create XY plots with average gene body methylation for control and OA-exposed samples. If genes that are differentially spliced significantly deviate from the 1-to-1 regression line, then it is possible methylation modulated alternative splicing.
+
+### Format data
 
 ```{r}
 f_splice_meth <- female_40_meth %>%
-  left_join(female_splice, by = c("name" = "name")) %>%
-  filter(desc == "f_diff")
+  left_join(female_splice, by = "gene_name") %>%
+  filter(desc == "f_diff") #Join average gene body methylation data with spliced genes. filter for genes that are spliced
+f_splice_meth #Confirm formatting
 ```
-
-
-# plot 
-
 
 ```{r}
-ggplot(f_splice_meth, aes(x = average_control, y = average_exposed)) +
-  geom_point() +  # This adds the points to the plot
-  theme_minimal() 
+f_noSplice_meth <- female_40_meth %>%
+  left_join(female_noSplice, by = "gene_name") %>%
+  filter(desc == "f_same") #Join average gene body methylation data with spliced genes. filter for genes that are not spliced
+head(f_noSplice_meth) #Confirm changes
 ```
 
-## female no splice
-
+### Plot data
 
 ```{r}
-female_NOsplice <- read.table("../output/77-asca-exon/females_splicing_nodifference_gene_list.csv", col.names = c("name")) %>%
-  mutate(desc = "f_same")
+f_allSplice_meth <- rbind(f_noSplice_meth, f_splice_meth) #Combine data to make plotting easier
+head(f_allSplice_meth) #Confirm changes
 ```
-
-
-female DMLs
-
-
 
 ```{r}
-female_dml <- read.table("../output/16-DML-annotation/female_dml_geneID.txt") %>%
-  mutate(desc = "fdml")
+plotColors <- RColorBrewer::brewer.pal(9, "Greens") #Create color palette
 ```
-
-
-
-join
 
 ```{r}
-fNOsp_dml <- female_NOsplice %>%
-  left_join(female_dml, by = c("name" = "V1"))
+f_allSplice_meth %>%
+  ggplot(aes(x = average_control, y = average_exposed, color = desc)) +
+  geom_point() +
+  geom_smooth(method = lm, data = f_noSplice_meth, aes(x = average_control, y = average_exposed), color = plotColors[5]) +
+  geom_smooth(method = lm, data = f_splice_meth, aes(x = average_control, y = average_exposed), color = plotColors[8]) +
+  labs(x = "Control Methylation (%)", y = "Exposed Methylation (%)") +
+  scale_color_manual(name = "Splicing Pattern",
+                     values = c(plotColors[8], plotColors[5]), 
+                     breaks = c("f_diff", "f_same"),
+                     labels = c("Difference", "No Difference")) +
+  theme_classic(base_size = 15) #Take combined data and plot average control methylation vs. average exposed methylation. Assign color based on gene category. Add regressions with 95% confidence intervals for each data category separately
+ggsave("../output/78-asca-methdiff/methylation-patterns-splice-type.pdf", height = 8.5, width = 11)
 ```
 
-1 dml overlap
-
-
-# GBM
-
-```{r}
-female_40_meth <- read_csv("../output/73-gene-methylation/female_40_meth.csv") %>%
-  mutate(name = str_replace(name, "gene-", ""))
-```
-
-
-```{r}
-f_NOsplice_meth <- female_40_meth %>%
-  left_join(female_NOsplice, by = c("name" = "name")) %>%
-  filter(desc == "f_same")
-```
-
-
-# plot 
-
-
-```{r}
-ggplot(f_NOsplice_meth, aes(x = average_control, y = average_exposed)) +
-  geom_point() +  # This adds the points to the plot
-  theme_minimal() 
-```
-
-
-# lets look at together on one plot
 
 ```{r}
 ggplot() +
-  geom_point(data = f_NOsplice_meth, aes(x = average_control, y = average_exposed), color = "blue") +
-  geom_point(data = f_splice_meth, aes(x = average_control, y = average_exposed), color = "red") +
-  theme_minimal() +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "black") +
-  geom_abline(intercept = -5, slope = 1, linetype = "solid", color = "grey") + # Line below
-  geom_abline(intercept = 5, slope = 1, linetype = "solid", color = "grey") + # Line above
-  labs(x = "control", y = "exposed", title = "female methylation difference")
-
+  geom_point(data = f_allSplice_meth, aes(x = average_control, y = average_exposed), color = plotColors[5]) +
+  geom_smooth(method = lm, data = f_noSplice_meth, aes(x = average_control, y = average_exposed), color = plotColors[5]) +
+  geom_point(data = f_splice_meth, aes(x = average_control, y = average_exposed), color = plotColors[8]) +
+  geom_smooth(method = lm, data = f_splice_meth, aes(x = average_control, y = average_exposed), color = plotColors[8]) +
+  labs(x = "Control Methylation (%)", y = "Exposed Methylation (%)") +
+  scale_color_manual(values = c(plotColors[5], plotColors[8]), 
+                     breaks = c("No Difference", "Difference")) +
+  theme_classic(base_size = 15) 
 ```
+
+### Model data
+
+BINOMIAL MODEL: CAN METHYLATION PREDICT GROUP
+add gene length?
 
 # Males
 
