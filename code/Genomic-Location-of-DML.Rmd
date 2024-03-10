@@ -338,11 +338,6 @@ head(geneNames)
 ```
 
 ```{r}
-head(femDMLGenes)
-```
-
-
-```{r}
 femDMLGenesUnique <- femDMLGenes %>%
   dplyr::select(., gene_name) %>%
   unique(.) #Select the gene ID column and retain unique entries. Save as a new object
@@ -409,3 +404,118 @@ femDMLGenes %>%
   write.csv("fem-DML-BP-EnrichedGO-geneAnnot.csv", quote = FALSE, row.names = FALSE) #Annotate DML list then join with significantly enriched BPGO. Separate product information and retain unique rows with gene names. Save as a csv
 ```
 
+## Males
+
+### Import data
+
+```{r}
+maleDMLGenes <- read.delim("male_dml-Gene-wb.bed", sep = "\t", col.names = c("chr", "DML.start", "DML.stop", "f_DML", "meth.diff", "gene.chr", "Gnomon", "gene", "gene.start", "gene.stop", "V11", "strand", "V13", "V14")) %>%
+  dplyr::select(., chr, DML.start, DML.stop, f_DML, meth.diff, V14) %>%
+  separate(., col = V14, into = c("gene_name", "misc"), sep = ";Dbxref=GeneID:") %>%
+  dplyr::select(., -misc) %>%
+  mutate(., gene_name = gsub(x = gene_name, pattern = "ID=gene-", replacement = "")) #Import overlaps between DML and genes and rename columns during import. Select columns of interest. Separate annotations into gene name and misc information, remove misc column, and remove additional characters from gene name.
+head(maleDMLGenes)
+```
+
+```{r}
+maleGeneBackground <- read.delim("../methylation-landscape/male-union-averages_10x-wb.bed", sep = "\t", col.names = c("chr", "start", "stop", "meth", "chr", "RefSeq", "gene", "gene.start", "gene.end", "V10", "strand", "V12", "V13")) %>%
+  separate(., col = V13, into = c("gene_name", "misc"), sep = ";Dbxref=") %>%
+  mutate(., gene_name = gsub(., x = gene_name, pattern = "ID=gene-", replacement = "")) %>%
+  dplyr::select(., chr, start, stop, meth, gene_name) %>%
+  unique(.) #Import gene background (all genes with data for 10x CpGs). Separate gene name information from annotaton column and retain columns of interest. Keep only unique rows
+head(maleGeneBackground) #Confirm formatting
+```
+
+### Format enrichment input
+
+```{r}
+maleGeneBackground %>%
+  dplyr::select(., chr, gene_name) %>%
+  unique(.) %>%
+  left_join(., mRNATrack, by = "gene_name") %>%
+  left_join(., GOterms, by = "transcript") %>%
+  dplyr::select(., gene_name, GO) %>%
+  unique(.) %>%
+  group_by(., gene_name) %>%
+  filter(., is.na(GO) == FALSE) %>%
+  summarize(., GO = paste(GO, collapse = ",")) %>%
+  write.table(., "geneid2go-male_geneBackground.tab", quote = FALSE, sep = "\t", col.names = FALSE, row.names = FALSE) #Select chromosome and gene name information from background and join with transcripts, then GOterms. Keep only gene name and GO annotations, and retain unique entries. Group by gene name then summarize GO column such that all GOterms for one gene are in the same row separated by a comma. Save as a tab file
+```
+
+```{r}
+geneID2GO <- readMappings(file = "geneid2go-male_geneBackground.tab") #Loading the GO annotations and GeneIDs. Each line has one transcript ID and all associated GOterms
+str(head(geneID2GO)) #Confirm file structure
+length(geneID2GO) #32411 genes with annotations for all genes with 10x CpGs
+```
+
+```{r}
+geneNames <- names(geneID2GO) #Extract names to use as a gene universe
+head(geneNames)
+```
+
+```{r}
+maleDMLGenesUnique <- maleDMLGenes %>%
+  dplyr::select(., gene_name) %>%
+  unique(.) #Select the gene ID column and retain unique entries. Save as a new object
+maleDMLGenesUnique <- maleDMLGenesUnique$gene_name #Save column as a vector (will not work otherwise!)
+```
+
+```{r}
+maleDMLGeneList <- factor(as.integer(geneNames %in% maleDMLGenesUnique))  #Create a factor vector to indicate genes that increased transcripts as significant (1) and didn't as not significant (0)
+names(maleDMLGeneList) <- geneNames
+str(maleDMLGeneList)
+```
+
+### Run enrichment test
+
+```{r}
+maleDMLGeneListDataBP <- new("topGOdata", ontology = "BP", allGenes = maleDMLGeneList,
+                            annot = annFUN.gene2GO, gene2GO = geneID2GO) #Create biological process topGO object
+maleDMLGeneListDataBP #Get summary of object
+```
+
+```{r}
+test.stat <- new("classicCount", testStatistic = GOFisherTest, name = "Fisher test")
+resultFisher.maleDMLGeneListDataBP <- getSigGroups(maleDMLGeneListDataBP, test.stat)
+resultFisher.maleDMLGeneListDataBP
+```
+
+```{r}
+pvalFis.maleDMLGeneListDataBP <- score(resultFisher.maleDMLGeneListDataBP) #Extract p-values
+head(pvalFis.maleDMLGeneListDataBP)
+hist(pvalFis.maleDMLGeneListDataBP, 50, xlab = "p-values") #Plot histogram of p-values
+```
+
+```{r}
+allRes.maleDMLGeneListDataBP <- GenTable(maleDMLGeneListDataBP, classic = resultFisher.maleDMLGeneListDataBP, ranksOf = "classic", orderBy = "classic", topNodes = length(pvalFis.maleDMLGeneListDataBP))
+#Create a statistical results table with statistical test results. Order by p-value (classic), and include all results (topNodes)
+head(allRes.maleDMLGeneListDataBP)
+```
+
+```{r}
+write.csv(allRes.maleDMLGeneListDataBP, "male-DML-BP-FisherTestResults.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+```
+
+### Match enriched GOterms with general annotation information
+
+```{r}
+sigRes.maleDMLGeneListDataBP <- allRes.maleDMLGeneListDataBP[1:359,c(1, 6)] #Filter significantly enriched GOterms, only keep GOID and p-value
+colnames(sigRes.maleDMLGeneListDataBP) <- c("GO", "p.value") #Change column names
+head(sigRes.maleDMLGeneListDataBP)
+```
+
+```{r}
+maleDMLGenes %>%
+  dplyr::select(., chr, gene_name, meth.diff) %>%
+  unique(.) %>%
+  left_join(., mRNATrack, by = "gene_name") %>%
+  left_join(., GOterms, by = "transcript") %>%
+  unique(.) %>% 
+  left_join(sigRes.maleDMLGeneListDataBP, ., by = "GO") %>%
+  dplyr::select(gene_name, meth.diff, GO, p.value, product) %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C") %>%
+  dplyr::select(., -transcriptVar) %>%
+  filter(., is.na(gene_name) == FALSE) %>%
+  unique(.) %>%
+  write.csv("male-DML-BP-EnrichedGO-geneAnnot.csv", quote = FALSE, row.names = FALSE) #Annotate DML list then join with significantly enriched BPGO. Separate product information and retain unique rows with gene names. Save as a csv
+```
