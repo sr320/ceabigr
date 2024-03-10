@@ -124,6 +124,17 @@ dev.off()
 
 Plot PC components for components with variance explained >1.5%. 
 
+Prep color palette. 
+```{r}
+require(RColorBrewer)
+
+plotColors <- RColorBrewer::brewer.pal(9, "Greens")
+
+plotColors[6]
+plotColors[8]
+```
+
+
 PC1: 38.65%
 ```{r}
 pdf(file="output/77-asca-exon/female_plots/PC1_females.pdf", width=8, height=4)
@@ -132,7 +143,7 @@ plot(res, effect = 1, component = 1, type = 'effect',
      ribbon = TRUE,
      x_angle = 0, x_h_just= 0.5,
      flip_axis=TRUE,
-     palette = c("gray", "darkred"),
+     palette = c(plotColors[6], plotColors[8]),
      my_theme = theme_classic())
 dev.off()
 ```
@@ -145,7 +156,7 @@ plot(res, effect = 1, component = 2, type = 'effect',
      ribbon = TRUE,
      x_angle = 0, x_h_just= 0.5,
      flip_axis=TRUE,
-     palette = c("gray", "darkred"),
+     palette = c(plotColors[6], plotColors[8]),
      my_theme = theme_classic())
 dev.off()
 ```
@@ -158,7 +169,7 @@ plot(res, effect = 1, component = 3, type = 'effect',
      ribbon = TRUE,
      x_angle = 0, x_h_just= 0.5,
      flip_axis=TRUE,
-     palette = c("gray", "darkred"),
+     palette = c(plotColors[6], plotColors[8]),
      my_theme = theme_classic())
 dev.off()
 ```
@@ -171,7 +182,7 @@ plot(res, effect = 1, component = 4, type = 'effect',
      ribbon = TRUE,
      x_angle = 0, x_h_just= 0.5,
      flip_axis=TRUE,
-     palette = c("gray", "darkred"),
+     palette = c(plotColors[6], plotColors[8]),
      my_theme = theme_classic())
 dev.off()
 ```
@@ -184,7 +195,7 @@ plot(res, effect = 1, component = 5, type = 'effect',
      ribbon = TRUE,
      x_angle = 0, x_h_just= 0.5,
      flip_axis=TRUE,
-     palette = c("gray", "darkred"),
+     palette = c(plotColors[6], plotColors[8]),
      my_theme = theme_classic())
 dev.off()
 ```
@@ -197,7 +208,7 @@ plot(res, effect = 1, component = 6, type = 'effect',
      ribbon = TRUE,
      x_angle = 0, x_h_just= 0.5,
      flip_axis=TRUE,
-     palette = c("gray", "darkred"),
+     palette = c(plotColors[6], plotColors[8]),
      my_theme = theme_classic())
 dev.off()
 ```
@@ -208,7 +219,7 @@ PC1
 ```{r}
 #individual plot
 pdf(file="output/77-asca-exon/female_plots/PC1_genes_females.pdf", width=12, height=6)
-plot(res, component = 1, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+plot(res, component = 1, effect = 1, type = 'prediction', n_limit = 20, variable = c(), palette = c(plotColors[6], plotColors[8]))
 dev.off()
 ```
 
@@ -216,7 +227,7 @@ PC2
 ```{r}
 #individual plot
 pdf(file="output/77-asca-exon/female_plots/PC2_genes_females.pdf", width=12, height=6)
-plot(res, component = 2, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+plot(res, component = 2, effect = 1, type = 'prediction', n_limit = 20, variable = c(), palette = c(plotColors[6], plotColors[8]))
 dev.off()
 ```
 
@@ -224,7 +235,7 @@ PC3
 ```{r}
 #individual plot
 pdf(file="output/77-asca-exon/female_plots/PC3_genes_females.pdf", width=12, height=6)
-plot(res, component = 3, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+plot(res, component = 3, effect = 1, type = 'prediction', n_limit = 20, variable = c(), palette = c(plotColors[6], plotColors[8]))
 dev.off()
 ```
 
@@ -232,7 +243,7 @@ PC4
 ```{r}
 #individual plot
 pdf(file="output/77-asca-exon/female_plots/PC4_genes_females.pdf", width=12, height=6)
-plot(res, component = 4, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+plot(res, component = 4, effect = 1, type = 'prediction', n_limit = 20, variable = c(), palette = c(plotColors[6], plotColors[8]))
 dev.off()
 ```
 
@@ -240,7 +251,7 @@ PC5
 ```{r}
 #individual plot
 pdf(file="output/77-asca-exon/female_plots/PC5_genes_females.pdf", width=12, height=6)
-plot(res, component = 5, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+plot(res, component = 5, effect = 1, type = 'prediction', n_limit = 20, variable = c(), palette = c(plotColors[6], plotColors[8]))
 dev.off()
 ```
 
@@ -248,7 +259,7 @@ PC6
 ```{r}
 #individual plot
 pdf(file="output/77-asca-exon/female_plots/PC6_genes_females.pdf", width=12, height=6)
-plot(res, component = 6, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+plot(res, component = 6, effect = 1, type = 'prediction', n_limit = 20, variable = c(), palette = c(plotColors[6], plotColors[8]))
 dev.off()
 ```
 
@@ -385,7 +396,7 @@ plot(res_male, effect = 1, component = 1, type = 'effect',
      ribbon = TRUE,
      x_angle = 0, x_h_just= 0.5,
      flip_axis=TRUE,
-     palette = c("gray", "darkred"),
+     palette = c(plotColors[6], plotColors[8]),
      my_theme = theme_classic())
 dev.off()
 ```
@@ -398,7 +409,7 @@ plot(res_male, effect = 1, component = 2, type = 'effect',
      ribbon = TRUE,
      x_angle = 0, x_h_just= 0.5,
      flip_axis=TRUE,
-     palette = c("gray", "darkred"),
+     palette = c(plotColors[6], plotColors[8]),
      my_theme = theme_classic())
 dev.off()
 ```
@@ -411,7 +422,7 @@ plot(res_male, effect = 1, component = 3, type = 'effect',
      ribbon = TRUE,
      x_angle = 0, x_h_just= 0.5,
      flip_axis=TRUE,
-     palette = c("gray", "darkred"),
+     palette = c(plotColors[6], plotColors[8]),
      my_theme = theme_classic())
 dev.off()
 ```
@@ -424,7 +435,7 @@ plot(res_male, effect = 1, component = 4, type = 'effect',
      ribbon = TRUE,
      x_angle = 0, x_h_just= 0.5,
      flip_axis=TRUE,
-     palette = c("gray", "darkred"),
+     palette = c(plotColors[6], plotColors[8]),
      my_theme = theme_classic())
 dev.off()
 ```
@@ -437,7 +448,7 @@ plot(res_male, effect = 1, component = 5, type = 'effect',
      ribbon = TRUE,
      x_angle = 0, x_h_just= 0.5,
      flip_axis=TRUE,
-     palette = c("gray", "darkred"),
+     palette = c(plotColors[6], plotColors[8]),
      my_theme = theme_classic())
 dev.off()
 ```
@@ -450,7 +461,7 @@ plot(res_male, effect = 1, component = 6, type = 'effect',
      ribbon = TRUE,
      x_angle = 0, x_h_just= 0.5,
      flip_axis=TRUE,
-     palette = c("gray", "darkred"),
+     palette = c(plotColors[6], plotColors[8]),
      my_theme = theme_classic())
 dev.off()
 ```
@@ -466,7 +477,7 @@ PC1
 ```{r}
 #individual plot
 pdf(file="output/77-asca-exon/male_plots/PC1_genes_males.pdf", width=12, height=6)
-plot(res_male, component = 1, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+plot(res_male, component = 1, effect = 1, type = 'prediction', n_limit = 20, variable = c(), palette = c(plotColors[6], plotColors[8]))
 dev.off()
 ```
 
@@ -474,7 +485,7 @@ PC2
 ```{r}
 #individual plot
 pdf(file="output/77-asca-exon/male_plots/PC2_genes_males.pdf", width=12, height=6)
-plot(res_male, component = 2, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+plot(res_male, component = 2, effect = 1, type = 'prediction', n_limit = 20, variable = c(), palette = c(plotColors[6], plotColors[8]))
 dev.off()
 ```
 
@@ -482,7 +493,7 @@ PC3
 ```{r}
 #individual plot
 pdf(file="output/77-asca-exon/male_plots/PC3_genes_males.pdf", width=12, height=6)
-plot(res_male, component = 3, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+plot(res_male, component = 3, effect = 1, type = 'prediction', n_limit = 20, variable = c(), palette = c(plotColors[6], plotColors[8]))
 dev.off()
 ```
 
@@ -490,7 +501,7 @@ PC4
 ```{r}
 #individual plot
 pdf(file="output/77-asca-exon/male_plots/PC4_genes_males.pdf", width=12, height=6)
-plot(res_male, component = 4, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+plot(res_male, component = 4, effect = 1, type = 'prediction', n_limit = 20, variable = c(), palette = c(plotColors[6], plotColors[8]))
 dev.off()
 ```
 
@@ -498,7 +509,7 @@ PC5
 ```{r}
 #individual plot
 pdf(file="output/77-asca-exon/male_plots/PC5_genes_males.pdf", width=12, height=6)
-plot(res_male, component = 5, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+plot(res_male, component = 5, effect = 1, type = 'prediction', n_limit = 20, variable = c(), palette = c(plotColors[6], plotColors[8]))
 dev.off()
 ```
 
@@ -506,7 +517,7 @@ PC6
 ```{r}
 #individual plot
 pdf(file="output/77-asca-exon/male_plots/PC6_genes_males.pdf", width=12, height=6)
-plot(res_male, component = 6, effect = 1, type = 'prediction', n_limit = 20, variable = c())
+plot(res_male, component = 6, effect = 1, type = 'prediction', n_limit = 20, variable = c(), palette = c(plotColors[6], plotColors[8]))
 dev.off()
 ```
 
