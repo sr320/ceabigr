@@ -370,7 +370,7 @@ maleAllSpliceMethPlot <- m_allSplice_meth %>%
 ```
 
 ```{r}
-femAllSpliceMethPlot / maleAllSpliceMethPlot
-ggsave("methylation-patterns-splice-type.pdf")
+femAllSpliceMethPlot / maleAllSpliceMethPlot #Create patchwork plot
+ggsave("../output/78-asca-methdiff/methylation-patterns-splice-type.pdf")
 ```
 
