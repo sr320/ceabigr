@@ -1,0 +1,1966 @@
+gene_name,meth.diff,GO,p.value,product
+LOC111110619,-56,GO:0006996,7.1e-15,Hermansky-Pudlak syndrome 5 protein homolog
+LOC111126237,-50,GO:0006996,7.1e-15,Golgi reassembly-stacking protein 2-like
+LOC111104835,62,GO:0043087,1.2e-11,arf-GAP with GTPase
+LOC111104835,55,GO:0043087,1.2e-11,arf-GAP with GTPase
+LOC111117970,-65,GO:0043087,1.2e-11,focal adhesion kinase 1-like
+LOC111117970,-50,GO:0043087,1.2e-11,focal adhesion kinase 1-like
+LOC111119689,71,GO:0043087,1.2e-11,rapamycin-insensitive companion of mTOR-like
+LOC111119689,50,GO:0043087,1.2e-11,rapamycin-insensitive companion of mTOR-like
+LOC111119689,-73,GO:0043087,1.2e-11,rapamycin-insensitive companion of mTOR-like
+LOC111121366,50,GO:0043087,1.2e-11,rap guanine nucleotide exchange factor 6-like
+LOC111125048,51,GO:0043087,1.2e-11,guanine nucleotide exchange factor VAV2-like
+LOC111099157,-67,GO:0043087,1.2e-11,rap1 GTPase-activating protein 1-like
+LOC111133403,-57,GO:0043087,1.2e-11,rap1 GTPase-activating protein 1-like
+LOC111133403,66,GO:0043087,1.2e-11,rap1 GTPase-activating protein 1-like
+LOC111135949,-53,GO:0043087,1.2e-11,neurofibromin-like
+LOC111100441,61,GO:0043087,1.2e-11,uncharacterized LOC111100441
+LOC111108143,-61,GO:0043087,1.2e-11,FYVE
+LOC111106022,56,GO:0043087,1.2e-11,plexin-B1-like
+LOC111106023,56,GO:0043087,1.2e-11,plexin-B2-like
+LOC111108439,56,GO:0043087,1.2e-11,plexin-B-like
+LOC111108439,69,GO:0043087,1.2e-11,plexin-B-like
+LOC111108439,53,GO:0043087,1.2e-11,plexin-B-like
+LOC111107307,53,GO:0043087,1.2e-11,FYVE
+LOC111126641,52,GO:0008104,7.9e-09,low-density lipoprotein receptor-related protein 2-like
+LOC111125816,73,GO:0008104,7.9e-09,uncharacterized LOC111125816
+LOC111101884,50,GO:0008104,7.9e-09,TFIIH basal transcription factor complex helicase XPB subunit-like
+LOC111107913,52,GO:0008104,7.9e-09,filamin-A-like
+LOC111107913,53,GO:0008104,7.9e-09,filamin-A-like
+LOC111112987,53,GO:0008104,7.9e-09,ATP-dependent RNA helicase DDX42-like
+LOC111136991,-58,GO:0016070,8.1e-09,DNA-directed RNA polymerase II subunit RPB2-like
+LOC111136987,-58,GO:0016070,8.1e-09,DNA-directed RNA polymerase II subunit RPB2
+LOC111124264,-58,GO:0007017,9.8e-09,tubulin beta chain-like
+LOC111124577,79,GO:0007017,9.8e-09,kinesin-associated protein 3-like
+LOC111131843,-50,GO:0007017,9.8e-09,lysosomal-trafficking regulator-like
+LOC111124297,-52,GO:0007049,1.1e-08,zygotic DNA replication licensing factor mcm3-like
+LOC111121152,50,GO:0007049,1.1e-08,uncharacterized LOC111121152
+LOC111121152,71,GO:0007049,1.1e-08,uncharacterized LOC111121152
+LOC111120878,68,GO:0007049,1.1e-08,histone-binding protein N1/N2-like
+LOC111120878,56,GO:0007049,1.1e-08,histone-binding protein N1/N2-like
+LOC111119409,-62,GO:0007049,1.1e-08,cyclin-G-associated kinase-like
+LOC111120478,53,GO:0007049,1.1e-08,ras association domain-containing protein 2-like
+LOC111121780,55,GO:0007049,1.1e-08,protein phosphatase 1 regulatory subunit 7-like
+LOC111121780,50,GO:0007049,1.1e-08,protein phosphatase 1 regulatory subunit 7-like
+LOC111121780,67,GO:0007049,1.1e-08,protein phosphatase 1 regulatory subunit 7-like
+LOC111121447,62,GO:0007049,1.1e-08,RAD50-interacting protein 1-like
+LOC111125463,-51,GO:0007049,1.1e-08,hemicentin-1-like
+LOC111126797,-61,GO:0007049,1.1e-08,serine/threonine-protein phosphatase 6 catalytic subunit
+LOC111124746,56,GO:0007049,1.1e-08,septin-11-like
+LOC111124746,70,GO:0007049,1.1e-08,septin-11-like
+LOC111131058,54,GO:0007049,1.1e-08,cyclin-K-like
+LOC111127743,64,GO:0007049,1.1e-08,mis18-binding protein 1-like
+LOC111127743,54,GO:0007049,1.1e-08,mis18-binding protein 1-like
+LOC111127743,56,GO:0007049,1.1e-08,mis18-binding protein 1-like
+LOC111130223,52,GO:0007049,1.1e-08,ARL14 effector protein-like
+LOC111129910,-64,GO:0007049,1.1e-08,serine/threonine-protein kinase ATR-like
+LOC111129365,56,GO:0007049,1.1e-08,baculoviral IAP repeat-containing protein 6-like
+LOC111128537,56,GO:0007049,1.1e-08,uncharacterized LOC111128537
+LOC111129611,-56,GO:0007049,1.1e-08,uncharacterized LOC111129611
+LOC111129611,-64,GO:0007049,1.1e-08,uncharacterized LOC111129611
+LOC111131413,57,GO:0007049,1.1e-08,centriole
+LOC111136013,53,GO:0007049,1.1e-08,caltractin-like
+LOC111134709,61,GO:0007049,1.1e-08,leucine-rich repeat and coiled-coil domain-containing protein 1-like
+LOC111133065,-50,GO:0007049,1.1e-08,uncharacterized LOC111133065
+LOC111134148,-50,GO:0007049,1.1e-08,septin-7-like
+LOC111134148,51,GO:0007049,1.1e-08,septin-7-like
+LOC111135434,-72,GO:0007049,1.1e-08,retinoblastoma-like protein 1
+LOC111135434,-75,GO:0007049,1.1e-08,retinoblastoma-like protein 1
+LOC111134306,-52,GO:0007049,1.1e-08,N-lysine methyltransferase KMT5A-like
+LOC111134306,-54,GO:0007049,1.1e-08,N-lysine methyltransferase KMT5A-like
+LOC111134076,50,GO:0007049,1.1e-08,FK506-binding protein 3-like
+LOC111137585,52,GO:0007049,1.1e-08,macrophage erythroblast attacher-like
+LOC111134796,55,GO:0007049,1.1e-08,leucine zipper putative tumor suppressor 2 homolog
+LOC111132949,-51,GO:0007049,1.1e-08,transforming acidic coiled-coil-containing protein 3-like
+LOC111134993,64,GO:0007049,1.1e-08,transforming acidic coiled-coil-containing protein 1-like
+LOC111134993,74,GO:0007049,1.1e-08,transforming acidic coiled-coil-containing protein 1-like
+LOC111099585,67,GO:0007049,1.1e-08,lys-63-specific deubiquitinase BRCC36-like
+LOC111100561,-61,GO:0007049,1.1e-08,probable ubiquitin carboxyl-terminal hydrolase FAF-X
+LOC111105379,55,GO:0007049,1.1e-08,serine/threonine-protein kinase Nek9-like
+LOC111110608,-52,GO:0007049,1.1e-08,histone-lysine N-methyltransferase SUV39H2-like
+LOC111107565,-54,GO:0007049,1.1e-08,host cell factor 1-like
+LOC111112653,51,GO:0007049,1.1e-08,uncharacterized LOC111112653
+LOC111112653,54,GO:0007049,1.1e-08,uncharacterized LOC111112653
+LOC111115356,54,GO:0007049,1.1e-08,breast cancer type 1 susceptibility protein homolog
+LOC111115356,-50,GO:0007049,1.1e-08,breast cancer type 1 susceptibility protein homolog
+LOC111115356,52,GO:0007049,1.1e-08,breast cancer type 1 susceptibility protein homolog
+LOC111112743,-50,GO:0007049,1.1e-08,telomere-associated protein RIF1-like
+LOC111114886,56,GO:0007049,1.1e-08,uncharacterized LOC111114886
+LOC111113387,56,GO:0007049,1.1e-08,serine/threonine-protein kinase tousled-like 2
+LOC111113385,54,GO:0007049,1.1e-08,serine/threonine-protein kinase tousled-like 2
+LOC111135247,-54,GO:0046907,5.4e-08,protein spire homolog 1-like
+LOC111135247,-67,GO:0046907,5.4e-08,protein spire homolog 1-like
+LOC111127765,50,GO:0006892,5.2e-07,unconventional myosin-Ia-like
+LOC111099965,53,GO:0006892,5.2e-07,low-density lipoprotein receptor-related protein 8-like
+LOC111111058,-60,GO:0006892,5.2e-07,unconventional myosin-Va-like
+LOC111111058,61,GO:0006892,5.2e-07,unconventional myosin-Va-like
+LOC111111058,50,GO:0006892,5.2e-07,unconventional myosin-Va-like
+LOC111137104,-58,GO:0006351,5.3e-07,SWI/SNF complex subunit SMARCC2-like
+LOC111099659,61,GO:0006351,5.3e-07,zinc finger protein 177-like
+LOC111099659,56,GO:0006351,5.3e-07,zinc finger protein 177-like
+LOC111099659,64,GO:0006351,5.3e-07,zinc finger protein 177-like
+LOC111123891,53,GO:0006351,5.3e-07,lysine-specific histone demethylase 1B-like
+LOC111123818,-51,GO:0006351,5.3e-07,protein argonaute-2-like
+LOC111123818,65,GO:0006351,5.3e-07,protein argonaute-2-like
+LOC111126694,66,GO:0006351,5.3e-07,uncharacterized LOC111126694
+LOC111126605,59,GO:0006351,5.3e-07,uncharacterized LOC111126605
+LOC111126605,58,GO:0006351,5.3e-07,uncharacterized LOC111126605
+LOC111126605,66,GO:0006351,5.3e-07,uncharacterized LOC111126605
+LOC111126605,52,GO:0006351,5.3e-07,uncharacterized LOC111126605
+LOC111134747,-58,GO:0006351,5.3e-07,uncharacterized LOC111134747
+LOC111134747,-67,GO:0006351,5.3e-07,uncharacterized LOC111134747
+LOC111130344,51,GO:0006351,5.3e-07,nuclear factor erythroid 2-related factor 2-like
+LOC111118939,51,GO:0006351,5.3e-07,uncharacterized LOC111118939
+LOC111137675,-72,GO:0006351,5.3e-07,zinc finger protein 26-like
+LOC111135381,52,GO:0006351,5.3e-07,NGFI-A-binding protein homolog
+LOC111102833,-52,GO:0006351,5.3e-07,zinc finger E-box-binding homeobox 1-like
+LOC111127137,-52,GO:0006351,5.3e-07,retinoic acid receptor alpha-like
+LOC111123204,-57,GO:0006351,5.3e-07,B-cell lymphoma 6 protein homolog
+LOC111114011,-53,GO:0006351,5.3e-07,zinc finger protein 761-like
+LOC111135160,-52,GO:0006351,5.3e-07,protein timeless homolog
+LOC111108216,-50,GO:0006351,5.3e-07,zinc finger E-box-binding homeobox 2-like
+LOC111135478,51,GO:0006351,5.3e-07,PR domain zinc finger protein 15-like
+LOC111122759,64,GO:0006351,5.3e-07,zinc finger protein 260-like
+LOC111120013,-77,GO:0006351,5.3e-07,zinc finger protein 2 homolog
+LOC111120013,-60,GO:0006351,5.3e-07,zinc finger protein 2 homolog
+LOC111118904,69,GO:0006351,5.3e-07,uncharacterized LOC111118904
+LOC111118904,-54,GO:0006351,5.3e-07,uncharacterized LOC111118904
+LOC111118904,57,GO:0006351,5.3e-07,uncharacterized LOC111118904
+LOC111118012,52,GO:0006351,5.3e-07,coiled-coil and C2 domain-containing protein 1-like
+LOC111118089,53,GO:0006351,5.3e-07,elongator complex protein 3
+LOC111118300,-58,GO:0006351,5.3e-07,histone acetyltransferase KAT6B-like
+LOC111121376,-74,GO:0006351,5.3e-07,mediator of RNA polymerase II transcription subunit 23-like
+LOC111121376,-66,GO:0006351,5.3e-07,mediator of RNA polymerase II transcription subunit 23-like
+LOC111121376,65,GO:0006351,5.3e-07,mediator of RNA polymerase II transcription subunit 23-like
+LOC111120489,55,GO:0006351,5.3e-07,HEAT repeat-containing protein 1-like
+LOC111120062,-51,GO:0006351,5.3e-07,proteoglycan 4-like
+LOC111117921,-53,GO:0006351,5.3e-07,lethal(3)malignant brain tumor-like protein 3
+LOC111122313,-57,GO:0006351,5.3e-07,CCR4-NOT transcription complex subunit 3-like
+LOC111121273,-52,GO:0006351,5.3e-07,helicase with zinc finger domain 2-like
+LOC111121273,-67,GO:0006351,5.3e-07,helicase with zinc finger domain 2-like
+LOC111121273,52,GO:0006351,5.3e-07,helicase with zinc finger domain 2-like
+LOC111121273,56,GO:0006351,5.3e-07,helicase with zinc finger domain 2-like
+LOC111127061,68,GO:0006351,5.3e-07,uncharacterized LOC111127061
+LOC111122516,-53,GO:0006351,5.3e-07,transcriptional adapter 2-alpha-like
+LOC111123970,57,GO:0006351,5.3e-07,dentin sialophosphoprotein-like
+LOC111125018,52,GO:0006351,5.3e-07,E3 ubiquitin-protein ligase MYCBP2-like
+LOC111126788,51,GO:0006351,5.3e-07,uncharacterized LOC111126788
+LOC111124613,59,GO:0006351,5.3e-07,activating signal cointegrator 1 complex subunit 2-like
+LOC111127525,59,GO:0006351,5.3e-07,zinc finger protein 570-like
+LOC111123841,64,GO:0006351,5.3e-07,ubiquitin carboxyl-terminal hydrolase isozyme L5-like
+LOC111126626,-61,GO:0006351,5.3e-07,CCR4-NOT transcription complex subunit 9-like
+LOC111126626,-51,GO:0006351,5.3e-07,CCR4-NOT transcription complex subunit 9-like
+LOC111123762,54,GO:0006351,5.3e-07,AF4/FMR2 family member 4-like
+LOC111125833,-55,GO:0006351,5.3e-07,uncharacterized LOC111125833
+LOC111125795,-51,GO:0006351,5.3e-07,poly [ADP-ribose] polymerase 14-like
+LOC111127355,58,GO:0006351,5.3e-07,general transcription factor 3C polypeptide 4-like
+LOC111128020,51,GO:0006351,5.3e-07,COMM domain-containing protein 10-like
+LOC111130633,69,GO:0006351,5.3e-07,guanine nucleotide exchange protein SMCR8-like
+LOC111130633,59,GO:0006351,5.3e-07,guanine nucleotide exchange protein SMCR8-like
+LOC111128642,-54,GO:0006351,5.3e-07,transcriptional-regulating factor 1-like
+LOC111130152,57,GO:0006351,5.3e-07,bromodomain adjacent to zinc finger domain protein 1A-like
+LOC111131058,54,GO:0006351,5.3e-07,cyclin-K-like
+LOC111129906,-50,GO:0006351,5.3e-07,YLP motif-containing protein 1-like
+LOC111130223,52,GO:0006351,5.3e-07,ARL14 effector protein-like
+LOC111129287,-54,GO:0006351,5.3e-07,breast cancer metastasis-suppressor 1-like protein
+LOC111129048,51,GO:0006351,5.3e-07,GON-4-like protein
+LOC111129048,64,GO:0006351,5.3e-07,GON-4-like protein
+LOC111128559,-58,GO:0006351,5.3e-07,methyl-CpG-binding domain protein 2-like
+LOC111128564,-59,GO:0006351,5.3e-07,E3 SUMO-protein ligase PIAS2-like
+LOC111129072,-51,GO:0006351,5.3e-07,speckle-type POZ protein-like
+LOC111128383,56,GO:0006351,5.3e-07,CREB-regulated transcription coactivator 1-like
+LOC111136295,-71,GO:0006351,5.3e-07,uncharacterized LOC111136295
+LOC111136295,52,GO:0006351,5.3e-07,uncharacterized LOC111136295
+LOC111133006,51,GO:0006351,5.3e-07,centrosomal protein of 290 kDa-like
+LOC111133006,57,GO:0006351,5.3e-07,centrosomal protein of 290 kDa-like
+LOC111135165,55,GO:0006351,5.3e-07,mediator of RNA polymerase II transcription subunit 15-like
+LOC111136454,55,GO:0006351,5.3e-07,uncharacterized LOC111136454
+LOC111136454,54,GO:0006351,5.3e-07,uncharacterized LOC111136454
+LOC111136239,-52,GO:0006351,5.3e-07,protein HIRA-like
+LOC111134360,52,GO:0006351,5.3e-07,zinc finger protein 341-like
+LOC111134360,58,GO:0006351,5.3e-07,zinc finger protein 341-like
+LOC111133062,-50,GO:0006351,5.3e-07,huntingtin-interacting protein 1-like
+LOC111137181,-58,GO:0006351,5.3e-07,myb-binding protein 1A-like protein
+LOC111137181,-51,GO:0006351,5.3e-07,myb-binding protein 1A-like protein
+LOC111137181,-55,GO:0006351,5.3e-07,myb-binding protein 1A-like protein
+LOC111135281,-51,GO:0006351,5.3e-07,RE1-silencing transcription factor-like
+LOC111136943,-52,GO:0006351,5.3e-07,interferon regulatory factor 8-like
+LOC111136924,-50,GO:0006351,5.3e-07,chromodomain-helicase-DNA-binding protein 8-like
+LOC111136924,60,GO:0006351,5.3e-07,chromodomain-helicase-DNA-binding protein 8-like
+LOC111135434,-72,GO:0006351,5.3e-07,retinoblastoma-like protein 1
+LOC111135434,-75,GO:0006351,5.3e-07,retinoblastoma-like protein 1
+LOC111136643,51,GO:0006351,5.3e-07,FACT complex subunit SPT16-like
+LOC111134594,56,GO:0006351,5.3e-07,nucleolar complex protein 2 homolog
+LOC111134306,-52,GO:0006351,5.3e-07,N-lysine methyltransferase KMT5A-like
+LOC111134306,-54,GO:0006351,5.3e-07,N-lysine methyltransferase KMT5A-like
+LOC111135881,-53,GO:0006351,5.3e-07,transcription factor 25-like
+LOC111132479,51,GO:0006351,5.3e-07,uncharacterized LOC111132479
+LOC111135642,-57,GO:0006351,5.3e-07,zinc finger protein 83-like
+LOC111133949,73,GO:0006351,5.3e-07,zinc finger protein 354B-like
+LOC111136406,-54,GO:0006351,5.3e-07,YEATS domain-containing protein 4-like
+LOC111136406,-52,GO:0006351,5.3e-07,YEATS domain-containing protein 4-like
+LOC111136084,56,GO:0006351,5.3e-07,chromodomain-helicase-DNA-binding protein Mi-2 homolog
+LOC111132503,-51,GO:0006351,5.3e-07,chromodomain-helicase-DNA-binding protein Mi-2 homolog
+LOC111135819,50,GO:0006351,5.3e-07,ATP-dependent RNA helicase DDX1-like
+LOC111135819,-52,GO:0006351,5.3e-07,ATP-dependent RNA helicase DDX1-like
+LOC111133758,50,GO:0006351,5.3e-07,polycomb group RING finger protein 1-like
+LOC111136050,61,GO:0006351,5.3e-07,histone acetyltransferase KAT7-like
+LOC111136050,55,GO:0006351,5.3e-07,histone acetyltransferase KAT7-like
+LOC111136050,56,GO:0006351,5.3e-07,histone acetyltransferase KAT7-like
+LOC111134835,55,GO:0006351,5.3e-07,homeodomain-only protein-like
+LOC111134533,51,GO:0006351,5.3e-07,putative zinc finger protein 286B
+LOC111134076,50,GO:0006351,5.3e-07,FK506-binding protein 3-like
+LOC111136509,54,GO:0006351,5.3e-07,proline-
+LOC111134126,57,GO:0006351,5.3e-07,uncharacterized LOC111134126
+LOC111135181,-54,GO:0006351,5.3e-07,DNA-binding protein Ikaros-like
+LOC111136459,52,GO:0006351,5.3e-07,IWS1-like protein
+LOC111134465,52,GO:0006351,5.3e-07,poly [ADP-ribose] polymerase 14-like
+LOC111134465,54,GO:0006351,5.3e-07,poly [ADP-ribose] polymerase 14-like
+LOC111136641,67,GO:0006351,5.3e-07,EF-hand calcium-binding domain-containing protein 6-like
+LOC111134676,59,GO:0006351,5.3e-07,beta-arrestin-1-like
+LOC111136991,-58,GO:0006351,5.3e-07,DNA-directed RNA polymerase II subunit RPB2-like
+LOC111136987,-58,GO:0006351,5.3e-07,DNA-directed RNA polymerase II subunit RPB2
+LOC111134737,51,GO:0006351,5.3e-07,nuclear hormone receptor HR96-like
+LOC111134737,58,GO:0006351,5.3e-07,nuclear hormone receptor HR96-like
+LOC111134737,55,GO:0006351,5.3e-07,nuclear hormone receptor HR96-like
+LOC111134737,77,GO:0006351,5.3e-07,nuclear hormone receptor HR96-like
+LOC111134737,-53,GO:0006351,5.3e-07,nuclear hormone receptor HR96-like
+LOC111134737,54,GO:0006351,5.3e-07,nuclear hormone receptor HR96-like
+LOC111100403,53,GO:0006351,5.3e-07,uncharacterized LOC111100403
+LOC111100403,61,GO:0006351,5.3e-07,uncharacterized LOC111100403
+LOC111100406,61,GO:0006351,5.3e-07,uncharacterized LOC111100406
+LOC111100426,52,GO:0006351,5.3e-07,far upstream element-binding protein 3-like
+LOC111100426,50,GO:0006351,5.3e-07,far upstream element-binding protein 3-like
+LOC111100364,-55,GO:0006351,5.3e-07,histone deacetylase complex subunit SAP130-like
+LOC111099777,59,GO:0006351,5.3e-07,gastrula zinc finger protein XlCGF7.1-like
+LOC111100582,54,GO:0006351,5.3e-07,lysine-specific demethylase 3A-like
+LOC111099929,50,GO:0006351,5.3e-07,uncharacterized LOC111099929
+LOC111099929,56,GO:0006351,5.3e-07,uncharacterized LOC111099929
+LOC111099929,67,GO:0006351,5.3e-07,uncharacterized LOC111099929
+LOC111099929,69,GO:0006351,5.3e-07,uncharacterized LOC111099929
+LOC111099929,59,GO:0006351,5.3e-07,uncharacterized LOC111099929
+LOC111099929,58,GO:0006351,5.3e-07,uncharacterized LOC111099929
+LOC111104374,53,GO:0006351,5.3e-07,transcription factor E2F7-like
+LOC111105580,57,GO:0006351,5.3e-07,chromatin modification-related protein MEAF6-like
+LOC111104017,-56,GO:0006351,5.3e-07,zinc finger protein 711-like
+LOC111105527,50,GO:0006351,5.3e-07,tRNA wybutosine-synthesizing protein 5-like
+LOC111104779,-54,GO:0006351,5.3e-07,uncharacterized LOC111104779
+LOC111104074,-53,GO:0006351,5.3e-07,interleukin-1 receptor-associated kinase 1-binding protein 1-like
+LOC111103123,64,GO:0006351,5.3e-07,AT-rich interactive domain-containing protein 2-like
+LOC111110608,-52,GO:0006351,5.3e-07,histone-lysine N-methyltransferase SUV39H2-like
+LOC111106378,-53,GO:0006351,5.3e-07,uncharacterized LOC111106378
+LOC111108707,-51,GO:0006351,5.3e-07,fibropellin-1-like
+LOC111108271,-55,GO:0006351,5.3e-07,titin homolog
+LOC111108271,-51,GO:0006351,5.3e-07,titin homolog
+LOC111106496,51,GO:0006351,5.3e-07,DNA-binding protein P3A2-like
+LOC111110366,55,GO:0006351,5.3e-07,uncharacterized LOC111110366
+LOC111106097,52,GO:0006351,5.3e-07,retinoic acid receptor beta-like
+LOC111106097,-67,GO:0006351,5.3e-07,retinoic acid receptor beta-like
+LOC111106097,-53,GO:0006351,5.3e-07,retinoic acid receptor beta-like
+LOC111108180,-51,GO:0006351,5.3e-07,zinc finger and BTB domain-containing protein 49-like
+LOC111108180,-52,GO:0006351,5.3e-07,zinc finger and BTB domain-containing protein 49-like
+LOC111110082,-53,GO:0006351,5.3e-07,COMM domain-containing protein 7-like
+LOC111110082,56,GO:0006351,5.3e-07,COMM domain-containing protein 7-like
+LOC111105716,52,GO:0006351,5.3e-07,protein polybromo-1-like
+LOC111110750,51,GO:0006351,5.3e-07,WD repeat-containing protein 75-like
+LOC111114721,-56,GO:0006351,5.3e-07,transformation/transcription domain-associated protein-like
+LOC111115438,-61,GO:0006351,5.3e-07,uncharacterized LOC111115438
+LOC111112875,51,GO:0006351,5.3e-07,mothers against decapentaplegic homolog 6-like
+LOC111112875,50,GO:0006351,5.3e-07,mothers against decapentaplegic homolog 6-like
+LOC111114986,51,GO:0006351,5.3e-07,zinc finger protein 420-like
+LOC111111274,52,GO:0006351,5.3e-07,COMM domain-containing protein 4-like
+LOC111111977,59,GO:0006351,5.3e-07,nuclear receptor ROR-beta-like
+LOC111111034,51,GO:0006351,5.3e-07,interleukin enhancer-binding factor 2-like
+LOC111111034,52,GO:0006351,5.3e-07,interleukin enhancer-binding factor 2-like
+LOC111111034,50,GO:0006351,5.3e-07,interleukin enhancer-binding factor 2-like
+LOC111113180,-57,GO:0006351,5.3e-07,zinc finger protein 37 homolog
+LOC111113319,-60,GO:0006351,5.3e-07,ecdysone receptor-like
+LOC111115356,54,GO:0006351,5.3e-07,breast cancer type 1 susceptibility protein homolog
+LOC111115356,-50,GO:0006351,5.3e-07,breast cancer type 1 susceptibility protein homolog
+LOC111115356,52,GO:0006351,5.3e-07,breast cancer type 1 susceptibility protein homolog
+LOC111117335,60,GO:0006351,5.3e-07,zinc finger protein 473 homolog
+LOC111117305,55,GO:0006351,5.3e-07,endothelial zinc finger protein induced by tumor necrosis factor alpha-like
+LOC111117825,50,GO:0006351,5.3e-07,transformation/transcription domain-associated protein-like
+LOC111099659,61,GO:0006355,5.3e-07,zinc finger protein 177-like
+LOC111099659,56,GO:0006355,5.3e-07,zinc finger protein 177-like
+LOC111099659,64,GO:0006355,5.3e-07,zinc finger protein 177-like
+LOC111123891,53,GO:0006355,5.3e-07,lysine-specific histone demethylase 1B-like
+LOC111134747,-58,GO:0006355,5.3e-07,uncharacterized LOC111134747
+LOC111134747,-67,GO:0006355,5.3e-07,uncharacterized LOC111134747
+LOC111118939,51,GO:0006355,5.3e-07,uncharacterized LOC111118939
+LOC111137675,-72,GO:0006355,5.3e-07,zinc finger protein 26-like
+LOC111102833,-52,GO:0006355,5.3e-07,zinc finger E-box-binding homeobox 1-like
+LOC111127118,-52,GO:0006355,5.3e-07,nuclear receptor ROR-beta-like
+LOC111123204,-57,GO:0006355,5.3e-07,B-cell lymphoma 6 protein homolog
+LOC111114011,-53,GO:0006355,5.3e-07,zinc finger protein 761-like
+LOC111122759,64,GO:0006355,5.3e-07,zinc finger protein 260-like
+LOC111120013,-77,GO:0006355,5.3e-07,zinc finger protein 2 homolog
+LOC111120013,-60,GO:0006355,5.3e-07,zinc finger protein 2 homolog
+LOC111118904,69,GO:0006355,5.3e-07,uncharacterized LOC111118904
+LOC111118904,-54,GO:0006355,5.3e-07,uncharacterized LOC111118904
+LOC111118904,57,GO:0006355,5.3e-07,uncharacterized LOC111118904
+LOC111118300,-58,GO:0006355,5.3e-07,histone acetyltransferase KAT6B-like
+LOC111121376,-74,GO:0006355,5.3e-07,mediator of RNA polymerase II transcription subunit 23-like
+LOC111121376,-66,GO:0006355,5.3e-07,mediator of RNA polymerase II transcription subunit 23-like
+LOC111121376,65,GO:0006355,5.3e-07,mediator of RNA polymerase II transcription subunit 23-like
+LOC111122313,-57,GO:0006355,5.3e-07,CCR4-NOT transcription complex subunit 3-like
+LOC111123349,-52,GO:0006355,5.3e-07,N-glycosylase/DNA lyase-like
+LOC111127061,68,GO:0006355,5.3e-07,uncharacterized LOC111127061
+LOC111127549,65,GO:0006355,5.3e-07,zinc finger protein 567-like
+LOC111123970,57,GO:0006355,5.3e-07,dentin sialophosphoprotein-like
+LOC111125018,52,GO:0006355,5.3e-07,E3 ubiquitin-protein ligase MYCBP2-like
+LOC111126788,51,GO:0006355,5.3e-07,uncharacterized LOC111126788
+LOC111124613,59,GO:0006355,5.3e-07,activating signal cointegrator 1 complex subunit 2-like
+LOC111123841,64,GO:0006355,5.3e-07,ubiquitin carboxyl-terminal hydrolase isozyme L5-like
+LOC111126626,-61,GO:0006355,5.3e-07,CCR4-NOT transcription complex subunit 9-like
+LOC111126626,-51,GO:0006355,5.3e-07,CCR4-NOT transcription complex subunit 9-like
+LOC111123762,54,GO:0006355,5.3e-07,AF4/FMR2 family member 4-like
+LOC111128020,51,GO:0006355,5.3e-07,COMM domain-containing protein 10-like
+LOC111130633,69,GO:0006355,5.3e-07,guanine nucleotide exchange protein SMCR8-like
+LOC111130633,59,GO:0006355,5.3e-07,guanine nucleotide exchange protein SMCR8-like
+LOC111129335,-54,GO:0006355,5.3e-07,protein Smaug homolog 1-like
+LOC111130152,57,GO:0006355,5.3e-07,bromodomain adjacent to zinc finger domain protein 1A-like
+LOC111129906,-50,GO:0006355,5.3e-07,YLP motif-containing protein 1-like
+LOC111130223,52,GO:0006355,5.3e-07,ARL14 effector protein-like
+LOC111128989,52,GO:0006355,5.3e-07,uncharacterized LOC111128989
+LOC111130565,-51,GO:0006355,5.3e-07,5'-3' exoribonuclease 2-like
+LOC111129072,-51,GO:0006355,5.3e-07,speckle-type POZ protein-like
+LOC111134360,52,GO:0006355,5.3e-07,zinc finger protein 341-like
+LOC111134360,58,GO:0006355,5.3e-07,zinc finger protein 341-like
+LOC111133062,-50,GO:0006355,5.3e-07,huntingtin-interacting protein 1-like
+LOC111137181,-58,GO:0006355,5.3e-07,myb-binding protein 1A-like protein
+LOC111137181,-51,GO:0006355,5.3e-07,myb-binding protein 1A-like protein
+LOC111137181,-55,GO:0006355,5.3e-07,myb-binding protein 1A-like protein
+LOC111135281,-51,GO:0006355,5.3e-07,RE1-silencing transcription factor-like
+LOC111134306,-52,GO:0006355,5.3e-07,N-lysine methyltransferase KMT5A-like
+LOC111134306,-54,GO:0006355,5.3e-07,N-lysine methyltransferase KMT5A-like
+LOC111133949,73,GO:0006355,5.3e-07,zinc finger protein 354B-like
+LOC111136406,-54,GO:0006355,5.3e-07,YEATS domain-containing protein 4-like
+LOC111136406,-52,GO:0006355,5.3e-07,YEATS domain-containing protein 4-like
+LOC111135819,50,GO:0006355,5.3e-07,ATP-dependent RNA helicase DDX1-like
+LOC111135819,-52,GO:0006355,5.3e-07,ATP-dependent RNA helicase DDX1-like
+LOC111133758,50,GO:0006355,5.3e-07,polycomb group RING finger protein 1-like
+LOC111136050,61,GO:0006355,5.3e-07,histone acetyltransferase KAT7-like
+LOC111136050,55,GO:0006355,5.3e-07,histone acetyltransferase KAT7-like
+LOC111136050,56,GO:0006355,5.3e-07,histone acetyltransferase KAT7-like
+LOC111134533,51,GO:0006355,5.3e-07,putative zinc finger protein 286B
+LOC111136433,-53,GO:0006355,5.3e-07,transcription termination factor 2-like
+LOC111134126,57,GO:0006355,5.3e-07,uncharacterized LOC111134126
+LOC111135181,-54,GO:0006355,5.3e-07,DNA-binding protein Ikaros-like
+LOC111134465,52,GO:0006355,5.3e-07,poly [ADP-ribose] polymerase 14-like
+LOC111134465,54,GO:0006355,5.3e-07,poly [ADP-ribose] polymerase 14-like
+LOC111136641,67,GO:0006355,5.3e-07,EF-hand calcium-binding domain-containing protein 6-like
+LOC111134676,59,GO:0006355,5.3e-07,beta-arrestin-1-like
+LOC111100403,53,GO:0006355,5.3e-07,uncharacterized LOC111100403
+LOC111100403,61,GO:0006355,5.3e-07,uncharacterized LOC111100403
+LOC111100406,61,GO:0006355,5.3e-07,uncharacterized LOC111100406
+LOC111100426,52,GO:0006355,5.3e-07,far upstream element-binding protein 3-like
+LOC111100426,50,GO:0006355,5.3e-07,far upstream element-binding protein 3-like
+LOC111100364,-55,GO:0006355,5.3e-07,histone deacetylase complex subunit SAP130-like
+LOC111099777,59,GO:0006355,5.3e-07,gastrula zinc finger protein XlCGF7.1-like
+LOC111100582,54,GO:0006355,5.3e-07,lysine-specific demethylase 3A-like
+LOC111104141,54,GO:0006355,5.3e-07,protein arginine N-methyltransferase 3-like
+LOC111103434,56,GO:0006355,5.3e-07,cold shock domain-containing protein E1-like
+LOC111105580,57,GO:0006355,5.3e-07,chromatin modification-related protein MEAF6-like
+LOC111104017,-56,GO:0006355,5.3e-07,zinc finger protein 711-like
+LOC111104779,-54,GO:0006355,5.3e-07,uncharacterized LOC111104779
+LOC111104074,-53,GO:0006355,5.3e-07,interleukin-1 receptor-associated kinase 1-binding protein 1-like
+LOC111103123,64,GO:0006355,5.3e-07,AT-rich interactive domain-containing protein 2-like
+LOC111107565,-54,GO:0006355,5.3e-07,host cell factor 1-like
+LOC111107409,60,GO:0006355,5.3e-07,orphan steroid hormone receptor 2-like
+LOC111106378,-53,GO:0006355,5.3e-07,uncharacterized LOC111106378
+LOC111108790,51,GO:0006355,5.3e-07,scm-like with four MBT domains protein 1
+LOC111108271,-55,GO:0006355,5.3e-07,titin homolog
+LOC111108271,-51,GO:0006355,5.3e-07,titin homolog
+LOC111106496,51,GO:0006355,5.3e-07,DNA-binding protein P3A2-like
+LOC111110366,55,GO:0006355,5.3e-07,uncharacterized LOC111110366
+LOC111108180,-51,GO:0006355,5.3e-07,zinc finger and BTB domain-containing protein 49-like
+LOC111108180,-52,GO:0006355,5.3e-07,zinc finger and BTB domain-containing protein 49-like
+LOC111105716,52,GO:0006355,5.3e-07,protein polybromo-1-like
+LOC111110750,51,GO:0006355,5.3e-07,WD repeat-containing protein 75-like
+LOC111114721,-56,GO:0006355,5.3e-07,transformation/transcription domain-associated protein-like
+LOC111115438,-61,GO:0006355,5.3e-07,uncharacterized LOC111115438
+LOC111114986,51,GO:0006355,5.3e-07,zinc finger protein 420-like
+LOC111111274,52,GO:0006355,5.3e-07,COMM domain-containing protein 4-like
+LOC111113180,-57,GO:0006355,5.3e-07,zinc finger protein 37 homolog
+LOC111117335,60,GO:0006355,5.3e-07,zinc finger protein 473 homolog
+LOC111117305,55,GO:0006355,5.3e-07,endothelial zinc finger protein induced by tumor necrosis factor alpha-like
+LOC111117825,50,GO:0006355,5.3e-07,transformation/transcription domain-associated protein-like
+LOC111104835,62,GO:0043547,5.6e-07,arf-GAP with GTPase
+LOC111104835,55,GO:0043547,5.6e-07,arf-GAP with GTPase
+LOC111118303,51,GO:0043547,5.6e-07,rap1 GTPase-GDP dissociation stimulator 1-B-like
+LOC111121366,50,GO:0043547,5.6e-07,rap guanine nucleotide exchange factor 6-like
+LOC111120738,64,GO:0043547,5.6e-07,RAB6A-GEF complex partner protein 1-like
+LOC111125534,-51,GO:0043547,5.6e-07,triple functional domain protein-like
+LOC111124696,-71,GO:0043547,5.6e-07,E3 SUMO-protein ligase RanBP2-like
+LOC111124696,-51,GO:0043547,5.6e-07,E3 SUMO-protein ligase RanBP2-like
+LOC111128477,59,GO:0043547,5.6e-07,uncharacterized LOC111128477
+LOC111128477,52,GO:0043547,5.6e-07,uncharacterized LOC111128477
+LOC111131208,57,GO:0043547,5.6e-07,WD repeat-containing protein 41-like
+LOC111099157,-67,GO:0043547,5.6e-07,rap1 GTPase-activating protein 1-like
+LOC111133403,-57,GO:0043547,5.6e-07,rap1 GTPase-activating protein 1-like
+LOC111133403,66,GO:0043547,5.6e-07,rap1 GTPase-activating protein 1-like
+LOC111135949,-53,GO:0043547,5.6e-07,neurofibromin-like
+LOC111132939,-50,GO:0043547,5.6e-07,agrin-like
+LOC111132939,-51,GO:0043547,5.6e-07,agrin-like
+LOC111100962,51,GO:0043547,5.6e-07,protein ECT2-like
+LOC111103819,74,GO:0043547,5.6e-07,afadin-like
+LOC111106022,56,GO:0043547,5.6e-07,plexin-B1-like
+LOC111112703,51,GO:0043547,5.6e-07,sorting nexin-13-like
+LOC111135499,50,GO:0006403,1.8e-06,pre-mRNA-processing factor 6-like
+LOC111121447,62,GO:0048193,2.7e-06,RAD50-interacting protein 1-like
+LOC111129524,50,GO:0051252,3.2e-06,endoribonuclease Dicer-like
+LOC111135335,-50,GO:0060271,3.4e-06,WD repeat-containing protein 35-like
+LOC111110828,-53,GO:0060271,3.4e-06,tectonic-3-like
+LOC111120496,61,GO:0060271,3.4e-06,intraflagellar transport protein 140 homolog
+LOC111120496,-54,GO:0060271,3.4e-06,intraflagellar transport protein 140 homolog
+LOC111120713,-73,GO:0060271,3.4e-06,intraflagellar transport protein 172 homolog
+LOC111121543,66,GO:0060271,3.4e-06,protein JBTS17-like
+LOC111122003,-57,GO:0060271,3.4e-06,B9 domain-containing protein 1-like
+LOC111124747,66,GO:0060271,3.4e-06,centrosomal protein of 164 kDa-like
+LOC111124747,58,GO:0060271,3.4e-06,centrosomal protein of 164 kDa-like
+LOC111123971,51,GO:0060271,3.4e-06,tyrosine-protein phosphatase non-receptor type 23-like
+LOC111123971,74,GO:0060271,3.4e-06,tyrosine-protein phosphatase non-receptor type 23-like
+LOC111123971,61,GO:0060271,3.4e-06,tyrosine-protein phosphatase non-receptor type 23-like
+LOC111128088,61,GO:0060271,3.4e-06,tetratricopeptide repeat protein 8-like
+LOC111133006,51,GO:0060271,3.4e-06,centrosomal protein of 290 kDa-like
+LOC111133006,57,GO:0060271,3.4e-06,centrosomal protein of 290 kDa-like
+LOC111134148,-50,GO:0060271,3.4e-06,septin-7-like
+LOC111134148,51,GO:0060271,3.4e-06,septin-7-like
+LOC111135792,50,GO:0060271,3.4e-06,protein broad-minded-like
+LOC111134944,64,GO:0060271,3.4e-06,transcription factor RFX4-like
+LOC111136651,58,GO:0060271,3.4e-06,multidrug resistance-associated protein 4-like
+LOC111101328,-55,GO:0060271,3.4e-06,guanine nucleotide exchange factor for Rab-3A-like
+LOC111101972,53,GO:0060271,3.4e-06,X-linked retinitis pigmentosa GTPase regulator-like
+LOC111100546,58,GO:0060271,3.4e-06,X-linked retinitis pigmentosa GTPase regulator-like
+LOC111100602,69,GO:0060271,3.4e-06,WD repeat-containing protein 34-like
+LOC111101023,62,GO:0060271,3.4e-06,serine/threonine-protein kinase 36-like
+LOC111108799,-54,GO:0060271,3.4e-06,protein tyrosine phosphatase domain-containing protein 1-like
+LOC111106953,52,GO:0060271,3.4e-06,centrosomal protein of 41 kDa-like
+LOC111108707,-51,GO:0060271,3.4e-06,fibropellin-1-like
+LOC111107913,52,GO:0060271,3.4e-06,filamin-A-like
+LOC111107913,53,GO:0060271,3.4e-06,filamin-A-like
+LOC111107620,66,GO:0060271,3.4e-06,cilia- and flagella-associated protein 54-like
+LOC111107620,57,GO:0060271,3.4e-06,cilia- and flagella-associated protein 54-like
+LOC111108798,51,GO:0060271,3.4e-06,intraflagellar transport protein 122 homolog
+LOC111105908,51,GO:0060271,3.4e-06,centrosomal protein of 83 kDa-like
+LOC111112099,50,GO:0060271,3.4e-06,A-kinase anchor protein 9-like
+LOC111112099,61,GO:0060271,3.4e-06,A-kinase anchor protein 9-like
+LOC111112099,59,GO:0060271,3.4e-06,A-kinase anchor protein 9-like
+LOC111111633,-51,GO:0060271,3.4e-06,NAD-dependent protein deacetylase sirtuin-2-like
+LOC111135439,59,GO:0016570,3.7e-06,biotin--protein ligase-like
+LOC111117970,-65,GO:0000226,4.2e-06,focal adhesion kinase 1-like
+LOC111117970,-50,GO:0000226,4.2e-06,focal adhesion kinase 1-like
+LOC111124939,50,GO:0000226,4.2e-06,centrosome-associated protein CEP250-like
+LOC111131267,51,GO:0000226,4.2e-06,serine/threonine-protein phosphatase 2A regulatory subunit B'' subunit gamma-like
+LOC111134993,64,GO:0000226,4.2e-06,transforming acidic coiled-coil-containing protein 1-like
+LOC111134993,74,GO:0000226,4.2e-06,transforming acidic coiled-coil-containing protein 1-like
+LOC111108238,65,GO:0000226,4.2e-06,uncharacterized LOC111108238
+LOC111112099,50,GO:0000226,4.2e-06,A-kinase anchor protein 9-like
+LOC111112099,61,GO:0000226,4.2e-06,A-kinase anchor protein 9-like
+LOC111112099,59,GO:0000226,4.2e-06,A-kinase anchor protein 9-like
+LOC111113273,-52,GO:0044782,5.1e-06,centrosomal protein of 78 kDa-like
+LOC111133592,-54,GO:0032438,5.6e-06,ras-related protein Rab-32-like
+LOC111133592,-58,GO:0032438,5.6e-06,ras-related protein Rab-32-like
+LOC111125905,-61,GO:0032438,5.6e-06,kinesin-like protein KIF13B
+LOC111125905,-70,GO:0032438,5.6e-06,kinesin-like protein KIF13B
+LOC111125905,73,GO:0032438,5.6e-06,kinesin-like protein KIF13B
+LOC111125905,53,GO:0032438,5.6e-06,kinesin-like protein KIF13B
+LOC111125905,-53,GO:0032438,5.6e-06,kinesin-like protein KIF13B
+LOC111125959,-53,GO:0032438,5.6e-06,uncharacterized LOC111125959
+LOC111124997,55,GO:0032438,5.6e-06,SNARE-associated protein Snapin-like
+LOC111131843,-50,GO:0032438,5.6e-06,lysosomal-trafficking regulator-like
+LOC111137311,58,GO:0032438,5.6e-06,uncharacterized LOC111137311
+LOC111131843,-50,GO:0048753,5.6e-06,lysosomal-trafficking regulator-like
+LOC111118970,54,GO:0030030,7.3e-06,coiled-coil domain-containing protein 78-like
+LOC111122636,63,GO:0030030,7.3e-06,dynein beta chain
+LOC111125428,-60,GO:0030030,7.3e-06,cytoplasmic dynein 2 heavy chain 1-like
+LOC111125124,55,GO:0030030,7.3e-06,hamartin-like
+LOC111110034,-72,GO:0030030,7.3e-06,IQ and ubiquitin-like domain-containing protein
+LOC111134598,-57,GO:0015031,1.0e-05,pleckstrin homology domain-containing family F member 2-like
+LOC111126577,66,GO:0015031,1.0e-05,uncharacterized LOC111126577
+LOC111120139,-52,GO:0015031,1.0e-05,GPI inositol-deacylase-like
+LOC111120783,-53,GO:0015031,1.0e-05,charged multivesicular body protein 5-like
+LOC111120878,68,GO:0015031,1.0e-05,histone-binding protein N1/N2-like
+LOC111120878,56,GO:0015031,1.0e-05,histone-binding protein N1/N2-like
+LOC111118850,-67,GO:0015031,1.0e-05,serine/arginine repetitive matrix protein 2-like
+LOC111119012,53,GO:0015031,1.0e-05,uncharacterized LOC111119012
+LOC111119012,68,GO:0015031,1.0e-05,uncharacterized LOC111119012
+LOC111121916,57,GO:0015031,1.0e-05,kelch-like protein 3
+LOC111122360,-58,GO:0015031,1.0e-05,inactive rhomboid protein 1-like
+LOC111120645,51,GO:0015031,1.0e-05,protein Hook homolog 3-like
+LOC111120645,-62,GO:0015031,1.0e-05,protein Hook homolog 3-like
+LOC111119698,50,GO:0015031,1.0e-05,extracellular matrix protein FRAS1-like
+LOC111119698,-73,GO:0015031,1.0e-05,extracellular matrix protein FRAS1-like
+LOC111119697,51,GO:0015031,1.0e-05,extracellular matrix protein FRAS1-like
+LOC111119697,65,GO:0015031,1.0e-05,extracellular matrix protein FRAS1-like
+LOC111118022,-53,GO:0015031,1.0e-05,exocyst complex component 7-like
+LOC111121447,62,GO:0015031,1.0e-05,RAD50-interacting protein 1-like
+LOC111122587,-50,GO:0015031,1.0e-05,proteolipid protein DM beta-like
+LOC111123971,51,GO:0015031,1.0e-05,tyrosine-protein phosphatase non-receptor type 23-like
+LOC111123971,74,GO:0015031,1.0e-05,tyrosine-protein phosphatase non-receptor type 23-like
+LOC111123971,61,GO:0015031,1.0e-05,tyrosine-protein phosphatase non-receptor type 23-like
+LOC111123804,-57,GO:0015031,1.0e-05,NTF2-related export protein 2-like
+LOC111123804,-52,GO:0015031,1.0e-05,NTF2-related export protein 2-like
+LOC111123804,-70,GO:0015031,1.0e-05,NTF2-related export protein 2-like
+LOC111128088,61,GO:0015031,1.0e-05,tetratricopeptide repeat protein 8-like
+LOC111131258,62,GO:0015031,1.0e-05,exocyst complex component 5-like
+LOC111131470,-59,GO:0015031,1.0e-05,AP-5 complex subunit beta-1-like
+LOC111131470,-58,GO:0015031,1.0e-05,AP-5 complex subunit beta-1-like
+LOC111128599,51,GO:0015031,1.0e-05,EH domain-binding protein 1-like
+LOC111128599,54,GO:0015031,1.0e-05,EH domain-binding protein 1-like
+LOC111128599,52,GO:0015031,1.0e-05,EH domain-binding protein 1-like
+LOC111131437,-52,GO:0015031,1.0e-05,ribosome-binding protein 1-like
+LOC111130915,50,GO:0015031,1.0e-05,conserved oligomeric Golgi complex subunit 1-like
+LOC111133006,51,GO:0015031,1.0e-05,centrosomal protein of 290 kDa-like
+LOC111133006,57,GO:0015031,1.0e-05,centrosomal protein of 290 kDa-like
+LOC111135247,-54,GO:0015031,1.0e-05,protein spire homolog 1-like
+LOC111135247,-67,GO:0015031,1.0e-05,protein spire homolog 1-like
+LOC111134748,-63,GO:0015031,1.0e-05,exocyst complex component 2-like
+LOC111132028,-53,GO:0015031,1.0e-05,vacuolar protein sorting-associated protein 53 homolog
+LOC111132028,-50,GO:0015031,1.0e-05,vacuolar protein sorting-associated protein 53 homolog
+LOC111136676,56,GO:0015031,1.0e-05,AKT-interacting protein-like
+LOC111135863,-70,GO:0015031,1.0e-05,hemocyte protein-glutamine gamma-glutamyltransferase-like
+LOC111136186,-51,GO:0015031,1.0e-05,exocyst complex component 8-like
+LOC111134449,-56,GO:0015031,1.0e-05,eukaryotic translation initiation factor 4E transporter-like
+LOC111134995,54,GO:0015031,1.0e-05,tankyrase-1-like
+LOC111134800,-58,GO:0015031,1.0e-05,tripartite motif-containing protein 55-like
+LOC111132189,62,GO:0015031,1.0e-05,putative uncharacterized protein DDB_G0277255
+LOC111132189,51,GO:0015031,1.0e-05,putative uncharacterized protein DDB_G0277255
+LOC111134676,59,GO:0015031,1.0e-05,beta-arrestin-1-like
+LOC111136994,-58,GO:0015031,1.0e-05,tripartite motif-containing protein 5-like
+LOC111137470,63,GO:0015031,1.0e-05,uncharacterized LOC111137470
+LOC111137470,59,GO:0015031,1.0e-05,uncharacterized LOC111137470
+LOC111137470,53,GO:0015031,1.0e-05,uncharacterized LOC111137470
+LOC111133277,-77,GO:0015031,1.0e-05,uncharacterized LOC111133277
+LOC111133277,-82,GO:0015031,1.0e-05,uncharacterized LOC111133277
+LOC111133282,-77,GO:0015031,1.0e-05,uncharacterized LOC111133282
+LOC111133282,-53,GO:0015031,1.0e-05,uncharacterized LOC111133282
+LOC111133282,-51,GO:0015031,1.0e-05,uncharacterized LOC111133282
+LOC111133282,-54,GO:0015031,1.0e-05,uncharacterized LOC111133282
+LOC111133282,-57,GO:0015031,1.0e-05,uncharacterized LOC111133282
+LOC111133282,-56,GO:0015031,1.0e-05,uncharacterized LOC111133282
+LOC111133282,-50,GO:0015031,1.0e-05,uncharacterized LOC111133282
+LOC111133282,-52,GO:0015031,1.0e-05,uncharacterized LOC111133282
+LOC111133282,-60,GO:0015031,1.0e-05,uncharacterized LOC111133282
+LOC111099850,73,GO:0015031,1.0e-05,uncharacterized LOC111099850
+LOC111099850,52,GO:0015031,1.0e-05,uncharacterized LOC111099850
+LOC111100962,51,GO:0015031,1.0e-05,protein ECT2-like
+LOC111099960,55,GO:0015031,1.0e-05,uncharacterized LOC111099960
+LOC111102907,73,GO:0015031,1.0e-05,charged multivesicular body protein 2a-like
+LOC111103322,-50,GO:0015031,1.0e-05,protein dopey-1-like
+LOC111103322,-51,GO:0015031,1.0e-05,protein dopey-1-like
+LOC111104268,58,GO:0015031,1.0e-05,exportin-4-like
+LOC111102735,52,GO:0015031,1.0e-05,uncharacterized LOC111102735
+LOC111109622,53,GO:0015031,1.0e-05,WASH complex subunit 4-like
+LOC111108105,-55,GO:0015031,1.0e-05,glutamic acid-rich protein-like
+LOC111106044,56,GO:0015031,1.0e-05,conserved oligomeric Golgi complex subunit 6-like
+LOC111106044,73,GO:0015031,1.0e-05,conserved oligomeric Golgi complex subunit 6-like
+LOC111110125,-50,GO:0015031,1.0e-05,protein MON2 homolog
+LOC111110125,-54,GO:0015031,1.0e-05,protein MON2 homolog
+LOC111110125,61,GO:0015031,1.0e-05,protein MON2 homolog
+LOC111110125,-53,GO:0015031,1.0e-05,protein MON2 homolog
+LOC111106953,52,GO:0015031,1.0e-05,centrosomal protein of 41 kDa-like
+LOC111107856,60,GO:0015031,1.0e-05,protein MON2 homolog
+LOC111111451,62,GO:0015031,1.0e-05,uncharacterized LOC111111451
+LOC111111451,65,GO:0015031,1.0e-05,uncharacterized LOC111111451
+LOC111111451,55,GO:0015031,1.0e-05,uncharacterized LOC111111451
+LOC111111451,61,GO:0015031,1.0e-05,uncharacterized LOC111111451
+LOC111111451,66,GO:0015031,1.0e-05,uncharacterized LOC111111451
+LOC111111451,68,GO:0015031,1.0e-05,uncharacterized LOC111111451
+LOC111111451,64,GO:0015031,1.0e-05,uncharacterized LOC111111451
+LOC111111451,70,GO:0015031,1.0e-05,uncharacterized LOC111111451
+LOC111111451,58,GO:0015031,1.0e-05,uncharacterized LOC111111451
+LOC111111451,57,GO:0015031,1.0e-05,uncharacterized LOC111111451
+LOC111111058,-60,GO:0015031,1.0e-05,unconventional myosin-Va-like
+LOC111111058,61,GO:0015031,1.0e-05,unconventional myosin-Va-like
+LOC111111058,50,GO:0015031,1.0e-05,unconventional myosin-Va-like
+LOC111115943,-52,GO:0015031,1.0e-05,coiled-coil domain-containing protein 93-like
+LOC111112242,50,GO:0015031,1.0e-05,E3 ubiquitin-protein ligase TRIM71-like
+LOC111117050,51,GO:0051301,1.5e-05,serine/threonine-protein kinase greatwall-like
+LOC111135160,-52,GO:0051301,1.5e-05,protein timeless homolog
+LOC111120125,-72,GO:0051301,1.5e-05,spindle and centriole-associated protein 1-like
+LOC111118975,64,GO:0051301,1.5e-05,kinesin-like protein KIN-7I
+LOC111118975,54,GO:0051301,1.5e-05,kinesin-like protein KIN-7I
+LOC111118975,-61,GO:0051301,1.5e-05,kinesin-like protein KIN-7I
+LOC111121152,50,GO:0051301,1.5e-05,uncharacterized LOC111121152
+LOC111121152,71,GO:0051301,1.5e-05,uncharacterized LOC111121152
+LOC111119090,50,GO:0051301,1.5e-05,ubiquitin-conjugating enzyme E2 S-like
+LOC111118796,-52,GO:0051301,1.5e-05,nucleoprotein TPR-like
+LOC111121780,55,GO:0051301,1.5e-05,protein phosphatase 1 regulatory subunit 7-like
+LOC111121780,50,GO:0051301,1.5e-05,protein phosphatase 1 regulatory subunit 7-like
+LOC111121780,67,GO:0051301,1.5e-05,protein phosphatase 1 regulatory subunit 7-like
+LOC111124747,66,GO:0051301,1.5e-05,centrosomal protein of 164 kDa-like
+LOC111124747,58,GO:0051301,1.5e-05,centrosomal protein of 164 kDa-like
+LOC111125463,-51,GO:0051301,1.5e-05,hemicentin-1-like
+LOC111122929,-51,GO:0051301,1.5e-05,ubiquitin carboxyl-terminal hydrolase 26-like
+LOC111122929,-57,GO:0051301,1.5e-05,ubiquitin carboxyl-terminal hydrolase 26-like
+LOC111125942,-57,GO:0051301,1.5e-05,centriolin-like
+LOC111124746,56,GO:0051301,1.5e-05,septin-11-like
+LOC111124746,70,GO:0051301,1.5e-05,septin-11-like
+LOC111131058,54,GO:0051301,1.5e-05,cyclin-K-like
+LOC111127743,64,GO:0051301,1.5e-05,mis18-binding protein 1-like
+LOC111127743,54,GO:0051301,1.5e-05,mis18-binding protein 1-like
+LOC111127743,56,GO:0051301,1.5e-05,mis18-binding protein 1-like
+LOC111130636,56,GO:0051301,1.5e-05,anaphase-promoting complex subunit 1-like
+LOC111130636,-52,GO:0051301,1.5e-05,anaphase-promoting complex subunit 1-like
+LOC111129365,56,GO:0051301,1.5e-05,baculoviral IAP repeat-containing protein 6-like
+LOC111128552,-58,GO:0051301,1.5e-05,HAUS augmin-like complex subunit 1
+LOC111128552,70,GO:0051301,1.5e-05,HAUS augmin-like complex subunit 1
+LOC111128537,56,GO:0051301,1.5e-05,uncharacterized LOC111128537
+LOC111129611,-56,GO:0051301,1.5e-05,uncharacterized LOC111129611
+LOC111129611,-64,GO:0051301,1.5e-05,uncharacterized LOC111129611
+LOC111131413,57,GO:0051301,1.5e-05,centriole
+LOC111136013,53,GO:0051301,1.5e-05,caltractin-like
+LOC111132180,-63,GO:0051301,1.5e-05,borealin-like
+LOC111134709,61,GO:0051301,1.5e-05,leucine-rich repeat and coiled-coil domain-containing protein 1-like
+LOC111134148,-50,GO:0051301,1.5e-05,septin-7-like
+LOC111134148,51,GO:0051301,1.5e-05,septin-7-like
+LOC111137330,50,GO:0051301,1.5e-05,aurora kinase A-like
+LOC111135283,59,GO:0051301,1.5e-05,tRNA (cytosine(34)-C(5))-methyltransferase-like
+LOC111134306,-52,GO:0051301,1.5e-05,N-lysine methyltransferase KMT5A-like
+LOC111134306,-54,GO:0051301,1.5e-05,N-lysine methyltransferase KMT5A-like
+LOC111137056,74,GO:0051301,1.5e-05,HAUS augmin-like complex subunit 4
+LOC111134735,51,GO:0051301,1.5e-05,cohesin subunit SA-1-like
+LOC111134995,54,GO:0051301,1.5e-05,tankyrase-1-like
+LOC111134076,50,GO:0051301,1.5e-05,FK506-binding protein 3-like
+LOC111135331,53,GO:0051301,1.5e-05,anaphase-promoting complex subunit 4-like
+LOC111137585,52,GO:0051301,1.5e-05,macrophage erythroblast attacher-like
+LOC111134795,-58,GO:0051301,1.5e-05,condensin complex subunit 2-like
+LOC111134796,55,GO:0051301,1.5e-05,leucine zipper putative tumor suppressor 2 homolog
+LOC111132949,-51,GO:0051301,1.5e-05,transforming acidic coiled-coil-containing protein 3-like
+LOC111134993,64,GO:0051301,1.5e-05,transforming acidic coiled-coil-containing protein 1-like
+LOC111134993,74,GO:0051301,1.5e-05,transforming acidic coiled-coil-containing protein 1-like
+LOC111101550,-58,GO:0051301,1.5e-05,spindle and kinetochore-associated protein 3-like
+LOC111101550,-50,GO:0051301,1.5e-05,spindle and kinetochore-associated protein 3-like
+LOC111099585,67,GO:0051301,1.5e-05,lys-63-specific deubiquitinase BRCC36-like
+LOC111100880,-51,GO:0051301,1.5e-05,mini-chromosome maintenance complex-binding protein-like
+LOC111100561,-61,GO:0051301,1.5e-05,probable ubiquitin carboxyl-terminal hydrolase FAF-X
+LOC111100632,53,GO:0051301,1.5e-05,receptor expression-enhancing protein 1-like
+LOC111102678,57,GO:0051301,1.5e-05,dual specificity protein kinase Ttk-like
+LOC111105379,55,GO:0051301,1.5e-05,serine/threonine-protein kinase Nek9-like
+LOC111108626,55,GO:0051301,1.5e-05,integrator complex subunit 13-like
+LOC111122940,54,GO:0045184,1.6e-05,rho family-interacting cell polarization regulator 2-like
+LOC111121701,-52,GO:0045184,1.6e-05,putative ankyrin repeat protein RF_0381
+LOC111118817,55,GO:0045184,1.6e-05,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit C-like
+LOC111123804,-57,GO:0045184,1.6e-05,NTF2-related export protein 2-like
+LOC111123804,-52,GO:0045184,1.6e-05,NTF2-related export protein 2-like
+LOC111123804,-70,GO:0045184,1.6e-05,NTF2-related export protein 2-like
+LOC111124392,-61,GO:0045184,1.6e-05,uncharacterized LOC111124392
+LOC111101238,57,GO:0045184,1.6e-05,tankyrase-1-like
+LOC111107913,52,GO:0045184,1.6e-05,filamin-A-like
+LOC111107913,53,GO:0045184,1.6e-05,filamin-A-like
+LOC111110204,56,GO:0051648,1.7e-05,optineurin-like
+LOC111120125,-72,GO:0046599,2.0e-05,spindle and centriole-associated protein 1-like
+LOC111134751,-52,GO:0046599,2.0e-05,centrosomal protein of 76 kDa-like
+LOC111134751,-70,GO:0046599,2.0e-05,centrosomal protein of 76 kDa-like
+LOC111110197,-57,GO:0007010,2.9e-05,uncharacterized LOC111110197
+LOC111124649,-52,GO:0007010,2.9e-05,rho GTPase-activating protein 26-like
+LOC111134328,-69,GO:0007010,2.9e-05,protein kinase C iota type-like
+LOC111137094,79,GO:0007010,2.9e-05,dedicator of cytokinesis protein 1-like
+LOC111137585,52,GO:0007010,2.9e-05,macrophage erythroblast attacher-like
+LOC111102779,-64,GO:0007010,2.9e-05,uncharacterized LOC111102779
+LOC111108143,-61,GO:0007010,2.9e-05,FYVE
+LOC111107307,53,GO:0007010,2.9e-05,FYVE
+LOC111114212,-51,GO:0006886,3.1e-05,coatomer subunit alpha-like
+LOC111114212,57,GO:0006886,3.1e-05,coatomer subunit alpha-like
+LOC111135967,54,GO:0006886,3.1e-05,sorting nexin-33-like
+LOC111125905,-61,GO:0006886,3.1e-05,kinesin-like protein KIF13B
+LOC111125905,-70,GO:0006886,3.1e-05,kinesin-like protein KIF13B
+LOC111125905,73,GO:0006886,3.1e-05,kinesin-like protein KIF13B
+LOC111125905,53,GO:0006886,3.1e-05,kinesin-like protein KIF13B
+LOC111125905,-53,GO:0006886,3.1e-05,kinesin-like protein KIF13B
+LOC111125959,-53,GO:0006886,3.1e-05,uncharacterized LOC111125959
+LOC111134129,54,GO:0006886,3.1e-05,AP-2 complex subunit alpha-2-like
+LOC111108287,-50,GO:0006886,3.1e-05,TBC1 domain family member 9-like
+LOC111108287,80,GO:0006886,3.1e-05,TBC1 domain family member 9-like
+LOC111121630,-59,GO:0006886,3.1e-05,programmed cell death protein 6-like
+LOC111118911,80,GO:0006886,3.1e-05,sorting nexin-8-like
+LOC111120273,50,GO:0006886,3.1e-05,protein HID1-like
+LOC111120273,67,GO:0006886,3.1e-05,protein HID1-like
+LOC111120273,60,GO:0006886,3.1e-05,protein HID1-like
+LOC111120273,65,GO:0006886,3.1e-05,protein HID1-like
+LOC111118731,-50,GO:0006886,3.1e-05,protein transport protein Sec24A-like
+LOC111120738,64,GO:0006886,3.1e-05,RAB6A-GEF complex partner protein 1-like
+LOC111120467,53,GO:0006886,3.1e-05,protein transport protein Sec24C-like
+LOC111124997,55,GO:0006886,3.1e-05,SNARE-associated protein Snapin-like
+LOC111122737,-50,GO:0006886,3.1e-05,syntaxin-17-like
+LOC111127465,61,GO:0006886,3.1e-05,TBC1 domain family member 1-like
+LOC111137817,63,GO:0006886,3.1e-05,syntaxin-16-like
+LOC111135523,-51,GO:0006886,3.1e-05,growth hormone-regulated TBC protein 1-A-like
+LOC111100344,-50,GO:0006886,3.1e-05,unconventional myosin-VI-like
+LOC111100794,52,GO:0006886,3.1e-05,TBC1 domain family member 12-like
+LOC111108268,-59,GO:0006886,3.1e-05,TBC1 domain family member 30-like
+LOC111112703,51,GO:0006886,3.1e-05,sorting nexin-13-like
+LOC111113387,56,GO:0006886,3.1e-05,serine/threonine-protein kinase tousled-like 2
+LOC111113385,54,GO:0006886,3.1e-05,serine/threonine-protein kinase tousled-like 2
+LOC111117701,55,GO:0006886,3.1e-05,gamma-soluble NSF attachment protein-like
+LOC111117701,51,GO:0006886,3.1e-05,gamma-soluble NSF attachment protein-like
+LOC111124696,-71,GO:0007051,3.2e-05,E3 SUMO-protein ligase RanBP2-like
+LOC111124696,-51,GO:0007051,3.2e-05,E3 SUMO-protein ligase RanBP2-like
+LOC111137330,50,GO:0007051,3.2e-05,aurora kinase A-like
+LOC111121674,-51,GO:0007059,3.3e-05,N-alpha-acetyltransferase 60-like
+LOC111118975,64,GO:0007059,3.3e-05,kinesin-like protein KIN-7I
+LOC111118975,54,GO:0007059,3.3e-05,kinesin-like protein KIN-7I
+LOC111118975,-61,GO:0007059,3.3e-05,kinesin-like protein KIN-7I
+LOC111124939,50,GO:0007059,3.3e-05,centrosome-associated protein CEP250-like
+LOC111101550,-58,GO:0007059,3.3e-05,spindle and kinetochore-associated protein 3-like
+LOC111101550,-50,GO:0007059,3.3e-05,spindle and kinetochore-associated protein 3-like
+LOC111100561,-61,GO:0007059,3.3e-05,probable ubiquitin carboxyl-terminal hydrolase FAF-X
+LOC111110677,-57,GO:0006366,3.5e-05,homeodomain-interacting protein kinase 2-like
+LOC111109352,-64,GO:0006366,3.5e-05,PHD and RING finger domain-containing protein 1-like
+LOC111118832,-51,GO:0006366,3.5e-05,zinc finger protein GLIS3-like
+LOC111129570,-51,GO:0006366,3.5e-05,DNA-directed RNA polymerase II subunit RPB3-like
+LOC111129369,51,GO:0006366,3.5e-05,protein trachealess-like
+LOC111128837,-54,GO:0006366,3.5e-05,lysine-specific demethylase 5A-like
+LOC111136991,-58,GO:0006366,3.5e-05,DNA-directed RNA polymerase II subunit RPB2-like
+LOC111136987,-58,GO:0006366,3.5e-05,DNA-directed RNA polymerase II subunit RPB2
+LOC111133129,59,GO:0006366,3.5e-05,transcription initiation factor TFIID subunit 9B-like
+LOC111101884,50,GO:0006366,3.5e-05,TFIIH basal transcription factor complex helicase XPB subunit-like
+LOC111103988,57,GO:0006366,3.5e-05,DNA-directed RNA polymerases I
+LOC111107565,-54,GO:0006366,3.5e-05,host cell factor 1-like
+LOC111125491,50,GO:0051603,4.1e-05,caspase-8-like
+LOC111129870,-50,GO:0051603,4.1e-05,ATP-dependent Clp protease ATP-binding subunit ClpX-like
+LOC111129870,51,GO:0051603,4.1e-05,ATP-dependent Clp protease ATP-binding subunit ClpX-like
+LOC111136303,-54,GO:0051603,4.1e-05,uncharacterized LOC111136303
+LOC111136303,55,GO:0051603,4.1e-05,uncharacterized LOC111136303
+LOC111136303,67,GO:0051603,4.1e-05,uncharacterized LOC111136303
+LOC111136303,58,GO:0051603,4.1e-05,uncharacterized LOC111136303
+LOC111119493,54,GO:0006511,4.8e-05,ubiquitin carboxyl-terminal hydrolase 24-like
+LOC111118909,-53,GO:0006511,4.8e-05,E3 ubiquitin-protein ligase SMURF2-like
+LOC111119090,50,GO:0006511,4.8e-05,ubiquitin-conjugating enzyme E2 S-like
+LOC111118834,53,GO:0006511,4.8e-05,ubiquitin carboxyl-terminal hydrolase 7-like
+LOC111118834,59,GO:0006511,4.8e-05,ubiquitin carboxyl-terminal hydrolase 7-like
+LOC111118382,58,GO:0006511,4.8e-05,COP9 signalosome complex subunit 3-like
+LOC111122929,-51,GO:0006511,4.8e-05,ubiquitin carboxyl-terminal hydrolase 26-like
+LOC111122929,-57,GO:0006511,4.8e-05,ubiquitin carboxyl-terminal hydrolase 26-like
+LOC111123841,64,GO:0006511,4.8e-05,ubiquitin carboxyl-terminal hydrolase isozyme L5-like
+LOC111124696,-71,GO:0006511,4.8e-05,E3 SUMO-protein ligase RanBP2-like
+LOC111124696,-51,GO:0006511,4.8e-05,E3 SUMO-protein ligase RanBP2-like
+LOC111128834,-62,GO:0006511,4.8e-05,ubiquitin carboxyl-terminal hydrolase 34-like
+LOC111135619,63,GO:0006511,4.8e-05,ubiquitin carboxyl-terminal hydrolase 10-like
+LOC111135619,64,GO:0006511,4.8e-05,ubiquitin carboxyl-terminal hydrolase 10-like
+LOC111135619,55,GO:0006511,4.8e-05,ubiquitin carboxyl-terminal hydrolase 10-like
+LOC111134719,-51,GO:0006511,4.8e-05,ubiquitin carboxyl-terminal hydrolase 32-like
+LOC111135857,52,GO:0006511,4.8e-05,F-box/WD repeat-containing protein 1A-like
+LOC111138289,54,GO:0006511,4.8e-05,F-box/LRR-repeat protein 20-like
+LOC111136204,54,GO:0006511,4.8e-05,E3 ubiquitin-protein ligase RNF168-like
+LOC111100561,-61,GO:0006511,4.8e-05,probable ubiquitin carboxyl-terminal hydrolase FAF-X
+LOC111103877,-57,GO:0006511,4.8e-05,uncharacterized LOC111103877
+LOC111110182,56,GO:0006511,4.8e-05,uncharacterized LOC111110182
+LOC111108238,65,GO:0006511,4.8e-05,uncharacterized LOC111108238
+LOC111124169,55,GO:0030163,7.3e-05,uncharacterized LOC111124169
+LOC111126408,-59,GO:0030163,7.3e-05,beta-secretase 1-like
+LOC111129870,-50,GO:0030163,7.3e-05,ATP-dependent Clp protease ATP-binding subunit ClpX-like
+LOC111129870,51,GO:0030163,7.3e-05,ATP-dependent Clp protease ATP-binding subunit ClpX-like
+LOC111114538,50,GO:0030163,7.3e-05,cullin-2-like
+LOC111137104,-58,GO:0006357,7.9e-05,SWI/SNF complex subunit SMARCC2-like
+LOC111130344,51,GO:0006357,7.9e-05,nuclear factor erythroid 2-related factor 2-like
+LOC111118089,53,GO:0006357,7.9e-05,elongator complex protein 3
+LOC111122516,-53,GO:0006357,7.9e-05,transcriptional adapter 2-alpha-like
+LOC111127525,59,GO:0006357,7.9e-05,zinc finger protein 570-like
+LOC111127226,-52,GO:0006357,7.9e-05,snRNA-activating protein complex subunit 4-like
+LOC111122887,64,GO:0006357,7.9e-05,trafficking kinesin-binding protein 1-like
+LOC111122887,-54,GO:0006357,7.9e-05,trafficking kinesin-binding protein 1-like
+LOC111128642,-54,GO:0006357,7.9e-05,transcriptional-regulating factor 1-like
+LOC111132503,-51,GO:0006357,7.9e-05,chromodomain-helicase-DNA-binding protein Mi-2 homolog
+LOC111134835,55,GO:0006357,7.9e-05,homeodomain-only protein-like
+LOC111136056,55,GO:0006357,7.9e-05,golgin-45-like
+LOC111136056,57,GO:0006357,7.9e-05,golgin-45-like
+LOC111100426,52,GO:0006357,7.9e-05,far upstream element-binding protein 3-like
+LOC111100426,50,GO:0006357,7.9e-05,far upstream element-binding protein 3-like
+LOC111102390,-57,GO:0006357,7.9e-05,superoxide dismutase [Mn]
+LOC111124939,50,GO:0046600,7.9e-05,centrosome-associated protein CEP250-like
+LOC111137343,53,GO:0046600,7.9e-05,E3 ubiquitin-protein ligase TRIM37-like
+LOC111137343,64,GO:0046600,7.9e-05,E3 ubiquitin-protein ligase TRIM37-like
+LOC111137343,-53,GO:0046600,7.9e-05,E3 ubiquitin-protein ligase TRIM37-like
+LOC111137343,-52,GO:0046600,7.9e-05,E3 ubiquitin-protein ligase TRIM37-like
+LOC111103859,61,GO:0046600,7.9e-05,uncharacterized LOC111103859
+LOC111103859,58,GO:0046600,7.9e-05,uncharacterized LOC111103859
+LOC111103859,54,GO:0046600,7.9e-05,uncharacterized LOC111103859
+LOC111109171,55,GO:0046600,7.9e-05,nuclear protein MDM1-like
+LOC111119411,-62,GO:0051028,8.5e-05,uncharacterized LOC111119411
+LOC111119411,50,GO:0051028,8.5e-05,uncharacterized LOC111119411
+LOC111125546,55,GO:0051028,8.5e-05,nuclear pore complex protein Nup54-like
+LOC111123804,-57,GO:0051028,8.5e-05,NTF2-related export protein 2-like
+LOC111123804,-52,GO:0051028,8.5e-05,NTF2-related export protein 2-like
+LOC111123804,-70,GO:0051028,8.5e-05,NTF2-related export protein 2-like
+LOC111124696,-71,GO:0051028,8.5e-05,E3 SUMO-protein ligase RanBP2-like
+LOC111124696,-51,GO:0051028,8.5e-05,E3 SUMO-protein ligase RanBP2-like
+LOC111134995,54,GO:0051028,8.5e-05,tankyrase-1-like
+LOC111136459,52,GO:0051028,8.5e-05,IWS1-like protein
+LOC111100403,53,GO:0051028,8.5e-05,uncharacterized LOC111100403
+LOC111100403,61,GO:0051028,8.5e-05,uncharacterized LOC111100403
+LOC111100406,61,GO:0051028,8.5e-05,uncharacterized LOC111100406
+LOC111100426,52,GO:0051028,8.5e-05,far upstream element-binding protein 3-like
+LOC111100426,50,GO:0051028,8.5e-05,far upstream element-binding protein 3-like
+LOC111109130,-59,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111109130,-58,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111109130,-52,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111109130,-50,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111110057,-51,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111109131,-56,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111109131,-53,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111109131,-54,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111109131,-51,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111109131,-50,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111109135,-56,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111109135,-61,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111110055,-50,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111110055,-62,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111110055,-57,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111110055,-58,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111110055,-54,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111110055,-53,GO:0051028,8.5e-05,germinal-center associated nuclear protein-like
+LOC111121323,-50,GO:0002576,8.9e-05,uncharacterized LOC111121323
+LOC111121323,53,GO:0002576,8.9e-05,uncharacterized LOC111121323
+LOC111121323,52,GO:0002576,8.9e-05,uncharacterized LOC111121323
+LOC111125463,-51,GO:0002576,8.9e-05,hemicentin-1-like
+LOC111123831,-65,GO:0002576,8.9e-05,titin-like
+LOC111123831,50,GO:0002576,8.9e-05,titin-like
+LOC111123831,53,GO:0002576,8.9e-05,titin-like
+LOC111124106,-51,GO:0002576,8.9e-05,titin-like
+LOC111125634,54,GO:0002576,8.9e-05,titin-like
+LOC111125634,63,GO:0002576,8.9e-05,titin-like
+LOC111133801,54,GO:0002576,8.9e-05,CD109 antigen-like
+LOC111132924,52,GO:0002576,8.9e-05,muscle M-line assembly protein unc-89-like
+LOC111136651,58,GO:0002576,8.9e-05,multidrug resistance-associated protein 4-like
+LOC111108522,58,GO:0002576,8.9e-05,non-structural maintenance of chromosomes element 3 homolog
+LOC111107913,52,GO:0002576,8.9e-05,filamin-A-like
+LOC111107913,53,GO:0002576,8.9e-05,filamin-A-like
+LOC111109943,64,GO:0002576,8.9e-05,testis-expressed protein 264-like
+LOC111112605,51,GO:0002576,8.9e-05,talin-1-like
+LOC111112605,-56,GO:0002576,8.9e-05,talin-1-like
+LOC111112605,-65,GO:0002576,8.9e-05,talin-1-like
+LOC111137130,-52,GO:0033365,9.2e-05,cyclic nucleotide-gated cation channel beta-1-like
+LOC111137130,-53,GO:0033365,9.2e-05,cyclic nucleotide-gated cation channel beta-1-like
+LOC111101328,-55,GO:0033365,9.2e-05,guanine nucleotide exchange factor for Rab-3A-like
+LOC111115508,-62,GO:0007018,0.00010,kinesin-II 95 kDa subunit-like
+LOC111118975,64,GO:0007018,0.00010,kinesin-like protein KIN-7I
+LOC111118975,54,GO:0007018,0.00010,kinesin-like protein KIN-7I
+LOC111118975,-61,GO:0007018,0.00010,kinesin-like protein KIN-7I
+LOC111119668,56,GO:0007018,0.00010,kinesin-like protein KIF19
+LOC111127380,53,GO:0007018,0.00010,chromosome-associated kinesin KIF4-like
+LOC111122636,63,GO:0007018,0.00010,dynein beta chain
+LOC111125428,-60,GO:0007018,0.00010,cytoplasmic dynein 2 heavy chain 1-like
+LOC111134572,-59,GO:0007018,0.00010,kinesin-like protein KIF28P
+LOC111138063,52,GO:0007018,0.00010,dynein heavy chain 2
+LOC111138063,58,GO:0007018,0.00010,dynein heavy chain 2
+LOC111102596,-53,GO:0007018,0.00010,kinesin-like protein KIF25
+LOC111115046,50,GO:0007018,0.00010,kinesin-like protein KIF23
+LOC111112439,-50,GO:0007018,0.00010,kinesin heavy chain-like
+LOC111118678,-56,GO:0032886,0.00011,microtubule-actin cross-linking factor 1
+LOC111118678,-53,GO:0032886,0.00011,microtubule-actin cross-linking factor 1
+LOC111110828,-53,GO:0097711,0.00011,tectonic-3-like
+LOC111122003,-57,GO:0097711,0.00011,B9 domain-containing protein 1-like
+LOC111124747,66,GO:0097711,0.00011,centrosomal protein of 164 kDa-like
+LOC111124747,58,GO:0097711,0.00011,centrosomal protein of 164 kDa-like
+LOC111125942,-57,GO:0097711,0.00011,centriolin-like
+LOC111137056,74,GO:0097711,0.00011,HAUS augmin-like complex subunit 4
+LOC111137510,54,GO:0097711,0.00011,protein SFI1 homolog
+LOC111132966,52,GO:0097711,0.00011,dynactin subunit 1-like
+LOC111101328,-55,GO:0097711,0.00011,guanine nucleotide exchange factor for Rab-3A-like
+LOC111113273,-52,GO:0097711,0.00011,centrosomal protein of 78 kDa-like
+LOC111112099,50,GO:0097711,0.00011,A-kinase anchor protein 9-like
+LOC111112099,61,GO:0097711,0.00011,A-kinase anchor protein 9-like
+LOC111112099,59,GO:0097711,0.00011,A-kinase anchor protein 9-like
+LOC111119098,54,GO:0032880,0.00014,AP2-associated protein kinase 1-like
+LOC111119098,55,GO:0032880,0.00014,AP2-associated protein kinase 1-like
+LOC111122003,-57,GO:0032880,0.00014,B9 domain-containing protein 1-like
+LOC111119269,56,GO:0032880,0.00014,guanine nucleotide-binding protein subunit beta-2-like 1
+LOC111124521,53,GO:0032880,0.00014,tyrosine-protein kinase Abl-like
+LOC111125018,52,GO:0032880,0.00014,E3 ubiquitin-protein ligase MYCBP2-like
+LOC111127465,61,GO:0032880,0.00014,TBC1 domain family member 1-like
+LOC111128088,61,GO:0032880,0.00014,tetratricopeptide repeat protein 8-like
+LOC111131142,51,GO:0032880,0.00014,centrosomal protein of 120 kDa-like
+LOC111131142,64,GO:0032880,0.00014,centrosomal protein of 120 kDa-like
+LOC111131142,60,GO:0032880,0.00014,centrosomal protein of 120 kDa-like
+LOC111103819,74,GO:0032880,0.00014,afadin-like
+LOC111117970,-65,GO:0051493,0.00014,focal adhesion kinase 1-like
+LOC111117970,-50,GO:0051493,0.00014,focal adhesion kinase 1-like
+LOC111125018,52,GO:0051493,0.00014,E3 ubiquitin-protein ligase MYCBP2-like
+LOC111106022,56,GO:0051493,0.00014,plexin-B1-like
+LOC111112844,59,GO:0051493,0.00014,mitogen-activated protein kinase 11-like
+LOC111115508,-62,GO:0030705,0.00015,kinesin-II 95 kDa subunit-like
+LOC111120645,51,GO:0030705,0.00015,protein Hook homolog 3-like
+LOC111120645,-62,GO:0030705,0.00015,protein Hook homolog 3-like
+LOC111130874,54,GO:0030705,0.00015,girdin-like
+LOC111125791,-62,GO:0051225,0.00016,golgin subfamily A member 2-like
+LOC111129524,50,GO:0051225,0.00016,endoribonuclease Dicer-like
+LOC111128552,-58,GO:0051225,0.00016,HAUS augmin-like complex subunit 1
+LOC111128552,70,GO:0051225,0.00016,HAUS augmin-like complex subunit 1
+LOC111137056,74,GO:0051225,0.00016,HAUS augmin-like complex subunit 4
+LOC111132503,-51,GO:0051225,0.00016,chromodomain-helicase-DNA-binding protein Mi-2 homolog
+LOC111134995,54,GO:0051225,0.00016,tankyrase-1-like
+LOC111134944,64,GO:0021537,0.00018,transcription factor RFX4-like
+LOC111118568,59,GO:0006807,0.00018,polycystin-1-like
+LOC111105629,50,GO:0006807,0.00018,uncharacterized LOC111105629
+LOC111102482,51,GO:0006807,0.00018,uncharacterized LOC111102482
+LOC111132855,-56,GO:0001754,0.00019,cytosolic carboxypeptidase 1-like
+LOC111132855,-50,GO:0001754,0.00019,cytosolic carboxypeptidase 1-like
+LOC111124410,50,GO:0048208,0.00019,trafficking protein particle complex subunit 4-like
+LOC111124410,57,GO:0048208,0.00019,trafficking protein particle complex subunit 4-like
+LOC111124410,67,GO:0048208,0.00019,trafficking protein particle complex subunit 4-like
+LOC111121630,-59,GO:0048208,0.00019,programmed cell death protein 6-like
+LOC111118731,-50,GO:0048208,0.00019,protein transport protein Sec24A-like
+LOC111120467,53,GO:0048208,0.00019,protein transport protein Sec24C-like
+LOC111128650,-51,GO:0048208,0.00019,trafficking protein particle complex subunit 6B-like
+LOC111127980,-52,GO:0048208,0.00019,protein cornichon homolog 1-like
+LOC111127980,65,GO:0048208,0.00019,protein cornichon homolog 1-like
+LOC111104416,54,GO:0048208,0.00019,trafficking protein particle complex subunit 10-like
+LOC111104416,59,GO:0048208,0.00019,trafficking protein particle complex subunit 10-like
+LOC111104416,70,GO:0048208,0.00019,trafficking protein particle complex subunit 10-like
+LOC111104416,61,GO:0048208,0.00019,trafficking protein particle complex subunit 10-like
+LOC111132215,51,GO:0000278,0.00021,deubiquitinating protein VCIP135-like
+LOC111132215,-52,GO:0000278,0.00021,deubiquitinating protein VCIP135-like
+LOC111132215,57,GO:0000278,0.00021,deubiquitinating protein VCIP135-like
+LOC111117050,51,GO:0000278,0.00021,serine/threonine-protein kinase greatwall-like
+LOC111118975,64,GO:0000278,0.00021,kinesin-like protein KIN-7I
+LOC111118975,54,GO:0000278,0.00021,kinesin-like protein KIN-7I
+LOC111118975,-61,GO:0000278,0.00021,kinesin-like protein KIN-7I
+LOC111119411,-62,GO:0000278,0.00021,uncharacterized LOC111119411
+LOC111119411,50,GO:0000278,0.00021,uncharacterized LOC111119411
+LOC111122516,-53,GO:0000278,0.00021,transcriptional adapter 2-alpha-like
+LOC111127434,58,GO:0000278,0.00021,ribonucleoside-diphosphate reductase large subunit-like
+LOC111137330,50,GO:0000278,0.00021,aurora kinase A-like
+LOC111136261,58,GO:0000278,0.00021,major antigen-like
+LOC111136261,56,GO:0000278,0.00021,major antigen-like
+LOC111132966,52,GO:0000278,0.00021,dynactin subunit 1-like
+LOC111101550,-58,GO:0000278,0.00021,spindle and kinetochore-associated protein 3-like
+LOC111101550,-50,GO:0000278,0.00021,spindle and kinetochore-associated protein 3-like
+LOC111107913,52,GO:0000278,0.00021,filamin-A-like
+LOC111107913,53,GO:0000278,0.00021,filamin-A-like
+LOC111105716,52,GO:0000278,0.00021,protein polybromo-1-like
+LOC111131258,62,GO:0006893,0.00022,exocyst complex component 5-like
+LOC111131301,-55,GO:0006893,0.00022,synaptosomal-associated protein 25-like
+LOC111134748,-63,GO:0006893,0.00022,exocyst complex component 2-like
+LOC111101328,-55,GO:0006893,0.00022,guanine nucleotide exchange factor for Rab-3A-like
+LOC111115943,-52,GO:0006893,0.00022,coiled-coil domain-containing protein 93-like
+LOC111124939,50,GO:0031023,0.00023,centrosome-associated protein CEP250-like
+LOC111124939,50,GO:0007098,0.00023,centrosome-associated protein CEP250-like
+LOC111125791,-62,GO:0007098,0.00023,golgin subfamily A member 2-like
+LOC111128552,-58,GO:0007098,0.00023,HAUS augmin-like complex subunit 1
+LOC111128552,70,GO:0007098,0.00023,HAUS augmin-like complex subunit 1
+LOC111131142,51,GO:0007098,0.00023,centrosomal protein of 120 kDa-like
+LOC111131142,64,GO:0007098,0.00023,centrosomal protein of 120 kDa-like
+LOC111131142,60,GO:0007098,0.00023,centrosomal protein of 120 kDa-like
+LOC111137056,74,GO:0007098,0.00023,HAUS augmin-like complex subunit 4
+LOC111119850,57,GO:0006013,0.00026,lysosomal alpha-mannosidase-like
+LOC111119850,50,GO:0006013,0.00026,lysosomal alpha-mannosidase-like
+LOC111119850,65,GO:0006013,0.00026,lysosomal alpha-mannosidase-like
+LOC111119850,68,GO:0006013,0.00026,lysosomal alpha-mannosidase-like
+LOC111119850,73,GO:0006013,0.00026,lysosomal alpha-mannosidase-like
+LOC111119851,66,GO:0006013,0.00026,lysosomal alpha-mannosidase-like
+LOC111128909,59,GO:0006013,0.00026,alpha-mannosidase 2-like
+LOC111099882,-60,GO:0006013,0.00026,hexokinase-1-like
+LOC111113429,-55,GO:0006013,0.00026,alpha-mannosidase 2x-like
+LOC111113429,-63,GO:0006013,0.00026,alpha-mannosidase 2x-like
+LOC111113429,-50,GO:0006013,0.00026,alpha-mannosidase 2x-like
+LOC111137330,50,GO:0046605,0.00028,aurora kinase A-like
+LOC111137330,50,GO:0007052,0.00031,aurora kinase A-like
+LOC111134995,54,GO:0007052,0.00031,tankyrase-1-like
+LOC111108626,55,GO:0007052,0.00031,integrator complex subunit 13-like
+LOC111112099,50,GO:0007052,0.00031,A-kinase anchor protein 9-like
+LOC111112099,61,GO:0007052,0.00031,A-kinase anchor protein 9-like
+LOC111112099,59,GO:0007052,0.00031,A-kinase anchor protein 9-like
+LOC111134951,-52,GO:0042462,0.00033,reticulon-4-interacting protein 1 homolog
+LOC111127137,-52,GO:0042462,0.00033,retinoic acid receptor alpha-like
+LOC111126277,-59,GO:0042462,0.00033,neurobeachin-like
+LOC111126277,61,GO:0042462,0.00033,neurobeachin-like
+LOC111126277,57,GO:0042462,0.00033,neurobeachin-like
+LOC111133006,51,GO:0042462,0.00033,centrosomal protein of 290 kDa-like
+LOC111133006,57,GO:0042462,0.00033,centrosomal protein of 290 kDa-like
+LOC111135734,-52,GO:0042462,0.00033,uncharacterized LOC111135734
+LOC111135734,51,GO:0042462,0.00033,uncharacterized LOC111135734
+LOC111134328,-69,GO:0042462,0.00033,protein kinase C iota type-like
+LOC111101972,53,GO:0042462,0.00033,X-linked retinitis pigmentosa GTPase regulator-like
+LOC111100546,58,GO:0042462,0.00033,X-linked retinitis pigmentosa GTPase regulator-like
+LOC111111977,59,GO:0042462,0.00033,nuclear receptor ROR-beta-like
+LOC111115080,60,GO:0042462,0.00033,retinol dehydrogenase 13-like
+LOC111115080,77,GO:0042462,0.00033,retinol dehydrogenase 13-like
+LOC111115080,-50,GO:0042462,0.00033,retinol dehydrogenase 13-like
+LOC111115080,52,GO:0042462,0.00033,retinol dehydrogenase 13-like
+LOC111136621,51,GO:0006475,0.00035,malate dehydrogenase
+LOC111129859,65,GO:0021680,0.00040,alanine--tRNA ligase
+LOC111119689,71,GO:0010468,0.00042,rapamycin-insensitive companion of mTOR-like
+LOC111119689,50,GO:0010468,0.00042,rapamycin-insensitive companion of mTOR-like
+LOC111119689,-73,GO:0010468,0.00042,rapamycin-insensitive companion of mTOR-like
+LOC111119375,65,GO:0010468,0.00042,extracellular signal-regulated kinase 2-like
+LOC111120054,-50,GO:0010468,0.00042,probable ATP-dependent RNA helicase DDX46
+LOC111120054,50,GO:0010468,0.00042,probable ATP-dependent RNA helicase DDX46
+LOC111123125,56,GO:0010468,0.00042,multiple epidermal growth factor-like domains protein 8
+LOC111125048,51,GO:0010468,0.00042,guanine nucleotide exchange factor VAV2-like
+LOC111122539,62,GO:0010468,0.00042,copper-transporting ATPase 1-like
+LOC111129524,50,GO:0010468,0.00042,endoribonuclease Dicer-like
+LOC111130217,-54,GO:0010468,0.00042,MAPK/MAK/MRK overlapping kinase-like
+LOC111100364,-55,GO:0010468,0.00042,histone deacetylase complex subunit SAP130-like
+LOC111106097,52,GO:0010468,0.00042,retinoic acid receptor beta-like
+LOC111106097,-67,GO:0010468,0.00042,retinoic acid receptor beta-like
+LOC111106097,-53,GO:0010468,0.00042,retinoic acid receptor beta-like
+LOC111111318,53,GO:0010468,0.00042,D-3-phosphoglycerate dehydrogenase-like
+LOC111117165,52,GO:0010468,0.00042,cytoplasmic aconitate hydratase-like
+LOC111117165,64,GO:0010468,0.00042,cytoplasmic aconitate hydratase-like
+LOC111117165,50,GO:0010468,0.00042,cytoplasmic aconitate hydratase-like
+LOC111117165,51,GO:0010468,0.00042,cytoplasmic aconitate hydratase-like
+LOC111117165,56,GO:0010468,0.00042,cytoplasmic aconitate hydratase-like
+LOC111117165,69,GO:0010468,0.00042,cytoplasmic aconitate hydratase-like
+LOC111117165,54,GO:0010468,0.00042,cytoplasmic aconitate hydratase-like
+LOC111117165,58,GO:0010468,0.00042,cytoplasmic aconitate hydratase-like
+LOC111122360,-58,GO:0061136,0.00045,inactive rhomboid protein 1-like
+LOC111118568,59,GO:0061136,0.00045,polycystin-1-like
+LOC111123841,64,GO:0061136,0.00045,ubiquitin carboxyl-terminal hydrolase isozyme L5-like
+LOC111135857,52,GO:0061136,0.00045,F-box/WD repeat-containing protein 1A-like
+LOC111118568,59,GO:0001889,0.00045,polycystin-1-like
+LOC111122539,62,GO:0001889,0.00045,copper-transporting ATPase 1-like
+LOC111130290,58,GO:0001889,0.00045,protein jagged-1b-like
+LOC111135243,68,GO:0001889,0.00045,trafficking protein particle complex subunit 11-like
+LOC111135949,-53,GO:0001889,0.00045,neurofibromin-like
+LOC111132479,51,GO:0001889,0.00045,uncharacterized LOC111132479
+LOC111134478,-50,GO:0001889,0.00045,CAD protein-like
+LOC111100622,-50,GO:0001889,0.00045,cation-independent mannose-6-phosphate receptor-like
+LOC111125905,-61,GO:0072383,0.00045,kinesin-like protein KIF13B
+LOC111125905,-70,GO:0072383,0.00045,kinesin-like protein KIF13B
+LOC111125905,73,GO:0072383,0.00045,kinesin-like protein KIF13B
+LOC111125905,53,GO:0072383,0.00045,kinesin-like protein KIF13B
+LOC111125905,-53,GO:0072383,0.00045,kinesin-like protein KIF13B
+LOC111125959,-53,GO:0072383,0.00045,uncharacterized LOC111125959
+LOC111115046,50,GO:0072383,0.00045,kinesin-like protein KIF23
+LOC111118300,-58,GO:0016573,0.00047,histone acetyltransferase KAT6B-like
+LOC111122516,-53,GO:0016573,0.00047,transcriptional adapter 2-alpha-like
+LOC111114721,-56,GO:0016573,0.00047,transformation/transcription domain-associated protein-like
+LOC111117825,50,GO:0016573,0.00047,transformation/transcription domain-associated protein-like
+LOC111125905,-61,GO:0000910,0.00053,kinesin-like protein KIF13B
+LOC111125905,-70,GO:0000910,0.00053,kinesin-like protein KIF13B
+LOC111125905,73,GO:0000910,0.00053,kinesin-like protein KIF13B
+LOC111125905,53,GO:0000910,0.00053,kinesin-like protein KIF13B
+LOC111125905,-53,GO:0000910,0.00053,kinesin-like protein KIF13B
+LOC111125959,-53,GO:0000910,0.00053,uncharacterized LOC111125959
+LOC111120513,65,GO:0000910,0.00053,rab11 family-interacting protein 4B-like
+LOC111120513,72,GO:0000910,0.00053,rab11 family-interacting protein 4B-like
+LOC111120513,66,GO:0000910,0.00053,rab11 family-interacting protein 4B-like
+LOC111125745,53,GO:0000910,0.00053,protein diaphanous homolog 2-like
+LOC111127879,-56,GO:0000910,0.00053,phosphatidylinositol 3-kinase catalytic subunit type 3-like
+LOC111130078,52,GO:0000910,0.00053,zinc finger FYVE domain-containing protein 26-like
+LOC111100962,51,GO:0000910,0.00053,protein ECT2-like
+LOC111115046,50,GO:0000910,0.00053,kinesin-like protein KIF23
+LOC111112915,52,GO:0000910,0.00053,ras-related protein Ral-A-like
+LOC111132855,-56,GO:0021702,0.00056,cytosolic carboxypeptidase 1-like
+LOC111132855,-50,GO:0021702,0.00056,cytosolic carboxypeptidase 1-like
+LOC111127118,-52,GO:0021702,0.00056,nuclear receptor ROR-beta-like
+LOC111122539,62,GO:0021702,0.00056,copper-transporting ATPase 1-like
+LOC111128585,69,GO:0021702,0.00056,probable E3 ubiquitin-protein ligase HERC1
+LOC111128989,52,GO:0021702,0.00056,uncharacterized LOC111128989
+LOC111128971,-52,GO:0006396,0.00060,double-stranded RNA-specific editase 1-like
+LOC111128971,-54,GO:0006396,0.00060,double-stranded RNA-specific editase 1-like
+LOC111138235,-59,GO:0006396,0.00060,polyadenylate-binding protein 4-like
+LOC111121011,-55,GO:0006396,0.00060,THO complex subunit 1-like
+LOC111129524,50,GO:0006396,0.00060,endoribonuclease Dicer-like
+LOC111099056,-55,GO:0006396,0.00060,tRNA (uracil-5-)-methyltransferase homolog A-like
+LOC111137070,-53,GO:0006396,0.00060,39S ribosomal protein L44
+LOC111104688,-51,GO:0006396,0.00060,zinc finger C3H1 domain-containing protein-like
+LOC111126456,57,GO:0036498,0.00067,exostosin-like 3
+LOC111125576,59,GO:0036498,0.00067,hypoxia up-regulated protein 1-like
+LOC111132966,52,GO:0036498,0.00067,dynactin subunit 1-like
+LOC111108783,59,GO:0036498,0.00067,dnaJ homolog subfamily B member 9-like
+LOC111106144,55,GO:0036498,0.00067,uncharacterized LOC111106144
+LOC111112605,51,GO:0036498,0.00067,talin-1-like
+LOC111112605,-56,GO:0036498,0.00067,talin-1-like
+LOC111112605,-65,GO:0036498,0.00067,talin-1-like
+LOC111130645,51,GO:0051276,0.00074,Bloom syndrome protein homolog
+LOC111122539,62,GO:0018205,0.00075,copper-transporting ATPase 1-like
+LOC111132180,-63,GO:0000070,0.00084,borealin-like
+LOC111125463,-51,GO:0030049,0.00086,hemicentin-1-like
+LOC111123831,-65,GO:0030049,0.00086,titin-like
+LOC111123831,50,GO:0030049,0.00086,titin-like
+LOC111123831,53,GO:0030049,0.00086,titin-like
+LOC111124106,-51,GO:0030049,0.00086,titin-like
+LOC111125634,54,GO:0030049,0.00086,titin-like
+LOC111125634,63,GO:0030049,0.00086,titin-like
+LOC111132924,52,GO:0030049,0.00086,muscle M-line assembly protein unc-89-like
+LOC111103558,-56,GO:0030049,0.00086,dystrophin-like
+LOC111136106,-54,GO:0051056,0.00086,rho GTPase-activating protein 39-like
+LOC111125048,51,GO:0051056,0.00086,guanine nucleotide exchange factor VAV2-like
+LOC111124894,54,GO:0051056,0.00086,rho guanine nucleotide exchange factor 17-like
+LOC111124649,-52,GO:0051056,0.00086,rho GTPase-activating protein 26-like
+LOC111131555,-52,GO:0051056,0.00086,unconventional myosin-IXb-like
+LOC111130297,54,GO:0051056,0.00086,A-kinase anchor protein 13-like
+LOC111099157,-67,GO:0051056,0.00086,rap1 GTPase-activating protein 1-like
+LOC111133403,-57,GO:0051056,0.00086,rap1 GTPase-activating protein 1-like
+LOC111133403,66,GO:0051056,0.00086,rap1 GTPase-activating protein 1-like
+LOC111135275,52,GO:0051056,0.00086,angiomotin-like
+LOC111135275,-51,GO:0051056,0.00086,angiomotin-like
+LOC111100962,51,GO:0051056,0.00086,protein ECT2-like
+LOC111110347,-52,GO:0051056,0.00086,SLIT-ROBO Rho GTPase-activating protein 1-like
+LOC111107307,53,GO:0051056,0.00086,FYVE
+LOC111100631,-64,GO:0006903,0.00086,uncharacterized LOC111100631
+LOC111132028,-53,GO:0007041,0.00087,vacuolar protein sorting-associated protein 53 homolog
+LOC111132028,-50,GO:0007041,0.00087,vacuolar protein sorting-associated protein 53 homolog
+LOC111117970,-65,GO:2000060,0.00091,focal adhesion kinase 1-like
+LOC111117970,-50,GO:2000060,0.00091,focal adhesion kinase 1-like
+LOC111127137,-52,GO:0007420,0.00092,retinoic acid receptor alpha-like
+LOC111119382,51,GO:0007420,0.00092,nipped-B-like protein
+LOC111119382,62,GO:0007420,0.00092,nipped-B-like protein
+LOC111119225,-63,GO:0007420,0.00092,uncharacterized LOC111119225
+LOC111122107,-53,GO:0007420,0.00092,cystinosin-like
+LOC111124939,50,GO:0007420,0.00092,centrosome-associated protein CEP250-like
+LOC111135949,-53,GO:0007420,0.00092,neurofibromin-like
+LOC111137968,-54,GO:0007420,0.00092,DNA fragmentation factor subunit beta-like
+LOC111132939,-50,GO:0007420,0.00092,agrin-like
+LOC111132939,-51,GO:0007420,0.00092,agrin-like
+LOC111101023,62,GO:0007420,0.00092,serine/threonine-protein kinase 36-like
+LOC111106023,56,GO:0007420,0.00092,plexin-B2-like
+LOC111111977,59,GO:0007420,0.00092,nuclear receptor ROR-beta-like
+LOC111111318,53,GO:0007420,0.00092,D-3-phosphoglycerate dehydrogenase-like
+LOC111120139,-52,GO:0060322,0.00097,GPI inositol-deacylase-like
+LOC111120657,56,GO:0035608,0.00109,cytosolic carboxypeptidase-like protein 5
+LOC111110360,51,GO:0034504,0.00109,smoothened homolog
+LOC111118911,80,GO:0016050,0.00114,sorting nexin-8-like
+LOC111118850,-67,GO:0016050,0.00114,serine/arginine repetitive matrix protein 2-like
+LOC111127397,-52,GO:0032436,0.00118,E3 ubiquitin-protein ligase RNF19A-like
+LOC111124998,50,GO:0032436,0.00118,ankyrin repeat and IBR domain-containing protein 1-like
+LOC111124919,66,GO:0032436,0.00118,ankyrin repeat and IBR domain-containing protein 1-like
+LOC111128564,-59,GO:0032436,0.00118,E3 SUMO-protein ligase PIAS2-like
+LOC111137330,50,GO:0032436,0.00118,aurora kinase A-like
+LOC111107387,71,GO:0032436,0.00118,leucine-rich repeat serine/threonine-protein kinase 2-like
+LOC111109652,58,GO:0032436,0.00118,probable E3 ubiquitin-protein ligase ARI9
+LOC111109652,56,GO:0032436,0.00118,probable E3 ubiquitin-protein ligase ARI9
+LOC111109652,52,GO:0032436,0.00118,probable E3 ubiquitin-protein ligase ARI9
+LOC111109652,-50,GO:0032436,0.00118,probable E3 ubiquitin-protein ligase ARI9
+LOC111111117,-54,GO:0032436,0.00118,kelch-like protein 41
+LOC111111633,-51,GO:0032436,0.00118,NAD-dependent protein deacetylase sirtuin-2-like
+LOC111115508,-62,GO:0090307,0.00118,kinesin-II 95 kDa subunit-like
+LOC111120125,-72,GO:0090307,0.00118,spindle and centriole-associated protein 1-like
+LOC111125791,-62,GO:0090307,0.00118,golgin subfamily A member 2-like
+LOC111137059,66,GO:0090307,0.00118,rho guanine nucleotide exchange factor 10-like protein
+LOC111107913,52,GO:0090307,0.00118,filamin-A-like
+LOC111107913,53,GO:0090307,0.00118,filamin-A-like
+LOC111110360,51,GO:0021953,0.00121,smoothened homolog
+LOC111130938,52,GO:0016310,0.00123,ALK tyrosine kinase receptor-like
+LOC111133422,51,GO:0016310,0.00123,sedoheptulokinase-like
+LOC111107387,71,GO:0016310,0.00123,leucine-rich repeat serine/threonine-protein kinase 2-like
+LOC111128971,-52,GO:0051726,0.00137,double-stranded RNA-specific editase 1-like
+LOC111128971,-54,GO:0051726,0.00137,double-stranded RNA-specific editase 1-like
+LOC111117050,51,GO:0051726,0.00137,serine/threonine-protein kinase greatwall-like
+LOC111113238,-55,GO:0051726,0.00137,protein scribble homolog
+LOC111113238,53,GO:0051726,0.00137,protein scribble homolog
+LOC111110677,-57,GO:0051726,0.00137,homeodomain-interacting protein kinase 2-like
+LOC111119997,52,GO:0051726,0.00137,uncharacterized LOC111119997
+LOC111123666,-51,GO:0051726,0.00137,nuclear pore complex protein Nup214-like
+LOC111123666,52,GO:0051726,0.00137,nuclear pore complex protein Nup214-like
+LOC111125124,55,GO:0051726,0.00137,hamartin-like
+LOC111129524,50,GO:0051726,0.00137,endoribonuclease Dicer-like
+LOC111135434,-72,GO:0051726,0.00137,retinoblastoma-like protein 1
+LOC111135434,-75,GO:0051726,0.00137,retinoblastoma-like protein 1
+LOC111135912,-70,GO:0051726,0.00137,ribosome biogenesis protein bop1-A-like
+LOC111111633,-51,GO:0051726,0.00137,NAD-dependent protein deacetylase sirtuin-2-like
+LOC111109628,60,GO:0006914,0.00140,DNA damage-regulated autophagy modulator protein 2-like
+LOC111109628,63,GO:0006914,0.00140,DNA damage-regulated autophagy modulator protein 2-like
+LOC111133511,50,GO:0006914,0.00140,transmembrane 9 superfamily member 1-like
+LOC111119828,55,GO:0006914,0.00140,WD repeat domain phosphoinositide-interacting protein 4-like
+LOC111120390,51,GO:0006914,0.00140,annexin A4-like
+LOC111120559,-56,GO:0006914,0.00140,annexin A7-like
+LOC111126580,-50,GO:0006914,0.00140,annexin A4-like
+LOC111126580,-63,GO:0006914,0.00140,annexin A4-like
+LOC111126911,54,GO:0006914,0.00140,ETS translocation variant 5-like
+LOC111130633,69,GO:0006914,0.00140,guanine nucleotide exchange protein SMCR8-like
+LOC111130633,59,GO:0006914,0.00140,guanine nucleotide exchange protein SMCR8-like
+LOC111127879,-56,GO:0006914,0.00140,phosphatidylinositol 3-kinase catalytic subunit type 3-like
+LOC111131208,57,GO:0006914,0.00140,WD repeat-containing protein 41-like
+LOC111135619,63,GO:0006914,0.00140,ubiquitin carboxyl-terminal hydrolase 10-like
+LOC111135619,64,GO:0006914,0.00140,ubiquitin carboxyl-terminal hydrolase 10-like
+LOC111135619,55,GO:0006914,0.00140,ubiquitin carboxyl-terminal hydrolase 10-like
+LOC111107387,71,GO:0006914,0.00140,leucine-rich repeat serine/threonine-protein kinase 2-like
+LOC111110204,56,GO:0006914,0.00140,optineurin-like
+LOC111118382,58,GO:0043687,0.00145,COP9 signalosome complex subunit 3-like
+LOC111129830,51,GO:0043687,0.00145,uncharacterized LOC111129830
+LOC111135857,52,GO:0043687,0.00145,F-box/WD repeat-containing protein 1A-like
+LOC111100583,-51,GO:0043687,0.00145,ceruloplasmin-like
+LOC111103787,61,GO:0043687,0.00145,cullin-5-like
+LOC111106311,52,GO:0043687,0.00145,F-box only protein 32-like
+LOC111108089,53,GO:0043687,0.00145,F-box/LRR-repeat protein 13-like
+LOC111108089,-50,GO:0043687,0.00145,F-box/LRR-repeat protein 13-like
+LOC111108238,65,GO:0043687,0.00145,uncharacterized LOC111108238
+LOC111137104,-58,GO:0045893,0.00148,SWI/SNF complex subunit SMARCC2-like
+LOC111130344,51,GO:0045893,0.00148,nuclear factor erythroid 2-related factor 2-like
+LOC111135788,53,GO:0045893,0.00148,cullin-associated NEDD8-dissociated protein 1-like
+LOC111135788,50,GO:0045893,0.00148,cullin-associated NEDD8-dissociated protein 1-like
+LOC111102833,-52,GO:0045893,0.00148,zinc finger E-box-binding homeobox 1-like
+LOC111110677,-57,GO:0045893,0.00148,homeodomain-interacting protein kinase 2-like
+LOC111127118,-52,GO:0045893,0.00148,nuclear receptor ROR-beta-like
+LOC111127137,-52,GO:0045893,0.00148,retinoic acid receptor alpha-like
+LOC111121980,-62,GO:0045893,0.00148,nuclear pore complex protein Nup85-like
+LOC111118300,-58,GO:0045893,0.00148,histone acetyltransferase KAT6B-like
+LOC111119225,-63,GO:0045893,0.00148,uncharacterized LOC111119225
+LOC111124939,50,GO:0045893,0.00148,centrosome-associated protein CEP250-like
+LOC111128642,-54,GO:0045893,0.00148,transcriptional-regulating factor 1-like
+LOC111128989,52,GO:0045893,0.00148,uncharacterized LOC111128989
+LOC111128564,-59,GO:0045893,0.00148,E3 SUMO-protein ligase PIAS2-like
+LOC111128837,-54,GO:0045893,0.00148,lysine-specific demethylase 5A-like
+LOC111130645,51,GO:0045893,0.00148,Bloom syndrome protein homolog
+LOC111133006,51,GO:0045893,0.00148,centrosomal protein of 290 kDa-like
+LOC111133006,57,GO:0045893,0.00148,centrosomal protein of 290 kDa-like
+LOC111136015,53,GO:0045893,0.00148,lysine--tRNA ligase-like
+LOC111136015,54,GO:0045893,0.00148,lysine--tRNA ligase-like
+LOC111133472,-52,GO:0045893,0.00148,tumor protein 63-like
+LOC111135857,52,GO:0045893,0.00148,F-box/WD repeat-containing protein 1A-like
+LOC111100403,53,GO:0045893,0.00148,uncharacterized LOC111100403
+LOC111100403,61,GO:0045893,0.00148,uncharacterized LOC111100403
+LOC111100406,61,GO:0045893,0.00148,uncharacterized LOC111100406
+LOC111105527,50,GO:0045893,0.00148,tRNA wybutosine-synthesizing protein 5-like
+LOC111104779,-54,GO:0045893,0.00148,uncharacterized LOC111104779
+LOC111111977,59,GO:0045893,0.00148,nuclear receptor ROR-beta-like
+LOC111111034,51,GO:0045893,0.00148,interleukin enhancer-binding factor 2-like
+LOC111111034,52,GO:0045893,0.00148,interleukin enhancer-binding factor 2-like
+LOC111111034,50,GO:0045893,0.00148,interleukin enhancer-binding factor 2-like
+LOC111115356,54,GO:0045893,0.00148,breast cancer type 1 susceptibility protein homolog
+LOC111115356,-50,GO:0045893,0.00148,breast cancer type 1 susceptibility protein homolog
+LOC111115356,52,GO:0045893,0.00148,breast cancer type 1 susceptibility protein homolog
+LOC111123818,-51,GO:0010501,0.00150,protein argonaute-2-like
+LOC111123818,65,GO:0010501,0.00150,protein argonaute-2-like
+LOC111122389,-53,GO:0010501,0.00150,probable ATP-dependent RNA helicase DDX43
+LOC111122389,66,GO:0010501,0.00150,probable ATP-dependent RNA helicase DDX43
+LOC111120054,-50,GO:0010501,0.00150,probable ATP-dependent RNA helicase DDX46
+LOC111120054,50,GO:0010501,0.00150,probable ATP-dependent RNA helicase DDX46
+LOC111126417,-55,GO:0010501,0.00150,probable ATP-dependent RNA helicase DDX31
+LOC111126417,56,GO:0010501,0.00150,probable ATP-dependent RNA helicase DDX31
+LOC111128233,-52,GO:0010501,0.00150,probable ATP-dependent RNA helicase DDX49
+LOC111135819,50,GO:0010501,0.00150,ATP-dependent RNA helicase DDX1-like
+LOC111135819,-52,GO:0010501,0.00150,ATP-dependent RNA helicase DDX1-like
+LOC111100588,-52,GO:0010501,0.00150,helicase POLQ-like
+LOC111100588,-58,GO:0010501,0.00150,helicase POLQ-like
+LOC111103448,-53,GO:0010501,0.00150,probable ATP-dependent RNA helicase DDX10
+LOC111112987,53,GO:0010501,0.00150,ATP-dependent RNA helicase DDX42-like
+LOC111121674,-51,GO:0043967,0.00150,N-alpha-acetyltransferase 60-like
+LOC111136406,-54,GO:0043967,0.00150,YEATS domain-containing protein 4-like
+LOC111136406,-52,GO:0043967,0.00150,YEATS domain-containing protein 4-like
+LOC111136084,56,GO:0043967,0.00150,chromodomain-helicase-DNA-binding protein Mi-2 homolog
+LOC111117050,51,GO:0035556,0.00150,serine/threonine-protein kinase greatwall-like
+LOC111122823,63,GO:0035556,0.00150,diacylglycerol kinase beta-like
+LOC111137026,53,GO:0035556,0.00150,SH3 domain-binding protein 5-like
+LOC111120015,-54,GO:0035556,0.00150,serine/threonine-protein kinase NIM1-like
+LOC111120680,50,GO:0035556,0.00150,dual specificity testis-specific protein kinase 2-like
+LOC111120759,-51,GO:0035556,0.00150,uncharacterized LOC111120759
+LOC111120759,50,GO:0035556,0.00150,uncharacterized LOC111120759
+LOC111120320,52,GO:0035556,0.00150,leucine-rich repeat serine/threonine-protein kinase 1-like
+LOC111120320,-55,GO:0035556,0.00150,leucine-rich repeat serine/threonine-protein kinase 1-like
+LOC111120320,-51,GO:0035556,0.00150,leucine-rich repeat serine/threonine-protein kinase 1-like
+LOC111120341,55,GO:0035556,0.00150,microtubule-associated serine/threonine-protein kinase 2-like
+LOC111122832,-57,GO:0035556,0.00150,uncharacterized LOC111122832
+LOC111122832,-58,GO:0035556,0.00150,uncharacterized LOC111122832
+LOC111131555,-52,GO:0035556,0.00150,unconventional myosin-IXb-like
+LOC111128082,-50,GO:0035556,0.00150,serine/threonine-protein kinase MRCK alpha-like
+LOC111128082,-51,GO:0035556,0.00150,serine/threonine-protein kinase MRCK alpha-like
+LOC111130297,54,GO:0035556,0.00150,A-kinase anchor protein 13-like
+LOC111130217,-54,GO:0035556,0.00150,MAPK/MAK/MRK overlapping kinase-like
+LOC111136960,58,GO:0035556,0.00150,atrial natriuretic peptide receptor 1-like
+LOC111134634,62,GO:0035556,0.00150,GATOR complex protein DEPDC5-like
+LOC111134634,-50,GO:0035556,0.00150,GATOR complex protein DEPDC5-like
+LOC111134328,-69,GO:0035556,0.00150,protein kinase C iota type-like
+LOC111100441,61,GO:0035556,0.00150,uncharacterized LOC111100441
+LOC111100962,51,GO:0035556,0.00150,protein ECT2-like
+LOC111103799,55,GO:0035556,0.00150,serine/threonine-protein kinase 33-like
+LOC111103799,-51,GO:0035556,0.00150,serine/threonine-protein kinase 33-like
+LOC111106022,56,GO:0035556,0.00150,plexin-B1-like
+LOC111107387,71,GO:0035556,0.00150,leucine-rich repeat serine/threonine-protein kinase 2-like
+LOC111107088,-50,GO:0035556,0.00150,ras association domain-containing protein 1-like
+LOC111112627,-60,GO:0035556,0.00150,uncharacterized LOC111112627
+LOC111112627,-53,GO:0035556,0.00150,uncharacterized LOC111112627
+LOC111112615,-50,GO:0035556,0.00150,uncharacterized LOC111112615
+LOC111113264,-64,GO:0035556,0.00150,5'-AMP-activated protein kinase subunit gamma-2-like
+LOC111113387,56,GO:0035556,0.00150,serine/threonine-protein kinase tousled-like 2
+LOC111113385,54,GO:0035556,0.00150,serine/threonine-protein kinase tousled-like 2
+LOC111133592,-54,GO:0072657,0.00151,ras-related protein Rab-32-like
+LOC111133592,-58,GO:0072657,0.00151,ras-related protein Rab-32-like
+LOC111132966,52,GO:0010970,0.00152,dynactin subunit 1-like
+LOC111100511,-67,GO:0000122,0.00153,immunoglobulin-binding protein 1-like
+LOC111100511,-58,GO:0000122,0.00153,immunoglobulin-binding protein 1-like
+LOC111133491,55,GO:0000122,0.00153,OTU domain-containing protein 7A-like
+LOC111133491,-57,GO:0000122,0.00153,OTU domain-containing protein 7A-like
+LOC111113238,-55,GO:0000122,0.00153,protein scribble homolog
+LOC111113238,53,GO:0000122,0.00153,protein scribble homolog
+LOC111102833,-52,GO:0000122,0.00153,zinc finger E-box-binding homeobox 1-like
+LOC111137225,-71,GO:0000122,0.00153,PHD finger protein 14-like
+LOC111110677,-57,GO:0000122,0.00153,homeodomain-interacting protein kinase 2-like
+LOC111110360,51,GO:0000122,0.00153,smoothened homolog
+LOC111132097,-69,GO:0000122,0.00153,LIM domain only protein 3-like
+LOC111132097,-52,GO:0000122,0.00153,LIM domain only protein 3-like
+LOC111135160,-52,GO:0000122,0.00153,protein timeless homolog
+LOC111108216,-50,GO:0000122,0.00153,zinc finger E-box-binding homeobox 2-like
+LOC111122348,55,GO:0000122,0.00153,putative ankyrin repeat protein RF_0381
+LOC111122348,51,GO:0000122,0.00153,putative ankyrin repeat protein RF_0381
+LOC111118012,52,GO:0000122,0.00153,coiled-coil and C2 domain-containing protein 1-like
+LOC111118796,-52,GO:0000122,0.00153,nucleoprotein TPR-like
+LOC111119382,51,GO:0000122,0.00153,nipped-B-like protein
+LOC111119382,62,GO:0000122,0.00153,nipped-B-like protein
+LOC111118832,-51,GO:0000122,0.00153,zinc finger protein GLIS3-like
+LOC111125795,-51,GO:0000122,0.00153,poly [ADP-ribose] polymerase 14-like
+LOC111129524,50,GO:0000122,0.00153,endoribonuclease Dicer-like
+LOC111131704,-62,GO:0000122,0.00153,dual specificity mitogen-activated protein kinase kinase 5-like
+LOC111129287,-54,GO:0000122,0.00153,breast cancer metastasis-suppressor 1-like protein
+LOC111128559,-58,GO:0000122,0.00153,methyl-CpG-binding domain protein 2-like
+LOC111128564,-59,GO:0000122,0.00153,E3 SUMO-protein ligase PIAS2-like
+LOC111128837,-54,GO:0000122,0.00153,lysine-specific demethylase 5A-like
+LOC111136295,-71,GO:0000122,0.00153,uncharacterized LOC111136295
+LOC111136295,52,GO:0000122,0.00153,uncharacterized LOC111136295
+LOC111137343,53,GO:0000122,0.00153,E3 ubiquitin-protein ligase TRIM37-like
+LOC111137343,64,GO:0000122,0.00153,E3 ubiquitin-protein ligase TRIM37-like
+LOC111137343,-53,GO:0000122,0.00153,E3 ubiquitin-protein ligase TRIM37-like
+LOC111137343,-52,GO:0000122,0.00153,E3 ubiquitin-protein ligase TRIM37-like
+LOC111136943,-52,GO:0000122,0.00153,interferon regulatory factor 8-like
+LOC111133472,-52,GO:0000122,0.00153,tumor protein 63-like
+LOC111135434,-72,GO:0000122,0.00153,retinoblastoma-like protein 1
+LOC111135434,-75,GO:0000122,0.00153,retinoblastoma-like protein 1
+LOC111134594,56,GO:0000122,0.00153,nucleolar complex protein 2 homolog
+LOC111135881,-53,GO:0000122,0.00153,transcription factor 25-like
+LOC111132479,51,GO:0000122,0.00153,uncharacterized LOC111132479
+LOC111135642,-57,GO:0000122,0.00153,zinc finger protein 83-like
+LOC111132503,-51,GO:0000122,0.00153,chromodomain-helicase-DNA-binding protein Mi-2 homolog
+LOC111134835,55,GO:0000122,0.00153,homeodomain-only protein-like
+LOC111134076,50,GO:0000122,0.00153,FK506-binding protein 3-like
+LOC111100561,-61,GO:0000122,0.00153,probable ubiquitin carboxyl-terminal hydrolase FAF-X
+LOC111104374,53,GO:0000122,0.00153,transcription factor E2F7-like
+LOC111103859,61,GO:0000122,0.00153,uncharacterized LOC111103859
+LOC111103859,58,GO:0000122,0.00153,uncharacterized LOC111103859
+LOC111103859,54,GO:0000122,0.00153,uncharacterized LOC111103859
+LOC111107565,-54,GO:0000122,0.00153,host cell factor 1-like
+LOC111108707,-51,GO:0000122,0.00153,fibropellin-1-like
+LOC111110366,55,GO:0000122,0.00153,uncharacterized LOC111110366
+LOC111106097,52,GO:0000122,0.00153,retinoic acid receptor beta-like
+LOC111106097,-67,GO:0000122,0.00153,retinoic acid receptor beta-like
+LOC111106097,-53,GO:0000122,0.00153,retinoic acid receptor beta-like
+LOC111108180,-51,GO:0000122,0.00153,zinc finger and BTB domain-containing protein 49-like
+LOC111108180,-52,GO:0000122,0.00153,zinc finger and BTB domain-containing protein 49-like
+LOC111111633,-51,GO:0000122,0.00153,NAD-dependent protein deacetylase sirtuin-2-like
+LOC111112743,-50,GO:0000122,0.00153,telomere-associated protein RIF1-like
+LOC111118303,51,GO:0007264,0.00153,rap1 GTPase-GDP dissociation stimulator 1-B-like
+LOC111120320,52,GO:0007264,0.00153,leucine-rich repeat serine/threonine-protein kinase 1-like
+LOC111120320,-55,GO:0007264,0.00153,leucine-rich repeat serine/threonine-protein kinase 1-like
+LOC111120320,-51,GO:0007264,0.00153,leucine-rich repeat serine/threonine-protein kinase 1-like
+LOC111125048,51,GO:0007264,0.00153,guanine nucleotide exchange factor VAV2-like
+LOC111125960,50,GO:0007264,0.00153,ral guanine nucleotide dissociation stimulator-like
+LOC111137094,79,GO:0007264,0.00153,dedicator of cytokinesis protein 1-like
+LOC111138340,56,GO:0007264,0.00153,rho-related BTB domain-containing protein 1-like
+LOC111138340,55,GO:0007264,0.00153,rho-related BTB domain-containing protein 1-like
+LOC111108105,-55,GO:0007264,0.00153,glutamic acid-rich protein-like
+LOC111107387,71,GO:0007264,0.00153,leucine-rich repeat serine/threonine-protein kinase 2-like
+LOC111112627,-60,GO:0007264,0.00153,uncharacterized LOC111112627
+LOC111112627,-53,GO:0007264,0.00153,uncharacterized LOC111112627
+LOC111112615,-50,GO:0007264,0.00153,uncharacterized LOC111112615
+LOC111113270,51,GO:0007264,0.00153,ADP-ribosylation factor-like protein 5B
+LOC111125999,62,GO:0030900,0.00154,protocadherin-9-like
+LOC111124939,50,GO:0007099,0.00161,centrosome-associated protein CEP250-like
+LOC111133898,-66,GO:0007099,0.00161,uncharacterized LOC111133898
+LOC111122539,62,GO:0021954,0.00161,copper-transporting ATPase 1-like
+LOC111129077,52,GO:0021954,0.00161,non-lysosomal glucosylceramidase-like
+LOC111120783,-53,GO:0007034,0.00176,charged multivesicular body protein 5-like
+LOC111102907,73,GO:0007034,0.00176,charged multivesicular body protein 2a-like
+LOC111135976,57,GO:0009132,0.00183,uncharacterized Nudix hydrolase NudL-like
+LOC111119225,-63,GO:0006352,0.00189,uncharacterized LOC111119225
+LOC111135967,54,GO:0016197,0.00197,sorting nexin-33-like
+LOC111120903,53,GO:0016197,0.00197,vacuolar protein sorting-associated protein 28 homolog
+LOC111131470,-59,GO:0016197,0.00197,AP-5 complex subunit beta-1-like
+LOC111131470,-58,GO:0016197,0.00197,AP-5 complex subunit beta-1-like
+LOC111109622,53,GO:0016197,0.00197,WASH complex subunit 4-like
+LOC111119358,58,GO:0035065,0.00203,poly(ADP-ribose) glycohydrolase-like
+LOC111120468,-56,GO:0009056,0.00204,carboxylesterase 5A-like
+LOC111138516,-54,GO:0009056,0.00204,arylacetamide deacetylase-like
+LOC111138516,-50,GO:0009056,0.00204,arylacetamide deacetylase-like
+LOC111127118,-52,GO:0021930,0.00207,nuclear receptor ROR-beta-like
+LOC111128989,52,GO:0021930,0.00207,uncharacterized LOC111128989
+LOC111135789,-65,GO:0021930,0.00207,arginine-glutamic acid dipeptide repeats protein-like
+LOC111120713,-73,GO:0032006,0.00210,intraflagellar transport protein 172 homolog
+LOC111103817,52,GO:0032006,0.00210,proto-oncogene tyrosine-protein kinase ROS-like
+LOC111103817,-58,GO:0032006,0.00210,proto-oncogene tyrosine-protein kinase ROS-like
+LOC111120390,51,GO:0009992,0.00210,annexin A4-like
+LOC111120559,-56,GO:0009992,0.00210,annexin A7-like
+LOC111126580,-50,GO:0009992,0.00210,annexin A4-like
+LOC111126580,-63,GO:0009992,0.00210,annexin A4-like
+LOC111125463,-51,GO:0050790,0.00218,hemicentin-1-like
+LOC111123831,-65,GO:0050790,0.00218,titin-like
+LOC111123831,50,GO:0050790,0.00218,titin-like
+LOC111123831,53,GO:0050790,0.00218,titin-like
+LOC111124106,-51,GO:0050790,0.00218,titin-like
+LOC111125634,54,GO:0050790,0.00218,titin-like
+LOC111125634,63,GO:0050790,0.00218,titin-like
+LOC111132924,52,GO:0050790,0.00218,muscle M-line assembly protein unc-89-like
+LOC111125124,55,GO:0034260,0.00234,hamartin-like
+LOC111128088,61,GO:0034260,0.00234,tetratricopeptide repeat protein 8-like
+LOC111135275,52,GO:0034260,0.00234,angiomotin-like
+LOC111135275,-51,GO:0034260,0.00234,angiomotin-like
+LOC111107387,71,GO:0034260,0.00234,leucine-rich repeat serine/threonine-protein kinase 2-like
+LOC111113136,-52,GO:0034260,0.00234,receptor-type tyrosine-protein phosphatase N2-like
+LOC111113136,52,GO:0034260,0.00234,receptor-type tyrosine-protein phosphatase N2-like
+LOC111113136,-50,GO:0034260,0.00234,receptor-type tyrosine-protein phosphatase N2-like
+LOC111103877,-57,GO:0070646,0.00237,uncharacterized LOC111103877
+LOC111104374,53,GO:0032466,0.00240,transcription factor E2F7-like
+LOC111137166,-62,GO:0034757,0.00240,3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type 4-like
+LOC111122703,50,GO:0060327,0.00240,advillin-like
+LOC111137242,53,GO:0060327,0.00240,shootin-1-like
+LOC111136459,52,GO:0090239,0.00240,IWS1-like protein
+LOC111102833,-52,GO:1903056,0.00240,zinc finger E-box-binding homeobox 1-like
+LOC111137311,58,GO:1903056,0.00240,uncharacterized LOC111137311
+LOC111124011,54,GO:1903671,0.00240,vascular endothelial growth factor receptor 1-like
+LOC111130618,52,GO:1903671,0.00240,synaptojanin-2-binding protein-like
+LOC111099157,-67,GO:1903697,0.00240,rap1 GTPase-activating protein 1-like
+LOC111133403,-57,GO:1903697,0.00240,rap1 GTPase-activating protein 1-like
+LOC111133403,66,GO:1903697,0.00240,rap1 GTPase-activating protein 1-like
+LOC111108287,-50,GO:0090630,0.00275,TBC1 domain family member 9-like
+LOC111108287,80,GO:0090630,0.00275,TBC1 domain family member 9-like
+LOC111127465,61,GO:0090630,0.00275,TBC1 domain family member 1-like
+LOC111125124,55,GO:0090630,0.00275,hamartin-like
+LOC111137059,66,GO:0090630,0.00275,rho guanine nucleotide exchange factor 10-like protein
+LOC111135523,-51,GO:0090630,0.00275,growth hormone-regulated TBC protein 1-A-like
+LOC111100794,52,GO:0090630,0.00275,TBC1 domain family member 12-like
+LOC111100962,51,GO:0090630,0.00275,protein ECT2-like
+LOC111108268,-59,GO:0090630,0.00275,TBC1 domain family member 30-like
+LOC111113173,-57,GO:0090630,0.00275,phosphatidylinositol 4-phosphate 5-kinase type-1 alpha-like
+LOC111113173,-70,GO:0090630,0.00275,phosphatidylinositol 4-phosphate 5-kinase type-1 alpha-like
+LOC111113173,-58,GO:0090630,0.00275,phosphatidylinositol 4-phosphate 5-kinase type-1 alpha-like
+LOC111113173,-61,GO:0090630,0.00275,phosphatidylinositol 4-phosphate 5-kinase type-1 alpha-like
+LOC111124308,-53,GO:0051321,0.00276,F-box only protein 43-like
+LOC111123088,52,GO:0051321,0.00276,THO complex subunit 4D-like
+LOC111129115,-56,GO:0051321,0.00276,diphthine--ammonia ligase-like
+LOC111129115,-53,GO:0051321,0.00276,diphthine--ammonia ligase-like
+LOC111129115,-52,GO:0051321,0.00276,diphthine--ammonia ligase-like
+LOC111132883,-51,GO:0051321,0.00276,protein pelota-like
+LOC111133930,65,GO:0051321,0.00276,meiotic recombination protein REC8 homolog
+LOC111120866,55,GO:0031929,0.00287,regulatory-associated protein of mTOR-like
+LOC111119689,71,GO:0031929,0.00287,rapamycin-insensitive companion of mTOR-like
+LOC111119689,50,GO:0031929,0.00287,rapamycin-insensitive companion of mTOR-like
+LOC111119689,-73,GO:0031929,0.00287,rapamycin-insensitive companion of mTOR-like
+LOC111130874,54,GO:0031929,0.00287,girdin-like
+LOC111135899,63,GO:0046474,0.00287,copine-3-like
+LOC111122539,62,GO:0043085,0.00298,copper-transporting ATPase 1-like
+LOC111125905,-61,GO:0008333,0.00300,kinesin-like protein KIF13B
+LOC111125905,-70,GO:0008333,0.00300,kinesin-like protein KIF13B
+LOC111125905,73,GO:0008333,0.00300,kinesin-like protein KIF13B
+LOC111125905,53,GO:0008333,0.00300,kinesin-like protein KIF13B
+LOC111125905,-53,GO:0008333,0.00300,kinesin-like protein KIF13B
+LOC111125959,-53,GO:0008333,0.00300,uncharacterized LOC111125959
+LOC111124997,55,GO:0008333,0.00300,SNARE-associated protein Snapin-like
+LOC111122887,64,GO:0008333,0.00300,trafficking kinesin-binding protein 1-like
+LOC111122887,-54,GO:0008333,0.00300,trafficking kinesin-binding protein 1-like
+LOC111136676,56,GO:0008333,0.00300,AKT-interacting protein-like
+LOC111110360,51,GO:0021696,0.00300,smoothened homolog
+LOC111134944,64,GO:0021696,0.00300,transcription factor RFX4-like
+LOC111119175,54,GO:0048854,0.00300,laminin subunit alpha-like
+LOC111126568,69,GO:0048854,0.00300,sodium bicarbonate cotransporter 3-like
+LOC111102495,54,GO:0048854,0.00300,SH3 and multiple ankyrin repeat domains protein 1-like
+LOC111102495,51,GO:0048854,0.00300,SH3 and multiple ankyrin repeat domains protein 1-like
+LOC111107067,52,GO:0048854,0.00300,Fanconi anemia group D2 protein-like
+LOC111119190,-57,GO:0042176,0.00338,ornithine decarboxylase-like
+LOC111136988,-52,GO:0042176,0.00338,26S proteasome non-ATPase regulatory subunit 1-like
+LOC111102833,-52,GO:0007417,0.00339,zinc finger E-box-binding homeobox 1-like
+LOC111120159,53,GO:0007417,0.00339,KICSTOR complex protein SZT2-like
+LOC111120159,90,GO:0007417,0.00339,KICSTOR complex protein SZT2-like
+LOC111120159,-63,GO:0007417,0.00339,KICSTOR complex protein SZT2-like
+LOC111124521,53,GO:0007417,0.00339,tyrosine-protein kinase Abl-like
+LOC111100542,-50,GO:0007417,0.00339,tyrosine-protein phosphatase 10D-like
+LOC111106820,59,GO:0007417,0.00339,cadherin EGF LAG seven-pass G-type receptor 1-like
+LOC111111285,-51,GO:0007417,0.00339,uncharacterized LOC111111285
+LOC111135335,-50,GO:0061512,0.00347,WD repeat-containing protein 35-like
+LOC111120496,61,GO:0061512,0.00347,intraflagellar transport protein 140 homolog
+LOC111120496,-54,GO:0061512,0.00347,intraflagellar transport protein 140 homolog
+LOC111108798,51,GO:0061512,0.00347,intraflagellar transport protein 122 homolog
+LOC111119390,55,GO:0035973,0.00354,WD repeat and FYVE domain-containing protein 3-like
+LOC111119390,58,GO:0035973,0.00354,WD repeat and FYVE domain-containing protein 3-like
+LOC111129995,52,GO:0035973,0.00354,ubiquilin-1-like
+LOC111102871,51,GO:0035973,0.00354,autophagy protein 5-like
+LOC111119555,70,GO:0070197,0.00354,SUN domain-containing protein 2-like
+LOC111128552,-58,GO:0070197,0.00354,HAUS augmin-like complex subunit 1
+LOC111128552,70,GO:0070197,0.00354,HAUS augmin-like complex subunit 1
+LOC111099169,59,GO:0070197,0.00354,uncharacterized LOC111099169
+LOC111136050,61,GO:0072710,0.00354,histone acetyltransferase KAT7-like
+LOC111136050,55,GO:0072710,0.00354,histone acetyltransferase KAT7-like
+LOC111136050,56,GO:0072710,0.00354,histone acetyltransferase KAT7-like
+LOC111133592,-54,GO:0016192,0.00355,ras-related protein Rab-32-like
+LOC111133592,-58,GO:0016192,0.00355,ras-related protein Rab-32-like
+LOC111108139,-51,GO:0016192,0.00355,endoplasmic reticulum-Golgi intermediate compartment protein 3-like
+LOC111118731,-50,GO:0016192,0.00355,protein transport protein Sec24A-like
+LOC111131301,-55,GO:0016192,0.00355,synaptosomal-associated protein 25-like
+LOC111135247,-54,GO:0016192,0.00355,protein spire homolog 1-like
+LOC111135247,-67,GO:0016192,0.00355,protein spire homolog 1-like
+LOC111135243,68,GO:0016192,0.00355,trafficking protein particle complex subunit 11-like
+LOC111134328,-69,GO:0016192,0.00355,protein kinase C iota type-like
+LOC111135899,63,GO:0016192,0.00355,copine-3-like
+LOC111108105,-55,GO:0016192,0.00355,glutamic acid-rich protein-like
+LOC111111058,-60,GO:0016192,0.00355,unconventional myosin-Va-like
+LOC111111058,61,GO:0016192,0.00355,unconventional myosin-Va-like
+LOC111111058,50,GO:0016192,0.00355,unconventional myosin-Va-like
+LOC111117701,55,GO:0016192,0.00355,gamma-soluble NSF attachment protein-like
+LOC111117701,51,GO:0016192,0.00355,gamma-soluble NSF attachment protein-like
+LOC111110677,-57,GO:0006468,0.00364,homeodomain-interacting protein kinase 2-like
+LOC111110332,-59,GO:0006468,0.00364,checkpoint protein HUS1-like
+LOC111120015,-54,GO:0006468,0.00364,serine/threonine-protein kinase NIM1-like
+LOC111120680,50,GO:0006468,0.00364,dual specificity testis-specific protein kinase 2-like
+LOC111119098,54,GO:0006468,0.00364,AP2-associated protein kinase 1-like
+LOC111119098,55,GO:0006468,0.00364,AP2-associated protein kinase 1-like
+LOC111124521,53,GO:0006468,0.00364,tyrosine-protein kinase Abl-like
+LOC111125274,52,GO:0006468,0.00364,NADPH oxidase activator-like
+LOC111124011,54,GO:0006468,0.00364,vascular endothelial growth factor receptor 1-like
+LOC111128082,-50,GO:0006468,0.00364,serine/threonine-protein kinase MRCK alpha-like
+LOC111128082,-51,GO:0006468,0.00364,serine/threonine-protein kinase MRCK alpha-like
+LOC111129365,56,GO:0006468,0.00364,baculoviral IAP repeat-containing protein 6-like
+LOC111130217,-54,GO:0006468,0.00364,MAPK/MAK/MRK overlapping kinase-like
+LOC111136017,56,GO:0006468,0.00364,tyrosine-protein kinase PR2-like
+LOC111137330,50,GO:0006468,0.00364,aurora kinase A-like
+LOC111134328,-69,GO:0006468,0.00364,protein kinase C iota type-like
+LOC111135071,-54,GO:0006468,0.00364,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111135071,-51,GO:0006468,0.00364,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111135071,-52,GO:0006468,0.00364,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111135071,-53,GO:0006468,0.00364,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111135071,-58,GO:0006468,0.00364,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111135071,-64,GO:0006468,0.00364,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111137042,-55,GO:0006468,0.00364,serine/threonine-protein kinase PRP4 homolog
+LOC111137042,-64,GO:0006468,0.00364,serine/threonine-protein kinase PRP4 homolog
+LOC111135701,60,GO:0006468,0.00364,eukaryotic translation initiation factor 2-alpha kinase 3-like
+LOC111135701,58,GO:0006468,0.00364,eukaryotic translation initiation factor 2-alpha kinase 3-like
+LOC111101884,50,GO:0006468,0.00364,TFIIH basal transcription factor complex helicase XPB subunit-like
+LOC111103817,52,GO:0006468,0.00364,proto-oncogene tyrosine-protein kinase ROS-like
+LOC111103817,-58,GO:0006468,0.00364,proto-oncogene tyrosine-protein kinase ROS-like
+LOC111103509,55,GO:0006468,0.00364,MORC family CW-type zinc finger protein 3-like
+LOC111107387,71,GO:0006468,0.00364,leucine-rich repeat serine/threonine-protein kinase 2-like
+LOC111107790,-54,GO:0006468,0.00364,cyclin-dependent kinase 17-like
+LOC111107574,50,GO:0006468,0.00364,cyclin-dependent kinase 17-like
+LOC111112844,59,GO:0006468,0.00364,mitogen-activated protein kinase 11-like
+LOC111113387,56,GO:0006468,0.00364,serine/threonine-protein kinase tousled-like 2
+LOC111113385,54,GO:0006468,0.00364,serine/threonine-protein kinase tousled-like 2
+LOC111118975,64,GO:0019886,0.00367,kinesin-like protein KIN-7I
+LOC111118975,54,GO:0019886,0.00367,kinesin-like protein KIN-7I
+LOC111118975,-61,GO:0019886,0.00367,kinesin-like protein KIN-7I
+LOC111118731,-50,GO:0019886,0.00367,protein transport protein Sec24A-like
+LOC111120467,53,GO:0019886,0.00367,protein transport protein Sec24C-like
+LOC111132966,52,GO:0019886,0.00367,dynactin subunit 1-like
+LOC111115046,50,GO:0019886,0.00367,kinesin-like protein KIF23
+LOC111129365,56,GO:0032465,0.00384,baculoviral IAP repeat-containing protein 6-like
+LOC111137330,50,GO:0032465,0.00384,aurora kinase A-like
+LOC111135071,-54,GO:0032465,0.00384,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111135071,-51,GO:0032465,0.00384,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111135071,-52,GO:0032465,0.00384,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111135071,-53,GO:0032465,0.00384,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111135071,-58,GO:0032465,0.00384,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111135071,-64,GO:0032465,0.00384,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111122940,54,GO:1901673,0.00387,rho family-interacting cell polarization regulator 2-like
+LOC111118796,-52,GO:1901673,0.00387,nucleoprotein TPR-like
+LOC111131413,57,GO:1901673,0.00387,centriole
+LOC111135863,-70,GO:1901673,0.00387,hemocyte protein-glutamine gamma-glutamyltransferase-like
+LOC111122940,54,GO:2000114,0.00387,rho family-interacting cell polarization regulator 2-like
+LOC111119689,71,GO:2000114,0.00387,rapamycin-insensitive companion of mTOR-like
+LOC111119689,50,GO:2000114,0.00387,rapamycin-insensitive companion of mTOR-like
+LOC111119689,-73,GO:2000114,0.00387,rapamycin-insensitive companion of mTOR-like
+LOC111119269,56,GO:2000114,0.00387,guanine nucleotide-binding protein subunit beta-2-like 1
+LOC111137242,53,GO:2000114,0.00387,shootin-1-like
+LOC111120680,50,GO:0030036,0.00394,dual specificity testis-specific protein kinase 2-like
+LOC111122666,69,GO:0030036,0.00394,uncharacterized LOC111122666
+LOC111122666,-62,GO:0030036,0.00394,uncharacterized LOC111122666
+LOC111122535,-56,GO:0030036,0.00394,protein SDA1 homolog
+LOC111122535,-59,GO:0030036,0.00394,protein SDA1 homolog
+LOC111122535,-54,GO:0030036,0.00394,protein SDA1 homolog
+LOC111124894,54,GO:0030036,0.00394,rho guanine nucleotide exchange factor 17-like
+LOC111135247,-54,GO:0030036,0.00394,protein spire homolog 1-like
+LOC111135247,-67,GO:0030036,0.00394,protein spire homolog 1-like
+LOC111134024,-51,GO:0030036,0.00394,metastasis suppressor protein 1-like
+LOC111135949,-53,GO:0030036,0.00394,neurofibromin-like
+LOC111137702,53,GO:0030036,0.00394,filamin-C-like
+LOC111135275,52,GO:0030036,0.00394,angiomotin-like
+LOC111135275,-51,GO:0030036,0.00394,angiomotin-like
+LOC111100441,61,GO:0030036,0.00394,uncharacterized LOC111100441
+LOC111108143,-61,GO:0030036,0.00394,FYVE
+LOC111108124,58,GO:0030036,0.00394,IQ motif and SEC7 domain-containing protein 2-like
+LOC111109250,-60,GO:0030036,0.00394,uncharacterized LOC111109250
+LOC111109250,-57,GO:0030036,0.00394,uncharacterized LOC111109250
+LOC111109250,-51,GO:0030036,0.00394,uncharacterized LOC111109250
+LOC111109250,-50,GO:0030036,0.00394,uncharacterized LOC111109250
+LOC111109250,-52,GO:0030036,0.00394,uncharacterized LOC111109250
+LOC111109250,-56,GO:0030036,0.00394,uncharacterized LOC111109250
+LOC111107105,53,GO:0030036,0.00394,uncharacterized LOC111107105
+LOC111107105,50,GO:0030036,0.00394,uncharacterized LOC111107105
+LOC111107105,55,GO:0030036,0.00394,uncharacterized LOC111107105
+LOC111107105,-54,GO:0030036,0.00394,uncharacterized LOC111107105
+LOC111107105,-60,GO:0030036,0.00394,uncharacterized LOC111107105
+LOC111107105,82,GO:0030036,0.00394,uncharacterized LOC111107105
+LOC111107307,53,GO:0030036,0.00394,FYVE
+LOC111121323,-50,GO:0051234,0.00400,uncharacterized LOC111121323
+LOC111121323,53,GO:0051234,0.00400,uncharacterized LOC111121323
+LOC111121323,52,GO:0051234,0.00400,uncharacterized LOC111121323
+LOC111129524,50,GO:0048536,0.00414,endoribonuclease Dicer-like
+LOC111131267,51,GO:0048536,0.00414,serine/threonine-protein phosphatase 2A regulatory subunit B'' subunit gamma-like
+LOC111133065,-50,GO:0048536,0.00414,uncharacterized LOC111133065
+LOC111136739,55,GO:0048536,0.00414,uncharacterized LOC111136739
+LOC111132479,51,GO:0048536,0.00414,uncharacterized LOC111132479
+LOC111118850,-67,GO:0006895,0.00450,serine/arginine repetitive matrix protein 2-like
+LOC111121916,57,GO:0006895,0.00450,kelch-like protein 3
+LOC111103322,-50,GO:0006895,0.00450,protein dopey-1-like
+LOC111103322,-51,GO:0006895,0.00450,protein dopey-1-like
+LOC111110125,-50,GO:0006895,0.00450,protein MON2 homolog
+LOC111110125,-54,GO:0006895,0.00450,protein MON2 homolog
+LOC111110125,61,GO:0006895,0.00450,protein MON2 homolog
+LOC111110125,-53,GO:0006895,0.00450,protein MON2 homolog
+LOC111107856,60,GO:0006895,0.00450,protein MON2 homolog
+LOC111117970,-65,GO:0021955,0.00450,focal adhesion kinase 1-like
+LOC111117970,-50,GO:0021955,0.00450,focal adhesion kinase 1-like
+LOC111127118,-52,GO:0006367,0.00488,nuclear receptor ROR-beta-like
+LOC111119151,54,GO:0006367,0.00488,general transcription factor IIF subunit 1-like
+LOC111119151,62,GO:0006367,0.00488,general transcription factor IIF subunit 1-like
+LOC111119151,59,GO:0006367,0.00488,general transcription factor IIF subunit 1-like
+LOC111119225,-63,GO:0006367,0.00488,uncharacterized LOC111119225
+LOC111128989,52,GO:0006367,0.00488,uncharacterized LOC111128989
+LOC111136991,-58,GO:0006367,0.00488,DNA-directed RNA polymerase II subunit RPB2-like
+LOC111136987,-58,GO:0006367,0.00488,DNA-directed RNA polymerase II subunit RPB2
+LOC111101884,50,GO:0006367,0.00488,TFIIH basal transcription factor complex helicase XPB subunit-like
+LOC111107409,60,GO:0006367,0.00488,orphan steroid hormone receptor 2-like
+LOC111134795,-58,GO:0045132,0.00488,condensin complex subunit 2-like
+LOC111106719,-52,GO:0007409,0.00494,uncharacterized LOC111106719
+LOC111136649,50,GO:0007409,0.00494,neuroglian-like
+LOC111121701,-52,GO:0007409,0.00494,putative ankyrin repeat protein RF_0381
+LOC111118089,53,GO:0007409,0.00494,elongator complex protein 3
+LOC111118817,55,GO:0007409,0.00494,serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit C-like
+LOC111124521,53,GO:0007409,0.00494,tyrosine-protein kinase Abl-like
+LOC111123804,-57,GO:0007409,0.00494,NTF2-related export protein 2-like
+LOC111123804,-52,GO:0007409,0.00494,NTF2-related export protein 2-like
+LOC111123804,-70,GO:0007409,0.00494,NTF2-related export protein 2-like
+LOC111137242,53,GO:0007409,0.00494,shootin-1-like
+LOC111101238,57,GO:0007409,0.00494,tankyrase-1-like
+LOC111110204,56,GO:0007409,0.00494,optineurin-like
+LOC111120903,53,GO:0045732,0.00501,vacuolar protein sorting-associated protein 28 homolog
+LOC111126055,-55,GO:0045732,0.00501,low-density lipoprotein receptor-related protein 1-like
+LOC111099965,53,GO:0045732,0.00501,low-density lipoprotein receptor-related protein 8-like
+LOC111135335,-50,GO:0045019,0.00507,WD repeat-containing protein 35-like
+LOC111100403,53,GO:0045019,0.00507,uncharacterized LOC111100403
+LOC111100403,61,GO:0045019,0.00507,uncharacterized LOC111100403
+LOC111100406,61,GO:0045019,0.00507,uncharacterized LOC111100406
+LOC111100426,52,GO:0045019,0.00507,far upstream element-binding protein 3-like
+LOC111100426,50,GO:0045019,0.00507,far upstream element-binding protein 3-like
+LOC111133898,-66,GO:0051299,0.00507,uncharacterized LOC111133898
+LOC111119462,-61,GO:0006810,0.00507,uncharacterized LOC111119462
+LOC111119830,53,GO:0006810,0.00507,ATP-binding cassette sub-family A member 3-like
+LOC111120513,65,GO:0006810,0.00507,rab11 family-interacting protein 4B-like
+LOC111120513,72,GO:0006810,0.00507,rab11 family-interacting protein 4B-like
+LOC111120513,66,GO:0006810,0.00507,rab11 family-interacting protein 4B-like
+LOC111128585,69,GO:0006810,0.00507,probable E3 ubiquitin-protein ligase HERC1
+LOC111130028,63,GO:0006810,0.00507,major facilitator superfamily domain-containing protein 12-like
+LOC111132307,-52,GO:0006810,0.00507,uncharacterized LOC111132307
+LOC111137130,-52,GO:0006810,0.00507,cyclic nucleotide-gated cation channel beta-1-like
+LOC111137130,-53,GO:0006810,0.00507,cyclic nucleotide-gated cation channel beta-1-like
+LOC111100311,-71,GO:0006810,0.00507,poly [ADP-ribose] polymerase 4-like
+LOC111100311,85,GO:0006810,0.00507,poly [ADP-ribose] polymerase 4-like
+LOC111099748,51,GO:0006810,0.00507,multidrug resistance-associated protein 5-like
+LOC111099748,-56,GO:0006810,0.00507,multidrug resistance-associated protein 5-like
+LOC111108086,54,GO:0006810,0.00507,plasma membrane calcium-transporting ATPase 2-like
+LOC111111058,-60,GO:0006810,0.00507,unconventional myosin-Va-like
+LOC111111058,61,GO:0006810,0.00507,unconventional myosin-Va-like
+LOC111111058,50,GO:0006810,0.00507,unconventional myosin-Va-like
+LOC111110863,62,GO:0006810,0.00507,multidrug resistance protein 1-like
+LOC111110863,51,GO:0006810,0.00507,multidrug resistance protein 1-like
+LOC111119175,54,GO:0045995,0.00509,laminin subunit alpha-like
+LOC111119382,51,GO:0045995,0.00509,nipped-B-like protein
+LOC111119382,62,GO:0045995,0.00509,nipped-B-like protein
+LOC111131413,57,GO:0045995,0.00509,centriole
+LOC111127118,-52,GO:0006809,0.00521,nuclear receptor ROR-beta-like
+LOC111128989,52,GO:0006809,0.00521,uncharacterized LOC111128989
+LOC111113238,-55,GO:0008283,0.00521,protein scribble homolog
+LOC111113238,53,GO:0008283,0.00521,protein scribble homolog
+LOC111135381,52,GO:0008283,0.00521,NGFI-A-binding protein homolog
+LOC111099197,-54,GO:0008283,0.00521,CDK5 regulatory subunit-associated protein 3-like
+LOC111121674,-51,GO:0008283,0.00521,N-alpha-acetyltransferase 60-like
+LOC111120878,68,GO:0008283,0.00521,histone-binding protein N1/N2-like
+LOC111120878,56,GO:0008283,0.00521,histone-binding protein N1/N2-like
+LOC111118850,-67,GO:0008283,0.00521,serine/arginine repetitive matrix protein 2-like
+LOC111122360,-58,GO:0008283,0.00521,inactive rhomboid protein 1-like
+LOC111120390,51,GO:0008283,0.00521,annexin A4-like
+LOC111120559,-56,GO:0008283,0.00521,annexin A7-like
+LOC111126580,-50,GO:0008283,0.00521,annexin A4-like
+LOC111126580,-63,GO:0008283,0.00521,annexin A4-like
+LOC111126055,-55,GO:0008283,0.00521,low-density lipoprotein receptor-related protein 1-like
+LOC111130938,52,GO:0008283,0.00521,ALK tyrosine kinase receptor-like
+LOC111129524,50,GO:0008283,0.00521,endoribonuclease Dicer-like
+LOC111135439,59,GO:0008283,0.00521,biotin--protein ligase-like
+LOC111136056,55,GO:0008283,0.00521,golgin-45-like
+LOC111136056,57,GO:0008283,0.00521,golgin-45-like
+LOC111134993,64,GO:0008283,0.00521,transforming acidic coiled-coil-containing protein 1-like
+LOC111134993,74,GO:0008283,0.00521,transforming acidic coiled-coil-containing protein 1-like
+LOC111103817,52,GO:0008283,0.00521,proto-oncogene tyrosine-protein kinase ROS-like
+LOC111103817,-58,GO:0008283,0.00521,proto-oncogene tyrosine-protein kinase ROS-like
+LOC111103787,61,GO:0008283,0.00521,cullin-5-like
+LOC111117050,51,GO:0000086,0.00534,serine/threonine-protein kinase greatwall-like
+LOC111124747,66,GO:0000086,0.00534,centrosomal protein of 164 kDa-like
+LOC111124747,58,GO:0000086,0.00534,centrosomal protein of 164 kDa-like
+LOC111125942,-57,GO:0000086,0.00534,centriolin-like
+LOC111137330,50,GO:0000086,0.00534,aurora kinase A-like
+LOC111137056,74,GO:0000086,0.00534,HAUS augmin-like complex subunit 4
+LOC111135857,52,GO:0000086,0.00534,F-box/WD repeat-containing protein 1A-like
+LOC111137510,54,GO:0000086,0.00534,protein SFI1 homolog
+LOC111132966,52,GO:0000086,0.00534,dynactin subunit 1-like
+LOC111105527,50,GO:0000086,0.00534,tRNA wybutosine-synthesizing protein 5-like
+LOC111113273,-52,GO:0000086,0.00534,centrosomal protein of 78 kDa-like
+LOC111112099,50,GO:0000086,0.00534,A-kinase anchor protein 9-like
+LOC111112099,61,GO:0000086,0.00534,A-kinase anchor protein 9-like
+LOC111112099,59,GO:0000086,0.00534,A-kinase anchor protein 9-like
+LOC111110863,62,GO:0000086,0.00534,multidrug resistance protein 1-like
+LOC111110863,51,GO:0000086,0.00534,multidrug resistance protein 1-like
+LOC111119269,56,GO:0051302,0.00536,guanine nucleotide-binding protein subunit beta-2-like 1
+LOC111121674,-51,GO:0017196,0.00546,N-alpha-acetyltransferase 60-like
+LOC111121267,-56,GO:0017196,0.00546,N-alpha-acetyltransferase 25
+LOC111131729,-50,GO:0017196,0.00546,N-alpha-acetyltransferase 20-like
+LOC111125905,-61,GO:0035459,0.00546,kinesin-like protein KIF13B
+LOC111125905,-70,GO:0035459,0.00546,kinesin-like protein KIF13B
+LOC111125905,73,GO:0035459,0.00546,kinesin-like protein KIF13B
+LOC111125905,53,GO:0035459,0.00546,kinesin-like protein KIF13B
+LOC111125905,-53,GO:0035459,0.00546,kinesin-like protein KIF13B
+LOC111125959,-53,GO:0035459,0.00546,uncharacterized LOC111125959
+LOC111112620,52,GO:0048499,0.00546,centrosome and spindle pole-associated protein 1-like
+LOC111124026,65,GO:0048499,0.00546,teneurin-m-like
+LOC111124026,-50,GO:0048499,0.00546,teneurin-m-like
+LOC111107722,54,GO:0048499,0.00546,uncharacterized LOC111107722
+LOC111130120,54,GO:0090659,0.00546,spatacsin-like
+LOC111124603,-52,GO:0006508,0.00556,calpain-9-like
+LOC111121630,-59,GO:0006508,0.00556,programmed cell death protein 6-like
+LOC111122360,-58,GO:0006508,0.00556,inactive rhomboid protein 1-like
+LOC111125491,50,GO:0006508,0.00556,caspase-8-like
+LOC111126408,-59,GO:0006508,0.00556,beta-secretase 1-like
+LOC111125883,-52,GO:0006508,0.00556,calpain-15-like
+LOC111129870,-50,GO:0006508,0.00556,ATP-dependent Clp protease ATP-binding subunit ClpX-like
+LOC111129870,51,GO:0006508,0.00556,ATP-dependent Clp protease ATP-binding subunit ClpX-like
+LOC111133509,52,GO:0006508,0.00556,calpain-5-like
+LOC111134238,68,GO:0006508,0.00556,puromycin-sensitive aminopeptidase-like
+LOC111099446,53,GO:0006508,0.00556,putative serine protease K12H4.7
+LOC111104629,-51,GO:0006508,0.00556,androglobin-like
+LOC111104629,-52,GO:0006508,0.00556,androglobin-like
+LOC111104629,-54,GO:0006508,0.00556,androglobin-like
+LOC111111251,-50,GO:0006508,0.00556,uncharacterized LOC111111251
+LOC111136882,60,GO:0008152,0.00561,isochorismatase domain-containing protein 2-like
+LOC111103072,-50,GO:0008152,0.00561,enoyl-CoA hydratase domain-containing protein 3
+LOC111121118,-50,GO:0008152,0.00561,lipoamide acyltransferase component of branched-chain alpha-keto acid dehydrogenase complex
+LOC111102779,-64,GO:0008152,0.00561,uncharacterized LOC111102779
+LOC111121059,-57,GO:0006283,0.00565,DNA repair endonuclease XPF-like
+LOC111118834,53,GO:0006283,0.00565,ubiquitin carboxyl-terminal hydrolase 7-like
+LOC111118834,59,GO:0006283,0.00565,ubiquitin carboxyl-terminal hydrolase 7-like
+LOC111118382,58,GO:0006283,0.00565,COP9 signalosome complex subunit 3-like
+LOC111136991,-58,GO:0006283,0.00565,DNA-directed RNA polymerase II subunit RPB2-like
+LOC111136987,-58,GO:0006283,0.00565,DNA-directed RNA polymerase II subunit RPB2
+LOC111101884,50,GO:0006283,0.00565,TFIIH basal transcription factor complex helicase XPB subunit-like
+LOC111118568,59,GO:0060236,0.00565,polycystin-1-like
+LOC111132966,52,GO:0060236,0.00565,dynactin subunit 1-like
+LOC111130696,-50,GO:0030326,0.00612,fibrillin-2-like
+LOC111119698,50,GO:0030326,0.00612,extracellular matrix protein FRAS1-like
+LOC111119698,-73,GO:0030326,0.00612,extracellular matrix protein FRAS1-like
+LOC111119697,51,GO:0030326,0.00612,extracellular matrix protein FRAS1-like
+LOC111119697,65,GO:0030326,0.00612,extracellular matrix protein FRAS1-like
+LOC111123125,56,GO:0030326,0.00612,multiple epidermal growth factor-like domains protein 8
+LOC111126641,52,GO:0030326,0.00612,low-density lipoprotein receptor-related protein 2-like
+LOC111129524,50,GO:0030326,0.00612,endoribonuclease Dicer-like
+LOC111133472,-52,GO:0030326,0.00612,tumor protein 63-like
+LOC111130870,50,GO:0045944,0.00623,probable ATP-dependent RNA helicase DHX58
+LOC111123818,-51,GO:0045944,0.00623,protein argonaute-2-like
+LOC111123818,65,GO:0045944,0.00623,protein argonaute-2-like
+LOC111130344,51,GO:0045944,0.00623,nuclear factor erythroid 2-related factor 2-like
+LOC111129431,50,GO:0045944,0.00623,solute carrier family 40 member 1-like
+LOC111102833,-52,GO:0045944,0.00623,zinc finger E-box-binding homeobox 1-like
+LOC111110677,-57,GO:0045944,0.00623,homeodomain-interacting protein kinase 2-like
+LOC111127118,-52,GO:0045944,0.00623,nuclear receptor ROR-beta-like
+LOC111099197,-54,GO:0045944,0.00623,CDK5 regulatory subunit-associated protein 3-like
+LOC111110360,51,GO:0045944,0.00623,smoothened homolog
+LOC111132097,-69,GO:0045944,0.00623,LIM domain only protein 3-like
+LOC111132097,-52,GO:0045944,0.00623,LIM domain only protein 3-like
+LOC111135499,50,GO:0045944,0.00623,pre-mRNA-processing factor 6-like
+LOC111120947,66,GO:0045944,0.00623,inhibitor of nuclear factor kappa-B kinase subunit alpha-like
+LOC111118300,-58,GO:0045944,0.00623,histone acetyltransferase KAT6B-like
+LOC111120511,-57,GO:0045944,0.00623,transcription initiation factor TFIID subunit 2-like
+LOC111119382,51,GO:0045944,0.00623,nipped-B-like protein
+LOC111119382,62,GO:0045944,0.00623,nipped-B-like protein
+LOC111118832,-51,GO:0045944,0.00623,zinc finger protein GLIS3-like
+LOC111118568,59,GO:0045944,0.00623,polycystin-1-like
+LOC111119225,-63,GO:0045944,0.00623,uncharacterized LOC111119225
+LOC111121850,56,GO:0045944,0.00623,MKL/myocardin-like protein 2
+LOC111120077,-54,GO:0045944,0.00623,TNFAIP3-interacting protein 1-like
+LOC111121273,-52,GO:0045944,0.00623,helicase with zinc finger domain 2-like
+LOC111121273,-67,GO:0045944,0.00623,helicase with zinc finger domain 2-like
+LOC111121273,52,GO:0045944,0.00623,helicase with zinc finger domain 2-like
+LOC111121273,56,GO:0045944,0.00623,helicase with zinc finger domain 2-like
+LOC111123833,53,GO:0045944,0.00623,uncharacterized LOC111123833
+LOC111123833,-52,GO:0045944,0.00623,uncharacterized LOC111123833
+LOC111126911,54,GO:0045944,0.00623,ETS translocation variant 5-like
+LOC111128477,59,GO:0045944,0.00623,uncharacterized LOC111128477
+LOC111128477,52,GO:0045944,0.00623,uncharacterized LOC111128477
+LOC111129524,50,GO:0045944,0.00623,endoribonuclease Dicer-like
+LOC111131058,54,GO:0045944,0.00623,cyclin-K-like
+LOC111128989,52,GO:0045944,0.00623,uncharacterized LOC111128989
+LOC111131704,-62,GO:0045944,0.00623,dual specificity mitogen-activated protein kinase kinase 5-like
+LOC111129369,51,GO:0045944,0.00623,protein trachealess-like
+LOC111128383,56,GO:0045944,0.00623,CREB-regulated transcription coactivator 1-like
+LOC111133065,-50,GO:0045944,0.00623,uncharacterized LOC111133065
+LOC111132939,-50,GO:0045944,0.00623,agrin-like
+LOC111132939,-51,GO:0045944,0.00623,agrin-like
+LOC111136943,-52,GO:0045944,0.00623,interferon regulatory factor 8-like
+LOC111133472,-52,GO:0045944,0.00623,tumor protein 63-like
+LOC111136924,-50,GO:0045944,0.00623,chromodomain-helicase-DNA-binding protein 8-like
+LOC111136924,60,GO:0045944,0.00623,chromodomain-helicase-DNA-binding protein 8-like
+LOC111136739,55,GO:0045944,0.00623,uncharacterized LOC111136739
+LOC111136050,61,GO:0045944,0.00623,histone acetyltransferase KAT7-like
+LOC111136050,55,GO:0045944,0.00623,histone acetyltransferase KAT7-like
+LOC111136050,56,GO:0045944,0.00623,histone acetyltransferase KAT7-like
+LOC111134995,54,GO:0045944,0.00623,tankyrase-1-like
+LOC111134944,64,GO:0045944,0.00623,transcription factor RFX4-like
+LOC111136509,54,GO:0045944,0.00623,proline-
+LOC111133129,59,GO:0045944,0.00623,transcription initiation factor TFIID subunit 9B-like
+LOC111100344,-50,GO:0045944,0.00623,unconventional myosin-VI-like
+LOC111100403,53,GO:0045944,0.00623,uncharacterized LOC111100403
+LOC111100403,61,GO:0045944,0.00623,uncharacterized LOC111100403
+LOC111100406,61,GO:0045944,0.00623,uncharacterized LOC111100406
+LOC111101884,50,GO:0045944,0.00623,TFIIH basal transcription factor complex helicase XPB subunit-like
+LOC111104374,53,GO:0045944,0.00623,transcription factor E2F7-like
+LOC111104779,-54,GO:0045944,0.00623,uncharacterized LOC111104779
+LOC111107409,60,GO:0045944,0.00623,orphan steroid hormone receptor 2-like
+LOC111112664,-51,GO:0045944,0.00623,probable helicase senataxin
+LOC111111633,-51,GO:0045944,0.00623,NAD-dependent protein deacetylase sirtuin-2-like
+LOC111115487,55,GO:0045944,0.00623,serine/threonine-protein kinase 16-like
+LOC111115356,54,GO:0045944,0.00623,breast cancer type 1 susceptibility protein homolog
+LOC111115356,-50,GO:0045944,0.00623,breast cancer type 1 susceptibility protein homolog
+LOC111115356,52,GO:0045944,0.00623,breast cancer type 1 susceptibility protein homolog
+LOC111123891,53,GO:0016579,0.00647,lysine-specific histone demethylase 1B-like
+LOC111132215,51,GO:0016579,0.00647,deubiquitinating protein VCIP135-like
+LOC111132215,-52,GO:0016579,0.00647,deubiquitinating protein VCIP135-like
+LOC111132215,57,GO:0016579,0.00647,deubiquitinating protein VCIP135-like
+LOC111133491,55,GO:0016579,0.00647,OTU domain-containing protein 7A-like
+LOC111133491,-57,GO:0016579,0.00647,OTU domain-containing protein 7A-like
+LOC111119493,54,GO:0016579,0.00647,ubiquitin carboxyl-terminal hydrolase 24-like
+LOC111119194,-59,GO:0016579,0.00647,uncharacterized protein DDB_G0283357-like
+LOC111118834,53,GO:0016579,0.00647,ubiquitin carboxyl-terminal hydrolase 7-like
+LOC111118834,59,GO:0016579,0.00647,ubiquitin carboxyl-terminal hydrolase 7-like
+LOC111120077,-54,GO:0016579,0.00647,TNFAIP3-interacting protein 1-like
+LOC111124169,55,GO:0016579,0.00647,uncharacterized LOC111124169
+LOC111123841,64,GO:0016579,0.00647,ubiquitin carboxyl-terminal hydrolase isozyme L5-like
+LOC111128834,-62,GO:0016579,0.00647,ubiquitin carboxyl-terminal hydrolase 34-like
+LOC111135619,63,GO:0016579,0.00647,ubiquitin carboxyl-terminal hydrolase 10-like
+LOC111135619,64,GO:0016579,0.00647,ubiquitin carboxyl-terminal hydrolase 10-like
+LOC111135619,55,GO:0016579,0.00647,ubiquitin carboxyl-terminal hydrolase 10-like
+LOC111134719,-51,GO:0016579,0.00647,ubiquitin carboxyl-terminal hydrolase 32-like
+LOC111134995,54,GO:0016579,0.00647,tankyrase-1-like
+LOC111100561,-61,GO:0016579,0.00647,probable ubiquitin carboxyl-terminal hydrolase FAF-X
+LOC111107565,-54,GO:0016579,0.00647,host cell factor 1-like
+LOC111110182,56,GO:0016579,0.00647,uncharacterized LOC111110182
+LOC111118811,-55,GO:0043981,0.00650,KAT8 regulatory NSL complex subunit 2-like
+LOC111136050,61,GO:0043981,0.00650,histone acetyltransferase KAT7-like
+LOC111136050,55,GO:0043981,0.00650,histone acetyltransferase KAT7-like
+LOC111136050,56,GO:0043981,0.00650,histone acetyltransferase KAT7-like
+LOC111105580,57,GO:0043981,0.00650,chromatin modification-related protein MEAF6-like
+LOC111107565,-54,GO:0043981,0.00650,host cell factor 1-like
+LOC111118811,-55,GO:0043982,0.00650,KAT8 regulatory NSL complex subunit 2-like
+LOC111136050,61,GO:0043982,0.00650,histone acetyltransferase KAT7-like
+LOC111136050,55,GO:0043982,0.00650,histone acetyltransferase KAT7-like
+LOC111136050,56,GO:0043982,0.00650,histone acetyltransferase KAT7-like
+LOC111105580,57,GO:0043982,0.00650,chromatin modification-related protein MEAF6-like
+LOC111107565,-54,GO:0043982,0.00650,host cell factor 1-like
+LOC111110677,-57,GO:0030182,0.00654,homeodomain-interacting protein kinase 2-like
+LOC111136295,-71,GO:0030182,0.00654,uncharacterized LOC111136295
+LOC111136295,52,GO:0030182,0.00654,uncharacterized LOC111136295
+LOC111099115,68,GO:0030182,0.00654,GPI transamidase component PIG-T-like
+LOC111103558,-56,GO:0035994,0.00654,dystrophin-like
+LOC111110360,51,GO:0021987,0.00664,smoothened homolog
+LOC111120604,-50,GO:0021987,0.00664,uncharacterized LOC111120604
+LOC111126055,-55,GO:0021987,0.00664,low-density lipoprotein receptor-related protein 1-like
+LOC111125357,-51,GO:0021987,0.00664,protocadherin Fat 4-like
+LOC111125124,55,GO:0021987,0.00664,hamartin-like
+LOC111129524,50,GO:0021987,0.00664,endoribonuclease Dicer-like
+LOC111131142,51,GO:0021987,0.00664,centrosomal protein of 120 kDa-like
+LOC111131142,64,GO:0021987,0.00664,centrosomal protein of 120 kDa-like
+LOC111131142,60,GO:0021987,0.00664,centrosomal protein of 120 kDa-like
+LOC111135949,-53,GO:0021987,0.00664,neurofibromin-like
+LOC111134993,64,GO:0021987,0.00664,transforming acidic coiled-coil-containing protein 1-like
+LOC111134993,74,GO:0021987,0.00664,transforming acidic coiled-coil-containing protein 1-like
+LOC111107913,52,GO:0021987,0.00664,filamin-A-like
+LOC111107913,53,GO:0021987,0.00664,filamin-A-like
+LOC111135071,-54,GO:0006661,0.00675,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111135071,-51,GO:0006661,0.00675,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111135071,-52,GO:0006661,0.00675,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111135071,-53,GO:0006661,0.00675,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111135071,-58,GO:0006661,0.00675,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111135071,-64,GO:0006661,0.00675,phosphoinositide 3-kinase regulatory subunit 4-like
+LOC111103190,50,GO:0006661,0.00675,polyphosphoinositide phosphatase-like
+LOC111113173,-57,GO:0006661,0.00675,phosphatidylinositol 4-phosphate 5-kinase type-1 alpha-like
+LOC111113173,-70,GO:0006661,0.00675,phosphatidylinositol 4-phosphate 5-kinase type-1 alpha-like
+LOC111113173,-58,GO:0006661,0.00675,phosphatidylinositol 4-phosphate 5-kinase type-1 alpha-like
+LOC111113173,-61,GO:0006661,0.00675,phosphatidylinositol 4-phosphate 5-kinase type-1 alpha-like
+LOC111100511,-67,GO:0035303,0.00696,immunoglobulin-binding protein 1-like
+LOC111100511,-58,GO:0035303,0.00696,immunoglobulin-binding protein 1-like
+LOC111099929,50,GO:0009294,0.00696,uncharacterized LOC111099929
+LOC111099929,56,GO:0009294,0.00696,uncharacterized LOC111099929
+LOC111099929,67,GO:0009294,0.00696,uncharacterized LOC111099929
+LOC111099929,69,GO:0009294,0.00696,uncharacterized LOC111099929
+LOC111099929,59,GO:0009294,0.00696,uncharacterized LOC111099929
+LOC111099929,58,GO:0009294,0.00696,uncharacterized LOC111099929
+LOC111131843,-50,GO:0032510,0.00696,lysosomal-trafficking regulator-like
+LOC111135863,-70,GO:0032510,0.00696,hemocyte protein-glutamine gamma-glutamyltransferase-like
+LOC111132855,-56,GO:0035610,0.00696,cytosolic carboxypeptidase 1-like
+LOC111132855,-50,GO:0035610,0.00696,cytosolic carboxypeptidase 1-like
+LOC111129975,-64,GO:0035610,0.00696,cytosolic carboxypeptidase 2-like
+LOC111129975,63,GO:0035610,0.00696,cytosolic carboxypeptidase 2-like
+LOC111129975,53,GO:0035610,0.00696,cytosolic carboxypeptidase 2-like
+LOC111118731,-50,GO:0060982,0.00696,protein transport protein Sec24A-like
+LOC111103123,64,GO:0060982,0.00696,AT-rich interactive domain-containing protein 2-like
+LOC111124327,-50,GO:0070166,0.00696,stromal interaction molecule 1-like
+LOC111124327,57,GO:0070166,0.00696,stromal interaction molecule 1-like
+LOC111102495,54,GO:0097107,0.00696,SH3 and multiple ankyrin repeat domains protein 1-like
+LOC111102495,51,GO:0097107,0.00696,SH3 and multiple ankyrin repeat domains protein 1-like
+LOC111118834,53,GO:0051090,0.00704,ubiquitin carboxyl-terminal hydrolase 7-like
+LOC111118834,59,GO:0051090,0.00704,ubiquitin carboxyl-terminal hydrolase 7-like
+LOC111128837,-54,GO:0051090,0.00704,lysine-specific demethylase 5A-like
+LOC111101023,62,GO:0051090,0.00704,serine/threonine-protein kinase 36-like
+LOC111107067,52,GO:0051090,0.00704,Fanconi anemia group D2 protein-like
+LOC111110619,-56,GO:0043473,0.00724,Hermansky-Pudlak syndrome 5 protein homolog
+LOC111120159,53,GO:0043473,0.00724,KICSTOR complex protein SZT2-like
+LOC111120159,90,GO:0043473,0.00724,KICSTOR complex protein SZT2-like
+LOC111120159,-63,GO:0043473,0.00724,KICSTOR complex protein SZT2-like
+LOC111122539,62,GO:0043473,0.00724,copper-transporting ATPase 1-like
+LOC111131843,-50,GO:0043473,0.00724,lysosomal-trafficking regulator-like
+LOC111135949,-53,GO:0043473,0.00724,neurofibromin-like
+LOC111103190,50,GO:0043473,0.00724,polyphosphoinositide phosphatase-like
+LOC111103877,-57,GO:0090169,0.00779,uncharacterized LOC111103877
+LOC111137343,53,GO:0035518,0.00789,E3 ubiquitin-protein ligase TRIM37-like
+LOC111137343,64,GO:0035518,0.00789,E3 ubiquitin-protein ligase TRIM37-like
+LOC111137343,-53,GO:0035518,0.00789,E3 ubiquitin-protein ligase TRIM37-like
+LOC111137343,-52,GO:0035518,0.00789,E3 ubiquitin-protein ligase TRIM37-like
+LOC111136204,54,GO:0035518,0.00789,E3 ubiquitin-protein ligase RNF168-like
+LOC111103859,61,GO:0035518,0.00789,uncharacterized LOC111103859
+LOC111103859,58,GO:0035518,0.00789,uncharacterized LOC111103859
+LOC111103859,54,GO:0035518,0.00789,uncharacterized LOC111103859
+LOC111120835,64,GO:0070072,0.00789,transmembrane 9 superfamily member 4-like
+LOC111127911,60,GO:0070072,0.00789,dmX-like protein 2
+LOC111127911,54,GO:0070072,0.00789,dmX-like protein 2
+LOC111099929,50,GO:0070072,0.00789,uncharacterized LOC111099929
+LOC111099929,56,GO:0070072,0.00789,uncharacterized LOC111099929
+LOC111099929,67,GO:0070072,0.00789,uncharacterized LOC111099929
+LOC111099929,69,GO:0070072,0.00789,uncharacterized LOC111099929
+LOC111099929,59,GO:0070072,0.00789,uncharacterized LOC111099929
+LOC111099929,58,GO:0070072,0.00789,uncharacterized LOC111099929
+LOC111129177,75,GO:0097119,0.00789,neurexin-1-like
+LOC111129177,55,GO:0097119,0.00789,neurexin-1-like
+LOC111137059,66,GO:0051298,0.00790,rho guanine nucleotide exchange factor 10-like protein
+LOC111135381,52,GO:0048666,0.00816,NGFI-A-binding protein homolog
+LOC111130938,52,GO:0048666,0.00816,ALK tyrosine kinase receptor-like
+LOC111131413,57,GO:0048666,0.00816,centriole
+LOC111103190,50,GO:0048666,0.00816,polyphosphoinositide phosphatase-like
+LOC111119698,50,GO:0003338,0.00818,extracellular matrix protein FRAS1-like
+LOC111119698,-73,GO:0003338,0.00818,extracellular matrix protein FRAS1-like
+LOC111119697,51,GO:0003338,0.00818,extracellular matrix protein FRAS1-like
+LOC111119697,65,GO:0003338,0.00818,extracellular matrix protein FRAS1-like
+LOC111129032,53,GO:0033522,0.00818,E3 ubiquitin-protein ligase UBR2-like
+LOC111122823,63,GO:0046486,0.00833,diacylglycerol kinase beta-like
+LOC111122429,51,GO:0001895,0.00839,WD repeat-containing protein 36-like
+LOC111137130,-52,GO:0001895,0.00839,cyclic nucleotide-gated cation channel beta-1-like
+LOC111137130,-53,GO:0001895,0.00839,cyclic nucleotide-gated cation channel beta-1-like
+LOC111119409,-62,GO:0007030,0.00943,cyclin-G-associated kinase-like
+LOC111122737,-50,GO:0007030,0.00943,syntaxin-17-like
+LOC111126237,-50,GO:0007030,0.00943,Golgi reassembly-stacking protein 2-like
+LOC111128998,53,GO:0007030,0.00943,nesprin-1-like
+LOC111128998,58,GO:0007030,0.00943,nesprin-1-like
+LOC111135243,68,GO:0007030,0.00943,trafficking protein particle complex subunit 11-like
+LOC111136056,55,GO:0007030,0.00943,golgin-45-like
+LOC111136056,57,GO:0007030,0.00943,golgin-45-like
+LOC111107387,71,GO:0007030,0.00943,leucine-rich repeat serine/threonine-protein kinase 2-like
+LOC111113181,67,GO:0007030,0.00943,dymeclin-like
+LOC111113181,51,GO:0007030,0.00943,dymeclin-like
+LOC111113181,54,GO:0007030,0.00943,dymeclin-like
+LOC111103988,57,GO:0006360,0.00946,DNA-directed RNA polymerases I
+LOC111133592,-54,GO:0019882,0.00953,ras-related protein Rab-32-like
+LOC111133592,-58,GO:0019882,0.00953,ras-related protein Rab-32-like

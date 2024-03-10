@@ -4,25 +4,39 @@ author: "Yaamini Venkataraman"
 output: github_document
 ---
 
-In this script, I'll create summary tables for genomic location information, run statistcal tests, and visualize the distribution of DML in the genome. I'll also count the number of genes with multiple DML.
+In this script, I'll create summary tables for genomic location information, run statistcal tests, and visualize the distribution of DML in the genome. I'll also perform an enrichment test for DML in gene bodies.
 
 # Prepare R Markdown file
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = "/Users/yaaminivenkataraman/Documents/ceabigr/output/DML-characterization/") #Set root directory
+knitr::opts_knit$set(root.dir = normalizePath( "../output/DML-characterization/")) #Set root directory
+```
+
+```{r}
+getwd()
 ```
 
 # Install packages
 
 ```{r}
-#Packages for visualization
+# if ("broom" %in% rownames(installed.packages()) == 'FALSE') install.packages('broom')
+# if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages('RColorBrewer')
+# if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse')
+```
 
-#install.packages("dichromat")
-#install.packages("broom")
+```{r}
+# if (!require("BiocManager", quietly = TRUE))
+#     install.packages("BiocManager")
+# 
+# BiocManager::install("topGO")
+```
 
-require(dichromat)
+```{r}
 require(broom)
+require(RColorBrewer)
+require(tidyverse)
+require(topGO)
 ```
 
 # Obtain session information
@@ -34,11 +48,7 @@ sessionInfo()
 # Establish color scheme
 
 ```{r}
-plotColors <- rev(RColorBrewer::brewer.pal(5, "Blues")) #Create a color palette for the barplots. Use 5 shades from RColorBrewer. Reverse the order so the darkest shade is used first.
-```
-
-```{r}
-plotColors2 <- rev(RColorBrewer::brewer.pal(8, "Blues")) #Create a color palette for the barplots. Use 8 shades from RColorBrewer. Reverse the order so the darkest shade is used first.
+plotColors <- RColorBrewer::brewer.pal(9, "Greens")
 ```
 
 # Genomic location of DML
@@ -55,6 +65,7 @@ cpgFeatureOverlapsFem <- cpgFeatureOverlapsFem[-c(2),] #Drop extra lines
 cpgFeatureOverlapsFem <- cpgFeatureOverlapsFem[c(4, 1, 6, 8, 3, 7, 2, 5),] #Reorganize rows to match order: exon UTR, CDS, intron, upstream, downstream, lncRNA, TE, intergenic
 head(cpgFeatureOverlapsFem, n = 9) #Confirm import
 ```
+
 ```{r}
 femCpGFeatureOverlaps <- read.csv("../methylation-landscape/fem-CpG-feature-overlaps.csv", row.names = 1) #Import female methylation landscape
 head(femCpGFeatureOverlaps) #Confirm formatting
@@ -193,7 +204,6 @@ head(cpgFeatureOverlapsPercentsBind)
 mkdir figures
 ```
 
-
 ```{r}
 #pdf("figures/DML-feature-overlaps.pdf", width = 11, height = 8.5)
 
@@ -202,26 +212,26 @@ par(mar = c(3,5,1,1), oma = c(0, 1, 1, 11), mfrow = c(2, 1)) #Change figure boun
 #Females
 
 barplot(t(t(cpgFeatureOverlapsPercentsBind[,c(2,1)])), 
-        col= plotColors2, 
+        col= rev(plotColors), 
         axes = FALSE,
         names.arg = c("10x CpGs", "Female DML"), cex.names = 1.5,
         ylim = c(0, 110)) #Create base plot. Everything should be white. Do not plot axes. Include sequencing type as labels and set size. Set y-axis specs. 
 
 axis(side = 2, at = seq(0, 100, by = 10), las = 2, col = "grey80", cex.axis = 1.2) #Add y-axis
 mtext(side = 2, "% CpGs", line = 3, cex = 1.5) #Add y-axis label
-mtext("A) Females", x = 0, y = 105, cex = 1.5, adj = 0) #Add panel title
+mtext("A. Females", x = 0, y = 105, cex = 1.5, adj = 0) #Add panel title
 
 #Males
 
 barplot(t(t(cpgFeatureOverlapsPercentsBind[,c(4,3)])), 
-        col= plotColors2, 
+        col= rev(plotColors), 
         axes = FALSE, 
         names.arg = c("10x CpGs", "Male DML"), cex.names = 1.5,
         ylim = c(0, 110)) #Create base plot. Everything should be white. Do not plot axes. Include sequencing type as labels and set size. Set y-axis specs. 
 
 axis(side = 2, at = seq(0, 100, by = 10), las = 2, col = "grey80", cex.axis = 1.2) #Add y-axis
 mtext(side = 2, "% CpGs", line = 3, cex = 1.5) #Add y-axis label
-mtext("B) Males", x = 0, y = 105, cex = 1.5, adj = 0) #Add panel title
+mtext("B. Males", x = 0, y = 105, cex = 1.5, adj = 0) #Add panel title
 
 #Legend
 
@@ -230,16 +240,16 @@ plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n") #Add new plot on top o
 legend(x = 0.57, y = 0.87, 
        xpd = TRUE,
        legend = rev(c("Exon UTR", 
-                  "CDS", 
-                  "Introns", 
-                  "Upstream Flank", 
-                  "Downstream Flank", 
-                  "lncRNA", 
-                  "TE", 
-                  "Intergenic")),
+                      "CDS", 
+                      "Introns", 
+                      "Upstream Flank", 
+                      "Downstream Flank", 
+                      "lncRNA", 
+                      "TE", 
+                      "Intergenic")),
        pch = 22, 
-        col = "black", 
-        pt.bg = rev(plotColors2),
+       col = "black", 
+       pt.bg = plotColors,
        bty = "n",
        cex = 1.5, 
        x.intersp = 0.7, xjust = 0) #Place a legend in the top right of the figure with no box
@@ -248,3 +258,264 @@ text("Genome Feature", x = 0.785, y = 0.879, cex = 1.5) #Add legend title that i
 #dev.off()
 ```
 
+# Enrichment test
+
+I will use `topGO` to identify any overrepresented biological processes in genes that contain DML.
+
+## Annotation data
+
+```{r}
+mRNATrack <- read.delim("../../genome-features/C_virginica-3.0-mRNA.gff", header = FALSE) %>%
+  separate(., V9, into = c("V10", "V11"), sep = "ID=rna-") %>%
+  separate(., V11, into = c("V12", "V13"), sep = ";Parent=") %>%
+  separate(., V13, into = c("V14", "V15"), sep = ";Dbxref=") %>%
+  separate(., V15, into = c("V16", "V17"), sep = ";product=") %>%
+  separate(., V17, into = c("V18", "V19"), sep = ";transcript_id=") %>%
+  dplyr::select(., c("V12", "V14", "V18")) %>%
+  dplyr::rename(., transcript = V12, gene = V14, product = V18) %>% 
+  mutate(., gene_name  = gsub(x = gene, pattern = "gene-", replacement = "")) %>%
+  dplyr::select(., -gene) #Winnow down mRNA track. Rename gene column and remove extra characters
+head(mRNATrack) #Confirm changes
+```
+
+```{r}
+GOterms <- read.delim("../../genome-features/_blast-GO-unfolded.sorted", header = FALSE, col.names = c("GO", "transcript"))
+head(GOterms)
+```
+
+```{r}
+GOslim <- read.delim("../../genome-features/GO-GOslim.sorted", header = FALSE, col.names = c("GO", "GOterm", "GOslim", "process"))
+head(GOslim)
+```
+
+## Females
+
+### Import data
+
+```{r}
+femDMLGenes <- read.delim("female_dml-Gene-wb.bed", sep = "\t", col.names = c("chr", "DML.start", "DML.stop", "f_DML", "meth.diff", "gene.chr", "Gnomon", "gene", "gene.start", "gene.stop", "V11", "strand", "V13", "V14")) %>%
+  dplyr::select(., chr, DML.start, DML.stop, f_DML, meth.diff, V14) %>%
+  separate(., col = V14, into = c("gene_name", "misc"), sep = ";Dbxref=GeneID:") %>%
+  dplyr::select(., -misc) %>%
+  mutate(., gene_name = gsub(x = gene_name, pattern = "ID=gene-", replacement = "")) #Import overlaps between DML and genes and rename columns during import. Select columns of interest. Separate annotations into gene name and misc information, remove misc column, and remove additional characters from gene name.
+head(femDMLGenes)
+```
+
+```{r}
+femGeneBackground <- read.delim("../methylation-landscape/fem-union-averages_10x-wb.bed", sep = "\t", col.names = c("chr", "start", "stop", "meth", "chr", "RefSeq", "gene", "gene.start", "gene.end", "V10", "strand", "V12", "V13")) %>%
+  separate(., col = V13, into = c("gene_name", "misc"), sep = ";Dbxref=") %>%
+  mutate(., gene_name = gsub(., x = gene_name, pattern = "ID=gene-", replacement = "")) %>%
+  dplyr::select(., chr, start, stop, meth, gene_name) %>%
+  unique(.) #Import gene background (all genes with data for 10x CpGs). Separate gene name information from annotaton column and retain columns of interest. Keep only unique rows
+head(femGeneBackground) #Confirm formatting
+```
+
+### Format enrichment input
+
+```{r}
+femGeneBackground %>%
+  dplyr::select(., chr, gene_name) %>%
+  unique(.) %>%
+  left_join(., mRNATrack, by = "gene_name") %>%
+  left_join(., GOterms, by = "transcript") %>%
+  dplyr::select(., gene_name, GO) %>%
+  unique(.) %>%
+  group_by(., gene_name) %>%
+  filter(., is.na(GO) == FALSE) %>%
+  summarize(., GO = paste(GO, collapse = ",")) %>%
+  write.table(., "geneid2go-fem_geneBackground.tab", quote = FALSE, sep = "\t", col.names = FALSE, row.names = FALSE) #Select chromosome and gene name information from background and join with transcripts, then GOterms. Keep only gene name and GO annotations, and retain unique entries. Group by gene name then summarize GO column such that all GOterms for one gene are in the same row separated by a comma. Save as a tab file
+```
+
+```{r}
+geneID2GO <- readMappings(file = "geneid2go-fem_geneBackground.tab") #Loading the GO annotations and GeneIDs. Each line has one transcript ID and all associated GOterms
+str(head(geneID2GO)) #Confirm file structure
+length(geneID2GO) #32472 genes with annotations for all genes with 10x CpGs
+```
+
+```{r}
+geneNames <- names(geneID2GO) #Extract names to use as a gene universe
+head(geneNames)
+```
+
+```{r}
+femDMLGenesUnique <- femDMLGenes %>%
+  dplyr::select(., gene_name) %>%
+  unique(.) #Select the gene ID column and retain unique entries. Save as a new object
+femDMLGenesUnique <- femDMLGenesUnique$gene_name #Save column as a vector (will not work otherwise!)
+```
+
+```{r}
+femDMLGeneList <- factor(as.integer(geneNames %in% femDMLGenesUnique))  #Create a factor vector to indicate genes that increased transcripts as significant (1) and didn't as not significant (0)
+names(femDMLGeneList) <- geneNames
+str(femDMLGeneList)
+```
+
+### Run enrichment test
+
+```{r}
+femDMLGeneListDataBP <- new("topGOdata", ontology = "BP", allGenes = femDMLGeneList,
+                            annot = annFUN.gene2GO, gene2GO = geneID2GO) #Create biological process topGO object
+femDMLGeneListDataBP #Get summary of object
+```
+
+```{r}
+test.stat <- new("classicCount", testStatistic = GOFisherTest, name = "Fisher test")
+resultFisher.femDMLGeneListDataBP <- getSigGroups(femDMLGeneListDataBP, test.stat)
+resultFisher.femDMLGeneListDataBP
+```
+
+```{r}
+pvalFis.femDMLGeneListDataBP <- score(resultFisher.femDMLGeneListDataBP) #Extract p-values
+head(pvalFis.femDMLGeneListDataBP)
+hist(pvalFis.femDMLGeneListDataBP, 50, xlab = "p-values") #Plot histogram of p-values
+```
+
+```{r}
+allRes.femDMLGeneListDataBP <- GenTable(femDMLGeneListDataBP, classic = resultFisher.femDMLGeneListDataBP, ranksOf = "classic", orderBy = "classic", topNodes = length(pvalFis.femDMLGeneListDataBP))
+#Create a statistical results table with statistical test results. Order by p-value (classic), and include all results (topNodes)
+head(allRes.femDMLGeneListDataBP)
+```
+
+```{r}
+write.csv(allRes.femDMLGeneListDataBP, "fem-DML-BP-FisherTestResults.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+```
+
+### Match enriched GOterms with general annotation information
+
+```{r}
+sigRes.femDMLGeneListDataBP <- allRes.femDMLGeneListDataBP[1:85,c(1, 6)] #Filter significantly enriched GOterms, only keep GOID and p-value
+colnames(sigRes.femDMLGeneListDataBP) <- c("GO", "p.value") #Change column names
+head(sigRes.femDMLGeneListDataBP)
+```
+
+```{r}
+femDMLGenes %>%
+  dplyr::select(., chr, gene_name, meth.diff) %>%
+  unique(.) %>%
+  left_join(., mRNATrack, by = "gene_name") %>%
+  left_join(., GOterms, by = "transcript") %>%
+  unique(.) %>% 
+  left_join(sigRes.femDMLGeneListDataBP, ., by = "GO") %>%
+  dplyr::select(gene_name, meth.diff, GO, p.value, product) %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C") %>%
+  dplyr::select(., -transcriptVar) %>%
+  filter(., is.na(gene_name) == FALSE) %>%
+  unique(.) %>%
+  write.csv("fem-DML-BP-EnrichedGO-geneAnnot.csv", quote = FALSE, row.names = FALSE) #Annotate DML list then join with significantly enriched BPGO. Separate product information and retain unique rows with gene names. Save as a csv
+```
+
+## Males
+
+### Import data
+
+```{r}
+maleDMLGenes <- read.delim("male_dml-Gene-wb.bed", sep = "\t", col.names = c("chr", "DML.start", "DML.stop", "f_DML", "meth.diff", "gene.chr", "Gnomon", "gene", "gene.start", "gene.stop", "V11", "strand", "V13", "V14")) %>%
+  dplyr::select(., chr, DML.start, DML.stop, f_DML, meth.diff, V14) %>%
+  separate(., col = V14, into = c("gene_name", "misc"), sep = ";Dbxref=GeneID:") %>%
+  dplyr::select(., -misc) %>%
+  mutate(., gene_name = gsub(x = gene_name, pattern = "ID=gene-", replacement = "")) #Import overlaps between DML and genes and rename columns during import. Select columns of interest. Separate annotations into gene name and misc information, remove misc column, and remove additional characters from gene name.
+head(maleDMLGenes)
+```
+
+```{r}
+maleGeneBackground <- read.delim("../methylation-landscape/male-union-averages_10x-wb.bed", sep = "\t", col.names = c("chr", "start", "stop", "meth", "chr", "RefSeq", "gene", "gene.start", "gene.end", "V10", "strand", "V12", "V13")) %>%
+  separate(., col = V13, into = c("gene_name", "misc"), sep = ";Dbxref=") %>%
+  mutate(., gene_name = gsub(., x = gene_name, pattern = "ID=gene-", replacement = "")) %>%
+  dplyr::select(., chr, start, stop, meth, gene_name) %>%
+  unique(.) #Import gene background (all genes with data for 10x CpGs). Separate gene name information from annotaton column and retain columns of interest. Keep only unique rows
+head(maleGeneBackground) #Confirm formatting
+```
+
+### Format enrichment input
+
+```{r}
+maleGeneBackground %>%
+  dplyr::select(., chr, gene_name) %>%
+  unique(.) %>%
+  left_join(., mRNATrack, by = "gene_name") %>%
+  left_join(., GOterms, by = "transcript") %>%
+  dplyr::select(., gene_name, GO) %>%
+  unique(.) %>%
+  group_by(., gene_name) %>%
+  filter(., is.na(GO) == FALSE) %>%
+  summarize(., GO = paste(GO, collapse = ",")) %>%
+  write.table(., "geneid2go-male_geneBackground.tab", quote = FALSE, sep = "\t", col.names = FALSE, row.names = FALSE) #Select chromosome and gene name information from background and join with transcripts, then GOterms. Keep only gene name and GO annotations, and retain unique entries. Group by gene name then summarize GO column such that all GOterms for one gene are in the same row separated by a comma. Save as a tab file
+```
+
+```{r}
+geneID2GO <- readMappings(file = "geneid2go-male_geneBackground.tab") #Loading the GO annotations and GeneIDs. Each line has one transcript ID and all associated GOterms
+str(head(geneID2GO)) #Confirm file structure
+length(geneID2GO) #32411 genes with annotations for all genes with 10x CpGs
+```
+
+```{r}
+geneNames <- names(geneID2GO) #Extract names to use as a gene universe
+head(geneNames)
+```
+
+```{r}
+maleDMLGenesUnique <- maleDMLGenes %>%
+  dplyr::select(., gene_name) %>%
+  unique(.) #Select the gene ID column and retain unique entries. Save as a new object
+maleDMLGenesUnique <- maleDMLGenesUnique$gene_name #Save column as a vector (will not work otherwise!)
+```
+
+```{r}
+maleDMLGeneList <- factor(as.integer(geneNames %in% maleDMLGenesUnique))  #Create a factor vector to indicate genes that increased transcripts as significant (1) and didn't as not significant (0)
+names(maleDMLGeneList) <- geneNames
+str(maleDMLGeneList)
+```
+
+### Run enrichment test
+
+```{r}
+maleDMLGeneListDataBP <- new("topGOdata", ontology = "BP", allGenes = maleDMLGeneList,
+                            annot = annFUN.gene2GO, gene2GO = geneID2GO) #Create biological process topGO object
+maleDMLGeneListDataBP #Get summary of object
+```
+
+```{r}
+test.stat <- new("classicCount", testStatistic = GOFisherTest, name = "Fisher test")
+resultFisher.maleDMLGeneListDataBP <- getSigGroups(maleDMLGeneListDataBP, test.stat)
+resultFisher.maleDMLGeneListDataBP
+```
+
+```{r}
+pvalFis.maleDMLGeneListDataBP <- score(resultFisher.maleDMLGeneListDataBP) #Extract p-values
+head(pvalFis.maleDMLGeneListDataBP)
+hist(pvalFis.maleDMLGeneListDataBP, 50, xlab = "p-values") #Plot histogram of p-values
+```
+
+```{r}
+allRes.maleDMLGeneListDataBP <- GenTable(maleDMLGeneListDataBP, classic = resultFisher.maleDMLGeneListDataBP, ranksOf = "classic", orderBy = "classic", topNodes = length(pvalFis.maleDMLGeneListDataBP))
+#Create a statistical results table with statistical test results. Order by p-value (classic), and include all results (topNodes)
+head(allRes.maleDMLGeneListDataBP)
+```
+
+```{r}
+write.csv(allRes.maleDMLGeneListDataBP, "male-DML-BP-FisherTestResults.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+```
+
+### Match enriched GOterms with general annotation information
+
+```{r}
+sigRes.maleDMLGeneListDataBP <- allRes.maleDMLGeneListDataBP[1:359,c(1, 6)] #Filter significantly enriched GOterms, only keep GOID and p-value
+colnames(sigRes.maleDMLGeneListDataBP) <- c("GO", "p.value") #Change column names
+head(sigRes.maleDMLGeneListDataBP)
+```
+
+```{r}
+maleDMLGenes %>%
+  dplyr::select(., chr, gene_name, meth.diff) %>%
+  unique(.) %>%
+  left_join(., mRNATrack, by = "gene_name") %>%
+  left_join(., GOterms, by = "transcript") %>%
+  unique(.) %>% 
+  left_join(sigRes.maleDMLGeneListDataBP, ., by = "GO") %>%
+  dplyr::select(gene_name, meth.diff, GO, p.value, product) %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C") %>%
+  dplyr::select(., -transcriptVar) %>%
+  filter(., is.na(gene_name) == FALSE) %>%
+  unique(.) %>%
+  write.csv("male-DML-BP-EnrichedGO-geneAnnot.csv", quote = FALSE, row.names = FALSE) #Annotate DML list then join with significantly enriched BPGO. Separate product information and retain unique rows with gene names. Save as a csv
+```

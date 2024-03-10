@@ -1,0 +1,76 @@
+gene_name,meth.diff,GO,p.value,product
+LOC111125051,59,GO:0006488,5.3e-06,polyprenol reductase-like
+LOC111135524,57,GO:0006488,5.3e-06,mannose-P-dolichol utilization defect 1 protein-like
+LOC111103977,-51,GO:0006488,5.3e-06,uncharacterized LOC111103977
+LOC111103977,-53,GO:0006488,5.3e-06,uncharacterized LOC111103977
+LOC111125051,59,GO:0019348,1.1e-05,polyprenol reductase-like
+LOC111115662,-53,GO:0044782,0.00101,ciliogenesis-associated TTC17-interacting protein-like
+LOC111119596,52,GO:0043066,0.00105,caspase recruitment domain-containing protein 11-like
+LOC111137330,-58,GO:0043066,0.00105,aurora kinase A-like
+LOC111107913,51,GO:0043066,0.00105,filamin-A-like
+LOC111137330,-58,GO:0007052,0.00122,aurora kinase A-like
+LOC111112099,57,GO:0007052,0.00122,A-kinase anchor protein 9-like
+LOC111112099,58,GO:0007052,0.00122,A-kinase anchor protein 9-like
+LOC111137330,-58,GO:0007057,0.00172,aurora kinase A-like
+LOC111137330,-58,GO:1900195,0.00172,aurora kinase A-like
+LOC111124747,-51,GO:0097711,0.00324,centrosomal protein of 164 kDa-like
+LOC111124747,-66,GO:0097711,0.00324,centrosomal protein of 164 kDa-like
+LOC111124747,-55,GO:0097711,0.00324,centrosomal protein of 164 kDa-like
+LOC111112099,57,GO:0097711,0.00324,A-kinase anchor protein 9-like
+LOC111112099,58,GO:0097711,0.00324,A-kinase anchor protein 9-like
+LOC111124747,-51,GO:0000086,0.00335,centrosomal protein of 164 kDa-like
+LOC111124747,-66,GO:0000086,0.00335,centrosomal protein of 164 kDa-like
+LOC111124747,-55,GO:0000086,0.00335,centrosomal protein of 164 kDa-like
+LOC111137330,-58,GO:0000086,0.00335,aurora kinase A-like
+LOC111112099,57,GO:0000086,0.00335,A-kinase anchor protein 9-like
+LOC111112099,58,GO:0000086,0.00335,A-kinase anchor protein 9-like
+LOC111134459,-53,GO:0015820,0.00344,sodium- and chloride-dependent transporter XTRP3-like
+LOC111134459,-53,GO:0015824,0.00344,sodium- and chloride-dependent transporter XTRP3-like
+LOC111120127,-51,GO:0034971,0.00344,histone-arginine methyltransferase CARMER-like
+LOC111120127,-51,GO:0048742,0.00344,histone-arginine methyltransferase CARMER-like
+LOC111101598,-64,GO:0050847,0.00344,E3 ubiquitin-protein ligase UBR5-like
+LOC111130115,-51,GO:1903373,0.00344,rab3 GTPase-activating protein non-catalytic subunit-like
+LOC111107913,51,GO:1905000,0.00344,filamin-A-like
+LOC111112099,57,GO:0000226,0.00458,A-kinase anchor protein 9-like
+LOC111112099,58,GO:0000226,0.00458,A-kinase anchor protein 9-like
+LOC111137330,-58,GO:0007051,0.00460,aurora kinase A-like
+LOC111125051,59,GO:0006486,0.00494,polyprenol reductase-like
+LOC111107913,51,GO:0008302,0.00516,filamin-A-like
+LOC111137712,51,GO:0015786,0.00516,solute carrier family 35 member C2-like
+LOC111134459,-53,GO:0015816,0.00516,sodium- and chloride-dependent transporter XTRP3-like
+LOC111137330,-58,GO:0032465,0.00546,aurora kinase A-like
+LOC111123958,71,GO:0007010,0.00569,supervillin-like
+LOC111121472,-53,GO:0060271,0.00621,uncharacterized LOC111121472
+LOC111121472,-57,GO:0060271,0.00621,uncharacterized LOC111121472
+LOC111124747,-51,GO:0060271,0.00621,centrosomal protein of 164 kDa-like
+LOC111124747,-66,GO:0060271,0.00621,centrosomal protein of 164 kDa-like
+LOC111124747,-55,GO:0060271,0.00621,centrosomal protein of 164 kDa-like
+LOC111107913,51,GO:0060271,0.00621,filamin-A-like
+LOC111112099,57,GO:0060271,0.00621,A-kinase anchor protein 9-like
+LOC111112099,58,GO:0060271,0.00621,A-kinase anchor protein 9-like
+LOC111130747,-61,GO:0010923,0.00632,zinc finger CCHC domain-containing protein 9-like
+LOC111130785,58,GO:0010923,0.00632,zinc finger CCHC domain-containing protein 9-like
+LOC111135615,-50,GO:0007049,0.00648,coadhesin-like
+LOC111123882,58,GO:0007049,0.00648,hemicentin-1-like
+LOC111103866,53,GO:0007049,0.00648,titin homolog
+LOC111103567,53,GO:0000045,0.00650,uncharacterized LOC111103567
+LOC111107913,51,GO:0016479,0.00687,filamin-A-like
+LOC111134459,-53,GO:0032328,0.00687,sodium- and chloride-dependent transporter XTRP3-like
+LOC111130115,-51,GO:0097051,0.00687,rab3 GTPase-activating protein non-catalytic subunit-like
+LOC111112296,-58,GO:0098535,0.00687,trichohyalin-like
+LOC111101598,-64,GO:1901315,0.00687,E3 ubiquitin-protein ligase UBR5-like
+LOC111130115,-51,GO:1903061,0.00687,rab3 GTPase-activating protein non-catalytic subunit-like
+LOC111130115,-51,GO:2000786,0.00687,rab3 GTPase-activating protein non-catalytic subunit-like
+LOC111101598,-64,GO:0031647,0.00726,E3 ubiquitin-protein ligase UBR5-like
+LOC111137330,-58,GO:0031647,0.00726,aurora kinase A-like
+LOC111112296,-58,GO:0030030,0.00828,trichohyalin-like
+LOC111135615,-50,GO:0051301,0.00855,coadhesin-like
+LOC111124747,-51,GO:0051301,0.00855,centrosomal protein of 164 kDa-like
+LOC111124747,-66,GO:0051301,0.00855,centrosomal protein of 164 kDa-like
+LOC111124747,-55,GO:0051301,0.00855,centrosomal protein of 164 kDa-like
+LOC111123882,58,GO:0051301,0.00855,hemicentin-1-like
+LOC111137330,-58,GO:0051301,0.00855,aurora kinase A-like
+LOC111103866,53,GO:0051301,0.00855,titin homolog
+LOC111105248,-54,GO:0043524,0.00945,intersectin-1-like
+LOC111103567,53,GO:0043524,0.00945,uncharacterized LOC111103567
+LOC111137679,-61,GO:0008283,0.00975,pescadillo-like
