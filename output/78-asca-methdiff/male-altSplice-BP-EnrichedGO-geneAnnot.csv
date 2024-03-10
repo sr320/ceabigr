@@ -1,0 +1,15 @@
+gene_name,desc,GO,p.value,product
+LOC111106536,m_diff,GO:1904684,0.00038,metalloproteinase inhibitor 3-like
+LOC111105325,m_diff,GO:0002752,0.00158,angiopoietin-related protein 7-like
+LOC111132602,m_diff,GO:0002752,0.00158,uncharacterized LOC111132602
+LOC111138131,m_diff,GO:0006084,0.00282,4-hydroxybutyrate coenzyme A transferase-like
+LOC111137518,m_diff,GO:1902975,0.00332,DNA replication complex GINS protein PSF2-like
+LOC111130037,m_diff,GO:0060731,0.00663,organic cation transporter protein-like
+LOC111130037,m_diff,GO:0070715,0.00663,organic cation transporter protein-like
+LOC111103244,m_diff,GO:0098711,0.00663,phosphatidylinositol-binding clathrin assembly protein LAP-like
+LOC111103244,m_diff,GO:1902961,0.00663,phosphatidylinositol-binding clathrin assembly protein LAP-like
+LOC111103244,m_diff,GO:0016183,0.00993,phosphatidylinositol-binding clathrin assembly protein LAP-like
+LOC111130514,m_diff,GO:0019413,0.00993,acetyl-coenzyme A synthetase 2-like%2C mitochondrial
+LOC111130514,m_diff,GO:0019427,0.00993,acetyl-coenzyme A synthetase 2-like%2C mitochondrial
+LOC111130514,m_diff,GO:0019542,0.00993,acetyl-coenzyme A synthetase 2-like%2C mitochondrial
+LOC111103244,m_diff,GO:1902004,0.00993,phosphatidylinositol-binding clathrin assembly protein LAP-like

@@ -355,6 +355,7 @@ female_splice %>%
   dplyr::select(., gene_name, desc, GO, p.value, product) %>%
   write.csv(., "../output/78-asca-methdiff/fem-altSplice-BP-EnrichedGO-geneAnnot.csv", quote = FALSE, row.names = FALSE) #Take genes that were alternatively splice and annotate. Remove extra information from annotations and select only columns of interest with unique rows. Join with enriched BPGO information and filter rows without gene matches. Reorder columns and save as a csv
 ```
+
 # Males
 
 ## Import data
@@ -517,7 +518,7 @@ read.csv("../output/72-exon-data-rfmt/male_exon_tf.csv") %>%
 ```{r}
 geneID2GO <- readMappings(file = "../output/78-asca-methdiff/geneid2go-male_altSplice.tab") #Loading the GO annotations and GeneIDs. Each line has one transcript ID and all associated GOterms
 str(head(geneID2GO)) #Confirm file structure
-length(geneID2GO) #120 genes with annotations
+length(geneID2GO) #12641 genes with annotations
 ```
 
 ```{r}
@@ -567,7 +568,27 @@ head(allRes.maleAltSpliceDataBP)
 write.csv(allRes.maleAltSpliceDataBP, "../output/78-asca-methdiff/male-altSplice-BP-FisherTestResults.csv", quote = FALSE, row.names = FALSE) #Save dataframe
 ```
 
-There were no significantly enriched biological processes.
+### Match enriched GOterms with general annotation information
+
+```{r}
+sigRes.maleAltSpliceDataBP <- allRes.maleAltSpliceDataBP[1:26,c(1, 6)] #Filter significantly enriched GOterms, only keep GOID and p-value
+colnames(sigRes.maleAltSpliceDataBP) <- c("GO", "p.value") #Change column names
+head(sigRes.maleAltSpliceDataBP)
+```
+
+```{r}
+male_splice %>%
+  left_join(., y = mRNATrack, by = "gene_name") %>%
+  left_join(., y = GOterms, by = "transcript") %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C transcript variant") %>%
+  dplyr::select(., gene_name, desc, product, GO) %>%
+  unique(.) %>%
+  left_join(x = sigRes.maleAltSpliceDataBP, y = ., by = "GO") %>%
+  filter(., is.na(desc) == FALSE) %>%
+  dplyr::select(., gene_name, desc, GO, p.value, product) %>%
+  write.csv(., "../output/78-asca-methdiff/male-altSplice-BP-EnrichedGO-geneAnnot.csv", quote = FALSE, row.names = FALSE) #Take genes that were alternatively splice and annotate. Remove extra information from annotations and select only columns of interest with unique rows. Join with enriched BPGO information and filter rows without gene matches. Reorder columns and save as a csv
+```
+
 
 # Create multipanel plot
 
