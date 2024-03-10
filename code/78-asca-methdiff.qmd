@@ -46,6 +46,7 @@ getwd()
 # if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse')
 # if ("data.table" %in% rownames(installed.packages()) == 'FALSE') install.packages('data.table')
 # if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages('RColorBrewer')
+# if ("patchwork" %in% rownames(installed.packages()) == 'FALSE') install.packages('patchwork')
 ```
 
 
@@ -53,6 +54,7 @@ getwd()
 require(tidyverse)
 require(data.table)
 require(RColorBrewer)
+require(patchwork)
 ```
 
 ```{r}
@@ -197,7 +199,7 @@ f_allSplice_meth %>%
                      breaks = c("f_diff", "f_same"),
                      labels = c("Difference", "No Difference")) +
   theme_classic(base_size = 15) #Take combined data and plot average control methylation vs. average exposed methylation. Assign color based on gene category. Add regressions with 95% confidence intervals for each data category separately
-ggsave("../output/78-asca-methdiff/methylation-patterns-splice-type.pdf", height = 8.5, width = 11)
+ggsave("../output/78-asca-methdiff/fem-methylation-patterns-splice-type.pdf", height = 8.5, width = 11)
 ```
 
 ### Model data
@@ -313,7 +315,7 @@ m_allSplice_meth %>%
                      breaks = c("m_diff", "m_same"),
                      labels = c("Difference", "No Difference")) +
   theme_classic(base_size = 15) #Take combined data and plot average control methylation vs. average exposed methylation. Assign color based on gene category. Add regressions with 95% confidence intervals for each data category separately
-ggsave("../output/78-asca-methdiff/methylation-patterns-splice-type.pdf", height = 8.5, width = 11)
+ggsave("../output/78-asca-methdiff/male-methylation-patterns-splice-type.pdf", height = 8.5, width = 11)
 ```
 
 ### Model data
@@ -340,3 +342,35 @@ summary(maleSpliceMethModel) #No significant terms
 ```{r}
 write.csv(broom::tidy(maleSpliceMethModel), "../output/78-asca-methdiff/male-splicing-binomial-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
 ```
+
+# Create multipanel plot
+
+```{r}
+femAllSpliceMethPlot <- f_allSplice_meth %>%
+  ggplot(aes(x = average_control, y = average_exposed, color = desc)) +
+  geom_point() +
+  geom_smooth(method = lm, data = f_noSplice_meth, aes(x = average_control, y = average_exposed), color = plotColors[5]) +
+  geom_smooth(method = lm, data = f_splice_meth, aes(x = average_control, y = average_exposed), color = plotColors[8]) +
+  labs(x = "", y = "Exposed Methylation (%)", title = "A. Females") +
+  scale_color_manual(values = c(plotColors[8], plotColors[5]), 
+                     breaks = c("f_diff", "f_same")) +
+  theme_classic(base_size = 15) + theme(legend.position = "none")
+
+maleAllSpliceMethPlot <- m_allSplice_meth %>%
+  ggplot(aes(x = average_control, y = average_exposed, color = desc)) +
+  geom_point() +
+  geom_smooth(method = lm, data = m_noSplice_meth, aes(x = average_control, y = average_exposed), color = plotColors[5]) +
+  geom_smooth(method = lm, data = m_splice_meth, aes(x = average_control, y = average_exposed), color = plotColors[8]) +
+  labs(x = "Control Methylation (%)", y = "Exposed Methylation (%)", title = "Males") +
+  scale_color_manual(name = "Splicing Pattern",
+                     values = c(plotColors[8], plotColors[5]), 
+                     breaks = c("m_diff", "m_same"),
+                     labels = c("Difference", "No Difference")) +
+  theme_classic(base_size = 15) + theme(legend.position = "bottom")
+```
+
+```{r}
+femAllSpliceMethPlot / maleAllSpliceMethPlot
+ggsave("methylation-patterns-splice-type.pdf")
+```
+
