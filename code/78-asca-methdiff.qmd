@@ -33,7 +33,7 @@ knitr::opts_chunk$set(
   fig.align = "center" # Align plots to the center
 )
 
-knitr::opts_knit$set(root.dir = normalizePath("../output/78-asca-methdiff/")) #Set root directory
+knitr::opts_knit$set(root.dir = "../output/78-asca-methdiff/") #Set root directory
 ```
 
 ```{r}
@@ -49,17 +49,25 @@ getwd()
 # if ("patchwork" %in% rownames(installed.packages()) == 'FALSE') install.packages('patchwork')
 ```
 
+```{r}
+# if (!require("BiocManager", quietly = TRUE))
+#     install.packages("BiocManager")
+# 
+# BiocManager::install("topGO")
+```
 
 ```{r setup, include = FALSE}
 require(tidyverse)
 require(data.table)
 require(RColorBrewer)
 require(patchwork)
+require(topGO)
 ```
 
 ```{r}
 sessionInfo()
 ```
+
 # Import overarching data
 
 ## Gene lengths
@@ -90,7 +98,7 @@ head(geneLengths) #Confirm formatting #Confirmm changes
 ## Annotation data
 
 ```{r}
-mRNATrack <- read.delim("../../genome-features/C_virginica-3.0-mRNA.gff", header = FALSE) %>%
+mRNATrack <- read.delim("../genome-features/C_virginica-3.0-mRNA.gff", header = FALSE) %>%
   separate(., V9, into = c("V10", "V11"), sep = "ID=rna-") %>%
   separate(., V11, into = c("V12", "V13"), sep = ";Parent=") %>%
   separate(., V13, into = c("V14", "V15"), sep = ";Dbxref=") %>%
@@ -103,7 +111,7 @@ head(mRNATrack) #Confirm changes
 ```
 
 ```{r}
-GOterms <- read.delim("../../genome-features/_blast-GO-unfolded.sorted", header = FALSE, col.names = c("GO", "transcript"))
+GOterms <- read.delim("../genome-features/_blast-GO-unfolded.sorted", header = FALSE, col.names = c("GO", "transcript"))
 head(GOterms)
 ```
 
@@ -258,23 +266,13 @@ I will use `topGO` to understand if genes that were alternatively spliced have a
 The background is all genes used in the ASCA.
 
 ```{r}
-read.csv("../output/72-exon-data-rfmt/female_exon_tf.csv", nrows = 10) %>%
+read.csv("../output/72-exon-data-rfmt/female_exon_tf.csv") %>%
   select_if(~ !any(is.na(.))) %>%
   t(.) %>% as.data.frame(.) %>%
   rownames_to_column(., var = "gene_name") %>%
   dplyr::slice(., -1) %>%
+  dplyr::select(., gene_name) %>%
   mutate(., desc = "f_background") %>%
-  dplyr::select(., gene_name, desc) %>%
-  left_join(., y = mRNATrack, by = "gene_name") %>%
-  left_join(., y = GOterms, by = "transcript") %>%
-  dplyr::select(., gene_name, GO) %>%
-  unique(.) %>%
-  mutate(., GO = paste(GO, collapse = ","))
-```
-
-
-```{r}
-f_allSplice_meth %>%
   left_join(., y = mRNATrack, by = "gene_name") %>%
   left_join(., y = GOterms, by = "transcript") %>%
   dplyr::select(., gene_name, GO) %>%
@@ -287,7 +285,7 @@ f_allSplice_meth %>%
 ```{r}
 geneID2GO <- readMappings(file = "../output/78-asca-methdiff/geneid2go-fem_altSplice.tab") #Loading the GO annotations and GeneIDs. Each line has one transcript ID and all associated GOterms
 str(head(geneID2GO)) #Confirm file structure
-length(geneID2GO) #120 genes with annotations
+length(geneID2GO) #11270 genes with annotations
 ```
 
 ```{r}
@@ -337,8 +335,26 @@ head(allRes.femAltSpliceDataBP)
 write.csv(allRes.femAltSpliceDataBP, "../output/78-asca-methdiff/fem-altSplice-BP-FisherTestResults.csv", quote = FALSE, row.names = FALSE) #Save dataframe
 ```
 
-There were no significantly enriched biological processes.
+### Match enriched GOterms with general annotation information
 
+```{r}
+sigRes.femAltSpliceDataBP <- allRes.femAltSpliceDataBP[1:38,c(1, 6)] #Filter significantly enriched GOterms, only keep GOID and p-value
+colnames(sigRes.femAltSpliceDataBP) <- c("GO", "p.value") #Change column names
+head(sigRes.femAltSpliceDataBP)
+```
+
+```{r}
+female_splice %>%
+  left_join(., y = mRNATrack, by = "gene_name") %>%
+  left_join(., y = GOterms, by = "transcript") %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C transcript variant") %>%
+  dplyr::select(., gene_name, desc, product, GO) %>%
+  unique(.) %>%
+  left_join(x = sigRes.femAltSpliceDataBP, y = ., by = "GO") %>%
+  filter(., is.na(desc) == FALSE) %>%
+  dplyr::select(., gene_name, desc, GO, p.value, product) %>%
+  write.csv(., "../output/78-asca-methdiff/fem-altSplice-BP-EnrichedGO-geneAnnot.csv", quote = FALSE, row.names = FALSE) #Take genes that were alternatively splice and annotate. Remove extra information from annotations and select only columns of interest with unique rows. Join with enriched BPGO information and filter rows without gene matches. Reorder columns and save as a csv
+```
 # Males
 
 ## Import data
@@ -482,7 +498,13 @@ write.csv(broom::tidy(maleSpliceMethModel), "../output/78-asca-methdiff/male-spl
 ### Make input files
 
 ```{r}
-m_allSplice_meth %>%
+read.csv("../output/72-exon-data-rfmt/male_exon_tf.csv") %>%
+  select_if(~ !any(is.na(.))) %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(., var = "gene_name") %>%
+  dplyr::slice(., -1) %>%
+  dplyr::select(., gene_name) %>%
+  mutate(., desc = "m_background") %>%
   left_join(., y = mRNATrack, by = "gene_name") %>%
   left_join(., y = GOterms, by = "transcript") %>%
   dplyr::select(., gene_name, GO) %>%

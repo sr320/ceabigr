@@ -1,0 +1,23 @@
+gene_name,desc,GO,p.value,product
+LOC111123385,f_diff,GO:0071569,6.1e-05,CDK5 regulatory subunit-associated protein 3-like
+LOC111125903,f_diff,GO:0071569,6.1e-05,ubiquitin-like modifier-activating enzyme 5
+LOC111118877,f_diff,GO:0001507,0.0032,acetylcholinesterase-like
+LOC111106360,f_diff,GO:0015794,0.0032,glucose-6-phosphate exchanger SLC37A2-like
+LOC111133666,f_diff,GO:0035118,0.0032,uncharacterized LOC111133666
+LOC111129785,f_diff,GO:0048561,0.0032,uncharacterized LOC111129785
+LOC111131766,f_diff,GO:0071421,0.0032,zinc transporter 1-like
+LOC111131766,f_diff,GO:1905802,0.0032,zinc transporter 1-like
+LOC111100951,f_diff,GO:0009710,0.0065,3-oxoacyl-[acyl-carrier-protein] reductase FabG-like
+LOC111137664,f_diff,GO:0014043,0.0065,T-box transcription factor TBX5-like
+LOC111119253,f_diff,GO:0019518,0.0065,protein FAM13A-like
+LOC111131766,f_diff,GO:0070574,0.0065,zinc transporter 1-like
+LOC111131766,f_diff,GO:0071579,0.0065,zinc transporter 1-like
+LOC111131766,f_diff,GO:0071584,0.0065,zinc transporter 1-like
+LOC111131766,f_diff,GO:0071585,0.0065,zinc transporter 1-like
+LOC111131766,f_diff,GO:1903427,0.0065,zinc transporter 1-like
+LOC111106360,f_diff,GO:0006127,0.0097,glucose-6-phosphate exchanger SLC37A2-like
+LOC111123385,f_diff,GO:0044387,0.0097,CDK5 regulatory subunit-associated protein 3-like
+LOC111129143,f_diff,GO:0050651,0.0097,uncharacterized LOC111129143
+LOC111136509,f_diff,GO:0071391,0.0097,proline-%2C glutamic acid- and leucine-rich protein 1-like
+LOC111131766,f_diff,GO:0090281,0.0097,zinc transporter 1-like
+LOC111125903,f_diff,GO:1990592,0.0097,ubiquitin-like modifier-activating enzyme 5
