@@ -227,124 +227,116 @@ write.csv(broom::tidy(femSpliceMethModel), "../output/78-asca-methdiff/fem-splic
 
 # Males
 
-## males where pattern differed.
-
-
-```{r}
-male_splice <- read.table("../output/77-asca-exon/males_splicing_treatments_gene_list.csv", col.names = c("name")) %>%
-  mutate(desc = "m_diff")
-```
-
-
-male DMLs
-
-
+## Import data
 
 ```{r}
-male_dml <- read.table("../output/16-DML-annotation/male_dml_geneID.txt") %>%
-  mutate(desc = "mdml")
+male_splice <- read.table("../output/77-asca-exon/males_splicing_treatments_gene_list.csv", col.names = c("gene_name")) %>%
+  mutate(desc = "m_diff") #Import the list of genes with changes in alternative splicing. Change column names and add descriptive column for what these genes are
+head(male_splice) #Confirm import and formatting
 ```
-
-
-
-join
 
 ```{r}
-msp_dml <- male_splice %>%
-  left_join(male_dml, by = c("name" = "V1"))
-
-msp_dml
+male_noSplice <- read.table("../output/77-asca-exon/males_splicing_nodifference_gene_list.csv", col.names = c("gene_name")) %>%
+  mutate(desc = "m_same") #Import the list of genes with no change in alternative splicing. Change column names and add descriptive column for what these genes are
+head(male_noSplice) #Confirm import and formatting
 ```
 
-
-
-
-# GBM
+```{r}
+male_dml <- read.table("../output/16-DML-annotation/male_dml_geneID.txt", col.names = c("gene_name")) %>%
+  mutate(desc = "m_dml")
+head(male_dml)
+```
 
 ```{r}
 male_40_meth <- read_csv("../output/73-gene-methylation/male_40_meth.csv") %>%
-  mutate(name = str_replace(name, "gene-", ""))
+  dplyr::rename(., gene_name = "name") %>%
+  mutate(gene_name = str_replace(gene_name, "gene-", "")) #Import data with average gene methylation for control and exposed samples
+head(male_40_meth) #Confirm import
 ```
 
+## DML presence in alternatively spliced genes
+
+```{r}
+male_splice %>%
+  left_join(., male_dml, by = "gene_name") %>%
+  filter(., is.na(desc.y) == FALSE) %>%
+  dplyr::select(., gene_name) %>%
+  unique(.) %>%
+  nrow(.) #6 alternatively spliced genes contain DML
+```
+
+```{r}
+male_noSplice %>%
+  left_join(., male_dml, by = "gene_name") %>%
+  filter(., is.na(desc.y) == FALSE) %>%
+  dplyr::select(., gene_name) %>%
+  unique(.) %>%
+  nrow(.) #13 not spliced gene contain DML
+```
+
+## Gene body methylation
+
+To examine differences in gene body methylation, we'll create XY plots with average gene body methylation for control and OA-exposed samples. If genes that are differentially spliced significantly deviate from the 1-to-1 regression line, then it is possible methylation modulated alternative splicing.
+
+### Format data
 
 ```{r}
 m_splice_meth <- male_40_meth %>%
-  left_join(male_splice, by = c("name" = "name")) %>%
-  filter(desc == "m_diff")
+  left_join(male_splice, by = "gene_name") %>%
+  filter(desc == "m_diff") #Join average gene body methylation data with spliced genes. filter for genes that are spliced
+m_splice_meth #Confirm formatting
 ```
-
-
-# plot 
-
 
 ```{r}
-ggplot(m_splice_meth, aes(x = average_control, y = average_exposed)) +
-  geom_point() +  # This adds the points to the plot
-  theme_minimal() 
+m_noSplice_meth <- male_40_meth %>%
+  left_join(male_noSplice, by = "gene_name") %>%
+  filter(desc == "m_same") #Join average gene body methylation data with spliced genes. filter for genes that are not spliced
+head(m_noSplice_meth) #Confirm changes
 ```
 
-## male no splice
-
+### Plot data
 
 ```{r}
-male_NOsplice <- read.table("../output/77-asca-exon/males_splicing_nodifference_gene_list.csv", col.names = c("name")) %>%
-  mutate(desc = "m_same")
+m_allSplice_meth <- rbind(m_noSplice_meth, m_splice_meth) #Combine data to make plotting easier
+head(m_allSplice_meth) #Confirm changes
 ```
-
-
-male DMLs
-
-
-
-
-
-join
 
 ```{r}
-mNOsp_dml <- male_NOsplice %>%
-  left_join(male_dml, by = c("name" = "V1"))
+m_allSplice_meth %>%
+  ggplot(aes(x = average_control, y = average_exposed, color = desc)) +
+  geom_point() +
+  geom_smooth(method = lm, data = m_noSplice_meth, aes(x = average_control, y = average_exposed), color = plotColors[5]) +
+  geom_smooth(method = lm, data = m_splice_meth, aes(x = average_control, y = average_exposed), color = plotColors[8]) +
+  labs(x = "Control Methylation (%)", y = "Exposed Methylation (%)") +
+  scale_color_manual(name = "Splicing Pattern",
+                     values = c(plotColors[8], plotColors[5]), 
+                     breaks = c("m_diff", "m_same"),
+                     labels = c("Difference", "No Difference")) +
+  theme_classic(base_size = 15) #Take combined data and plot average control methylation vs. average exposed methylation. Assign color based on gene category. Add regressions with 95% confidence intervals for each data category separately
+ggsave("../output/78-asca-methdiff/methylation-patterns-splice-type.pdf", height = 8.5, width = 11)
 ```
 
+### Model data
 
+I will use a binomial model to understand if average control methylation or average exposed methylation can predict success (gene being alternatively spliced by treatment). I will also include gene length in this model.
 
-
-# GBM
+#### Format data
 
 ```{r}
-male_40_meth <- read_csv("../output/73-gene-methylation/male_40_meth.csv") %>%
-  mutate(name = str_replace(name, "gene-", ""))
+m_allSplice_methLengths <- m_allSplice_meth %>%
+  left_join(., geneLengths, by = "gene_name") #Join with gene length information
+head(m_allSplice_methLengths) #Confirm changes
 ```
 
+#### Run model
 
 ```{r}
-m_NOsplice_meth <- male_40_meth %>%
-  left_join(male_NOsplice, by = c("name" = "name")) %>%
-  filter(desc == "m_same")
+maleSpliceMethModel <- glm(I(desc == "m_diff") ~ average_control + average_exposed + log10(length),
+                          family = binomial(),
+                          data = m_allSplice_methLengths) #Create a binomial model, where 1 = success = different splicing by treatment. Use average control methylation, average exposed methylation, and gene length as explanatory variables
+summary(maleSpliceMethModel) #No significant terms
 ```
-
-
-# plot 
-
 
 ```{r}
-ggplot(m_NOsplice_meth, aes(x = average_control, y = average_exposed)) +
-  geom_point() +  # This adds the points to the plot
-  theme_minimal() 
+write.csv(broom::tidy(maleSpliceMethModel), "../output/78-asca-methdiff/male-splicing-binomial-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
 ```
-
-
-# lets look at together on one plot
-
-```{r}
-ggplot() +
-  geom_point(data = m_NOsplice_meth, aes(x = average_control, y = average_exposed), color = "blue") +
-  geom_point(data = m_splice_meth, aes(x = average_control, y = average_exposed), color = "red") +
-  theme_minimal() +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "black") +
-  geom_abline(intercept = -5, slope = 1, linetype = "solid", color = "grey") + # Line below
-  geom_abline(intercept = 5, slope = 1, linetype = "solid", color = "grey") + # Line above
-  labs(x = "control", y = "exposed", title = "male methylation difference")
-
-```
-
-
