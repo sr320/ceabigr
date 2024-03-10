@@ -227,6 +227,80 @@ summary(femSpliceMethModel) #No significant terms
 write.csv(broom::tidy(femSpliceMethModel), "../output/78-asca-methdiff/fem-splicing-binomial-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
 ```
 
+## Enrichment test
+
+I will use `topGO` to understand if genes that were alternatively spliced have any overrepresented biological functions.
+
+### Make input files
+
+The background I will use is the top gene predictors of each PC, not all genes used in the analysis.
+
+```{r}
+f_allSplice_meth %>%
+  left_join(., y = mRNATrack, by = "gene_name") %>%
+  left_join(., y = GOterms, by = "transcript") %>%
+  dplyr::select(., gene_name, GO) %>%
+  unique(.) %>%
+  group_by(., gene_name) %>%
+  summarise(., GO = paste(GO, collapse = ",")) %>%
+  write.table(., "../output/78-asca-methdiff/geneid2go-fem_altSplice.tab", quote = FALSE, sep = "\t", col.names = FALSE, row.names = FALSE) #Take list of important genes from all PCs and join with mRNA and GO term information. Select only gene names and GO terms, then retain unique rows. Group by gene name and collapse all GO terms for each gene into one row separated by commas. Save as a tab file
+```
+
+```{r}
+geneID2GO <- readMappings(file = "../output/78-asca-methdiff/geneid2go-fem_altSplice.tab") #Loading the GO annotations and GeneIDs. Each line has one transcript ID and all associated GOterms
+str(head(geneID2GO)) #Confirm file structure
+length(geneID2GO) #120 genes with annotations
+```
+
+```{r}
+geneNames <- names(geneID2GO) #Extract names to use as a gene universe
+head(geneNames)
+```
+
+```{r}
+femAltSpliceGenes <- female_splice %>%
+  dplyr::select(., gene_name) #Take data select the gene ID column. Save as a new object
+femAltSpliceGenes <- femAltSpliceGenes$gene_name #Save column as a vector (will not work otherwise!)
+```
+
+```{r}
+femAltSpliceGeneList <- factor(as.integer(geneNames %in% femAltSpliceGenes))  #Create a factor vector to indicate genes that increased transcripts as significant (1) and didn't as not significant (0)
+names(femAltSpliceGeneList) <- geneNames
+str(femAltSpliceGeneList)
+```
+
+### Run enrichment test
+
+```{r}
+femAltSpliceDataBP <- new("topGOdata", ontology = "BP", allGenes = femAltSpliceGeneList,
+                            annot = annFUN.gene2GO, gene2GO = geneID2GO) #Create biological process topGO object
+femAltSpliceDataBP #Get summary of object
+```
+
+```{r}
+test.stat <- new("classicCount", testStatistic = GOFisherTest, name = "Fisher test")
+resultFisher.femAltSpliceDataBP <- getSigGroups(femAltSpliceDataBP, test.stat)
+resultFisher.femAltSpliceDataBP
+```
+
+```{r}
+pvalFis.femAltSpliceDataBP <- score(resultFisher.femAltSpliceDataBP) #Extract p-values
+head(pvalFis.femAltSpliceDataBP)
+hist(pvalFis.femAltSpliceDataBP, 50, xlab = "p-values") #Plot histogram of p-values
+```
+
+```{r}
+allRes.femAltSpliceDataBP <- GenTable(femAltSpliceDataBP, classic = resultFisher.femAltSpliceDataBP, ranksOf = "classic", orderBy = "classic", topNodes = length(pvalFis.femAltSpliceDataBP))
+#Create a statistical results table with statistical test results. Order by p-value (classic), and include all results (topNodes)
+head(allRes.femAltSpliceDataBP)
+```
+
+```{r}
+write.csv(allRes.femAltSpliceDataBP, "../output/78-asca-methdiff/fem-altSplice-BP-FisherTestResults.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+```
+
+There were no significantly enriched biological processes.
+
 # Males
 
 ## Import data
@@ -334,14 +408,84 @@ head(m_allSplice_methLengths) #Confirm changes
 
 ```{r}
 maleSpliceMethModel <- glm(I(desc == "m_diff") ~ average_control + average_exposed + log10(length),
-                          family = binomial(),
-                          data = m_allSplice_methLengths) #Create a binomial model, where 1 = success = different splicing by treatment. Use average control methylation, average exposed methylation, and gene length as explanatory variables
+                           family = binomial(),
+                           data = m_allSplice_methLengths) #Create a binomial model, where 1 = success = different splicing by treatment. Use average control methylation, average exposed methylation, and gene length as explanatory variables
 summary(maleSpliceMethModel) #No significant terms
 ```
 
 ```{r}
 write.csv(broom::tidy(maleSpliceMethModel), "../output/78-asca-methdiff/male-splicing-binomial-model-output.csv", quote = FALSE, row.names = FALSE) #Save model output
 ```
+
+## Enrichment test
+
+### Make input files
+
+```{r}
+m_allSplice_meth %>%
+  left_join(., y = mRNATrack, by = "gene_name") %>%
+  left_join(., y = GOterms, by = "transcript") %>%
+  dplyr::select(., gene_name, GO) %>%
+  unique(.) %>%
+  group_by(., gene_name) %>%
+  summarise(., GO = paste(GO, collapse = ",")) %>%
+  write.table(., "../output/78-asca-methdiff/geneid2go-male_altSplice.tab", quote = FALSE, sep = "\t", col.names = FALSE, row.names = FALSE) #Take list of important genes from all PCs and join with mRNA and GO term information. Select only gene names and GO terms, then retain unique rows. Group by gene name and collapse all GO terms for each gene into one row separated by commas. Save as a tab file
+```
+
+```{r}
+geneID2GO <- readMappings(file = "../output/78-asca-methdiff/geneid2go-male_altSplice.tab") #Loading the GO annotations and GeneIDs. Each line has one transcript ID and all associated GOterms
+str(head(geneID2GO)) #Confirm file structure
+length(geneID2GO) #120 genes with annotations
+```
+
+```{r}
+geneNames <- names(geneID2GO) #Extract names to use as a gene universe
+head(geneNames)
+```
+
+```{r}
+maleAltSpliceGenes <- male_splice %>%
+  dplyr::select(., gene_name) #Take data select the gene ID column. Save as a new object
+maleAltSpliceGenes <- maleAltSpliceGenes$gene_name #Save column as a vector (will not work otherwise!)
+```
+
+```{r}
+maleAltSpliceGeneList <- factor(as.integer(geneNames %in% maleAltSpliceGenes))  #Create a factor vector to indicate genes that increased transcripts as significant (1) and didn't as not significant (0)
+names(maleAltSpliceGeneList) <- geneNames
+str(maleAltSpliceGeneList)
+```
+
+### Run enrichment test
+
+```{r}
+maleAltSpliceDataBP <- new("topGOdata", ontology = "BP", allGenes = maleAltSpliceGeneList,
+                            annot = annFUN.gene2GO, gene2GO = geneID2GO) #Create biological process topGO object
+maleAltSpliceDataBP #Get summary of object
+```
+
+```{r}
+test.stat <- new("classicCount", testStatistic = GOFisherTest, name = "Fisher test")
+resultFisher.maleAltSpliceDataBP <- getSigGroups(maleAltSpliceDataBP, test.stat)
+resultFisher.maleAltSpliceDataBP
+```
+
+```{r}
+pvalFis.maleAltSpliceDataBP <- score(resultFisher.maleAltSpliceDataBP) #Extract p-values
+head(pvalFis.maleAltSpliceDataBP)
+hist(pvalFis.maleAltSpliceDataBP, 50, xlab = "p-values") #Plot histogram of p-values
+```
+
+```{r}
+allRes.maleAltSpliceDataBP <- GenTable(maleAltSpliceDataBP, classic = resultFisher.maleAltSpliceDataBP, ranksOf = "classic", orderBy = "classic", topNodes = length(pvalFis.maleAltSpliceDataBP))
+#Create a statistical results table with statistical test results. Order by p-value (classic), and include all results (topNodes)
+head(allRes.maleAltSpliceDataBP)
+```
+
+```{r}
+write.csv(allRes.maleAltSpliceDataBP, "../output/78-asca-methdiff/male-altSplice-BP-FisherTestResults.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+```
+
+There were no significantly enriched biological processes.
 
 # Create multipanel plot
 
