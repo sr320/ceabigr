@@ -39,3 +39,4 @@ ALASCA/
 *.RDataTmp
 output/methylation-landscape/male-union-averages_10x-wb.bed
 output/methylation-landscape/fem-union-averages_10x-wb.bed
+.DS_Store
