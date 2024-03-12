@@ -248,14 +248,14 @@ allRes.allFem <- rbind(allRes.maxTransFemPosDataBP, allRes.maxTransFemNegDataBP,
   group_by(., gene_name) %>%
   pivot_wider(., names_from = "category", values_from = "pvalue") %>%
   arrange(., gene_name, GO) %>%
-  mutate(., geneActivity = case_when(f_maxTransPos < 0.01 & f_maxTransNeg < 0.01 & f_predIso < 0.01 & f_altSplice < 0.01 ~ "Y",
-                                     f_maxTransPos >= 0.01 | f_maxTransNeg >= 0.01 | f_predIso >= 0.01 | f_altSplice >= 0.01 ~ "N")) %>%
-  mutate(., geneActivityNoSplice = case_when(f_maxTransPos < 0.01 & f_maxTransNeg < 0.01 & f_predIso < 0.01 ~ "Y",
-                                             f_maxTransPos >= 0.01 | f_maxTransNeg >= 0.01 | f_predIso >= 0.01 ~ "N")) %>%
-  mutate(., geneActivityNoSpliceDML = case_when(f_maxTransPos < 0.01 & f_maxTransNeg < 0.01 & f_predIso < 0.01 & f_DML < 0.01 ~ "Y",
-                                             f_maxTransPos >= 0.01 | f_maxTransNeg >= 0.01 | f_predIso >= 0.01 | f_DML >= 0.01 ~ "N")) %>%
-  mutate(., allTests = case_when(f_maxTransPos < 0.01 & f_maxTransNeg < 0.01 & f_predIso < 0.01 & f_altSplice < 0.01 & f_DML < 0.01 ~ "Y",
-                                 f_maxTransPos >= 0.01 | f_maxTransNeg >= 0.01 | f_predIso >= 0.01 | f_altSplice >= 0.01 | f_DML >= 0.01 ~ "N")) #Combine all separate enrichment results using rbind. Join with annotation information by gene and GOterm. Remove GOterm column from topGO and rename and keep column with GOterm annotations since these are not truncated. Isolate product information and select columns of interest. Retain only unique rows. Group by gene name and pivot p-value information such that each enrichment test has a separate column for p-values. Arrange by gene name, then GO ID. Create summary columns detailing if the GO term was 1) enriched across all gene activity tests (geneActivity), gene activity tests besides alt splicing (geneActivityNoSplice), gene activitiy + DML - splice (geneActivityNoSpliceDML), and all enrichment tests (allTests). NAs will be used if a value is missing for one of the columns.
+  mutate(., f_geneActivity = case_when(f_maxTransPos < 0.01 & f_maxTransNeg < 0.01 & f_predIso < 0.01 & f_altSplice < 0.01 ~ "Y",
+                                       f_maxTransPos >= 0.01 | f_maxTransNeg >= 0.01 | f_predIso >= 0.01 | f_altSplice >= 0.01 ~ "N")) %>%
+  mutate(., f_geneActivityNoSplice = case_when(f_maxTransPos < 0.01 & f_maxTransNeg < 0.01 & f_predIso < 0.01 ~ "Y",
+                                               f_maxTransPos >= 0.01 | f_maxTransNeg >= 0.01 | f_predIso >= 0.01 ~ "N")) %>%
+  mutate(., f_geneActivityNoSpliceDML = case_when(f_maxTransPos < 0.01 & f_maxTransNeg < 0.01 & f_predIso < 0.01 & f_DML < 0.01 ~ "Y",
+                                                  f_maxTransPos >= 0.01 | f_maxTransNeg >= 0.01 | f_predIso >= 0.01 | f_DML >= 0.01 ~ "N")) %>%
+  mutate(., f_allTests = case_when(f_maxTransPos < 0.01 & f_maxTransNeg < 0.01 & f_predIso < 0.01 & f_altSplice < 0.01 & f_DML < 0.01 ~ "Y",
+                                   f_maxTransPos >= 0.01 | f_maxTransNeg >= 0.01 | f_predIso >= 0.01 | f_altSplice >= 0.01 | f_DML >= 0.01 ~ "N")) #Combine all separate enrichment results using rbind. Join with annotation information by gene and GOterm. Remove GOterm column from topGO and rename and keep column with GOterm annotations since these are not truncated. Isolate product information and select columns of interest. Retain only unique rows. Group by gene name and pivot p-value information such that each enrichment test has a separate column for p-values. Arrange by gene name, then GO ID. Create summary columns detailing if the GO term was 1) enriched across all gene activity tests (geneActivity), gene activity tests besides alt splicing (geneActivityNoSplice), gene activitiy + DML - splice (geneActivityNoSpliceDML), and all enrichment tests (allTests). NAs will be used if a value is missing for one of the columns.
 head(allRes.allFem) #Confirm changes
 ```
 
@@ -279,14 +279,46 @@ allRes.allMale <- rbind(allRes.maxTransMalePosDataBP, allRes.maxTransMaleNegData
   group_by(., gene_name) %>%
   pivot_wider(., names_from = "category", values_from = "pvalue") %>%
   arrange(., gene_name, GO) %>%
-  mutate(., geneActivity = case_when(m_maxTransPos < 0.01 & m_maxTransNeg < 0.01 & m_predIso < 0.01 & m_altSplice < 0.01 ~ "Y",
-                                     m_maxTransPos >= 0.01 | m_maxTransNeg >= 0.01 | m_predIso >= 0.01 | m_altSplice >= 0.01 ~ "N")) %>%
-  mutate(., geneActivityNoSplice = case_when(m_maxTransPos < 0.01 & m_maxTransNeg < 0.01 & m_predIso < 0.01 ~ "Y",
-                                             m_maxTransPos >= 0.01 | m_maxTransNeg >= 0.01 | m_predIso >= 0.01 ~ "N")) %>%
-  mutate(., allTests = case_when(m_maxTransPos < 0.01 & m_maxTransNeg < 0.01 & m_predIso < 0.01 & m_altSplice < 0.01 & m_DML < 0.01 ~ "Y",
-                                 m_maxTransPos >= 0.01 | m_maxTransNeg >= 0.01 | m_predIso >= 0.01 | m_altSplice >= 0.01 | m_DML >= 0.01 ~ "N")) #Combine all separate enrichment results using rbind. Join with annotation information by gene and GOterm. Remove GOterm column from topGO and rename and keep column with GOterm annotations since these are not truncated. Isolate product information and select columns of interest. Retain only unique rows. Group by gene name and pivot p-value information such that each enrichment test has a separate column for p-values. Arrange by gene name, then GO ID. Create summary columns detailing if the GO term was 1) enriched across all gene activity tests (geneActivity), gene activity tests besides alt splicing (geneActivityNoSplice), and all enrichment tests (allTests). NAs will be used if a value is missing for one of the columns.
+  mutate(., m_geneActivity = case_when(m_maxTransPos < 0.01 & m_maxTransNeg < 0.01 & m_predIso < 0.01 & m_altSplice < 0.01 ~ "Y",
+                                       m_maxTransPos >= 0.01 | m_maxTransNeg >= 0.01 | m_predIso >= 0.01 | m_altSplice >= 0.01 ~ "N")) %>%
+  mutate(., m_geneActivityNoSplice = case_when(m_maxTransPos < 0.01 & m_maxTransNeg < 0.01 & m_predIso < 0.01 ~ "Y",
+                                               m_maxTransPos >= 0.01 | m_maxTransNeg >= 0.01 | m_predIso >= 0.01 ~ "N")) %>%
+  mutate(., m_geneActivityNoSpliceDML = case_when(m_maxTransPos < 0.01 & m_maxTransNeg < 0.01 & m_predIso < 0.01 & m_DML < 0.01 ~ "Y",
+                                                  m_maxTransPos >= 0.01 | m_maxTransNeg >= 0.01 | m_predIso >= 0.01 | m_DML >= 0.01 ~ "N")) %>%
+  mutate(., m_allTests = case_when(m_maxTransPos < 0.01 & m_maxTransNeg < 0.01 & m_predIso < 0.01 & m_altSplice < 0.01 & m_DML < 0.01 ~ "Y",
+                                   m_maxTransPos >= 0.01 | m_maxTransNeg >= 0.01 | m_predIso >= 0.01 | m_altSplice >= 0.01 | m_DML >= 0.01 ~ "N")) #Combine all separate enrichment results using rbind. Join with annotation information by gene and GOterm. Remove GOterm column from topGO and rename and keep column with GOterm annotations since these are not truncated. Isolate product information and select columns of interest. Retain only unique rows. Group by gene name and pivot p-value information such that each enrichment test has a separate column for p-values. Arrange by gene name, then GO ID. Create summary columns detailing if the GO term was 1) enriched across all gene activity tests (geneActivity), gene activity tests besides alt splicing (geneActivityNoSplice), gene activitiy + DML - splice (geneActivityNoSpliceDML), and all enrichment tests (allTests). NAs will be used if a value is missing for one of the columns.
 head(allRes.allMale) #Confirm changes
+```
+
+```{r}
+write_delim(allRes.allMale, "male-all-enrichment-results.tab", delim = "\t", col_names = TRUE, quote = "none")
 ```
 
 ## All data
 
+```{r}
+allRes.bothSexes <- full_join(allRes.allFem, allRes.allMale, by = c("gene_name", "GO", "GOterm")) %>%
+  mutate(., both_maxTransPos = case_when(f_maxTransPos < 0.01 & m_maxTransPos < 0.01 ~ "Y",
+                                          f_maxTransPos >= 0.01 | m_maxTransPos >= 0.01 ~ "N")) %>%
+  mutate(., both_maxTransNeg = case_when(f_maxTransNeg < 0.01 & m_maxTransNeg < 0.01 ~ "Y",
+                                          f_maxTransNeg >= 0.01 | m_maxTransNeg >= 0.01 ~ "N")) %>%
+  mutate(., both_predIso = case_when(f_predIso < 0.01 & m_predIso < 0.01 ~ "Y",
+                                          f_predIso >= 0.01 | m_predIso >= 0.01 ~ "N")) %>%
+  mutate(., both_altSplice = case_when(f_altSplice < 0.01 & m_altSplice < 0.01 ~ "Y",
+                                          f_altSplice >= 0.01 | m_altSplice >= 0.01 ~ "N")) %>%
+  mutate(., both_DML = case_when(f_DML < 0.01 & m_DML < 0.01 ~ "Y",
+                                          f_DML >= 0.01 | m_DML >= 0.01 ~ "N")) %>%
+  mutate(., both_geneActivity = case_when(f_geneActivity == "Y" & m_geneActivity == "Y" ~ "Y",
+                                          f_geneActivity == "N" | m_geneActivity == "N" ~ "N")) %>%
+  mutate(., both_geneActivityNoSplice = case_when(f_geneActivityNoSplice == "Y" & m_geneActivityNoSplice == "Y" ~ "Y",
+                                                  f_geneActivityNoSplice == "N" | m_geneActivityNoSplice == "N" ~ "N")) %>%
+  mutate(., both_geneActivityNoSpliceDML = case_when(f_geneActivityNoSpliceDML == "Y" & m_geneActivityNoSpliceDML == "Y" ~ "Y",
+                                                     f_geneActivityNoSpliceDML == "N" | m_geneActivityNoSpliceDML == "N" ~ "N")) %>%
+  mutate(., both_allTests = case_when(f_allTests == "Y" & m_allTests == "Y" ~ "Y",
+                                      f_allTests == "N" | m_allTests == "N" ~ "N")) #Full join both datasets (ensure entries in both dataframes are retained). Create a bunch of columns summarizing commonalities between the two datasets
+head(allRes.bothSexes)
+```
+
+```{r}
+write_delim(allRes.bothSexes, "all-enrichment-results.tab", delim = "\t", col_names = TRUE, quote = "none")
+```
