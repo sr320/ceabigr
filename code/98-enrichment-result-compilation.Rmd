@@ -1,0 +1,49 @@
+---
+title: "Enrichment Result Compilation"
+author: "Yaamini Venkataraman"
+output: github_document
+---
+
+In this script, I'll create a summary table with all enrichment results from all analyses. This will aid the functional interpretation of results.
+
+# Prepare R Markdown file
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = normalizePath("../output/98-enrichment-result-compilation/")) #Set root directory
+```
+
+```{r}
+getwd()
+```
+
+# Install packages
+
+```{r}
+# if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse')
+```
+
+```{r}
+# if (!require("BiocManager", quietly = TRUE))
+#     install.packages("BiocManager")
+# 
+# BiocManager::install("topGO")
+```
+
+```{r}
+require(tidyverse)
+require(topGO)
+```
+
+# Obtain session information
+
+```{r}
+sessionInfo()
+```
+
+# Import annotation data
+
+# Import enrichment results
+
+# Compile enrichment results
+
