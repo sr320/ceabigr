@@ -41,9 +41,150 @@ require(topGO)
 sessionInfo()
 ```
 
-# Import annotation data
+# Import and format annotation data
+
+```{r}
+mRNATrack <- read.delim("../../genome-features/C_virginica-3.0-mRNA.gff", header = FALSE) %>%
+  separate(., V9, into = c("V10", "V11"), sep = "ID=rna-") %>%
+  separate(., V11, into = c("V12", "V13"), sep = ";Parent=") %>%
+  separate(., V13, into = c("V14", "V15"), sep = ";Dbxref=") %>%
+  separate(., V15, into = c("V16", "V17"), sep = ";product=") %>%
+  separate(., V17, into = c("V18", "V19"), sep = ";transcript_id=") %>%
+  dplyr::select(., c("V12", "V14", "V18")) %>%
+  dplyr::rename(., transcript = V12, gene = V14, product = V18) %>%
+  mutate(., gene_name = gsub("gene-", "", mRNATrack$gene)) %>%
+  dplyr::select(., -gene) #Winnow down mRNA track
+head(mRNATrack) #Confirm changes
+```
+
+```{r}
+GOterms <- read.delim("../../genome-features/_blast-GO-unfolded.sorted", header = FALSE, col.names = c("GO", "transcript"))
+head(GOterms)
+```
+
+```{r}
+GOslim <- read.delim("../../genome-features/GO-GOslim.sorted", header = FALSE, col.names = c("GO", "GOterm", "GOslim", "process"))
+head(GOslim)
+```
+
+```{r}
+mRNAGOGOSlim <- mRNATrack %>%
+  left_join(., GOterms, by = "transcript") %>%
+  left_join(., GOslim, by = "GO") %>%
+  filter(., process == "P") %>%
+  unique(.) #Join mRNA track with GOterms such that all transcripts are retained even without GOterm matches (left_join). Join with GOslim information and filter for biological process terms only, since that was the only enrichment test conducted. Retain unique rows.
+head(mRNAGOGOSlim)
+```
 
 # Import enrichment results
 
+I want to combine enrichment results for all GO terms that were tested, not just significantly enriched terms.
+
+## Females
+
+### Change in maximum transcript
+
+```{r}
+allRes.maxTransFemPosDataBP <- read.csv("../75-max-transcript-enrichment/fem-maxTransPos-BP-FisherTestResults.csv") %>%
+  dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
+  dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
+  mutate(., category = "f_maxTransPos") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result categeory
+head(allRes.maxTransFemPosDataBP)
+```
+
+```{r}
+allRes.maxTransFemNegDataBP <- read.csv("../75-max-transcript-enrichment/fem-maxTransNeg-BP-FisherTestResults.csv") %>%
+  dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
+  dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
+  mutate(., category = "f_maxTransNeg") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result categeory
+head(allRes.maxTransFemNegDataBP)
+```
+
+### Predominant transcript shift
+
+```{r}
+allRes.predIsoFemdataBP <- read.csv("../42-predominant-isoform/fem-predIso-BP-FisherTestResults.csv") %>%
+  dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
+  dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
+  mutate(., category = "f_predIso") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category
+head(allRes.predIsoFemdataBP)
+```
+
+### Alternatively spliced genes
+
+```{r}
+allRes.femAltSpliceDataBP <- read.csv("../78-asca-methdiff/fem-altSplice-BP-FisherTestResults.csv") %>%
+  dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
+  dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
+  mutate(., category = "f_altSplice") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category
+head(allRes.femAltSpliceDataBP)
+```
+
+### DML
+
+```{r}
+allRes.femDMLGeneListDataBP <- read.csv("../DML-characterization/fem-DML-BP-FisherTestResults.csv") %>%
+  dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
+  dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
+  mutate(., category = "f_DML") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category
+head(allRes.femDMLGeneListDataBP)
+```
+
+## Males
+
+### Change in maximum transcript
+
+```{r}
+allRes.maxTransMalePosDataBP <- read.csv("../75-max-transcript-enrichment/male-maxTransPos-BP-FisherTestResults.csv") %>%
+  dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
+  dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
+  mutate(., category = "m_maxTransPos") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category
+head(allRes.maxTransMalePosDataBP)
+```
+
+```{r}
+allRes.maxTransMaleNegDataBP <- read.csv("../75-max-transcript-enrichment/male-maxTransNeg-BP-FisherTestResults.csv") %>%
+  dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
+  dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
+  mutate(., category = "m_maxTransNeg") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result categeory
+head(allRes.maxTransMaleNegDataBP)
+```
+
+### Predominant transcript shift
+
+```{r}
+allRes.predIsoMaledataBP <- read.csv("../42-predominant-isoform/male-predIso-BP-FisherTestResults.csv") %>%
+  dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
+  dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
+  mutate(., category = "m_predIso") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result categeory
+head(allRes.predIsoMaledataBP)
+```
+
+### Alternatively spliced genes
+
+```{r}
+allRes.maleAltSpliceDataBP <- read.csv("../78-asca-methdiff/male-altSplice-BP-FisherTestResults.csv") %>%
+  dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
+  dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
+  mutate(., category = "m_altSplice") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result categeory
+head(allRes.maleAltSpliceDataBP)
+```
+
+### DML
+
+```{r}
+allRes.maleDMLGeneListDataBP <- read.csv("../DML-characterization/male-DML-BP-FisherTestResults.csv") %>%
+  dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
+  dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
+  mutate(., category = "m_DML") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result categeory
+head(allRes.maleDMLGeneListDataBP)
+```
+
 # Compile enrichment results
+
+## Females
+
+## Males
+
+
 
