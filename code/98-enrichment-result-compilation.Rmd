@@ -234,6 +234,36 @@ head(allRes.maleDMLGeneListDataBP)
 
 ## Females
 
+- figure out why GO term names are truncated
+
+```{r}
+allRes.allFem <- rbind(allRes.maxTransFemPosDataBP, allRes.maxTransFemNegDataBP, 
+                       allRes.predIsoFemdataBP,
+                       allRes.femAltSpliceDataBP,
+                       allRes.femDMLGeneListDataBP) %>%
+  left_join(., mRNAGOGOSlim, by = c("gene_name", "GO")) %>%
+  dplyr::select(., -GOterm.x) %>%
+  dplyr::rename(., GOterm = "GOterm.y") %>%
+  separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C transcript") %>%
+  dplyr::select(., gene_name, GO, GOterm, pvalue, category) %>%
+  unique(.) %>%
+  group_by(., gene_name) %>%
+  pivot_wider(., names_from = "category", values_from = "pvalue") %>%
+  arrange(., gene_name, GO) %>%
+  mutate(., geneActivity = case_when(f_maxTransPos < 0.01 & f_maxTransNeg < 0.01 & f_predIso < 0.01 & f_altSplice < 0.01 ~ "Y",
+                                     f_maxTransPos >= 0.01 | f_maxTransNeg >= 0.01 | f_predIso >= 0.01 | f_altSplice >= 0.01 ~ "N")) %>%
+  mutate(., geneActivityNoSplice = case_when(f_maxTransPos < 0.01 & f_maxTransNeg < 0.01 & f_predIso < 0.01 ~ "Y",
+                                             f_maxTransPos >= 0.01 | f_maxTransNeg >= 0.01 | f_predIso >= 0.01 ~ "N")) %>%
+  mutate(., allTests = case_when(f_maxTransPos < 0.01 & f_maxTransNeg < 0.01 & f_predIso < 0.01 & f_altSplice < 0.01 & f_DML < 0.01 ~ "Y",
+                                 f_maxTransPos >= 0.01 | f_maxTransNeg >= 0.01 | f_predIso >= 0.01 | f_altSplice >= 0.01 | f_DML >= 0.01 ~ "N")) #Combine all separate enrichment results using rbind. Join with annotation information by gene and GOterm. Remove GOterm column from topGO and rename and keep column with GOterm annotations since these are not truncated. Isolate product information and select columns of interest. Retain only unique rows. Group by gene name and pivot p-value information such that each enrichment test has a separate column for p-values. Arrange by gene name, then GO ID. Create summary columns detailing if the GO term was 1) enriched across all gene activity tests (geneActivity), gene activity tests besides alt splicing (geneActivityNoSplice), and all enrichment tests (allTests). NAs will be used if a value is missing for one of the columns.
+head(allRes.allFem) #Confirm changes
+```
+
+```{r}
+write_delim(., "fem-all-enrichment-results.csv", delim = "\t", col_names = TRUE, quote = "none")
+```
+
+
 ## Males
 
 
