@@ -78,7 +78,7 @@ head(mRNAGOGOSlim)
 
 # Import enrichment results
 
-I want to combine enrichment results for all GO terms that were tested, not just significantly enriched terms.
+I want to combine enrichment results for all GO terms that were tested, not just significantly enriched terms. I will import the enrichment results then match them with genes from the relevant gene background.
 
 ## Females
 
@@ -88,7 +88,12 @@ I want to combine enrichment results for all GO terms that were tested, not just
 allRes.maxTransFemPosDataBP <- read.csv("../75-max-transcript-enrichment/fem-maxTransPos-BP-FisherTestResults.csv") %>%
   dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
   dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
-  mutate(., category = "f_maxTransPos") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result categeory
+  mutate(., category = "f_maxTransPos") %>%
+  left_join(., 
+            y = (read_delim("../75-max-transcript-enrichment/geneid2go-fem_maxTrans.tab", delim = "\t", col_names = c("gene_name", "GO")) %>% separate_longer_delim(., cols = GO, delim = ",")), 
+            by = "GO") %>%
+  group_by(., GO) %>%
+  unique(.) #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category. Join with gene background annotated with GOterms. For the gene background, import and separate GO terms into individual rows prior to joining. Group by GO term then retain unique rows
 head(allRes.maxTransFemPosDataBP)
 ```
 
@@ -96,7 +101,12 @@ head(allRes.maxTransFemPosDataBP)
 allRes.maxTransFemNegDataBP <- read.csv("../75-max-transcript-enrichment/fem-maxTransNeg-BP-FisherTestResults.csv") %>%
   dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
   dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
-  mutate(., category = "f_maxTransNeg") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result categeory
+  mutate(., category = "f_maxTransNeg")  %>%
+  left_join(., 
+            y = (read_delim("../75-max-transcript-enrichment/geneid2go-fem_maxTrans.tab", delim = "\t", col_names = c("gene_name", "GO")) %>% separate_longer_delim(., cols = GO, delim = ",")), 
+            by = "GO") %>%
+  group_by(., GO) %>%
+  unique(.) #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category. Join with gene background annotated with GOterms. For the gene background, import and separate GO terms into individual rows prior to joining. Group by GO term then retain unique rows
 head(allRes.maxTransFemNegDataBP)
 ```
 
@@ -106,7 +116,12 @@ head(allRes.maxTransFemNegDataBP)
 allRes.predIsoFemdataBP <- read.csv("../42-predominant-isoform/fem-predIso-BP-FisherTestResults.csv") %>%
   dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
   dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
-  mutate(., category = "f_predIso") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category
+  mutate(., category = "f_predIso") %>%
+  left_join(., 
+            y = (read_delim("../42-predominant-isoform/geneid2go-fem_predIso.tab", delim = "\t", col_names = c("gene_name", "GO")) %>% separate_longer_delim(., cols = GO, delim = ",")), 
+            by = "GO") %>%
+  group_by(., GO) %>%
+  unique(.) #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category. Join with gene background annotated with GOterms. For the gene background, import and separate GO terms into individual rows prior to joining. Group by GO term then retain unique rows
 head(allRes.predIsoFemdataBP)
 ```
 
@@ -116,7 +131,12 @@ head(allRes.predIsoFemdataBP)
 allRes.femAltSpliceDataBP <- read.csv("../78-asca-methdiff/fem-altSplice-BP-FisherTestResults.csv") %>%
   dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
   dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
-  mutate(., category = "f_altSplice") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category
+  mutate(., category = "f_altSplice") %>%
+  left_join(., 
+            y = (read_delim("../78-asca-methdiff/geneid2go-fem_altSplice.tab", delim = "\t", col_names = c("gene_name", "GO")) %>% separate_longer_delim(., cols = GO, delim = ",")), 
+            by = "GO") %>%
+  group_by(., GO) %>%
+  unique(.) #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category. Join with gene background annotated with GOterms. For the gene background, import and separate GO terms into individual rows prior to joining. Group by GO term then retain unique rows
 head(allRes.femAltSpliceDataBP)
 ```
 
@@ -126,7 +146,12 @@ head(allRes.femAltSpliceDataBP)
 allRes.femDMLGeneListDataBP <- read.csv("../DML-characterization/fem-DML-BP-FisherTestResults.csv") %>%
   dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
   dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
-  mutate(., category = "f_DML") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category
+  mutate(., category = "f_DML") %>%
+  left_join(., 
+            y = (read_delim("../DML-characterization/geneid2go-fem_geneBackground.tab", delim = "\t", col_names = c("gene_name", "GO")) %>% separate_longer_delim(., cols = GO, delim = ",")), 
+            by = "GO") %>%
+  group_by(., GO) %>%
+  unique(.) #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category. Join with gene background annotated with GOterms. For the gene background, import and separate GO terms into individual rows prior to joining. Group by GO term then retain unique rows
 head(allRes.femDMLGeneListDataBP)
 ```
 
@@ -138,7 +163,12 @@ head(allRes.femDMLGeneListDataBP)
 allRes.maxTransMalePosDataBP <- read.csv("../75-max-transcript-enrichment/male-maxTransPos-BP-FisherTestResults.csv") %>%
   dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
   dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
-  mutate(., category = "m_maxTransPos") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category
+  mutate(., category = "f_maxTransPos") %>%
+  left_join(., 
+            y = (read_delim("../75-max-transcript-enrichment/geneid2go-male_maxTrans.tab", delim = "\t", col_names = c("gene_name", "GO")) %>% separate_longer_delim(., cols = GO, delim = ",")), 
+            by = "GO") %>%
+  group_by(., GO) %>%
+  unique(.) #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category. Join with gene background annotated with GOterms. For the gene background, import and separate GO terms into individual rows prior to joining. Group by GO term then retain unique rows
 head(allRes.maxTransMalePosDataBP)
 ```
 
@@ -146,7 +176,12 @@ head(allRes.maxTransMalePosDataBP)
 allRes.maxTransMaleNegDataBP <- read.csv("../75-max-transcript-enrichment/male-maxTransNeg-BP-FisherTestResults.csv") %>%
   dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
   dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
-  mutate(., category = "m_maxTransNeg") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result categeory
+  mutate(., category = "f_maxTransNeg")  %>%
+  left_join(., 
+            y = (read_delim("../75-max-transcript-enrichment/geneid2go-male_maxTrans.tab", delim = "\t", col_names = c("gene_name", "GO")) %>% separate_longer_delim(., cols = GO, delim = ",")), 
+            by = "GO") %>%
+  group_by(., GO) %>%
+  unique(.) #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category. Join with gene background annotated with GOterms. For the gene background, import and separate GO terms into individual rows prior to joining. Group by GO term then retain unique rows
 head(allRes.maxTransMaleNegDataBP)
 ```
 
@@ -156,7 +191,12 @@ head(allRes.maxTransMaleNegDataBP)
 allRes.predIsoMaledataBP <- read.csv("../42-predominant-isoform/male-predIso-BP-FisherTestResults.csv") %>%
   dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
   dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
-  mutate(., category = "m_predIso") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result categeory
+  mutate(., category = "f_predIso") %>%
+  left_join(., 
+            y = (read_delim("../42-predominant-isoform/geneid2go-male_predIso.tab", delim = "\t", col_names = c("gene_name", "GO")) %>% separate_longer_delim(., cols = GO, delim = ",")), 
+            by = "GO") %>%
+  group_by(., GO) %>%
+  unique(.) #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category. Join with gene background annotated with GOterms. For the gene background, import and separate GO terms into individual rows prior to joining. Group by GO term then retain unique rows
 head(allRes.predIsoMaledataBP)
 ```
 
@@ -166,7 +206,12 @@ head(allRes.predIsoMaledataBP)
 allRes.maleAltSpliceDataBP <- read.csv("../78-asca-methdiff/male-altSplice-BP-FisherTestResults.csv") %>%
   dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
   dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
-  mutate(., category = "m_altSplice") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result categeory
+  mutate(., category = "f_altSplice") %>%
+  left_join(., 
+            y = (read_delim("../78-asca-methdiff/geneid2go-male_altSplice.tab", delim = "\t", col_names = c("gene_name", "GO")) %>% separate_longer_delim(., cols = GO, delim = ",")), 
+            by = "GO") %>%
+  group_by(., GO) %>%
+  unique(.) #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category. Join with gene background annotated with GOterms. For the gene background, import and separate GO terms into individual rows prior to joining. Group by GO term then retain unique rows
 head(allRes.maleAltSpliceDataBP)
 ```
 
@@ -176,7 +221,12 @@ head(allRes.maleAltSpliceDataBP)
 allRes.maleDMLGeneListDataBP <- read.csv("../DML-characterization/male-DML-BP-FisherTestResults.csv") %>%
   dplyr::rename(., pvalue = "classic", GO = "GO.ID", GOterm = "Term") %>%
   dplyr::select(., -c(Annotated, Significant, Expected)) %>% 
-  mutate(., category = "m_DML") #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result categeory
+  mutate(., category = "f_DML") %>%
+  left_join(., 
+            y = (read_delim("../DML-characterization/geneid2go-male_geneBackground.tab", delim = "\t", col_names = c("gene_name", "GO")) %>% separate_longer_delim(., cols = GO, delim = ",")), 
+            by = "GO") %>%
+  group_by(., GO) %>%
+  unique(.) #Import enrichment results. Rename columns and retain columns of interest. Add a column characterizing enrichment result category. Join with gene background annotated with GOterms. For the gene background, import and separate GO terms into individual rows prior to joining. Group by GO term then retain unique rows
 head(allRes.maleDMLGeneListDataBP)
 ```
 
