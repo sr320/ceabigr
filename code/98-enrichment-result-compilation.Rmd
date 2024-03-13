@@ -52,7 +52,7 @@ mRNATrack <- read.delim("../../genome-features/C_virginica-3.0-mRNA.gff", header
   separate(., V17, into = c("V18", "V19"), sep = ";transcript_id=") %>%
   dplyr::select(., c("V12", "V14", "V18")) %>%
   dplyr::rename(., transcript = V12, gene = V14, product = V18) %>%
-  mutate(., gene_name = gsub("gene-", "", mRNATrack$gene)) %>%
+  mutate(., gene_name = gsub("gene-", "", gene)) %>%
   dplyr::select(., -gene) #Winnow down mRNA track
 head(mRNATrack) #Confirm changes
 ```
@@ -243,7 +243,7 @@ allRes.allFem <- rbind(allRes.maxTransFemPosDataBP, allRes.maxTransFemNegDataBP,
   dplyr::select(., -GOterm.x) %>%
   dplyr::rename(., GOterm = "GOterm.y") %>%
   separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C transcript") %>%
-  dplyr::select(., gene_name, GO, GOterm, pvalue, category) %>%
+  dplyr::select(., gene_name, GO, GOterm, GOslim, pvalue, category) %>%
   unique(.) %>%
   group_by(., gene_name) %>%
   pivot_wider(., names_from = "category", values_from = "pvalue") %>%
@@ -260,7 +260,7 @@ head(allRes.allFem) #Confirm changes
 ```
 
 ```{r}
-write_delim(allRes.allFem, "fem-all-enrichment-results.tab", delim = "\t", col_names = TRUE, quote = "none")
+write_delim(allRes.allFem, "fem-all-enrichment-results.txt", delim = "\t", col_names = TRUE, quote = "none")
 ```
 
 ## Males
@@ -274,7 +274,7 @@ allRes.allMale <- rbind(allRes.maxTransMalePosDataBP, allRes.maxTransMaleNegData
   dplyr::select(., -GOterm.x) %>%
   dplyr::rename(., GOterm = "GOterm.y") %>%
   separate(., col = product, into = c("product", "transcriptVar"), sep = "%2C transcript") %>%
-  dplyr::select(., gene_name, GO, GOterm, pvalue, category) %>%
+  dplyr::select(., gene_name, GO, GOterm, GOslim, pvalue, category) %>%
   unique(.) %>%
   group_by(., gene_name) %>%
   pivot_wider(., names_from = "category", values_from = "pvalue") %>%
@@ -291,13 +291,13 @@ head(allRes.allMale) #Confirm changes
 ```
 
 ```{r}
-write_delim(allRes.allMale, "male-all-enrichment-results.tab", delim = "\t", col_names = TRUE, quote = "none")
+write_delim(allRes.allMale, "male-all-enrichment-results.txt", delim = "\t", col_names = TRUE, quote = "none")
 ```
 
 ## All data
 
 ```{r}
-allRes.bothSexes <- full_join(allRes.allFem, allRes.allMale, by = c("gene_name", "GO", "GOterm")) %>%
+allRes.bothSexes <- full_join(allRes.allFem, allRes.allMale, by = c("gene_name", "GO", "GOterm", "GOslim")) %>%
   mutate(., both_maxTransPos = case_when(f_maxTransPos < 0.01 & m_maxTransPos < 0.01 ~ "Y",
                                           f_maxTransPos >= 0.01 | m_maxTransPos >= 0.01 ~ "N")) %>%
   mutate(., both_maxTransNeg = case_when(f_maxTransNeg < 0.01 & m_maxTransNeg < 0.01 ~ "Y",
@@ -320,5 +320,5 @@ head(allRes.bothSexes)
 ```
 
 ```{r}
-write_delim(allRes.bothSexes, "all-enrichment-results.tab", delim = "\t", col_names = TRUE, quote = "none")
+write_delim(allRes.bothSexes, "all-enrichment-results.txt", delim = "\t", col_names = TRUE, quote = "none")
 ```
