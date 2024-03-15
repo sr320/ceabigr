@@ -3,35 +3,34 @@
 `ceabigr/code`
 
 
-#Materials and Methods
-##Experimental Design and Seawater Chemistry Analysis
+# Materials and Methods
+## Experimental Design and Seawater Chemistry Analysis
 
-##Nucleic Acid Extraction and Library Preparation
+## Nucleic Acid Extraction and Library Preparation
 
-##Genome Information and Feature Tracks
+## Genome Information and Feature Tracks
 
-##Genetic Variation
+## Genetic Variation
 
-##Gene Activity
-###Gene and Transcript Expression
+## Gene Activity
+### Gene and Transcript Expression
 
-###Predominant Transcript Identification 
+### Predominant Transcript Identification 
 
-###Alternative Splicing
+### Alternative Splicing
 
-##DNA Methylation Analysis 
-###CpG locus-level Methylation Quantification
+## DNA Methylation Analysis 
+### CpG locus-level Methylation Quantification
 
-###Gene-level Methylation Quantification
+### Gene-level Methylation Quantification
 
-##Methylation Influence on Gene Activity
+## Methylation Influence on Gene Activity
 
-##Influence of Methylation on Predominant Transcript Shifts
+## Influence of Methylation on Predominant Transcript Shifts
 
-##Transcriptional Noise Analysis
+## Transcriptional Noise Analysis
 
-
-Influence of Methylation on Alternative Splicing
+## Influence of Methylation on Alternative Splicing
 
 
 
