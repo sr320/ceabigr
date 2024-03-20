@@ -48,7 +48,7 @@ sessionInfo()
 # Establish color scheme
 
 ```{r}
-plotColors <- RColorBrewer::brewer.pal(9, "Greens")
+plotColors <- RColorBrewer::brewer.pal(9, "Greys")
 ```
 
 # Genomic location of DML
