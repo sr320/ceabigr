@@ -197,7 +197,8 @@ head(cpgFeatureOverlapsPercentsMale) #Check calculations
 
 ```{r}
 cpgFeatureOverlapsPercentsBind <- cbind(cpgFeatureOverlapsPercentsFem, cpgFeatureOverlapsPercentsMale) #Combine dataframes
-head(cpgFeatureOverlapsPercentsBind)
+colnames(cpgFeatureOverlapsPercentsBind) <- c("femaleDML", "female10Meth", "maleDML", "male10Meth") #Change column names
+head(cpgFeatureOverlapsPercentsBind) #Confirm formatting
 ```
 
 ```{bash}
@@ -205,57 +206,157 @@ mkdir figures
 ```
 
 ```{r}
-pdf("figures/DML-feature-overlaps.pdf", width = 11, height = 8.5)
+# pdf("figures/DML-feature-overlaps.pdf", width = 11, height = 8.5)
+# 
+# par(mar = c(3,5,1,1), oma = c(0, 1, 1, 11), mfrow = c(2, 1)) #Change figure boundaries
+# 
+# #Females
+# 
+# barplot(t(t(cpgFeatureOverlapsPercentsBind[,c(2,1)])), 
+#         col= rev(plotColors), 
+#         axes = FALSE,
+#         names.arg = c("10x CpGs", "Female DML"), cex.names = 1.5,
+#         ylim = c(0, 110)) #Create base plot. Everything should be white. Do not plot axes. Include sequencing type as labels and set size. Set y-axis specs. 
+# 
+# axis(side = 2, at = seq(0, 100, by = 10), las = 2, col = "grey80", cex.axis = 1.2) #Add y-axis
+# mtext(side = 2, "% CpGs", line = 3, cex = 1.5) #Add y-axis label
+# mtext("A. Females", x = 0, y = 105, cex = 1.5, adj = 0) #Add panel title
+# 
+# #Males
+# 
+# barplot(t(t(cpgFeatureOverlapsPercentsBind[,c(4,3)])), 
+#         col= rev(plotColors), 
+#         axes = FALSE, 
+#         names.arg = c("10x CpGs", "Male DML"), cex.names = 1.5,
+#         ylim = c(0, 110)) #Create base plot. Everything should be white. Do not plot axes. Include sequencing type as labels and set size. Set y-axis specs. 
+# 
+# axis(side = 2, at = seq(0, 100, by = 10), las = 2, col = "grey80", cex.axis = 1.2) #Add y-axis
+# mtext(side = 2, "% CpGs", line = 3, cex = 1.5) #Add y-axis label
+# mtext("B. Males", x = 0, y = 105, cex = 1.5, adj = 0) #Add panel title
+# 
+# #Legend
+# 
+# par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE) #Create new plot
+# plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n") #Add new plot on top of current plot
+# legend(x = 0.57, y = 0.87, 
+#        xpd = TRUE,
+#        legend = rev(c("Exon UTR", 
+#                       "CDS", 
+#                       "Introns", 
+#                       "Upstream Flank", 
+#                       "Downstream Flank", 
+#                       "lncRNA", 
+#                       "TE", 
+#                       "Intergenic")),
+#        pch = 22, 
+#        col = "black", 
+#        pt.bg = plotColors,
+#        bty = "n",
+#        cex = 1.5, 
+#        x.intersp = 0.7, xjust = 0) #Place a legend in the top right of the figure with no box
+# text("Genome Feature", x = 0.785, y = 0.879, cex = 1.5) #Add legend title that is aligned with legend
+# 
+# dev.off()
+```
 
-par(mar = c(3,5,1,1), oma = c(0, 1, 1, 11), mfrow = c(2, 1)) #Change figure boundaries
+```{r}
+cpgFeatureOverlapsPercentsBind %>%
+  mutate(., genomeFeature = c("8exonUTR", "7CDS", "6intron", "5upstream", "4downstream", "3lncRNA", "2TE", "1intergenic")) %>%
+  pivot_longer(., cols = c(-genomeFeature), values_to = "proportion", names_to = "category") %>%
+  mutate(., sex = case_when(category == "femaleDML" ~ "Female",
+                            category == "female10Meth" ~ "Female",
+                            category == "maleDML" ~ "Male",
+                            category == "male10Meth" ~ "Male")) %>%
+  mutate(., category = gsub(x = category, pattern = "female", replacement = ""),
+         category = gsub(x = category, pattern = "male", replacement = "")) %>%
+  ggplot(., aes(x = category, y = proportion, fill = genomeFeature)) +
+  geom_bar(position = "fill", stat = "identity", color = "black") +
+  facet_wrap(.~sex) +
+  scale_x_discrete(name = "",
+                   labels = c("10x CpGs", "DML")) +
+  scale_y_continuous(name= "Proportion of CpGs",
+                     breaks = seq(0, 1.0, 0.1)) +
+  scale_fill_manual(name = "Genome Feature",
+                    values = plotColors,
+                    labels = c("Intergenic", "TE", "lncRNA", "Downstream Flank", "Upstream Flank", "Introns", "CDS", "Exon UTR")) +
+  theme_classic(base_size = 15) + theme(strip.background = element_rect(colour = "white"),
+                                        strip.text = element_text(size = 15)) #Take dataframe with proportion information and create a new column with genome features organized a particular way. Pivot the data longer and create sex and category columns. Use this data in a stacked barplot faceted by sex. Specify x- and y-scales and the color scale. Specify theme information.
+ggsave("figures/DML-feature-overlaps-facet.pdf", height = 8.5, width = 11)
+```
+```{r}
+cbind(cpgFeatureOverlapsFem, cpgFeatureOverlapsMale) %>%
+  dplyr::select(femaleDML, maleDML) %>%
+  mutate(., genomeFeature = c("8exonUTR", "7CDS", "6intron", "5upstream", "4downstream", "3lncRNA", "2TE", "1intergenic")) %>%
+  pivot_longer(., cols = c(-genomeFeature), values_to = "count", names_to = "sex") %>%
+  mutate(., sex = case_when(sex == "femaleDML" ~ "Female",
+                            sex == "maleDML" ~ "Male")) %>%
+  ggplot(., aes(x = genomeFeature, y = count, fill = genomeFeature)) +
+  geom_bar(stat = "identity", color = "black") +
+  facet_wrap(.~sex, nrow = 2, scales = "free_y") +
+  scale_x_discrete(name = "") +
+  scale_y_continuous(name = "Number of DML") +
+  scale_fill_manual(name = "Genome Feature",
+                    values = plotColors,
+                    labels = c("Intergenic", "TE", "lncRNA", "Downstream Flank", "Upstream Flank", "Introns", "CDS", "Exon UTR")) +
+  theme_classic(base_size = 15) + theme(strip.background = element_rect(colour = "white"),
+                                        strip.text = element_text(size = 15),
+                                        axis.text.x = element_blank(),
+                                        axis.ticks.x = element_blank()) #Combine count tables for females and males with the number of DML found in each genome feature. Add a genome feature column that orders the features. Pivot the table longer and add a column for sex. Use data in a facated barplot with independent y axes. Modify x- and y-axes and labels. Specify a color scale.
+ggsave("figures/DML-abs-differences-facet.pdf", height = 8.5, width = 11)
+```
 
-#Females
+#### Multipanel plot
 
-barplot(t(t(cpgFeatureOverlapsPercentsBind[,c(2,1)])), 
-        col= rev(plotColors), 
-        axes = FALSE,
-        names.arg = c("10x CpGs", "Female DML"), cex.names = 1.5,
-        ylim = c(0, 110)) #Create base plot. Everything should be white. Do not plot axes. Include sequencing type as labels and set size. Set y-axis specs. 
+```{r}
+sexSpecificLocationsPlot <- cpgFeatureOverlapsPercentsBind %>%
+  mutate(., genomeFeature = c("8exonUTR", "7CDS", "6intron", "5upstream", "4downstream", "3lncRNA", "2TE", "1intergenic")) %>%
+  pivot_longer(., cols = c(-genomeFeature), values_to = "proportion", names_to = "category") %>%
+  mutate(., sex = case_when(category == "femaleDML" ~ "Female",
+                            category == "female10Meth" ~ "Female",
+                            category == "maleDML" ~ "Male",
+                            category == "male10Meth" ~ "Male")) %>%
+  mutate(., category = gsub(x = category, pattern = "female", replacement = ""),
+         category = gsub(x = category, pattern = "male", replacement = "")) %>%
+  ggplot(., aes(x = category, y = proportion, fill = genomeFeature)) +
+  geom_bar(position = "fill", stat = "identity", color = "black") +
+  facet_wrap(.~sex) +
+  scale_x_discrete(name = "",
+                   labels = c("10x CpGs", "DML")) +
+  scale_y_continuous(name= "Proportion of CpGs",
+                     breaks = seq(0, 1.0, 0.1)) +
+  scale_fill_manual(name = "Genome Feature",
+                    values = plotColors,
+                    labels = c("Intergenic", "TE", "lncRNA", "Downstream Flank", "Upstream Flank", "Introns", "CDS", "Exon UTR")) +
+  labs(title = "A. Sex-specific locations") +
+  theme_classic(base_size = 15) + theme(strip.background = element_rect(colour = "white"),
+                                        strip.text = element_text(size = 15),
+                                        legend.position = "none") #Take dataframe with proportion information and create a new column with genome features organized a particular way. Pivot the data longer and create sex and category columns. Use this data in a stacked barplot faceted by sex. Specify x- and y-scales and the color scale. Specify theme information.
 
-axis(side = 2, at = seq(0, 100, by = 10), las = 2, col = "grey80", cex.axis = 1.2) #Add y-axis
-mtext(side = 2, "% CpGs", line = 3, cex = 1.5) #Add y-axis label
-mtext("A. Females", x = 0, y = 105, cex = 1.5, adj = 0) #Add panel title
+totalDMLPlot <- cbind(cpgFeatureOverlapsFem, cpgFeatureOverlapsMale) %>%
+  dplyr::select(femaleDML, maleDML) %>%
+  mutate(., genomeFeature = c("8exonUTR", "7CDS", "6intron", "5upstream", "4downstream", "3lncRNA", "2TE", "1intergenic")) %>%
+  pivot_longer(., cols = c(-genomeFeature), values_to = "count", names_to = "sex") %>%
+  mutate(., sex = case_when(sex == "femaleDML" ~ "Female",
+                            sex == "maleDML" ~ "Male")) %>%
+  ggplot(., aes(x = genomeFeature, y = count, fill = genomeFeature)) +
+  geom_bar(stat = "identity", color = "black") +
+  facet_wrap(.~sex, ncol = 2, scales = "free_y") +
+  scale_x_discrete(name = "") +
+  scale_y_continuous(name = "Number of DML") +
+  scale_fill_manual(name = "Genome Feature",
+                    values = plotColors,
+                    labels = c("Intergenic", "TE", "lncRNA", "Downstream Flank", "Upstream Flank", "Introns", "CDS", "Exon UTR")) +
+  labs(title = "B. Total DML in Genome Features") +
+  theme_classic(base_size = 15) + theme(strip.background = element_rect(colour = "white"),
+                                        strip.text = element_text(size = 15),
+                                        axis.text.x = element_blank(),
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom") #Combine count tables for females and males with the number of DML found in each genome feature. Add a genome feature column that orders the features. Pivot the table longer and add a column for sex. Use data in a facated barplot with independent y axes. Modify x- and y-axes and labels. Specify a color scale.
+```
 
-#Males
-
-barplot(t(t(cpgFeatureOverlapsPercentsBind[,c(4,3)])), 
-        col= rev(plotColors), 
-        axes = FALSE, 
-        names.arg = c("10x CpGs", "Male DML"), cex.names = 1.5,
-        ylim = c(0, 110)) #Create base plot. Everything should be white. Do not plot axes. Include sequencing type as labels and set size. Set y-axis specs. 
-
-axis(side = 2, at = seq(0, 100, by = 10), las = 2, col = "grey80", cex.axis = 1.2) #Add y-axis
-mtext(side = 2, "% CpGs", line = 3, cex = 1.5) #Add y-axis label
-mtext("B. Males", x = 0, y = 105, cex = 1.5, adj = 0) #Add panel title
-
-#Legend
-
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE) #Create new plot
-plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n") #Add new plot on top of current plot
-legend(x = 0.57, y = 0.87, 
-       xpd = TRUE,
-       legend = rev(c("Exon UTR", 
-                      "CDS", 
-                      "Introns", 
-                      "Upstream Flank", 
-                      "Downstream Flank", 
-                      "lncRNA", 
-                      "TE", 
-                      "Intergenic")),
-       pch = 22, 
-       col = "black", 
-       pt.bg = plotColors,
-       bty = "n",
-       cex = 1.5, 
-       x.intersp = 0.7, xjust = 0) #Place a legend in the top right of the figure with no box
-text("Genome Feature", x = 0.785, y = 0.879, cex = 1.5) #Add legend title that is aligned with legend
-
-dev.off()
+```{r}
+sexSpecificLocationsPlot / totalDMLPlot
+ggsave("figures/multipanel-DML-location-plot.pdf", height = 8.5, width = 11)
 ```
 
 # Enrichment test
@@ -263,6 +364,7 @@ dev.off()
 I will use `topGO` to identify any overrepresented biological processes in genes that contain DML.
 
 ## Annotation data
+
 
 ```{r}
 mRNATrack <- read.delim("../../genome-features/C_virginica-3.0-mRNA.gff", header = FALSE) %>%
@@ -470,7 +572,7 @@ str(maleDMLGeneList)
 
 ```{r}
 maleDMLGeneListDataBP <- new("topGOdata", ontology = "BP", allGenes = maleDMLGeneList,
-                            annot = annFUN.gene2GO, gene2GO = geneID2GO) #Create biological process topGO object
+                             annot = annFUN.gene2GO, gene2GO = geneID2GO) #Create biological process topGO object
 maleDMLGeneListDataBP #Get summary of object
 ```
 
