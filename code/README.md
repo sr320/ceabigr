@@ -4,7 +4,7 @@ Code used in for each analysis can be found below.
 
 ## Genome Information and Feature Tracks
 
-- [Generating-Genome-Feature-Tracks.ipynb](https://github.com/sr320/ceabigr/blob/main/code/Generating-Genome-Feature-Tracks.ipynb): Generate genome feature tracks based on NCBI annotations
+- [`Generating-Genome-Feature-Tracks.ipynb`](https://github.com/sr320/ceabigr/blob/main/code/Generating-Genome-Feature-Tracks.ipynb): Generate genome feature tracks based on NCBI annotations. Output can be fond in the [`genome-features`](https://github.com/sr320/ceabigr/tree/main/genome-features) directory
 
 ## Genetic Variation
 
@@ -51,7 +51,7 @@ Code used in for each analysis can be found below.
 
 ## Influence of Methylation on Alternative Splicing
 
-- [00-78-asca-methdiff.qmd](https://github.com/sr320/ceabigr/blob/main/code/00-78-asca-methdiff.qmd): Understand if methylation significantly impacted alternative splicing and conduct enrichment analyses
+- [`00-78-asca-methdiff.qmd`](https://github.com/sr320/ceabigr/blob/main/code/00-78-asca-methdiff.qmd): Understand if methylation significantly impacted alternative splicing and conduct enrichment analyses
 
 ## Other scripts
 
