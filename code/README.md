@@ -29,10 +29,11 @@ Code used in for each analysis can be found below.
 - [`bismark`](https://github.com/sr320/ceabigr/blob/main/code/01-bismark.sh): bismark code
 - [`General-Methylation-Landscape.ipynb`](https://github.com/sr320/ceabigr/blob/main/code/General-Methylation-Landscape.ipynb): Use `bedtools` to characterize methylation landscape using CpGs with 10x coverage
 - [`General-Methylation-Landscape.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/General-Methylation-Landscape.Rmd): Visualization of general methylation landscape and chi-squared tests
-- [`Genomic-Location-of-DML.ipynb`](https://github.com/sr320/ceabigr/blob/main/code/00-Genomic-Location-of-DML.ipynb): Use `bedtools` to identify genomic locations of DML
-- [`Genomic-Location-of-DML.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/Genomic-Location-of-DML.Rmd): Visualization of DML genomic locations and chi-squared tests
 
 ### CpG locus-level Methylation Quantification
+
+- [`Genomic-Location-of-DML.ipynb`](https://github.com/sr320/ceabigr/blob/main/code/00-Genomic-Location-of-DML.ipynb): Use `bedtools` to identify genomic locations of DML
+- [`Genomic-Location-of-DML.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/Genomic-Location-of-DML.Rmd): Visualization of DML genomic locations and chi-squared tests
 
 ### Gene-level Methylation Quantification
 
