@@ -112,11 +112,11 @@ create_volcano_plot <- function(data, log2fc_col, pval_col, qval_col, diffexpres
 
 Notebooks detailing their creation:
 
-- [FastQ trimming](https://robertslab.github.io/sams-notebook/2022/02/24/Trimming-Additional-20bp-from-C.virginica-Gonad-RNAseq-with-fastp-on-Mox.html)
+- [FastQ trimming](https://robertslab.github.io/sams-notebook/posts/2022/2022-02-24-Trimming---Additional-20bp-from-C.virginica-Gonad-RNAseq-with-fastp-on-Mox/index.html)
 
-- [Genome indexing, and exon/splice sites with HISAT2](https://robertslab.github.io/sams-notebook/2021/07/20/Genome-Annotations-Splice-Site-and-Exon-Extractions-for-C.virginica-GCF_002022765.2-Genome-Using-Hisat2-on-Mox.html)
+- [Genome indexing, and exon/splice sites with HISAT2](https://robertslab.github.io/sams-notebook/posts/2021/2021-07-20-Genome-Annotations---Splice-Site-and-Exon-Extractions-for-C.virginica-GCF_002022765.2-Genome-Using-Hisat2-on-Mox/index.html)
 
-- [Mapping and identificaion of isoforms with StingTie](https://robertslab.github.io/sams-notebook/2023/08/21/Transcript-Identification-and-Alignments-C.virginica-RNAseq-with-NCBI-Genome-GCF_002022765.2-Using-Hisat2-and-Stringtie-on-Mox-Again.html)
+- [Mapping and identification of isoforms with StingTie](https://robertslab.github.io/sams-notebook/posts/2023/2023-08-21-Transcript-Identification-and-Alignments---C.virginica-RNAseq-with-NCBI-Genome-GCF_002022765.2-Using-Hisat2-and-Stringtie-on-Mox-Again/index.html)
 
 ```{bash}
 # Download Ballgown input files and directory structure
